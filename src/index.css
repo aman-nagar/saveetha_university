@@ -1,4 +1,6 @@
+/* src/index.css */
 @import "tailwindcss";
+@import "flowbite";
 
 @theme {
   /* Brand colors from logo */

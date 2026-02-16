@@ -1,17 +1,17 @@
-import React from "react";
-import Header from "../components/Header";
-import Footer from "../components/Footer";
-import Navbar from "../components/public/Navbar";
+// src/layouts/PublicLayout.jsx
+
+import PublicFooter from "../components/public/PublicFooter";
+import PublicHeader from "../components/public/PublicHeader";
 import { Outlet } from "react-router-dom";
 
 export default function PublicLayout() {
   return (
     <div className="min-h-screen flex flex-col">
-      <Navbar />
+      <PublicHeader />
       <main className="flex-1">
         <Outlet />
       </main>
-      <Footer />
+      <PublicFooter />
     </div>
   );
 }

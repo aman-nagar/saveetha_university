@@ -7,72 +7,100 @@ import {
   FooterLinkGroup,
   FooterTitle,
 } from "flowbite-react";
-import {
-  BsDribbble,
-  BsFacebook,
-  BsGithub,
-  BsInstagram,
-  BsTwitter,
-} from "react-icons/bs";
+import { BsFacebook, BsInstagram, BsTwitter } from "react-icons/bs";
 import { Link } from "react-router-dom";
 
 export default function PublicFooter() {
   return (
-    <Footer bgDark>
+    <Footer className="bg-primary text-white rounded-none">
       <div className="w-full">
-        <div className="grid w-full grid-cols-2 gap-8 px-6 py-8 md:grid-cols-4">
+        <div className="grid w-full grid-cols-2 gap-8 px-6 py-10 md:grid-cols-4">
           <div>
-            <FooterTitle title="Company" />
+            <FooterTitle title="University" className="text-accent" />
             <FooterLinkGroup col>
-              <FooterLink href="#">About</FooterLink>
-              <FooterLink href="#">Careers</FooterLink>
-              <FooterLink href="#">Brand Center</FooterLink>
-              <FooterLink href="#">Blog</FooterLink>
+              <FooterLink href="#" className="text-white/80 hover:text-accent">
+                About
+              </FooterLink>
+              <FooterLink href="#" className="text-white/80 hover:text-accent">
+                Centers
+              </FooterLink>
+              <FooterLink href="#" className="text-white/80 hover:text-accent">
+                Admissions
+              </FooterLink>
+              <FooterLink href="#" className="text-white/80 hover:text-accent">
+                Contact
+              </FooterLink>
             </FooterLinkGroup>
           </div>
+
           <div>
-            <FooterTitle title="help center" />
+            <FooterTitle title="Students" className="text-accent" />
             <FooterLinkGroup col>
-              <FooterLink href="#">Discord Server</FooterLink>
-              <FooterLink href="#">Twitter</FooterLink>
-              <FooterLink href="#">Facebook</FooterLink>
-              <FooterLink href="#">Contact Us</FooterLink>
+              <FooterLink href="#" className="text-white/80 hover:text-accent">
+                Student Portal
+              </FooterLink>
+              <FooterLink href="#" className="text-white/80 hover:text-accent">
+                Results
+              </FooterLink>
+              <FooterLink href="#" className="text-white/80 hover:text-accent">
+                Academic Calendar
+              </FooterLink>
             </FooterLinkGroup>
           </div>
+
           <div>
-            <FooterTitle title="legal" />
+            <FooterTitle title="Legal" className="text-accent" />
             <FooterLinkGroup col>
-              <FooterLink href="#">Privacy Policy</FooterLink>
-              <FooterLink href="#">Licensing</FooterLink>
-              <FooterLink href="#">Terms &amp; Conditions</FooterLink>
+              <FooterLink href="#" className="text-white/80 hover:text-accent">
+                Privacy Policy
+              </FooterLink>
+              <FooterLink href="#" className="text-white/80 hover:text-accent">
+                Terms & Conditions
+              </FooterLink>
             </FooterLinkGroup>
           </div>
+
           <div>
-            <FooterTitle title="download" />
-            <FooterLinkGroup col>
-              <FooterLink href="#">iOS</FooterLink>
-              <FooterLink href="#">Android</FooterLink>
-              <FooterLink href="#">Windows</FooterLink>
-              <FooterLink href="#">MacOS</FooterLink>
-            </FooterLinkGroup>
+            <FooterTitle title="Contact" className="text-accent" />
+            <p className="text-white/80 text-sm">
+              Aryavart International University
+              <br />
+              Uttar Pradesh, India
+              <br />
+              info@university.edu
+            </p>
           </div>
         </div>
-        <div className="w-full bg-gray-700 px-4 py-3 sm:flex sm:items-center sm:justify-between">
+
+        {/* Bottom bar */}
+        <div className="w-full border-t border-white/20 px-6 py-4 sm:flex sm:items-center sm:justify-between">
           <FooterCopyright
             href="#"
-            by="Copyright 2018-2026 | Saveetha Amaravati University"
+            by="Copyright 2018–2026 Aryavart International University"
+            className="text-white/70"
           />
-          <div className="mt-4 flex space-x-6 sm:mt-0 sm:justify-center">
-            <FooterIcon href="#" icon={BsFacebook} />
-            <FooterIcon href="#" icon={BsInstagram} />
-            <FooterIcon href="#" icon={BsTwitter} />
-            <FooterIcon href="#" icon={BsGithub} />
-            <FooterIcon href="#" icon={BsDribbble} />
+
+          <div className="mt-4 flex space-x-6 sm:mt-0">
+            <FooterIcon
+              href="#"
+              icon={BsFacebook}
+              className="text-white/70 hover:text-accent"
+            />
+            <FooterIcon
+              href="#"
+              icon={BsInstagram}
+              className="text-white/70 hover:text-accent"
+            />
+            <FooterIcon
+              href="#"
+              icon={BsTwitter}
+              className="text-white/70 hover:text-accent"
+            />
           </div>
-          <FooterCopyright
-            by="designed and Developed by  NSpro-webtech"
-            href="https://nsprowebtech.com/"
-          />
+
+          <div className="text-white/70 text-sm mt-4 sm:mt-0">
+            Designed by <Link to="#">NSpro-webtech</Link>
+          </div>
         </div>
       </div>
     </Footer>

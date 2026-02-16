@@ -6,6 +6,7 @@ import Home from "./pages/public/Home";
 import AdminLayout from "./layouts/AdminLayout";
 import AdminDashboard from "./pages/admin/AdminDashboard";
 import AdminLogin from "./pages/admin/AdminLogin";
+import About from "./pages/public/About";
 
 function App() {
   return (
@@ -14,6 +15,7 @@ function App() {
         {/* Public */}
         <Route element={<PublicLayout />}>
           <Route path="/" element={<Home />} />
+          <Route path="/about" element={<About />} />
         </Route>
 
         {/* Admin */}

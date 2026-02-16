@@ -26,7 +26,7 @@ export default function Programs() {
           {programs.map((program, i) => (
             <div
               key={i}
-              className="bg-white border border-border rounded-xl p-6 shadow-sm hover:shadow-md transition"
+              className="bg-surface border border-border rounded-xl p-6 shadow-sm hover:shadow-md transition"
             >
               <h3 className="font-heading font-semibold text-lg text-primary">
                 {program}

@@ -16,7 +16,7 @@ export default function WhyUs() {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-12">
           {/* Left Column */}
           <div className="space-y-6">
-            <div className="bg-white/10 backdrop-blur-sm p-6 rounded-xl border border-white/20">
+            <div className="bg-surface/10 backdrop-blur-sm p-6 rounded-xl border border-white/2">
               <h3 className="text-xl font-heading font-semibold text-accent mb-3 flex items-center gap-2">
                 <span className="w-2 h-2 bg-accent rounded-full"></span>
                 Academic Excellence
@@ -85,7 +85,7 @@ export default function WhyUs() {
           ].map((stat, i) => (
             <div
               key={i}
-              className="text-center bg-white/5 backdrop-blur-sm p-4 rounded-lg"
+              className="text-center bg-surface/5 backdrop-blur-sm p-4 rounded-lg"
             >
               <div className="text-2xl md:text-3xl font-heading font-bold text-accent">
                 {stat.number}

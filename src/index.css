@@ -9,11 +9,14 @@
   --color-accent: #c9a227; /* university gold */
 
   /* Neutrals */
-  --color-bg: #f9fafb; /* soft off-white */
+  --color-bg: #f9fafb; /* page background */
   --color-surface: #ffffff; /* cards */
   --color-text: #111827; /* main text */
   --color-muted: #6b7280; /* secondary text */
   --color-border: #e5e7eb; /* borders */
+
+  /* Overlay (for sliders/hero) */
+  --color-overlay: rgba(0, 0, 0, 0.4);
 
   /* Fonts */
   --font-sans: Inter, sans-serif;

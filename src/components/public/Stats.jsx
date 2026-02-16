@@ -14,7 +14,7 @@ export default function Stats() {
         {stats.map((stat, i) => (
           <div
             key={i}
-            className="bg-white rounded-xl shadow-sm border border-border p-6 text-center"
+            className="bg-surface rounded-xl shadow-sm border border-border p-6 text-center"
           >
             <div className="text-2xl md:text-3xl font-heading font-bold text-primary">
               {stat.number}

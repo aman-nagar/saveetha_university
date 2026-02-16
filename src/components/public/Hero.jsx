@@ -4,7 +4,7 @@ import React from "react";
 export default function Hero() {
   return (
     <>
-      <section className="h-[70vh] bg-primary text-white">
+      <section className="h-[70vh] bg-primary text-white ">
         <div className="max-w-6xl mx-auto px-6 py-16 md:py-24 grid md:grid-cols-2 gap-10 items-center">
           {/* Left content */}
           <div>

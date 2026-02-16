@@ -41,3 +41,47 @@ src/
 │
 ├── App.jsx
 └── main.jsx
+
+5-day delivery plan (realistic)
+
+Day 1:
+
+Project setup
+
+Routing
+
+Layouts
+
+Navbar + Footer
+
+Day 2:
+
+Home
+
+About
+
+Contact
+
+Centers page (API)
+
+Day 3:
+
+Student login
+
+Student dashboard
+
+Day 4:
+
+Admin login
+
+Admin dashboard
+
+Centers CRUD
+
+Day 5:
+
+Students + Pages CRUD
+
+Responsive fixes
+
+Bug fixing

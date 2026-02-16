@@ -1,15 +1,22 @@
 // src/layouts/AdminLayout.jsx
-import React from "react";
-import AdminSidebar from "../components/admin/AdminSidebar";
+// src/layouts/AdminLayout.jsx
 import { Outlet } from "react-router-dom";
+import AdminHeader from "../components/admin/AdminHeader";
+import { AdminSidebar } from "../components/admin/AdminSidebar";
 
 export default function AdminLayout() {
   return (
-    <div className="flex min-h-screen">
+    <div className="flex h-screen bg-bg">
+      {/* Sidebar - fixed full height */}
       <AdminSidebar />
-      <main className="flex-1 p-6 bg-gray-50">
-        <Outlet />
-      </main>
+      
+      {/* Main Content Area */}
+      <div className="flex-1 flex flex-col">
+        <AdminHeader />
+        <main className="flex-1 p-6 overflow-auto">
+          <Outlet />
+        </main>
+      </div>
     </div>
   );
 }

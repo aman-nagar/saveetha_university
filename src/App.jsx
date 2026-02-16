@@ -3,10 +3,10 @@ import { BrowserRouter, Route, Routes } from "react-router-dom";
 import PublicLayout from "./layouts/PublicLayout";
 import Home from "./pages/public/Home";
 import AdminLayout from "./layouts/AdminLayout";
-import AdminDashboard from "./pages/admin/AdminDashboard";
 import About from "./pages/public/About";
 import Contact from "./pages/public/Contact";
-import Login from "./components/Login";
+import Login from "./pages/Login";
+import AdminDashboard from "./pages/admin/AdminDashboard";
 
 function App() {
   return (

@@ -1,1 +1,18 @@
 @import "tailwindcss";
+
+@theme {
+  /* Brand colors from logo */
+  --color-primary: #0b1f4b;
+  --color-secondary: #8b2c2c;
+  --color-accent: #c9a227;
+
+  /* Neutrals */
+  --color-bg: #f8fafc;
+  --color-text: #1f2937;
+  --color-muted: #6b7280;
+  --color-border: #e5e7eb;
+
+  /* Fonts */
+  --font-sans: Inter, sans-serif;
+  --font-heading: Poppins, sans-serif;
+}

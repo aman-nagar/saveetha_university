@@ -1,3 +1,4 @@
+// src/App.jsx
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import PublicLayout from "./layouts/PublicLayout";
 import Home from "./pages/public/Home";
@@ -9,13 +10,16 @@ function App() {
   return (
     <BrowserRouter>
       <Routes>
-        {/* public */}
-        <Route element={<PublicLayout />} />
-        <Route path="/" element={<Home />} />
-        {/* admin */}
+        {/* Public */}
+        <Route element={<PublicLayout />}>
+          <Route path="/" element={<Home />} />
+        </Route>
+
+        {/* Admin */}
         <Route path="/admin/login" element={<Login />} />
-        <Route path="/admin" element={<AdminLayout />} />
-        <Route index element={<AdminDashboard />} />
+        <Route path="/admin" element={<AdminLayout />}>
+          <Route index element={<AdminDashboard />} />
+        </Route>
       </Routes>
     </BrowserRouter>
   );

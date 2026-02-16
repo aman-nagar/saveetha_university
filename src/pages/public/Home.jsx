@@ -6,12 +6,14 @@ import { HeroSlider } from "../../components/public/HeroSlider";
 import Stats from "../../components/public/Stats";
 import Programs from "../../components/public/Programs";
 import CTA from "../../components/public/CTA";
+import HighlightNews from "../../components/public/HighlightNews";
 
 export default function Home() {
   return (
     <div className="bg-bg">
       <Hero />
       <HeroSlider />
+      <HighlightNews />
       <Stats />
       <WhyUS />
       <Programs />

@@ -11,7 +11,7 @@ import logo from "../../assets/images/logo.png";
 
 export default function PublicHeader() {
   return (
-    <Navbar fluid className="bg-surface border-b border-border shadow-sm">
+    <Navbar fluid className="bg-surface border-b border-border shadow-sm px-20">
       <NavbarBrand as={Link} to="/">
         <img src={logo} className="mr-3 h-16" alt="University Logo" />
       </NavbarBrand>
@@ -35,6 +35,13 @@ export default function PublicHeader() {
           className="text-text hover:text-secondary"
         >
           Centers
+        </NavbarLink>
+        <NavbarLink
+          as={Link}
+          to="/news"
+          className="text-text hover:text-secondary"
+        >
+          News
         </NavbarLink>
         <NavbarLink
           as={Link}

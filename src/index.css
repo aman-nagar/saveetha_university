@@ -22,3 +22,16 @@
   --font-sans: Inter, sans-serif;
   --font-heading: Poppins, sans-serif;
 }
+
+@keyframes scroll-up {
+  0% {
+    transform: translateY(0);
+  }
+  100% {
+    transform: translateY(-50%);
+  }
+}
+
+.animate-scroll {
+  animation: scroll-up 12s linear infinite;
+}

@@ -3,16 +3,17 @@
 @import "flowbite";
 
 @theme {
-  /* Brand colors from logo */
-  --color-primary: #0b1f4b;
-  --color-secondary: #8b2c2c;
-  --color-accent: #c9a227;
+  /* Brand colors */
+  --color-primary: #0b1f4b; /* deep academic navy */
+  --color-secondary: #b23a3a; /* softened maroon */
+  --color-accent: #c9a227; /* university gold */
 
   /* Neutrals */
-  --color-bg: #f8fafc;
-  --color-text: #1f2937;
-  --color-muted: #6b7280;
-  --color-border: #e5e7eb;
+  --color-bg: #f9fafb; /* soft off-white */
+  --color-surface: #ffffff; /* cards */
+  --color-text: #111827; /* main text */
+  --color-muted: #6b7280; /* secondary text */
+  --color-border: #e5e7eb; /* borders */
 
   /* Fonts */
   --font-sans: Inter, sans-serif;

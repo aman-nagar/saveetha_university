@@ -11,7 +11,7 @@ import logo from "../../assets/images/logo.png";
 
 export default function PublicHeader() {
   return (
-    <Navbar fluid className="border-b">
+    <Navbar fluid className="bg-white border-b border-border shadow-sm">
       <NavbarBrand as={Link} to="/">
         <img src={logo} className="mr-3 h-16" alt="University Logo" />
       </NavbarBrand>

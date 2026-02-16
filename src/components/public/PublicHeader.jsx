@@ -45,9 +45,9 @@ export default function PublicHeader() {
         </NavbarLink>
 
         {/* Student login button style */}
-        <NavbarLink as={Link} to="/student/login">
+        <NavbarLink as={Link} to="/login">
           <span className="bg-secondary text-white px-4 py-2 rounded-md hover:bg-secondary/90">
-            Student Login
+            Login
           </span>
         </NavbarLink>
       </NavbarCollapse>

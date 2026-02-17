@@ -51,7 +51,7 @@ export default function AdminDashboard() {
   ];
 
   return (
-    <div className="h-full overflow-y-auto bg-[#f9fafb] p-6">
+    <div className="hi h-full overflow-y-auto bg-bg p-6">
       <div className="space-y-6">
         {/* Page Heading */}
         <div className="flex justify-between items-center">

@@ -1,11 +1,15 @@
-import { FaChevronRight, FaThumbtack } from "react-icons/fa";
+// src/components/admin/sidebar/SidebarHeader.jsx
 import { Link } from "react-router-dom";
+import { FaThumbtack, FaChevronRight, FaSun, FaMoon } from "react-icons/fa";
+import logo2 from "../../../assets/images/logo2.png";
 
 export default function SidebarHeader({
   isCollapsed,
   isPinned,
   togglePin,
   toggleCollapse,
+  theme,
+  toggleTheme,
 }) {
   return (
     <div className="p-2 border-b border-white/10">
@@ -15,12 +19,7 @@ export default function SidebarHeader({
             onClick={toggleCollapse}
             className="p-1.5 rounded-lg hover:bg-white/10 transition-colors w-full flex items-center justify-center group relative"
           >
-            <span className="text-xl flex items-center justify-center w-6 text-accent">
-              🏛️
-            </span>
-            <div className="fixed left-14 hidden md:block bg-primary text-white text-sm py-1.5 px-3 rounded-md shadow-lg opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none group-hover:pointer-events-auto z-50 whitespace-nowrap border border-white/10">
-              Expand Sidebar
-            </div>
+            <img src={logo2} className="h-8 w-auto rounded-xl" alt="Logo" />
           </button>
         ) : (
           <div className="flex items-center justify-between w-full">
@@ -28,26 +27,41 @@ export default function SidebarHeader({
               to="/admin"
               className="flex items-center space-x-2 p-1.5 rounded-lg hover:bg-white/10 transition-colors"
             >
-              <span className="text-xl flex items-center justify-center w-6 text-accent">
-                🏛️
-              </span>
+              <img src={logo2} className="h-8 w-auto rounded-xl" alt="Logo" />
               <span className="text-sm font-bold text-white whitespace-nowrap">
-                Admin Panel
+                S.A. University
               </span>
             </Link>
+
             <div className="flex items-center space-x-1">
+              {/* Dark mode toggle */}
+              <button
+                onClick={toggleTheme}
+                className="p-1.5 rounded-lg hover:bg-white/10 transition-colors text-white/70 hover:text-accent cursor-pointer"
+                title="Toggle theme"
+              >
+                {theme === "dark" ? (
+                  <FaSun className="w-3.5 h-3.5" />
+                ) : (
+                  <FaMoon className="w-3.5 h-3.5" />
+                )}
+              </button>
+
+              {/* Pin toggle */}
               <button
                 onClick={togglePin}
-                className={`p-1.5 rounded-lg hover:bg-white/10 transition-colors ${
+                className={`p-1.5 rounded-lg hover:bg-white/10 transition-colors cursor-pointer ${
                   isPinned ? "text-accent" : "text-white/40"
                 }`}
                 title={isPinned ? "Unpin sidebar" : "Pin sidebar"}
               >
                 <FaThumbtack className="w-3.5 h-3.5" />
               </button>
+
+              {/* Collapse toggle */}
               <button
                 onClick={toggleCollapse}
-                className="p-1.5 rounded-lg hover:bg-white/10 transition-colors text-white/60 hover:text-white"
+                className="p-1.5 rounded-lg hover:bg-white/10 transition-colors text-white/60 hover:text-white cursor-pointer"
                 title="Collapse sidebar"
               >
                 <FaChevronRight className="w-3.5 h-3.5" />

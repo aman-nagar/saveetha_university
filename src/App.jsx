@@ -8,6 +8,8 @@ import Contact from "./pages/public/Contact";
 import Login from "./pages/Login";
 import AdminDashboard from "./pages/admin/AdminDashboard";
 import News from "./pages/public/News";
+import { applySettings, loadSettings } from "./utils/adminSettings";
+import { useEffect } from "react";
 
 function App() {
   return (

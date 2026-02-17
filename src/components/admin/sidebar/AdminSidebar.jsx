@@ -1,3 +1,4 @@
+// src/components/admin/sidebar/AdminSidebar.jsx
 import { useState, useRef, useEffect } from "react";
 import { useLocation } from "react-router-dom";
 import { menuItems } from "./menuItems";
@@ -6,7 +7,7 @@ import SidebarHeader from "./SidebarHeader";
 import SidebarSearch from "./SidebarSearch";
 import SidebarFooter from "./SidebarFooter";
 
-export const AdminSidebar = () => {
+export const AdminSidebar = ({ theme, toggleTheme }) => {
   const location = useLocation();
   const sidebarRef = useRef(null);
 
@@ -106,6 +107,8 @@ export const AdminSidebar = () => {
         isPinned={isPinned}
         togglePin={togglePin}
         toggleCollapse={toggleCollapse}
+        theme={theme}
+        toggleTheme={toggleTheme}
       />
 
       <SidebarSearch

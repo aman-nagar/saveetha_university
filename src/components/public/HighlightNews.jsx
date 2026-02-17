@@ -67,22 +67,32 @@ export default function HighlightNews() {
 
   return (
     <section className="py-16 bg-bg">
-      <div className="max-w-6xl mx-auto px-6 grid md:grid-cols-3 gap-6">
-        <NewsColumn
-          title="Campus News"
-          items={campusNews}
-          headerColor="#0b1f4b"
-        />
-        <NewsColumn
-          title="Announcements"
-          items={announcements}
-          headerColor="#b23a3a"
-        />
-        <NewsColumn
-          title="University News"
-          items={universityNews}
-          headerColor="#c9a227"
-        />
+      <div className="max-w-6xl mx-auto px-6">
+        {/* Better heading */}
+        <div className="text-center mb-12">
+          <h3 className="text-3xl md:text-4xl font-heading font-bold text-text relative inline-block">
+            News & Updates
+            <span className="absolute -bottom-3 left-1/2 transform -translate-x-1/2 w-24 h-1 bg-gradient-to-r from-primary via-secondary to-accent rounded-full"></span>
+          </h3>
+        </div>
+
+        <div className="grid md:grid-cols-3 gap-6">
+          <NewsColumn
+            title="Campus News"
+            items={campusNews}
+            headerColor="#0b1f4b"
+          />
+          <NewsColumn
+            title="Announcements"
+            items={announcements}
+            headerColor="#b23a3a"
+          />
+          <NewsColumn
+            title="University News"
+            items={universityNews}
+            headerColor="#c9a227"
+          />
+        </div>
       </div>
     </section>
   );

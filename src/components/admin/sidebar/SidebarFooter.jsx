@@ -24,14 +24,14 @@ export default function SidebarFooter({ isCollapsed }) {
                 <p className="text-xs text-white/60">admin@univ.edu</p>
               </div>
             </div>
-            <div className="flex space-x-1">
+            {/* <div className="flex space-x-1">
               <button className="p-1.5 rounded-lg hover:bg-white/10 transition-colors relative">
                 <FaBell className="w-3.5 h-3.5 text-white/60 hover:text-accent" />
               </button>
               <button className="p-1.5 rounded-lg hover:bg-white/10 transition-colors">
                 <FaCog className="w-3.5 h-3.5 text-white/60 hover:text-accent" />
               </button>
-            </div>
+            </div> */}
           </div>
         )}
       </div>

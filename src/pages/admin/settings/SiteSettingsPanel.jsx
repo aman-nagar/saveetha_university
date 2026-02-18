@@ -3,7 +3,7 @@ import { useState } from "react";
 import SettingsForm from "../../../components/admin/settings/SettingsForm";
 import { updateSiteSettings } from "../../../api/settingsApi";
 
-export default function SiteSettings() {
+export default function SiteSettingsPanel() {
   const [form, setForm] = useState({
     college_name: "",
     short_name: "",

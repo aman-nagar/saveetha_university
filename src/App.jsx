@@ -6,9 +6,9 @@ import AdminLayout from "./layouts/AdminLayout";
 import About from "./pages/public/About";
 import Contact from "./pages/public/Contact";
 import Login from "./pages/Login";
-import AdminDashboard from "./pages/admin/AdminDashboard";
+import AdminDashboard from "./pages/admin/AdminDashboardPanel";
 import News from "./pages/public/News";
-import SiteSettings from "./pages/admin/settings/SiteSettings";
+import SiteSettings from "./pages/admin/settings/SiteSettingsPanel";
 
 function App() {
   return (
@@ -24,7 +24,7 @@ function App() {
 
         <Route path="/admin" element={<AdminLayout />}>
           <Route index element={<AdminDashboard />} />
-          <Route path="settings" element={<SiteSettings />} />
+          <Route path="site-settings" element={<SiteSettings />} />
         </Route>
       </Routes>
     </BrowserRouter>

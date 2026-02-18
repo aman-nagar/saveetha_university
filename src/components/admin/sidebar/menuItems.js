@@ -80,7 +80,7 @@ export const menuItems = [
     label: "Settings",
     icon: FaCog,
     children: [
-      { label: "General", path: "/admin/settings" },
+      { label: "Site Setting", path: "/admin/site-settings" },
       { label: "Users", path: "/admin/users" },
       { label: "Permissions", path: "/admin/permissions" },
     ],

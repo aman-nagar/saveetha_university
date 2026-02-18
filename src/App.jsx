@@ -1,5 +1,5 @@
 // src/App.jsx
-import { Route, Routes } from "react-router-dom";
+import { BrowserRouter, Route, Routes } from "react-router-dom";
 import PublicLayout from "./layouts/PublicLayout";
 import Home from "./pages/public/Home";
 import AdminLayout from "./layouts/AdminLayout";
@@ -9,23 +9,27 @@ import Login from "./pages/Login";
 import AdminDashboard from "./pages/admin/AdminDashboardPanel";
 import News from "./pages/public/News";
 import SiteSettings from "./pages/admin/settings/SiteSettingsPanel";
+import AddStudent from "./pages/admin/students/AddStudent";
 
 function App() {
   return (
-    <Routes>
-      <Route element={<PublicLayout />}>
-        <Route path="/" element={<Home />} />
-        <Route path="/about" element={<About />} />
-        <Route path="/contact" element={<Contact />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/news" element={<News />} />
-      </Route>
+    <BrowserRouter>
+      <Routes>
+        <Route element={<PublicLayout />}>
+          <Route path="/" element={<Home />} />
+          <Route path="/about" element={<About />} />
+          <Route path="/contact" element={<Contact />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/news" element={<News />} />
+        </Route>
 
-      <Route path="/admin" element={<AdminLayout />}>
-        <Route index element={<AdminDashboard />} />
-        <Route path="settings" element={<SiteSettings />} />
-      </Route>
-    </Routes>
+        <Route path="/admin" element={<AdminLayout />}>
+          <Route index element={<AdminDashboard />} />
+          <Route path="site-settings" element={<SiteSettings />} />
+          <Route path="students/add" element={<AddStudent />} />
+        </Route>
+      </Routes>
+    </BrowserRouter>
   );
 }
 

@@ -23,7 +23,7 @@
   --font-heading: Poppins, sans-serif;
 }
 .dark {
-  --color-bg: #0f172a;
+  --color-bg: #0b1220;
   --color-surface: #111827;
   --color-text: #e5e7eb;
   --color-muted: #9ca3af;
@@ -35,6 +35,9 @@
 :root[data-density="compact"] table th {
   padding: 6px 8px;
   font-size: 0.85rem;
+}
+.input {
+  @apply w-full border border-border rounded-lg px-3 py-2 bg-surface text-text placeholder-muted focus:outline-none focus:ring-2 focus:ring-accent/40 focus:border-accent transition;
 }
 
 /* this animation is for HighlightNews.jsx section */

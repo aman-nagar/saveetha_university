@@ -1,4 +1,4 @@
-// src/pages/admin/settings/SiteSettings.jsx
+// src/pages/admin/settings/SiteSettingsPanel.jsx
 import { useState } from "react";
 import SettingsForm from "../../../components/admin/settings/SettingsForm";
 import { updateSiteSettings } from "../../../api/settingsApi";
@@ -34,10 +34,8 @@ export default function SiteSettingsPanel() {
 
     setLoading(false);
     console.log("Response:", res);
-
     alert("Settings submitted successfully");
 
-    // optional: clear form after submit
     setForm({
       college_name: "",
       short_name: "",
@@ -52,8 +50,8 @@ export default function SiteSettingsPanel() {
   };
 
   return (
-    <div className="max-w-5xl">
-      <h1 className="text-xl font-heading font-bold text-primary mb-6">
+    <div className="w-full">
+      <h1 className="text-xl font-heading font-bold text-text mb-6">
         Site Settings
       </h1>
 

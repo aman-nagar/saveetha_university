@@ -51,7 +51,7 @@ export default function SiteSettingsPanel() {
 
   return (
     <div className="w-full">
-      <h1 className="text-xl font-heading font-bold text-text mb-6">
+      <h1 className="text-xl font-heading font-bold text-text mb-2">
         Site Settings
       </h1>
 

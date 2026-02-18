@@ -9,6 +9,7 @@ import Login from "./pages/Login";
 import AdminDashboard from "./pages/admin/AdminDashboardPanel";
 import News from "./pages/public/News";
 import SiteSettings from "./pages/admin/settings/SiteSettingsPanel";
+import AddStudent from "./pages/admin/students/AddStudent";
 
 function App() {
   return (
@@ -25,6 +26,7 @@ function App() {
         <Route path="/admin" element={<AdminLayout />}>
           <Route index element={<AdminDashboard />} />
           <Route path="site-settings" element={<SiteSettings />} />
+          <Route path="students/add" element={<AddStudent />} />
         </Route>
       </Routes>
     </BrowserRouter>

@@ -14,11 +14,17 @@ export default function AddStudent() {
   const prev = () => setStep((s) => Math.max(s - 1, 1));
 
   const onSubmit = (data) => {
+    const formData = new FormData();
+
+    Object.keys(data).forEach((key) => {
+      formData.append(key, data[key]);
+    });
+
     console.log("Final Admission Data:", data);
   };
 
   return (
-    <div className="max-w-5xl">
+    <div className="w-full max-w-7xl">
       <h1 className="text-xl font-heading font-bold text-primary mb-6">
         New Admission
       </h1>

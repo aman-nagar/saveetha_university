@@ -1,6 +1,7 @@
 import FormInput from "../../../form/FormInput";
 import FormSelect from "../../../form/FormSelect";
 import FormSection from "../../../form/FormSection";
+import FormFileInput from "../../../form/FormFileInput";
 
 export default function StepPersonal({ register }) {
   return (
@@ -33,6 +34,7 @@ export default function StepPersonal({ register }) {
         register={register}
         required
       />
+      <FormFileInput label="photo" name="photo" register={register} />
 
       <FormSelect
         label="Gender"

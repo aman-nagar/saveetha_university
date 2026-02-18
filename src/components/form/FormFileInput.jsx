@@ -10,43 +10,50 @@ export default function FormFileInput({
 }) {
   const [preview, setPreview] = useState(null);
 
+  // Get the onChange and ref from register
+  const { onChange, ...rest } = register(name, { required });
+
   const handlePreview = (e) => {
     const file = e.target.files[0];
-    if (!file) return;
-
-    if (file.type.startsWith("image/")) {
-      const url = URL.createObjectURL(file);
-      setPreview(url);
-    } else {
-      setPreview(null);
+    if (file && file.type.startsWith("image/")) {
+      setPreview(URL.createObjectURL(file));
     }
+    // Crucial: Call the original React Hook Form onChange
+    onChange(e);
   };
 
   return (
-    <div className="space-y-2">
-      <label className="block text-sm font-medium text-text">
+    <div className="space-y-1">
+      <label className="text-xs font-semibold text-text uppercase tracking-wider">
         {label} {required && "*"}
       </label>
 
-      <div className="border border-border rounded-lg p-4 bg-surface">
-        {preview ? (
-          <img
-            src={preview}
-            alt="Preview"
-            className="h-24 w-24 object-cover rounded-md mb-3 border border-border"
-          />
-        ) : (
-          <div className="h-24 w-24 flex items-center justify-center text-muted border border-dashed border-border rounded-md mb-3">
-            No image
-          </div>
-        )}
+      <div className="flex items-center gap-3 p-2 border border-border rounded-md bg-surface transition-sm focus-within:ring-1 focus-within:ring-primary">
+        {/* Compact Thumbnail */}
+        <div className="flex-shrink-0">
+          {preview ? (
+            <img
+              src={preview}
+              alt="Preview"
+              className="h-10 w-10 object-cover rounded shadow-sm border border-border"
+            />
+          ) : (
+            <></>
+          )}
+        </div>
 
+        {/* Lean Input */}
         <input
           type="file"
           accept={accept}
-          {...register(name, { required })}
+          {...rest}
           onChange={handlePreview}
-          className="text-sm text-text"
+          className="pl-5 block w-full text-xs text-text 
+            file:mr-3 file:py-1 file:px-3
+            file:rounded file:border-0
+            file:text-xs file:font-medium
+            file:bg-primary file:text-white
+            hover:file:bg-primary/90 cursor-pointer"
         />
       </div>
     </div>

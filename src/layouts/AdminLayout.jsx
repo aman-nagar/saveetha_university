@@ -1,15 +1,42 @@
 // src/layouts/AdminLayout.jsx
-import React from "react";
-import AdminSidebar from "../components/admin/AdminSidebar";
+import { useEffect, useState } from "react";
 import { Outlet } from "react-router-dom";
+import AdminHeader from "../components/admin/AdminHeader";
+import { AdminSidebar } from "../components/admin/sidebar/AdminSidebar";
 
 export default function AdminLayout() {
+  const [theme, setTheme] = useState(
+    localStorage.getItem("adminTheme") || "light"
+  );
+
+  // Save theme to localStorage when it changes
+  useEffect(() => {
+    localStorage.setItem("adminTheme", theme);
+  }, [theme]);
+
+  // Toggle function
+  const toggleTheme = () => {
+    setTheme((prev) => (prev === "dark" ? "light" : "dark"));
+  };
+
   return (
-    <div className="flex min-h-screen">
-      <AdminSidebar />
-      <main className="flex-1 p-6 bg-gray-50">
-        <Outlet />
-      </main>
+    <div
+      className={`min-h-screen flex flex-col ${
+        theme === "dark" ? "dark" : ""
+      }`}
+    >
+      <div className="flex flex-1 bg-bg text-text">
+        <AdminSidebar
+          theme={theme}
+          toggleTheme={toggleTheme}
+        />
+        <div className="flex-1 flex flex-col">
+          <AdminHeader />
+          <main className="p-6 flex-1">
+            <Outlet />
+          </main>
+        </div>
+      </div>
     </div>
   );
 }

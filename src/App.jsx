@@ -1,5 +1,5 @@
 // src/App.jsx
-import { BrowserRouter, Route, Routes } from "react-router-dom";
+import { Route, Routes } from "react-router-dom";
 import PublicLayout from "./layouts/PublicLayout";
 import Home from "./pages/public/Home";
 import AdminLayout from "./layouts/AdminLayout";
@@ -12,22 +12,20 @@ import SiteSettings from "./pages/admin/settings/SiteSettings";
 
 function App() {
   return (
-    <BrowserRouter>
-      <Routes>
-        <Route element={<PublicLayout />}>
-          <Route path="/saveetha_university" element={<Home />} />
-          <Route path="/about" element={<About />} />
-          <Route path="/contact" element={<Contact />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/news" element={<News />} />
-        </Route>
+    <Routes>
+      <Route element={<PublicLayout />}>
+        <Route path="/" element={<Home />} />
+        <Route path="/about" element={<About />} />
+        <Route path="/contact" element={<Contact />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/news" element={<News />} />
+      </Route>
 
-        <Route path="/admin" element={<AdminLayout />}>
-          <Route index element={<AdminDashboard />} />
-          <Route path="settings" element={<SiteSettings />} />
-        </Route>
-      </Routes>
-    </BrowserRouter>
+      <Route path="/admin" element={<AdminLayout />}>
+        <Route index element={<AdminDashboard />} />
+        <Route path="settings" element={<SiteSettings />} />
+      </Route>
+    </Routes>
   );
 }
 

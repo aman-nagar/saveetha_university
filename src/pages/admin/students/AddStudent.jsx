@@ -25,10 +25,6 @@ export default function AddStudent() {
 
   return (
     <div className="w-full max-w-7xl">
-      <h1 className="text-xl font-heading font-bold text-primary mb-6">
-        New Admission
-      </h1>
-
       <AdmissionStepper step={step} />
 
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">

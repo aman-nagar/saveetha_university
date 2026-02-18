@@ -1,14 +1,65 @@
-import logo2 from "../../assets/images/logo2.png";
+import { useLocation, Link } from "react-router-dom";
+
+const routeTitles = {
+  "/admin": "Dashboard",
+  "/admin/students": "Students",
+  "/admin/students/add": "New Admission",
+  "/admin/site-settings": "Site Settings",
+};
 
 export default function AdminHeader() {
-  return (
-    <header className="bg-surface border-b border-border px-6 py-2 flex items-center justify-between">
-      <h1 className="text-xl font-heading font-semibold text-primary">
-        Admin Panel
-      </h1>
-      {/* <img src={logo2} className="h-15" /> */}
+  const location = useLocation();
+  const path = location.pathname;
 
-      <div className="text-muted text-sm">Logged in as Admin</div>
+  // Split path into parts for breadcrumb
+  const parts = path.split("/").filter(Boolean);
+
+  let breadcrumb = [];
+  let accumulatedPath = "";
+
+  parts.forEach((part) => {
+    accumulatedPath += `/${part}`;
+    breadcrumb.push({
+      label:
+        routeTitles[accumulatedPath] ||
+        part.charAt(0).toUpperCase() + part.slice(1),
+      path: accumulatedPath,
+    });
+  });
+
+  const pageTitle =
+    routeTitles[path] ||
+    breadcrumb[breadcrumb.length - 1]?.label ||
+    "Admin Panel";
+
+  return (
+    <header className="bg-surface border-b border-border px-6 py-3">
+      <div className="flex items-center justify-between">
+        {/* Left: Breadcrumb + Title */}
+        <div>
+          {/* Breadcrumb */}
+          <div className="text-sm text-muted mb-1">
+            {breadcrumb.map((item, index) => (
+              <span key={item.path}>
+                {index !== 0 && " / "}
+                <Link to={item.path} className="hover:text-primary transition">
+                  {item.label}
+                </Link>
+              </span>
+            ))}
+          </div>
+
+          {/* Page Title */}
+          <h1 className="text-xl font-heading font-bold text-primary">
+            {pageTitle}
+          </h1>
+        </div>
+
+        {/* Right: User Info */}
+        <div className="text-sm text-muted">
+          Logged in as <span className="text-text font-medium">Admin</span>
+        </div>
+      </div>
     </header>
   );
 }

@@ -5,29 +5,44 @@
 @theme {
   /* Brand colors */
   --color-primary: #0b1f4b; /* deep academic navy */
-  --color-secondary: #b23a3a; /* softened maroon */
+  --color-secondary: #9e2f2f; /* refined maroon */
   --color-accent: #c9a227; /* university gold */
 
-  /* Neutrals */
-  --color-bg: #f9fafb; /* page background */
+  /* Neutrals (light mode) */
+  --color-bg: #f8fafc; /* softer page background */
   --color-surface: #ffffff; /* cards */
-  --color-text: #111827; /* main text */
-  --color-muted: #6b7280; /* secondary text */
-  --color-border: #e5e7eb; /* borders */
+  --color-text: #0f172a; /* deep readable text */
+  --color-muted: #64748b; /* secondary text */
+  --color-border: #e2e8f0; /* borders */
 
-  /* Overlay (for sliders/hero) */
+  --color-success: #16a34a;
+  --color-warning: #f59e0b;
+  --color-danger: #dc2626;
+
+  /* Overlay */
   --color-overlay: rgba(0, 0, 0, 0.4);
 
   /* Fonts */
   --font-sans: Inter, sans-serif;
   --font-heading: Poppins, sans-serif;
 }
+
 .dark {
-  --color-bg: #0b1220;
-  --color-surface: #111827;
-  --color-text: #e5e7eb;
-  --color-muted: #9ca3af;
-  --color-border: #1f2937;
+  /* Brand colors slightly brighter for visibility */
+  --color-primary: #1e3a8a; /* brighter academic navy */
+  --color-secondary: #c24141; /* brighter maroon */
+  --color-accent: #e0b93b; /* brighter gold */
+
+  /* Neutrals */
+  --color-bg: #0b1220; /* deep blue-black */
+  --color-surface: #111827; /* card surface */
+  --color-text: #e5e7eb; /* readable light text */
+  --color-muted: #9ca3af; /* secondary text */
+  --color-border: #1f2937; /* borders */
+
+  --color-success: #22c55e;
+  --color-warning: #fbbf24;
+  --color-danger: #ef4444;
 }
 
 /* admin settings preferences */

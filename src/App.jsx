@@ -8,6 +8,7 @@ import Contact from "./pages/public/Contact";
 import Login from "./pages/Login";
 import AdminDashboard from "./pages/admin/AdminDashboard";
 import News from "./pages/public/News";
+import SiteSettings from "./pages/admin/settings/SiteSettings";
 
 function App() {
   return (
@@ -23,6 +24,7 @@ function App() {
 
         <Route path="/admin" element={<AdminLayout />}>
           <Route index element={<AdminDashboard />} />
+          <Route path="settings" element={<SiteSettings />} />
         </Route>
       </Routes>
     </BrowserRouter>

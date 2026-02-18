@@ -1,3 +1,4 @@
+// src/components/admin/settings/SettingsForm.jsx
 import LogoUpload from "./LogoUpload";
 
 export default function SettingsForm({ form, setForm, onSubmit, loading }) {

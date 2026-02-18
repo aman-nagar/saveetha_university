@@ -1,3 +1,4 @@
+// src/components/admin/settings/LogoUpload.jsx
 export default function LogoUpload({ label, name, value, onChange }) {
   return (
     <div>

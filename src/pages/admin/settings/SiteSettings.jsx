@@ -1,21 +1,21 @@
+// src/pages/admin/settings/SiteSettings.jsx
 import { useEffect, useState } from "react";
 import SettingsForm from "../../../components/admin/settings/SettingsForm";
-import {
-  fetchSiteSettings,
-  updateSiteSettings,
-} from "../../../api/settingsApi";
+import { updateSiteSettings } from "../../../api/settingsApi";
 
 export default function SiteSettings() {
-  const [form, setForm] = useState({});
+  const [form, setForm] = useState({
+    college_name: "",
+    short_name: "",
+    email: "",
+    phone: "",
+    alternate_phone: "",
+    address: "",
+    logo: null,
+    additional_logo: null,
+    favicon: null,
+  });
   const [loading, setLoading] = useState(false);
-
-  useEffect(() => {
-    async function load() {
-      const data = await fetchSiteSettings();
-      setForm(data);
-    }
-    load();
-  }, []);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -24,22 +24,32 @@ export default function SiteSettings() {
     const formData = new FormData();
 
     Object.keys(form).forEach((key) => {
-      if (form[key] !== null) {
+      if (form[key] !== null && form[key] !== "") {
         formData.append(key, form[key]);
       }
     });
 
-    await updateSiteSettings(formData);
+    const res = await updateSiteSettings(formData);
     setLoading(false);
-    alert("Settings updated successfully");
-    for (let pair of formData.entries()) {
-      console.log(pair[0], pair[1]);
-    }
+    console.log(res);
+    alert("Data Send successfully");
+
+    setForm({
+      college_name: "",
+      short_name: "",
+      email: "",
+      phone: "",
+      alternate_phone: "",
+      address: "",
+      logo: null,
+      additional_logo: null,
+      favicon: null,
+    });
   };
 
   return (
     <div className="max-w-5xl">
-      <h1 className="text-2xl font-heading font-bold text-primary mb-6">
+      <h1 className="text-xl font-heading font-bold text-primary mb-6">
         Site Settings
       </h1>
 

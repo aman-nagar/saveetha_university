@@ -1,3 +1,4 @@
+// src/components/form/FormInput.jsx
 export default function FormInput({
   label,
   name,

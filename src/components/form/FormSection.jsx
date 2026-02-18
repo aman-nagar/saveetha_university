@@ -1,3 +1,4 @@
+// src/components/form/FormSection.jsx
 export default function FormSection({ title, children }) {
   return (
     <div className="bg-surface border border-border rounded-xl p-6">

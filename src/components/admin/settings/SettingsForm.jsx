@@ -1,110 +1,95 @@
 // src/components/admin/settings/SettingsForm.jsx
-import LogoUpload from "./LogoUpload";
+import { useForm } from "react-hook-form";
+import FormInput from "../../form/FormInput";
+import FormTextarea from "../../form/FormTextarea";
+import FormFileInput from "../../form/FormFileInput";
+import FormSection from "../../form/FormSection";
 
-export default function SettingsForm({ form, setForm, onSubmit, loading }) {
-  const handleChange = (e) => {
-    setForm({ ...form, [e.target.name]: e.target.value });
+export default function SettingsForm({ onSubmit, loading }) {
+  const { register, handleSubmit, reset } = useForm();
+
+  const submitHandler = async (data) => {
+    const formData = new FormData();
+
+    Object.keys(data).forEach((key) => {
+      if (data[key]) {
+        if (data[key][0] instanceof File) {
+          formData.append(key, data[key][0]);
+        } else {
+          formData.append(key, data[key]);
+        }
+      }
+    });
+
+    await onSubmit(formData);
+    reset();
   };
-
-  const handleFile = (e) => {
-    setForm({ ...form, [e.target.name]: e.target.files[0] });
-  };
-
-  const inputClass =
-    "border border-border rounded-md px-3 py-2 bg-surface text-text placeholder:text-muted focus:outline-none focus:ring-2 focus:ring-accent/40";
 
   return (
     <form
-      onSubmit={onSubmit}
+      onSubmit={handleSubmit(submitHandler)}
       className="bg-surface border border-border rounded-xl p-6 space-y-8"
     >
-      {/* Basic Info */}
-      <div>
-        <h2 className="text-lg font-heading font-semibold text-text mb-4">
-          Basic Information
-        </h2>
+      <FormSection title="Basic Information">
+        <FormInput
+          label="College Name"
+          name="college_name"
+          register={register}
+          required
+          placeholder="College Name"
+        />
 
-        <div className="grid md:grid-cols-2 gap-4">
-          <input
-            name="college_name"
-            value={form.college_name || ""}
-            onChange={handleChange}
-            placeholder="College Name"
-            className={inputClass}
-          />
+        <FormInput
+          label="Short Name"
+          name="short_name"
+          register={register}
+          placeholder="Short Name"
+        />
 
-          <input
-            name="short_name"
-            value={form.short_name || ""}
-            onChange={handleChange}
-            placeholder="Short Name"
-            className={inputClass}
-          />
+        <FormInput
+          label="Email"
+          name="email"
+          register={register}
+          type="email"
+          placeholder="Email"
+        />
 
-          <input
-            name="email"
-            value={form.email || ""}
-            onChange={handleChange}
-            placeholder="Email"
-            className={inputClass}
-          />
+        <FormInput
+          label="Phone"
+          name="phone"
+          register={register}
+          placeholder="Phone"
+        />
 
-          <input
-            name="phone"
-            value={form.phone || ""}
-            onChange={handleChange}
-            placeholder="Phone"
-            className={inputClass}
-          />
+        <FormInput
+          label="Alternate Phone"
+          name="alternate_phone"
+          register={register}
+          placeholder="Alternate Phone"
+        />
 
-          <input
-            name="alternate_phone"
-            value={form.alternate_phone || ""}
-            onChange={handleChange}
-            placeholder="Alternate Phone"
-            className={inputClass}
-          />
-
-          <textarea
+        <div className="md:col-span-2">
+          <FormTextarea
+            label="Address"
             name="address"
-            value={form.address || ""}
-            onChange={handleChange}
+            register={register}
             placeholder="Address"
-            className={`${inputClass} md:col-span-2`}
-            rows={3}
           />
         </div>
-      </div>
+      </FormSection>
 
-      {/* Branding */}
-      <div>
-        <h2 className="text-lg font-heading font-semibold text-text mb-4">
-          Branding
-        </h2>
+      <FormSection title="Branding">
+        <FormFileInput label="Logo" name="logo" register={register} />
 
-        <div className="grid md:grid-cols-3 gap-6">
-          <LogoUpload
-            label="Logo"
-            name="logo"
-            value={form.logo}
-            onChange={handleFile}
-          />
-          <LogoUpload
-            label="Additional Logo"
-            name="additional_logo"
-            value={form.additional_logo}
-            onChange={handleFile}
-          />
-          <LogoUpload
-            label="Favicon"
-            name="favicon"
-            value={form.favicon}
-            onChange={handleFile}
-          />
-        </div>
-      </div>
+        <FormFileInput
+          label="Additional Logo"
+          name="additional_logo"
+          register={register}
+        />
 
-      {/* Submit */}
+        <FormFileInput label="Favicon" name="favicon" register={register} />
+      </FormSection>
+
       <button
         type="submit"
         disabled={loading}
@@ -113,19 +98,5 @@ export default function SettingsForm({ form, setForm, onSubmit, loading }) {
         {loading ? "Saving..." : "Save Settings"}
       </button>
     </form>
-  );
-}
-
-/* Reusable input */
-function Input({ name, value, onChange, placeholder, type = "text" }) {
-  return (
-    <input
-      type={type}
-      name={name}
-      value={value || ""}
-      onChange={onChange}
-      placeholder={placeholder}
-      className="input"
-    />
   );
 }

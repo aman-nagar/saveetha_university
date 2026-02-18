@@ -10,6 +10,9 @@ export default function SettingsForm({ form, setForm, onSubmit, loading }) {
     setForm({ ...form, [e.target.name]: e.target.files[0] });
   };
 
+  const inputClass =
+    "border border-border rounded-md px-3 py-2 bg-surface text-text placeholder:text-muted focus:outline-none focus:ring-2 focus:ring-accent/40";
+
   return (
     <form
       onSubmit={onSubmit}
@@ -17,7 +20,7 @@ export default function SettingsForm({ form, setForm, onSubmit, loading }) {
     >
       {/* Basic Info */}
       <div>
-        <h2 className="text-lg font-heading font-semibold mb-4">
+        <h2 className="text-lg font-heading font-semibold text-text mb-4">
           Basic Information
         </h2>
 
@@ -27,7 +30,7 @@ export default function SettingsForm({ form, setForm, onSubmit, loading }) {
             value={form.college_name || ""}
             onChange={handleChange}
             placeholder="College Name"
-            className="border border-border rounded-md px-3 py-2 bg-surface"
+            className={inputClass}
           />
 
           <input
@@ -35,7 +38,7 @@ export default function SettingsForm({ form, setForm, onSubmit, loading }) {
             value={form.short_name || ""}
             onChange={handleChange}
             placeholder="Short Name"
-            className="border border-border rounded-md px-3 py-2 bg-surface"
+            className={inputClass}
           />
 
           <input
@@ -43,7 +46,7 @@ export default function SettingsForm({ form, setForm, onSubmit, loading }) {
             value={form.email || ""}
             onChange={handleChange}
             placeholder="Email"
-            className="border border-border rounded-md px-3 py-2 bg-surface"
+            className={inputClass}
           />
 
           <input
@@ -51,7 +54,7 @@ export default function SettingsForm({ form, setForm, onSubmit, loading }) {
             value={form.phone || ""}
             onChange={handleChange}
             placeholder="Phone"
-            className="border border-border rounded-md px-3 py-2 bg-surface"
+            className={inputClass}
           />
 
           <input
@@ -59,7 +62,7 @@ export default function SettingsForm({ form, setForm, onSubmit, loading }) {
             value={form.alternate_phone || ""}
             onChange={handleChange}
             placeholder="Alternate Phone"
-            className="border border-border rounded-md px-3 py-2 bg-surface"
+            className={inputClass}
           />
 
           <textarea
@@ -67,7 +70,7 @@ export default function SettingsForm({ form, setForm, onSubmit, loading }) {
             value={form.address || ""}
             onChange={handleChange}
             placeholder="Address"
-            className="border border-border rounded-md px-3 py-2 bg-surface md:col-span-2"
+            className={`${inputClass} md:col-span-2`}
             rows={3}
           />
         </div>
@@ -75,7 +78,9 @@ export default function SettingsForm({ form, setForm, onSubmit, loading }) {
 
       {/* Branding */}
       <div>
-        <h2 className="text-lg font-heading font-semibold mb-4">Branding</h2>
+        <h2 className="text-lg font-heading font-semibold text-text mb-4">
+          Branding
+        </h2>
 
         <div className="grid md:grid-cols-3 gap-6">
           <LogoUpload
@@ -103,10 +108,24 @@ export default function SettingsForm({ form, setForm, onSubmit, loading }) {
       <button
         type="submit"
         disabled={loading}
-        className="bg-primary text-white px-6 py-2 rounded-md"
+        className="bg-primary text-white px-6 py-2 rounded-md hover:opacity-90 transition"
       >
         {loading ? "Saving..." : "Save Settings"}
       </button>
     </form>
+  );
+}
+
+/* Reusable input */
+function Input({ name, value, onChange, placeholder, type = "text" }) {
+  return (
+    <input
+      type={type}
+      name={name}
+      value={value || ""}
+      onChange={onChange}
+      placeholder={placeholder}
+      className="input"
+    />
   );
 }

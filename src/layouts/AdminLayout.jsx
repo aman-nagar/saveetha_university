@@ -6,7 +6,7 @@ import { AdminSidebar } from "../components/admin/sidebar/AdminSidebar";
 
 export default function AdminLayout() {
   const [theme, setTheme] = useState(
-    localStorage.getItem("adminTheme") || "light"
+    localStorage.getItem("adminTheme") || "light",
   );
 
   // Save theme to localStorage when it changes
@@ -21,15 +21,10 @@ export default function AdminLayout() {
 
   return (
     <div
-      className={`min-h-screen flex flex-col ${
-        theme === "dark" ? "dark" : ""
-      }`}
+      className={`min-h-screen flex flex-col ${theme === "dark" ? "dark" : ""}`}
     >
       <div className="flex flex-1 bg-bg text-text">
-        <AdminSidebar
-          theme={theme}
-          toggleTheme={toggleTheme}
-        />
+        <AdminSidebar theme={theme} toggleTheme={toggleTheme} />
         <div className="flex-1 flex flex-col">
           <AdminHeader />
           <main className="p-6 flex-1">

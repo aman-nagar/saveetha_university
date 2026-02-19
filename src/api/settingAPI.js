@@ -1,6 +1,8 @@
-// src/api/settingsApi.js
+// src/api/api.js
 const BASE_URL = "https://api.nsprowebtech.com/backend/api/v1";
 
+// settings
+// sitesettings
 export async function fetchSiteSettings() {
   const res = await fetch(`${BASE_URL}/settings/`);
   const json = await res.json();

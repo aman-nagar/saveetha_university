@@ -2,8 +2,6 @@
 
 **Project Type:** Full-stack web application (Admin dashboard + public website)
 
----
-
 ## 1. Tech Stack
 
 ### Frontend

@@ -10,6 +10,7 @@ import AdminDashboard from "./pages/admin/AdminDashboardPanel";
 import News from "./pages/public/News";
 import SiteSettings from "./pages/admin/settings/SiteSettingsPanel";
 import AddStudent from "./pages/admin/students/AddStudent";
+import CourseCategoryPanel from "./pages/admin/courses/CourseCategoryPanel";
 
 function App() {
   return (
@@ -25,8 +26,12 @@ function App() {
 
         <Route path="/admin" element={<AdminLayout />}>
           <Route index element={<AdminDashboard />} />
-          <Route path="site-settings" element={<SiteSettings />} />
+          {/* students */}
           <Route path="students/add" element={<AddStudent />} />
+          {/* course category */}
+          <Route path="course-category" element={<CourseCategoryPanel />} />
+          {/* settings */}
+          <Route path="site-settings" element={<SiteSettings />} />
         </Route>
       </Routes>
     </BrowserRouter>

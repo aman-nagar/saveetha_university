@@ -1,3 +1,4 @@
+// src/api/courseApi.js
 const BASE_URL = "https://api.nsprowebtech.com/backend/api/v1";
 
 // Fetch course categories
@@ -8,8 +9,8 @@ export async function fetchCourseCategory() {
     if (!res.ok) {
       throw new Error("Failed to fetch course categories");
     }
-
     const json = await res.json();
+    console.log("Fetched categories:", json);
     return json.data || [];
   } catch (err) {
     console.error("fetchCourseCategory error:", err);
@@ -28,9 +29,10 @@ export async function addCourseCategory(formData) {
     const json = await res.json();
 
     if (!res.ok) {
+      console.log("failed");
       throw new Error(json.message || "Failed to add category");
     }
-
+    console.log("Add category response:", json);
     return json;
   } catch (err) {
     console.error("addCourseCategory error:", err);

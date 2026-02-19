@@ -1,62 +1,117 @@
 // src/pages/admin/courses/CourseCategoryPanel.jsx
-import { useState } from "react";
+import React, { useEffect, useState } from "react";
 import CourseCategoryForm from "../../../components/admin/courses/CourseCategoryForm";
-import Table from "../../../components/admin//courses/Table";
-import { FaEdit, FaTrash } from "react-icons/fa";
+import { fetchCourseCategory, addCourseCategory } from "../../../api/courseApi";
+import Toast from "../../../components/ui/Toast";
+import Table from "../../../components/admin/courses/Table";
 
 export default function CourseCategoryPanel() {
   const [loading, setLoading] = useState(false);
+  const [categories, setCategories] = useState([]);
+  const [toast, setToast] = useState(null);
 
-  // temporary static data
-  const [categories, setCategories] = useState([
-    {
-      id: 1,
-      title: "Education Courses",
-      eligibility: "Graduation",
-      duration: "2 Years",
-    },
-  ]);
-
-  const handleSubmit = async (formData) => {
-    setLoading(true);
-
-    const newItem = {
-      id: Date.now(),
-      title: formData.category,
-      eligibility: "—",
-      duration: "—",
-    };
-
-    setCategories((prev) => [...prev, newItem]);
-
-    setLoading(false);
+  // Load categories
+  const loadCategories = async () => {
+    const data = await fetchCourseCategory();
+    setCategories(data);
   };
 
-  const columns = [
-    { key: "id", label: "#" },
-    { key: "title", label: "Title" },
-    { key: "eligibility", label: "Eligibility" },
-    { key: "duration", label: "Duration" },
-  ];
+  useEffect(() => {
+    loadCategories();
+  }, []);
+
+  // Submit handler
+  const handleSubmit = async (formData) => {
+    try {
+      setLoading(true);
+
+      const data = new FormData();
+      data.append("type", "course_type");
+      data.append("name", formData.category);
+
+      const res = await addCourseCategory(data);
+
+      console.log("POST result:", res);
+
+      if (res?.status) {
+        setToast({
+          type: "success",
+          message: "Category added successfully",
+        });
+
+        await loadCategories();
+      } else {
+        throw new Error("API returned failure");
+      }
+    } catch (err) {
+      console.error(err);
+      setToast({
+        type: "error",
+        message: "Failed to add category",
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleDelete = async (row) => {
+    try {
+      const data = new FormData();
+      data.append("type", "course_type");
+      data.append("id", row.id);
+      data.append("action", "delete");
+
+      await addCourseCategory(data); // same endpoint
+
+      setToast({
+        type: "success",
+        message: "Category deleted",
+      });
+
+      loadCategories();
+    } catch (err) {
+      setToast({
+        type: "error",
+        message: "Delete failed",
+      });
+    }
+  };
 
   const actions = [
     {
-      icon: <FaEdit />,
-      className: "bg-blue-500 text-white px-3 py-1 rounded hover:opacity-90",
-      onClick: (row) => console.log("Edit", row),
+      icon: "🗑",
+      className:
+        "px-3 py-1 rounded bg-red-500 text-white hover:bg-red-600 text-sm",
+      onClick: handleDelete,
     },
-    {
-      icon: <FaTrash />,
-      className: "bg-red-500 text-white px-3 py-1 rounded hover:opacity-90",
-      onClick: (row) => console.log("Delete", row),
-    },
+  ];
+
+  const columns = [
+    { key: "id", label: "#" },
+    { key: "name", label: "Category Name" },
+    { key: "created_at", label: "Created At" },
   ];
 
   return (
     <div className="w-full space-y-6">
+      {toast && (
+        <Toast
+          type={toast.type}
+          message={toast.message}
+          onClose={() => setToast(null)}
+        />
+      )}
+
+      {/* Form */}
       <CourseCategoryForm onSubmit={handleSubmit} loading={loading} />
 
-      <Table columns={columns} data={categories} actions={actions} />
+      {/* Table */}
+      <Table
+        title="Course Categories"
+        columns={columns}
+        data={categories}
+        actions={actions}
+      />
     </div>
   );
 }

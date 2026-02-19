@@ -1,4 +1,6 @@
-export default function AdminTable({
+// src/components/admin/courses/Table.jsx
+export default function Table({
+  title = "List",
   columns = [],
   data = [],
   actions = [],
@@ -8,7 +10,7 @@ export default function AdminTable({
       {/* Table header */}
       <div className="px-6 py-4 border-b border-border">
         <h2 className="text-lg font-heading font-semibold text-text">
-          List
+          {title}
         </h2>
       </div>
 

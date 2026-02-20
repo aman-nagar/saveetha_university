@@ -29,12 +29,12 @@ export const menuItems = [
   },
   {
     id: 3,
-    label: "Academics",
+    label: "Courses",
     icon: FaBook,
     children: [
-      { label: "Courses", path: "/admin/courses" },
-      { label: "Programs", path: "/admin/programs" },
+      { label: "Course Category", path: "/admin/course-category" },
       { label: "Faculty", path: "/admin/faculty" },
+      { label: "Course", path: "/admin/course" },
       { label: "Timetable", path: "/admin/timetable" },
     ],
   },

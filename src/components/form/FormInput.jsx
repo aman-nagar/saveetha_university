@@ -16,7 +16,7 @@ export default function FormInput({
         type={type}
         placeholder={placeholder}
         {...register(name, { required })}
-        className="w-full border border-border rounded-md px-3 py-2 bg-surface text-text focus:outline-none focus:ring-2 focus:ring-accent"
+        className="w-full border border-border rounded-md px-3 py-2 bg-surface text-text focus:outline-none focus:ring-2 focus:ring-accent placeholder:text-xs placeholder-gray-500"
       />
     </div>
   );

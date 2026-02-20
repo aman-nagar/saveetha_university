@@ -1,7 +1,7 @@
 // src/pages/admin/settings/SiteSettingsPanel.jsx
 import { useState } from "react";
 import SettingsForm from "../../../components/admin/settings/SettingsForm";
-import { updateSiteSettings } from "../../../api/settingsApi";
+import { updateSiteSettings } from "../../../api/settingAPI";
 
 export default function SiteSettingsPanel() {
   const [loading, setLoading] = useState(false);

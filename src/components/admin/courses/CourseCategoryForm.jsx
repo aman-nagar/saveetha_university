@@ -4,32 +4,44 @@ import FormSection from "../../form/FormSection";
 import FormInput from "../../form/FormInput";
 
 export default function CourseCategoryForm({ onSubmit, loading }) {
-  const { register, handleSubmit, reset } = useForm();
+  const {
+    register,
+    handleSubmit,
+    reset,
+    formState: { errors, isSubmitting },
+  } = useForm();
 
-  const submitHandler = async (data) => {
+  const onFormSubmit = async (data) => {
     await onSubmit(data);
     reset();
   };
 
   return (
-    <form onSubmit={handleSubmit(submitHandler)}>
-      <FormSection title="Add Category">
+    <form onSubmit={handleSubmit(onFormSubmit)} className="space-y-6">
+      <FormSection title="Add New Course Category">
         <FormInput
-          label="Course Category Title"
+          label="Category Name"
           name="category"
           register={register}
-          required
-          placeholder="Add category"
+          required="Please enter a category name"
+          placeholder="e.g. Under Graduate, Diploma, Certificate..."
+          error={errors.category?.message}
         />
       </FormSection>
 
-      <button
-        type="submit"
-        disabled={loading}
-        className="bg-primary text-white px-6 py-2 rounded-md hover:opacity-90 transition mt-4"
-      >
-        {loading ? "Saving..." : "Save"}
-      </button>
+      <div>
+        <button
+          type="submit"
+          disabled={loading || isSubmitting}
+          className={`px-6 py-2.5 rounded-md text-white font-medium transition focus:outline-none focus:ring-2 focus:ring-offset-2 ${
+            loading || isSubmitting
+              ? "bg-gray-400 cursor-not-allowed"
+              : "bg-primary hover:bg-primary/90 focus:ring-primary/50"
+          }`}
+        >
+          {loading || isSubmitting ? "Creating..." : "Create Category"}
+        </button>
+      </div>
     </form>
   );
 }

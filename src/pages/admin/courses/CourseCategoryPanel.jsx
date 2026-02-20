@@ -1,99 +1,107 @@
 // src/pages/admin/courses/CourseCategoryPanel.jsx
 import React, { useEffect, useState } from "react";
+import {
+  fetchCourseCategories,
+  createCourseCategory,
+  deleteCourseCategory,
+} from "../../../api/courseApi";
 import CourseCategoryForm from "../../../components/admin/courses/CourseCategoryForm";
-import { fetchCourseCategory, addCourseCategory } from "../../../api/courseApi";
 import Toast from "../../../components/ui/Toast";
+import Modal from "../../../components/ui/Modal";
 import Table from "../../../components/admin/courses/Table";
 
 export default function CourseCategoryPanel() {
-  const [loading, setLoading] = useState(false);
   const [categories, setCategories] = useState([]);
+  const [loading, setLoading] = useState(false);
   const [toast, setToast] = useState(null);
+  const [deleteTarget, setDeleteTarget] = useState(null);
 
-  // Load categories
   const loadCategories = async () => {
-    const data = await fetchCourseCategory();
-    setCategories(data);
+    try {
+      const data = await fetchCourseCategories();
+      setCategories(data);
+    } catch (err) {
+      setToast({
+        type: "error",
+        message: `Failed to load categories: ${err.message}`,
+      });
+    }
   };
 
   useEffect(() => {
     loadCategories();
   }, []);
 
-  // Submit handler
-  const handleSubmit = async (formData) => {
+  const handleCreate = async (formValues) => {
+    const name = formValues.category?.trim();
+    if (!name) return;
+
+    setLoading(true);
     try {
-      setLoading(true);
-
-      const data = new FormData();
-      data.append("type", "course_type");
-      data.append("name", formData.category);
-
-      const res = await addCourseCategory(data);
-
-      console.log("POST result:", res);
-
-      if (res?.status) {
-        setToast({
-          type: "success",
-          message: "Category added successfully",
-        });
-
-        await loadCategories();
-      } else {
-        throw new Error("API returned failure");
-      }
+      await createCourseCategory(name);
+      setToast({ type: "success", message: `Category "${name}" created` });
+      await loadCategories();
     } catch (err) {
-      console.error(err);
       setToast({
         type: "error",
-        message: "Failed to add category",
+        message: err.message || "Failed to create category",
       });
     } finally {
       setLoading(false);
     }
   };
 
-  const handleDelete = async (row) => {
-    try {
-      const data = new FormData();
-      data.append("type", "course_type");
-      data.append("id", row.id);
-      data.append("action", "delete");
+  const handleDeleteClick = (row) => {
+    setDeleteTarget(row);
+  };
 
-      await addCourseCategory(data); // same endpoint
+  const confirmDelete = async () => {
+    if (!deleteTarget) return;
+
+    const originalCategories = [...categories];
+
+    // optimistic update
+    setCategories((prev) => prev.filter((c) => c.id !== deleteTarget.id));
+
+    try {
+      await deleteCourseCategory(deleteTarget.id);
 
       setToast({
         type: "success",
-        message: "Category deleted",
+        message: `Category "${deleteTarget.name}" deleted successfully`,
       });
 
-      loadCategories();
+      await loadCategories();
     } catch (err) {
+      // rollback
+      setCategories(originalCategories);
+
       setToast({
         type: "error",
-        message: "Delete failed",
+        message: err.message || "Failed to delete category",
       });
+    } finally {
+      setDeleteTarget(null);
     }
   };
+
+  const columns = [
+    { key: "serial", label: "#" },
+    { key: "name", label: "Category Name" },
+    { key: "created_at", label: "Created At" },
+  ];
 
   const actions = [
     {
       icon: "🗑",
       className:
-        "px-3 py-1 rounded bg-red-500 text-white hover:bg-red-600 text-sm",
-      onClick: handleDelete,
+        "px-3 py-1 rounded bg-red-600 text-white hover:bg-red-700 text-sm font-medium transition",
+      onClick: handleDeleteClick,
     },
   ];
 
-  const columns = [
-    { key: "id", label: "#" },
-    { key: "name", label: "Category Name" },
-    { key: "created_at", label: "Created At" },
-  ];
-
   return (
-    <div className="w-full space-y-6">
+    <div className="w-full space-y-8 p-6">
       {toast && (
         <Toast
           type={toast.type}
@@ -102,16 +110,45 @@ export default function CourseCategoryPanel() {
         />
       )}
 
-      {/* Form */}
-      <CourseCategoryForm onSubmit={handleSubmit} loading={loading} />
+      <CourseCategoryForm onSubmit={handleCreate} loading={loading} />
 
-      {/* Table */}
       <Table
         title="Course Categories"
         columns={columns}
         data={categories}
         actions={actions}
       />
+
+      <Modal
+        isOpen={!!deleteTarget}
+        title="Confirm Delete"
+        onClose={() => setDeleteTarget(null)}
+        footer={
+          <>
+            <button
+              onClick={() => setDeleteTarget(null)}
+              className="px-4 py-2 rounded border border-border text-muted hover:bg-bg"
+            >
+              Cancel
+            </button>
+            <button
+              onClick={confirmDelete}
+              className="px-4 py-2 rounded bg-red-600 text-white hover:bg-red-700"
+            >
+              Delete
+            </button>
+          </>
+        }
+      >
+        {deleteTarget && (
+          <p>
+            Are you sure you want to delete "
+            <strong>{deleteTarget.name}</strong>"?
+            <br />
+            This action cannot be undone.
+          </p>
+        )}
+      </Modal>
     </div>
   );
 }

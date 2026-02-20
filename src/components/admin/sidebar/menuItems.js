@@ -33,8 +33,8 @@ export const menuItems = [
     icon: FaBook,
     children: [
       { label: "Course Category", path: "/admin/course-category" },
-      { label: "Programs", path: "/admin/programs" },
       { label: "Faculty", path: "/admin/faculty" },
+      { label: "Programs", path: "/admin/programs" },
       { label: "Timetable", path: "/admin/timetable" },
     ],
   },

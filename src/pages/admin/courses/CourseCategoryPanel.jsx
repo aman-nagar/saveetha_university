@@ -4,11 +4,11 @@ import {
   fetchCourseCategories,
   createCourseCategory,
   deleteCourseCategory,
-} from "../../../api/courseApi";
+} from "../../../api/courseCategoryApi";
 import CourseCategoryForm from "../../../components/admin/courses/CourseCategoryForm";
 import Toast from "../../../components/ui/Toast";
 import Modal from "../../../components/ui/Modal";
-import Table from "../../../components/admin/courses/Table";
+import Table from "../../../components/table/Table";
 
 export default function CourseCategoryPanel() {
   const [categories, setCategories] = useState([]);
@@ -17,6 +17,7 @@ export default function CourseCategoryPanel() {
   const [deleteTarget, setDeleteTarget] = useState(null);
 
   const loadCategories = async () => {
+    setLoading(true);
     try {
       const data = await fetchCourseCategories();
       setCategories(data);
@@ -25,6 +26,8 @@ export default function CourseCategoryPanel() {
         type: "error",
         message: `Failed to load categories: ${err.message}`,
       });
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -86,9 +89,15 @@ export default function CourseCategoryPanel() {
   };
 
   const columns = [
-    { key: "serial", label: "#" },
-    { key: "name", label: "Category Name" },
-    { key: "created_at", label: "Created At" },
+    {
+      key: "serial",
+      label: "#",
+      render: (_, index) => index + 1,
+    },
+    {
+      key: "name",
+      label: "Category Name",
+    },
   ];
 
   const actions = [

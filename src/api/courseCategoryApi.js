@@ -1,33 +1,26 @@
 // src/api/courseApi.js
-const BASE_URL = "https://api.nsprowebtech.com/backend/api/v1";
+import { BASE_URL } from "./config";
+import { handleResponse } from "./handleResponse";
 
 const COURSE_LIST_URL = `${BASE_URL}/course/index.php?type=course_type`;
+
 const COURSE_CREATE_URL = `${BASE_URL}/course/`;
+
 const COURSE_DELETE_URL = `${BASE_URL}/course/index.php`;
 
 // Fetch all course categories
-
 export async function fetchCourseCategories() {
   const res = await fetch(COURSE_LIST_URL);
-
-  if (!res.ok) {
-    throw new Error(`Failed to fetch categories (HTTP ${res.status})`);
-  }
-
-  const json = await res.json();
-
-  if (!json.status || !Array.isArray(json.data)) {
-    throw new Error("Invalid response format from server");
-  }
-
-  return json.data;
+  return handleResponse(res);
 }
 
 // Create a new course category
-
 export async function createCourseCategory(name) {
-  const trimmed = name.trim();
-  if (!trimmed) throw new Error("Category name is required");
+  const trimmed = name?.trim();
+
+  if (!trimmed) {
+    throw new Error("Category name is required");
+  }
 
   const formData = new FormData();
   formData.append("type", "course_type");
@@ -38,21 +31,15 @@ export async function createCourseCategory(name) {
     body: formData,
   });
 
-  if (!res.ok) {
-    throw new Error(`Create failed (HTTP ${res.status})`);
-  }
-
-  const json = await res.json();
-
-  if (!json.status) {
-    throw new Error(json.message || "Create failed");
-  }
-
-  return json;
+  return handleResponse(res);
 }
 
 // Delete a course category
 export async function deleteCourseCategory(id) {
+  if (!id) {
+    throw new Error("Category ID is required");
+  }
+
   const res = await fetch(COURSE_DELETE_URL, {
     method: "DELETE",
     headers: {
@@ -64,15 +51,5 @@ export async function deleteCourseCategory(id) {
     }),
   });
 
-  if (!res.ok) {
-    throw new Error(`Delete failed (HTTP ${res.status})`);
-  }
-
-  const json = await res.json();
-
-  if (!json.status) {
-    throw new Error(json.message || "Delete failed");
-  }
-
-  return json;
+  return handleResponse(res);
 }

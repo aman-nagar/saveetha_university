@@ -4,12 +4,18 @@ export default function Table({
   columns = [],
   data = [],
   actions = [],
+  loading = false,
+  emptyMessage = "No data found",
 }) {
+  const colSpan = columns.length + (actions.length > 0 ? 1 : 0);
+
   return (
     <div className="bg-surface border border-border rounded-xl overflow-hidden shadow-sm">
-      <div className="px-6 py-4 border-b border-border">
-        <h2 className="text-lg font-semibold text-text">{title}</h2>
-      </div>
+      {title && (
+        <div className="px-6 py-4 border-b border-border">
+          <h2 className="text-lg font-semibold text-text">{title}</h2>
+        </div>
+      )}
 
       <div className="overflow-x-auto">
         <table className="w-full text-sm text-left">
@@ -24,7 +30,7 @@ export default function Table({
                 </th>
               ))}
               {actions.length > 0 && (
-                <th className="px-6 py-3 font-medium border-b border-border text-left">
+                <th className="px-6 py-3 font-medium border-b border-border">
                   Actions
                 </th>
               )}
@@ -32,26 +38,35 @@ export default function Table({
           </thead>
 
           <tbody>
-            {data.length === 0 ? (
+            {loading ? (
+              <tr>
+                <td colSpan={colSpan} className="text-center py-10 text-muted">
+                  Loading...
+                </td>
+              </tr>
+            ) : data.length === 0 ? (
               <tr>
                 <td
-                  colSpan={(columns.length || 0) + (actions.length > 0 ? 1 : 0)}
+                  colSpan={colSpan}
                   className="text-center py-10 text-muted italic"
                 >
-                  No categories found
+                  {emptyMessage}
                 </td>
               </tr>
             ) : (
               data.map((row, index) => (
                 <tr
-                  key={row.id || index}
+                  key={row.id ?? index}
                   className="border-b border-border hover:bg-bg/50 transition-colors"
                 >
                   {columns.map((col) => (
                     <td key={col.key} className="px-6 py-4 text-text">
-                      {col.key === "serial" ? index + 1 : (row[col.key] ?? "—")}
+                      {col.render
+                        ? col.render(row, index)
+                        : (row[col.key] ?? "—")}
                     </td>
                   ))}
+
                   {actions.length > 0 && (
                     <td className="px-6 py-4">
                       <div className="flex items-center gap-2">
@@ -60,7 +75,7 @@ export default function Table({
                             key={idx}
                             onClick={() => action.onClick(row)}
                             className={action.className}
-                            title="Delete"
+                            title={action.title || "Action"}
                           >
                             {action.icon}
                           </button>

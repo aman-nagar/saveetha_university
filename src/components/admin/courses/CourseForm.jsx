@@ -2,7 +2,6 @@
 import { useForm } from "react-hook-form";
 import FormSection from "../../form/FormSection";
 import FormInput from "../../form/FormInput";
-import Button from "../../ui/Button";
 
 export default function CourseForm({
   facultyList = [],
@@ -18,7 +17,13 @@ export default function CourseForm({
   } = useForm();
 
   const submitForm = async (data) => {
-    await onSubmit(data.course);
+    await onSubmit({
+      facultyId: selectedFaculty,
+      name: data.course,
+      duration: Number(data.duration),
+      durationType: data.duration_type,
+    });
+
     reset();
   };
 
@@ -43,13 +48,47 @@ export default function CourseForm({
           name="course"
           register={register}
           required="Enter course name"
-          placeholder="e.g. B.Sc, B.Com..."
+          error={errors.course?.message}
         />
+
+        <FormInput
+          label="Duration"
+          name="duration"
+          type="number"
+          register={register}
+          required="Enter duration"
+          error={errors.duration?.message}
+        />
+
+        <select
+          {...register("duration_type", {
+            required: "Select duration type",
+          })}
+          className="w-full border border-border rounded-md px-3 py-2 bg-surface text-text"
+        >
+          <option value="">Select Duration Type</option>
+          <option value="Year">Year</option>
+          <option value="Month">Month</option>
+        </select>
+
+        {errors.duration_type && (
+          <p className="text-sm text-red-500">
+            {errors.duration_type.message}
+          </p>
+        )}
       </FormSection>
 
-      <Button type="submit" disabled={!selectedFaculty}>
+      <button
+        type="submit"
+        disabled={!selectedFaculty}
+        className={`px-6 py-2.5 rounded-md text-white ${
+          selectedFaculty
+            ? "bg-primary"
+            : "bg-gray-400 cursor-not-allowed"
+        }`}
+      >
         Create Course
-      </Button>
+      </button>
     </form>
   );
 }

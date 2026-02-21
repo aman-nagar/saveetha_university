@@ -1,11 +1,10 @@
-// src/pages/admin/courses/FacultyPage.jsx
-
 import { useEffect, useState } from "react";
 import { fetchCourseCategories } from "../../../api/courseTypeApi";
 import {
   fetchFaculty,
   createFaculty,
   deleteFaculty,
+  updateFaculty,
 } from "../../../api/facultyApi";
 
 import { useCrud } from "../../../hooks/useCrud";
@@ -23,6 +22,7 @@ export default function FacultyPage() {
 
   const [courseTypes, setCourseTypes] = useState([]);
   const [selectedCourseType, setSelectedCourseType] = useState("");
+  const [editData, setEditData] = useState(null);
 
   const {
     data: facultyList,
@@ -35,9 +35,6 @@ export default function FacultyPage() {
   });
 
   useEffect(() => {
-    fetchFaculty(1).then((res) => {
-      console.log("faculty:", res);
-    });
     loadCourseTypes();
   }, []);
 
@@ -52,18 +49,31 @@ export default function FacultyPage() {
 
   const handleCourseChange = (value) => {
     setSelectedCourseType(value);
-    if (value) load(value);
+    if (value && !editData) load(value);
   };
 
-  const handleCreateFaculty = async (name) => {
+  const handleCreate = async (name) => {
     if (!selectedCourseType) {
-      show("warning", "Please select a course type first");
+      show("warning", "Select course type first");
       return;
     }
 
     try {
       await createFaculty(selectedCourseType, name);
       show("success", "Faculty created");
+      load(selectedCourseType);
+    } catch (err) {
+      show("error", err.message);
+    }
+  };
+
+  const handleUpdate = async (name) => {
+    if (!editData) return;
+
+    try {
+      await updateFaculty(editData.id, name, selectedCourseType);
+      show("success", "Faculty updated");
+      setEditData(null);
       load(selectedCourseType);
     } catch (err) {
       show("error", err.message);
@@ -91,7 +101,7 @@ export default function FacultyPage() {
   const columns = [
     { key: "serial", label: "#", render: (_, i) => i + 1 },
     {
-      key: "course_name",
+      key: "course_type",
       label: "Course Type",
       render: (row) => courseTypeMap[row.course_type_id] || "-",
     },
@@ -99,6 +109,15 @@ export default function FacultyPage() {
   ];
 
   const actions = [
+    {
+      icon: "✏️",
+      className:
+        "px-3 py-1 rounded bg-blue-600 text-white hover:bg-blue-700 text-sm",
+      onClick: (row) => {
+        setEditData(row);
+        setSelectedCourseType(row.course_type_id);
+      },
+    },
     {
       icon: "🗑",
       className:
@@ -115,7 +134,8 @@ export default function FacultyPage() {
         courseTypes={courseTypes}
         selectedCourseType={selectedCourseType}
         onCourseChange={handleCourseChange}
-        onSubmit={handleCreateFaculty}
+        onSubmit={handleCreate}
+        mode="create"
       />
 
       <Table
@@ -124,9 +144,26 @@ export default function FacultyPage() {
         data={facultyList}
         actions={actions}
         loading={loading}
-        emptyMessage="No faculty found"
       />
 
+      {/* EDIT MODAL */}
+      <Modal
+        isOpen={!!editData}
+        title="Edit Faculty"
+        onClose={() => setEditData(null)}
+      >
+        <FacultyForm
+          courseTypes={courseTypes}
+          selectedCourseType={selectedCourseType}
+          onCourseChange={handleCourseChange}
+          onSubmit={handleUpdate}
+          initialData={editData}
+          mode="edit"
+          onCancel={() => setEditData(null)}
+        />
+      </Modal>
+
+      {/* DELETE MODAL */}
       <Modal
         isOpen={isOpen}
         title="Confirm Delete"

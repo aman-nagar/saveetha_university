@@ -5,6 +5,7 @@ import {
   fetchCourses,
   createCourse,
   deleteCourse,
+  updateCourse,
 } from "../../../api/courseApi";
 
 import { useCrud } from "../../../hooks/useCrud";
@@ -22,6 +23,7 @@ export default function CoursePage() {
 
   const [facultyList, setFacultyList] = useState([]);
   const [selectedFaculty, setSelectedFaculty] = useState("");
+  const [editData, setEditData] = useState(null);
 
   const {
     data: courses,
@@ -34,9 +36,6 @@ export default function CoursePage() {
   });
 
   useEffect(() => {
-    fetchCourses(1).then((res) => {
-      console.log("course raw:", res);
-    });
     loadFaculty();
   }, []);
 
@@ -50,16 +49,34 @@ export default function CoursePage() {
   };
 
   const handleFacultyChange = (value) => {
-    console.log("[CoursePage.jsx] Faculty selected ID:", value);
     setSelectedFaculty(value);
-    if (value) load(value);
+    if (value && !editData) load(value);
   };
 
   const handleCreate = async (courseData) => {
     try {
       await createCourse(courseData);
-      console.log("Creating course with data:", courseData);
       show("success", "Course created");
+      load(courseData.facultyId);
+    } catch (err) {
+      show("error", err.message);
+    }
+  };
+
+  const handleUpdate = async (courseData) => {
+    if (!editData) return;
+
+    try {
+      await updateCourse({
+        id: editData.id,
+        facultyId: courseData.facultyId,
+        name: courseData.name,
+        duration: courseData.duration,
+        durationType: courseData.durationType,
+      });
+
+      show("success", "Course updated");
+      setEditData(null);
       load(courseData.facultyId);
     } catch (err) {
       show("error", err.message);
@@ -102,6 +119,15 @@ export default function CoursePage() {
 
   const actions = [
     {
+      icon: "✏️",
+      className:
+        "px-3 py-1 rounded bg-blue-600 text-white hover:bg-blue-700 text-sm",
+      onClick: (row) => {
+        setEditData(row);
+        setSelectedFaculty(row.faculty_id);
+      },
+    },
+    {
       icon: "🗑",
       className:
         "px-3 py-1 rounded bg-red-600 text-white hover:bg-red-700 text-sm",
@@ -118,6 +144,7 @@ export default function CoursePage() {
         selectedFaculty={selectedFaculty}
         onFacultyChange={handleFacultyChange}
         onSubmit={handleCreate}
+        mode="create"
       />
 
       <Table
@@ -126,9 +153,26 @@ export default function CoursePage() {
         data={courses}
         actions={actions}
         loading={loading}
-        emptyMessage="No courses found"
       />
 
+      {/* EDIT MODAL */}
+      <Modal
+        isOpen={!!editData}
+        title="Edit Course"
+        onClose={() => setEditData(null)}
+      >
+        <CourseForm
+          facultyList={facultyList}
+          selectedFaculty={selectedFaculty}
+          onFacultyChange={handleFacultyChange}
+          onSubmit={handleUpdate}
+          initialData={editData}
+          mode="edit"
+          onCancel={() => setEditData(null)}
+        />
+      </Modal>
+
+      {/* DELETE MODAL */}
       <Modal
         isOpen={isOpen}
         title="Confirm Delete"

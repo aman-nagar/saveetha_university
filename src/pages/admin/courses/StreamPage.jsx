@@ -1,11 +1,11 @@
 // src/pages/admin/courses/StreamPage.jsx
-
 import { useEffect, useState } from "react";
 import { fetchAllCourses } from "../../../api/courseApi";
 import {
   fetchStreams,
   createStream,
   deleteStream,
+  updateStream,
 } from "../../../api/streamApi";
 
 import { useCrud } from "../../../hooks/useCrud";
@@ -23,6 +23,7 @@ export default function StreamPage() {
 
   const [courseList, setCourseList] = useState([]);
   const [selectedCourse, setSelectedCourse] = useState("");
+  const [editData, setEditData] = useState(null);
 
   const {
     data: streams,
@@ -35,9 +36,6 @@ export default function StreamPage() {
   });
 
   useEffect(() => {
-    fetchStreams(2).then((res) => {
-      console.log("Streams raw:", res);
-    });
     loadCourses();
   }, []);
 
@@ -52,16 +50,27 @@ export default function StreamPage() {
 
   const handleCourseChange = (value) => {
     setSelectedCourse(value);
-
-    if (value) {
-      load(value);
-    }
+    if (value && !editData) load(value);
   };
 
   const handleCreate = async (streamData) => {
     try {
       await createStream(streamData.courseId, streamData.name);
       show("success", "Stream created");
+      load(streamData.courseId);
+    } catch (err) {
+      show("error", err.message);
+    }
+  };
+
+  const handleUpdate = async (streamData) => {
+    if (!editData) return;
+
+    try {
+      await updateStream(editData.id, streamData.name, streamData.courseId);
+
+      show("success", "Stream updated");
+      setEditData(null);
       load(streamData.courseId);
     } catch (err) {
       show("error", err.message);
@@ -98,6 +107,15 @@ export default function StreamPage() {
 
   const actions = [
     {
+      icon: "✏️",
+      className:
+        "px-3 py-1 rounded bg-blue-600 text-white hover:bg-blue-700 text-sm",
+      onClick: (row) => {
+        setEditData(row);
+        setSelectedCourse(row.course_id);
+      },
+    },
+    {
       icon: "🗑",
       className:
         "px-3 py-1 rounded bg-red-600 text-white hover:bg-red-700 text-sm",
@@ -114,6 +132,7 @@ export default function StreamPage() {
         selectedCourse={selectedCourse}
         onCourseChange={handleCourseChange}
         onSubmit={handleCreate}
+        mode="create"
       />
 
       <Table
@@ -122,9 +141,26 @@ export default function StreamPage() {
         data={streams}
         actions={actions}
         loading={loading}
-        emptyMessage="No streams found"
       />
 
+      {/* EDIT MODAL */}
+      <Modal
+        isOpen={!!editData}
+        title="Edit Stream"
+        onClose={() => setEditData(null)}
+      >
+        <StreamForm
+          courseList={courseList}
+          selectedCourse={selectedCourse}
+          onCourseChange={handleCourseChange}
+          onSubmit={handleUpdate}
+          initialData={editData}
+          mode="edit"
+          onCancel={() => setEditData(null)}
+        />
+      </Modal>
+
+      {/* DELETE MODAL */}
       <Modal
         isOpen={isOpen}
         title="Confirm Delete"

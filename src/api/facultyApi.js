@@ -42,6 +42,22 @@ export function createFaculty(courseTypeId, name) {
   });
 }
 
+// UPDATE Faculty
+export async function updateFaculty(id, name, courseTypeId) {
+  if (!id) throw new Error("Faculty ID required");
+  if (!name?.trim()) throw new Error("Faculty name required");
+
+  return apiRequest("/course/index.php", {
+    method: "PUT",
+    body: JSON.stringify({
+      type: "faculty",
+      id,
+      name: name.trim(),
+      course_type_id: courseTypeId,
+    }),
+  });
+}
+
 /* -------------------------
    Delete Faculty
 -------------------------- */

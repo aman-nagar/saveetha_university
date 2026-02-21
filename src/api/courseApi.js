@@ -44,6 +44,30 @@ export function createCourse({ facultyId, name, duration, durationType }) {
   });
 }
 
+// UPDATE Course
+export async function updateCourse({
+  id,
+  facultyId,
+  name,
+  duration,
+  durationType,
+}) {
+  if (!id) throw new Error("Course ID required");
+  if (!name?.trim()) throw new Error("Course name required");
+
+  return apiRequest("/course/index.php", {
+    method: "PUT",
+    body: JSON.stringify({
+      type: "course",
+      id,
+      faculty_id: facultyId,
+      name: name.trim(),
+      duration,
+      duration_type: durationType,
+    }),
+  });
+}
+
 /* -------------------------
    Delete Course
 -------------------------- */

@@ -35,6 +35,22 @@ export function createStream(courseId, name) {
   });
 }
 
+// UPDATE Stream
+export async function updateStream(id, name, courseId) {
+  if (!id) throw new Error("Stream ID required");
+  if (!name?.trim()) throw new Error("Stream name required");
+
+  return apiRequest("/course/index.php", {
+    method: "PUT",
+    body: JSON.stringify({
+      type: "stream",
+      id,
+      name: name.trim(),
+      course_id: courseId,
+    }),
+  });
+}
+
 /* -------------------------
    Delete Stream
 -------------------------- */

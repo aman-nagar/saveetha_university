@@ -31,9 +31,22 @@ export function createCourseCategory(name) {
   });
 }
 
-/* -------------------------
-   Delete Course Category
--------------------------- */
+// UPDATE Course Category
+export async function updateCourseCategory(id, name) {
+  if (!id) throw new Error("Category ID is required");
+  if (!name?.trim()) throw new Error("Category name is required");
+
+  return apiRequest("/course/index.php", {
+    method: "PUT",
+    body: JSON.stringify({
+      type: "course_type",
+      id,
+      name: name.trim(),
+    }),
+  });
+}
+//  Delete Course Category
+
 export function deleteCourseCategory(id) {
   if (!id) {
     throw new Error("Category ID is required");

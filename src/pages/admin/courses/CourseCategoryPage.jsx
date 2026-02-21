@@ -1,25 +1,27 @@
 // src/pages/admin/courses/CourseCategoryPage.jsx
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import {
   fetchCourseCategories,
   createCourseCategory,
   deleteCourseCategory,
+  updateCourseCategory,
 } from "../../../api/courseTypeApi";
 
 import { useCrud } from "../../../hooks/useCrud";
-
 import { useToast } from "../../../hooks/useToast";
+import { useConfirm } from "../../../hooks/useConfirm";
 
 import CourseCategoryForm from "../../../components/admin/courses/CourseCategoryForm";
 import Toast from "../../../components/ui/Toast";
 import Modal from "../../../components/ui/Modal";
 import Table from "../../../components/table/Table";
-import { useConfirm } from "../../../hooks/useConfirm";
 
 export default function CourseCategoryPage() {
   const { toast, show, clear } = useToast();
   const { target, isOpen, open, close } = useConfirm();
+
+  const [editData, setEditData] = useState(null);
 
   const {
     data: categories,
@@ -32,15 +34,14 @@ export default function CourseCategoryPage() {
   });
 
   useEffect(() => {
-    fetchCourseCategories(1).then((res) => {
-      console.log("course category:", res);
-    });
     load();
   }, [load]);
 
+  // CREATE
   const handleCreate = async (formValues) => {
     const name = formValues.category?.trim();
     if (!name) return;
+
     try {
       await createCourseCategory(name);
       show("success", `Category "${name}" created`);
@@ -50,6 +51,22 @@ export default function CourseCategoryPage() {
     }
   };
 
+  // UPDATE
+  const handleUpdate = async (formValues) => {
+    const name = formValues.category?.trim();
+    if (!name || !editData) return;
+
+    try {
+      await updateCourseCategory(editData.id, name);
+      show("success", `Category updated successfully`);
+      setEditData(null);
+      load();
+    } catch (err) {
+      show("error", err.message);
+    }
+  };
+
+  // DELETE
   const confirmDelete = async () => {
     if (!target) return;
 
@@ -70,6 +87,12 @@ export default function CourseCategoryPage() {
 
   const actions = [
     {
+      icon: "✏️",
+      className:
+        "px-3 py-1 rounded bg-blue-600 text-white hover:bg-blue-700 text-sm",
+      onClick: (row) => setEditData(row),
+    },
+    {
       icon: "🗑",
       className:
         "px-3 py-1 rounded bg-red-600 text-white hover:bg-red-700 text-sm",
@@ -81,8 +104,14 @@ export default function CourseCategoryPage() {
     <div className="space-y-8 p-6">
       {toast && <Toast {...toast} onClose={clear} />}
 
-      <CourseCategoryForm onSubmit={handleCreate} loading={loading} />
+      {/* CREATE FORM */}
+      <CourseCategoryForm
+        onSubmit={handleCreate}
+        loading={loading}
+        mode="create"
+      />
 
+      {/* TABLE */}
       <Table
         title="Course Categories"
         columns={columns}
@@ -91,6 +120,21 @@ export default function CourseCategoryPage() {
         loading={loading}
       />
 
+      {/* EDIT MODAL */}
+      <Modal
+        isOpen={!!editData}
+        title="Edit Course Category"
+        onClose={() => setEditData(null)}
+      >
+        <CourseCategoryForm
+          onSubmit={handleUpdate}
+          initialData={editData}
+          mode="edit"
+          onCancel={() => setEditData(null)}
+        />
+      </Modal>
+
+      {/* DELETE MODAL */}
       <Modal
         isOpen={isOpen}
         title="Confirm Delete"

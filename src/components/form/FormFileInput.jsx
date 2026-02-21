@@ -7,18 +7,21 @@ export default function FormFileInput({
   register,
   accept = "image/*",
   required = false,
+  error,
 }) {
   const [preview, setPreview] = useState(null);
 
-  // Get the onChange and ref from register
-  const { onChange, ...rest } = register(name, { required });
+  const { onChange, ...rest } = register(name, {
+    required: required ? "File is required" : false,
+  });
 
   const handlePreview = (e) => {
     const file = e.target.files[0];
+
     if (file && file.type.startsWith("image/")) {
       setPreview(URL.createObjectURL(file));
     }
-    // Crucial: Call the original React Hook Form onChange
+
     onChange(e);
   };
 
@@ -28,34 +31,31 @@ export default function FormFileInput({
         {label} {required && "*"}
       </label>
 
-      <div className="flex items-center gap-3 p-2 border border-border rounded-md bg-surface transition-sm focus-within:ring-1 focus-within:ring-primary">
-        {/* Compact Thumbnail */}
-        <div className="flex-shrink-0">
-          {preview ? (
-            <img
-              src={preview}
-              alt="Preview"
-              className="h-10 w-10 object-cover rounded shadow-sm border border-border"
-            />
-          ) : (
-            <></>
-          )}
-        </div>
+      <div
+        className={`flex items-center gap-3 p-2 border rounded-md bg-surface
+          ${error ? "border-red-500" : "border-border"}
+        `}
+      >
+        {preview && (
+          <img
+            src={preview}
+            alt="Preview"
+            className="h-10 w-10 object-cover rounded border"
+          />
+        )}
 
-        {/* Lean Input */}
         <input
           type="file"
           accept={accept}
           {...rest}
           onChange={handlePreview}
-          className="pl-5 block w-full text-xs text-text 
-            file:mr-3 file:py-1 file:px-3
-            file:rounded file:border-0
-            file:text-xs file:font-medium
-            file:bg-primary file:text-white
-            hover:file:bg-primary/90 cursor-pointer"
+          className="text-sm"
         />
       </div>
+
+      {error && (
+        <p className="text-xs text-red-500">{error.message}</p>
+      )}
     </div>
   );
 }

@@ -18,7 +18,14 @@ export async function fetchStudentById(id) {
   return apiRequest(`/students/index.php?id=${id}`);
 }
 
-export async function createStudent(payload) {
+export async function createStudent(payload, isMultipart = false) {
+  if (isMultipart) {
+    return apiRequest("/students/index.php", {
+      method: "POST",
+      body: payload,
+    });
+  }
+
   return apiRequest("/students/index.php", {
     method: "POST",
     headers: {

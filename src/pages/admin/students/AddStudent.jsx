@@ -57,14 +57,19 @@ export default function AddStudent() {
     try {
       setLoading(true);
 
-      const payload = {
-        candidate_name: data.candidate_name,
-        email: data.email,
-        dob: data.dob,
-        ...data,
-      };
+      const formData = new FormData();
 
-      const response = await createStudent(payload);
+      Object.entries(data).forEach(([key, value]) => {
+        if (value instanceof FileList) {
+          if (value.length > 0) {
+            formData.append(key, value[0]);
+          }
+        } else {
+          formData.append(key, value ?? "");
+        }
+      });
+
+      const response = await createStudent(formData, true);
 
       show("success", `Student Created: ${response.enrollment_no}`);
 

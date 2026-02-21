@@ -1,3 +1,4 @@
+// src/components/admin/courses/CourseForm.jsx
 import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import FormSection from "../../form/FormSection";
@@ -45,18 +46,24 @@ export default function CourseForm({
   return (
     <form onSubmit={handleSubmit(submitForm)} className="space-y-6">
       <FormSection title={mode === "edit" ? "Edit Course" : "Add Course"}>
-        <select
-          value={selectedFaculty}
-          onChange={(e) => onFacultyChange(e.target.value)}
-          className="w-full border border-border rounded-md px-3 py-2 bg-surface text-text"
-        >
-          <option value="">Select Faculty</option>
-          {facultyList.map((f) => (
-            <option key={f.id} value={f.id}>
-              {f.name}
-            </option>
-          ))}
-        </select>
+        {/* Wrapped select in space-y-1 with label for alignment consistency */}
+        <div className="space-y-1">
+          <label className="text-sm font-medium text-text">
+            Select Faculty *
+          </label>
+          <select
+            value={selectedFaculty}
+            onChange={(e) => onFacultyChange(e.target.value)}
+            className="w-full border border-border rounded-md px-3 py-2 bg-surface text-text focus:outline-none focus:ring-2 focus:ring-accent"
+          >
+            <option value="">Select Faculty</option>
+            {facultyList.map((f) => (
+              <option key={f.id} value={f.id}>
+                {f.name}
+              </option>
+            ))}
+          </select>
+        </div>
 
         <FormInput
           label="Course Name"
@@ -73,18 +80,24 @@ export default function CourseForm({
           required="Enter duration"
         />
 
-        <select
-          {...register("duration_type", {
-            required: "Select duration type",
-          })}
-          className="w-full border border-border rounded-md px-3 py-2 bg-surface text-text"
-        >
-          <option value="">Select Duration Type</option>
-          <option value="Year">Year</option>
-          <option value="Month">Month</option>
-          <option value="years">years</option>
-          <option value="months">months</option>
-        </select>
+        {/* Wrapped select in space-y-1 with label for alignment consistency */}
+        <div className="space-y-1">
+          <label className="text-sm font-medium text-text">
+            Duration Type *
+          </label>
+          <select
+            {...register("duration_type", {
+              required: "Select duration type",
+            })}
+            className="w-full border border-border rounded-md px-3 py-2 bg-surface text-text focus:outline-none focus:ring-2 focus:ring-accent"
+          >
+            <option value="">Select Duration Type</option>
+            <option value="Year">Year</option>
+            <option value="Month">Month</option>
+            <option value="Semester">Semester</option>{" "}
+            {/* Fixed duplicates and added Semester for consistency */}
+          </select>
+        </div>
       </FormSection>
 
       <div className="flex gap-3">

@@ -38,18 +38,24 @@ export default function StreamForm({
   return (
     <form onSubmit={handleSubmit(submitForm)} className="space-y-6">
       <FormSection title={mode === "edit" ? "Edit Stream" : "Add Stream"}>
-        <select
-          value={selectedCourse}
-          onChange={(e) => onCourseChange(e.target.value)}
-          className="w-full border border-border rounded-md px-3 py-2 bg-surface text-text"
-        >
-          <option value="">Select Course</option>
-          {courseList.map((c) => (
-            <option key={c.id} value={c.id}>
-              {c.name}
-            </option>
-          ))}
-        </select>
+        {/* Wrapped select in space-y-1 with label for alignment consistency */}
+        <div className="space-y-1">
+          <label className="text-sm font-medium text-text">
+            Select Course *
+          </label>
+          <select
+            value={selectedCourse}
+            onChange={(e) => onCourseChange(e.target.value)}
+            className="w-full border border-border rounded-md px-3 py-2 bg-surface text-text focus:outline-none focus:ring-2 focus:ring-accent"
+          >
+            <option value="">Select Course</option>
+            {courseList.map((c) => (
+              <option key={c.id} value={c.id}>
+                {c.name}
+              </option>
+            ))}
+          </select>
+        </div>
 
         <FormInput
           label="Stream Name"

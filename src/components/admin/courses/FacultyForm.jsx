@@ -36,7 +36,7 @@ export default function FacultyForm({
         <select
           value={selectedCourseType}
           onChange={(e) => onCourseChange(e.target.value)}
-          className="w-full border border-border rounded-md px-3 py-2 bg-surface text-text"
+          className="w-full border border-border rounded-md  bg-surface text-text"
         >
           <option value="">Select Course Type</option>
           {courseTypes.map((c) => (

@@ -6,7 +6,7 @@ import AdminLayout from "./layouts/AdminLayout";
 import About from "./pages/public/About";
 import Contact from "./pages/public/Contact";
 import Login from "./pages/Login";
-import AdminDashboard from "./pages/admin/AdminDashboardPanel";
+import AdminDashboard from "./pages/admin/AdminDashboardPage";
 import News from "./pages/public/News";
 import SiteSettingsPage from "./pages/admin/settings/SiteSettingsPage";
 import AddStudent from "./pages/admin/students/AddStudent";
@@ -15,6 +15,7 @@ import FacultyPage from "./pages/admin/courses/FacultyPage";
 import CoursePage from "./pages/admin/courses/CoursePage";
 import StudentDashboard from "./pages/student/StudentDashboard";
 import StreamPage from "./pages/admin/courses/StreamPage";
+import AllStudentsPage from "./pages/admin/students/AllStudentsPage";
 
 function App() {
   return (
@@ -35,14 +36,15 @@ function App() {
         <Route path="/admin" element={<AdminLayout />}>
           <Route index element={<AdminDashboard />} />
 
-          {/* students */}
-          <Route path="students/add" element={<AddStudent />} />
-
-          {/* course category */}
+          {/* admin course category */}
           <Route path="course-category" element={<CourseCategoryPage />} />
           <Route path="faculty" element={<FacultyPage />} />
           <Route path="course" element={<CoursePage />} />
           <Route path="stream" element={<StreamPage />} />
+
+          {/* admin students */}
+          <Route path="students/add" element={<AddStudent />} />
+          <Route path="students" element={<AllStudentsPage />} />
 
           {/* settings */}
           <Route path="site-settings" element={<SiteSettingsPage />} />

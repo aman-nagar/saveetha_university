@@ -13,11 +13,7 @@ export default function StreamForm({
   mode = "create",
   onCancel,
 }) {
-  const {
-    register,
-    handleSubmit,
-    reset,
-  } = useForm();
+  const { register, handleSubmit, reset } = useForm();
 
   useEffect(() => {
     if (initialData) {
@@ -41,9 +37,7 @@ export default function StreamForm({
 
   return (
     <form onSubmit={handleSubmit(submitForm)} className="space-y-6">
-      <FormSection
-        title={mode === "edit" ? "Edit Stream" : "Add Stream"}
-      >
+      <FormSection title={mode === "edit" ? "Edit Stream" : "Add Stream"}>
         <select
           value={selectedCourse}
           onChange={(e) => onCourseChange(e.target.value)}

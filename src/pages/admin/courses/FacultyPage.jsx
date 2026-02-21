@@ -35,6 +35,9 @@ export default function FacultyPage() {
   });
 
   useEffect(() => {
+    fetchFaculty(1).then((res) => {
+      console.log("faculty:", res);
+    });
     loadCourseTypes();
   }, []);
 
@@ -80,8 +83,18 @@ export default function FacultyPage() {
     }
   };
 
+  const courseTypeMap = {};
+  courseTypes.forEach((ct) => {
+    courseTypeMap[ct.id] = ct.name;
+  });
+
   const columns = [
     { key: "serial", label: "#", render: (_, i) => i + 1 },
+    {
+      key: "course_name",
+      label: "Course Type",
+      render: (row) => courseTypeMap[row.course_type_id] || "-",
+    },
     { key: "name", label: "Faculty Name" },
   ];
 

@@ -69,12 +69,11 @@ export default function CourseForm({
           <option value="">Select Duration Type</option>
           <option value="Year">Year</option>
           <option value="Month">Month</option>
+          <option value="Semester">Semester</option>
         </select>
 
         {errors.duration_type && (
-          <p className="text-sm text-red-500">
-            {errors.duration_type.message}
-          </p>
+          <p className="text-sm text-red-500">{errors.duration_type.message}</p>
         )}
       </FormSection>
 
@@ -82,9 +81,7 @@ export default function CourseForm({
         type="submit"
         disabled={!selectedFaculty}
         className={`px-6 py-2.5 rounded-md text-white ${
-          selectedFaculty
-            ? "bg-primary"
-            : "bg-gray-400 cursor-not-allowed"
+          selectedFaculty ? "bg-primary" : "bg-gray-400 cursor-not-allowed"
         }`}
       >
         Create Course

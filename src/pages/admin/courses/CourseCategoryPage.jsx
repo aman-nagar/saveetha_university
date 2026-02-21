@@ -32,13 +32,15 @@ export default function CourseCategoryPage() {
   });
 
   useEffect(() => {
+    fetchCourseCategories(1).then((res) => {
+      console.log("course category:", res);
+    });
     load();
   }, [load]);
 
   const handleCreate = async (formValues) => {
     const name = formValues.category?.trim();
     if (!name) return;
-
     try {
       await createCourseCategory(name);
       show("success", `Category "${name}" created`);

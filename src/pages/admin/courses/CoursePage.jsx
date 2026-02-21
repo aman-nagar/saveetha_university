@@ -1,5 +1,4 @@
 // src/pages/admin/courses/CoursePage.jsx
-
 import { useEffect, useState } from "react";
 import { fetchAllFaculty } from "../../../api/facultyApi";
 import {
@@ -35,6 +34,9 @@ export default function CoursePage() {
   });
 
   useEffect(() => {
+    fetchCourses(1).then((res) => {
+      console.log("course raw:", res);
+    });
     loadFaculty();
   }, []);
 
@@ -48,6 +50,7 @@ export default function CoursePage() {
   };
 
   const handleFacultyChange = (value) => {
+    console.log("[CoursePage.jsx] Faculty selected ID:", value);
     setSelectedFaculty(value);
     if (value) load(value);
   };
@@ -55,6 +58,7 @@ export default function CoursePage() {
   const handleCreate = async (courseData) => {
     try {
       await createCourse(courseData);
+      console.log("Creating course with data:", courseData);
       show("success", "Course created");
       load(courseData.facultyId);
     } catch (err) {
@@ -75,9 +79,25 @@ export default function CoursePage() {
     }
   };
 
+  const facultyMap = {};
+  facultyList.forEach((f) => {
+    facultyMap[f.id] = f.name;
+  });
+
   const columns = [
     { key: "serial", label: "#", render: (_, i) => i + 1 },
+    {
+      key: "faculty",
+      label: "Faculty",
+      render: (row) => facultyMap[row.faculty_id] || "—",
+    },
     { key: "name", label: "Course Name" },
+    {
+      key: "duration",
+      label: "Duration",
+      render: (row) =>
+        row.duration ? `${row.duration} ${row.duration_type}` : "—",
+    },
   ];
 
   const actions = [

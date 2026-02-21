@@ -35,6 +35,9 @@ export default function StreamPage() {
   });
 
   useEffect(() => {
+    fetchStreams(2).then((res) => {
+      console.log("Streams raw:", res);
+    });
     loadCourses();
   }, []);
 
@@ -78,8 +81,18 @@ export default function StreamPage() {
     }
   };
 
+  const courseMap = {};
+  courseList.forEach((c) => {
+    courseMap[c.id] = c.name;
+  });
+
   const columns = [
     { key: "serial", label: "#", render: (_, i) => i + 1 },
+    {
+      key: "course",
+      label: "Course",
+      render: (row) => courseMap[row.course_id] || "—",
+    },
     { key: "name", label: "Stream Name" },
   ];
 

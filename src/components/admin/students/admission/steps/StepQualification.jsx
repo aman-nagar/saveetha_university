@@ -1,3 +1,4 @@
+// src/components/admin/students/admission/steps/StepQualification.jsx
 import FormSection from "../../../../form/FormSection";
 import FormFileInput from "../../../../form/FormFileInput";
 

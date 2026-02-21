@@ -6,7 +6,7 @@ export async function fetchStudents({ page = 1, search = "" } = {}) {
 
   if (search) {
     endpoint = `/students/index.php?search=${encodeURIComponent(
-      search
+      search,
     )}&page=${page}`;
   }
 
@@ -16,4 +16,14 @@ export async function fetchStudents({ page = 1, search = "" } = {}) {
 export async function fetchStudentById(id) {
   if (!id) throw new Error("Student ID required");
   return apiRequest(`/students/index.php?id=${id}`);
+}
+
+export async function createStudent(payload) {
+  return apiRequest("/students/index.php", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(payload),
+  });
 }

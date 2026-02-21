@@ -6,29 +6,43 @@ import StepCommunication from "../../../components/admin/students/admission/step
 import StepQualification from "../../../components/admin/students/admission/steps/StepQualification";
 import StepProgram from "../../../components/admin/students/admission/steps/StepProgram";
 import AdmissionStepper from "../../../components/admin/students/admission/AdmissionStepper";
+import { createStudent } from "../../../api/students/studentApi";
+import { useToast } from "../../../hooks/useToast";
 
 export default function AddStudent() {
   const { register, handleSubmit } = useForm();
   const [step, setStep] = useState(1);
+  const { show } = useToast();
 
   const next = () => setStep((s) => Math.min(s + 1, 4));
   const prev = () => setStep((s) => Math.max(s - 1, 1));
 
-  const onSubmit = (data) => {
-    const formData = new FormData();
+  const onSubmit = async (data) => {
+    if (step !== 4) return; // prevent early submission
 
-    Object.keys(data).forEach((key) => {
-      formData.append(key, data[key]);
-    });
+    try {
+      const payload = {
+        candidate_name: data.candidate_name,
+        email: data.email,
+        dob: data.dob,
+        ...data,
+      };
 
-    console.log("Final Admission Data:", data);
+      const response = await createStudent(payload);
+
+      show("success", `Student Created: ${response.enrollment_no}`);
+
+      console.log("Created:", response);
+    } catch (err) {
+      show("error", err.message);
+    }
   };
 
   return (
     <div className="w-full max-w-7xl">
       <AdmissionStepper step={step} />
 
-      <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+      <form onSubmit={handleSubmit(onSubmit)}>
         {step === 1 && <StepPersonal register={register} />}
         {step === 2 && <StepCommunication register={register} />}
         {step === 3 && <StepQualification register={register} />}
@@ -55,7 +69,8 @@ export default function AddStudent() {
             </button>
           ) : (
             <button
-              type="submit"
+              type="button" // ← IMPORTANT CHANGE
+              onClick={handleSubmit(onSubmit)} // manual trigger
               className="ml-auto bg-accent text-primary px-6 py-2 rounded-md font-semibold"
             >
               Submit Admission

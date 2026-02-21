@@ -1,3 +1,4 @@
+// src/components/admin/students/admission/steps/StepPersonal.jsx
 import FormInput from "../../../../form/FormInput";
 import FormSelect from "../../../../form/FormSelect";
 import FormSection from "../../../../form/FormSection";
@@ -17,14 +18,14 @@ export default function StepPersonal({ register }) {
         label="Father's Name"
         name="father_name"
         register={register}
-        required
+       
       />
 
       <FormInput
         label="Mother's Name"
         name="mother_name"
         register={register}
-        required
+      
       />
 
       <FormInput

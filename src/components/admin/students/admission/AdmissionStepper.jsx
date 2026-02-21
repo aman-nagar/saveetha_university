@@ -1,3 +1,4 @@
+// src/components/admin/students/admission/AdmissionStepper.jsx
 export default function AdmissionStepper({ step }) {
   const steps = [
     "Personal Details",

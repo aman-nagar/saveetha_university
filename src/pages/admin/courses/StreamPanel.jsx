@@ -1,42 +1,43 @@
-// src/pages/admin/courses/CoursePanel.jsx
+// src/pages/admin/courses/StreamPanel.jsx
 import { useEffect, useState } from "react";
-import { fetchAllFaculty } from "../../../api/facultyApi";
+import { fetchAllCourses } from "../../../api/courseApi";
 import {
-  fetchCourses,
-  createCourse,
-  deleteCourse,
-} from "../../../api/courseApi";
+  fetchStreams,
+  createStream,
+  deleteStream,
+} from "../../../api/streamApi";
 
-import CourseForm from "../../../components/admin/courses/CourseForm";
+import StreamForm from "../../../components/admin/courses/StreamForm";
 import Table from "../../../components/table/Table";
 import Toast from "../../../components/ui/Toast";
 import Modal from "../../../components/ui/Modal";
 
-export default function CoursePanel() {
-  const [facultyList, setFacultyList] = useState([]);
-  const [selectedFaculty, setSelectedFaculty] = useState("");
-  const [courses, setCourses] = useState([]);
+export default function StreamPanel() {
+  const [courseList, setCourseList] = useState([]);
+  const [selectedCourse, setSelectedCourse] = useState("");
+  const [streams, setStreams] = useState([]);
   const [loading, setLoading] = useState(false);
   const [toast, setToast] = useState(null);
   const [deleteTarget, setDeleteTarget] = useState(null);
 
   useEffect(() => {
-    loadFaculty();
+    loadCourses();
   }, []);
 
-  const loadFaculty = async () => {
+  const loadCourses = async () => {
     try {
-      const data = await fetchAllFaculty();
-      setFacultyList(data);
+      const data = await fetchAllCourses();
+      setCourseList(data);
     } catch (err) {
       setToast({ type: "error", message: err.message });
     }
   };
-  const loadCourses = async (facultyId) => {
+
+  const loadStreams = async (courseId) => {
     setLoading(true);
     try {
-      const data = await fetchCourses(facultyId);
-      setCourses(data);
+      const data = await fetchStreams(courseId);
+      setStreams(data);
     } catch (err) {
       setToast({ type: "error", message: err.message });
     } finally {
@@ -44,20 +45,20 @@ export default function CoursePanel() {
     }
   };
 
-  const handleFacultyChange = (value) => {
-    setSelectedFaculty(value);
+  const handleCourseChange = (value) => {
+    setSelectedCourse(value);
     if (value) {
-      loadCourses(value);
+      loadStreams(value);
     } else {
-      setCourses([]);
+      setStreams([]);
     }
   };
 
-  const handleCreate = async (courseData) => {
+  const handleCreate = async (streamData) => {
     try {
-      await createCourse(courseData);
-      setToast({ type: "success", message: "Course created" });
-      loadCourses(courseData.facultyId);
+      await createStream(streamData.courseId, streamData.name);
+      setToast({ type: "success", message: "Stream created" });
+      loadStreams(streamData.courseId);
     } catch (err) {
       setToast({ type: "error", message: err.message });
     }
@@ -66,14 +67,14 @@ export default function CoursePanel() {
   const confirmDelete = async () => {
     if (!deleteTarget) return;
 
-    const original = [...courses];
-    setCourses((prev) => prev.filter((c) => c.id !== deleteTarget.id));
+    const original = [...streams];
+    setStreams((prev) => prev.filter((s) => s.id !== deleteTarget.id));
 
     try {
-      await deleteCourse(deleteTarget.id);
-      setToast({ type: "success", message: "Course deleted" });
+      await deleteStream(deleteTarget.id);
+      setToast({ type: "success", message: "Stream deleted" });
     } catch (err) {
-      setCourses(original);
+      setStreams(original);
       setToast({ type: "error", message: err.message });
     } finally {
       setDeleteTarget(null);
@@ -88,7 +89,7 @@ export default function CoursePanel() {
     },
     {
       key: "name",
-      label: "Course Name",
+      label: "Stream Name",
     },
   ];
 
@@ -111,20 +112,20 @@ export default function CoursePanel() {
         />
       )}
 
-      <CourseForm
-        facultyList={facultyList}
-        selectedFaculty={selectedFaculty}
-        onFacultyChange={handleFacultyChange}
+      <StreamForm
+        courseList={courseList}
+        selectedCourse={selectedCourse}
+        onCourseChange={handleCourseChange}
         onSubmit={handleCreate}
       />
 
       <Table
-        title="Course List"
+        title="Stream List"
         columns={columns}
-        data={courses}
+        data={streams}
         actions={actions}
         loading={loading}
-        emptyMessage="No courses found"
+        emptyMessage="No streams found"
       />
 
       <Modal

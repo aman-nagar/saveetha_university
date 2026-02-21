@@ -1,6 +1,6 @@
 // src/pages/admin/courses/FacultyPanel.jsx
 import React, { useEffect, useState } from "react";
-import { fetchCourseCategories } from "../../../api/courseCategoryApi";
+import { fetchCourseCategories } from "../../../api/courseTypeApi";
 import {
   fetchFaculty,
   createFaculty,

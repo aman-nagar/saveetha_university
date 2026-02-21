@@ -1,63 +1,59 @@
 // src/api/facultyApi.js
-import { BASE_URL } from "./config";
-import { handleResponse } from "./handleResponse";
 
-const FACULTY_URL = `${BASE_URL}/course/index.php`;
+import { apiRequest } from "./client";
 
-// Fetch faculty by course type
-export async function fetchFaculty(courseTypeId) {
+const ENDPOINT = "/course/index.php";
+
+/* -------------------------
+   Fetch Faculty by Course Type
+-------------------------- */
+export function fetchFaculty(courseTypeId) {
   if (!courseTypeId) {
     throw new Error("Course type is required");
   }
 
-  const res = await fetch(
-    `${FACULTY_URL}?type=faculty&course_type_id=${courseTypeId}`,
-  );
-
-  return handleResponse(res);
+  return apiRequest(`${ENDPOINT}?type=faculty&course_type_id=${courseTypeId}`);
 }
 
-// Create faculty
-export async function createFaculty(courseTypeId, name) {
+/* -------------------------
+   Fetch ALL Faculty
+-------------------------- */
+export function fetchAllFaculty() {
+  return apiRequest(`${ENDPOINT}?type=faculty`);
+}
+
+/* -------------------------
+   Create Faculty
+-------------------------- */
+export function createFaculty(courseTypeId, name) {
   const trimmed = name?.trim();
 
-  if (!courseTypeId) {
-    throw new Error("Course type is required");
-  }
-
-  if (!trimmed) {
-    throw new Error("Faculty name required");
-  }
+  if (!courseTypeId) throw new Error("Course type is required");
+  if (!trimmed) throw new Error("Faculty name required");
 
   const formData = new FormData();
   formData.append("type", "faculty");
   formData.append("course_type_id", courseTypeId);
   formData.append("name", trimmed);
 
-  const res = await fetch(FACULTY_URL, {
+  return apiRequest(ENDPOINT, {
     method: "POST",
     body: formData,
   });
-
-  return handleResponse(res);
 }
 
-// Delete faculty
-export async function deleteFaculty(id) {
-  if (!id) {
-    throw new Error("Faculty ID required");
-  }
+/* -------------------------
+   Delete Faculty
+-------------------------- */
+export function deleteFaculty(id) {
+  if (!id) throw new Error("Faculty ID required");
 
-  const res = await fetch(FACULTY_URL, {
+  return apiRequest(ENDPOINT, {
     method: "DELETE",
-    headers: {
-      "Content-Type": "application/json",
-    },
+    headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
       type: "faculty",
       id: String(id),
     }),
   });
-
-  return handleResponse(res);
 }

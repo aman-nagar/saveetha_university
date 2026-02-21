@@ -14,6 +14,7 @@ import CourseCategoryPanel from "./pages/admin/courses/CourseCategoryPanel";
 import FacultyPanel from "./pages/admin/courses/FacultyPanel";
 import CoursePanel from "./pages/admin/courses/CoursePanel";
 import StudentDashboard from "./pages/student/StudentDashboard";
+import StreamPanel from "./pages/admin/courses/StreamPanel";
 
 function App() {
   return (
@@ -26,17 +27,23 @@ function App() {
           <Route path="/login" element={<Login />} />
           <Route path="/news" element={<News />} />
         </Route>
+
         {/* students */}
         <Route path="/student-dashboard" element={<StudentDashboard />} />
+
         {/* admin */}
         <Route path="/admin" element={<AdminLayout />}>
           <Route index element={<AdminDashboard />} />
+
           {/* students */}
           <Route path="students/add" element={<AddStudent />} />
+
           {/* course category */}
           <Route path="course-category" element={<CourseCategoryPanel />} />
           <Route path="faculty" element={<FacultyPanel />} />
           <Route path="course" element={<CoursePanel />} />
+          <Route path="stream" element={<StreamPanel />} />
+
           {/* settings */}
           <Route path="site-settings" element={<SiteSettings />} />
         </Route>

@@ -4,7 +4,7 @@ import {
   fetchCourseCategories,
   createCourseCategory,
   deleteCourseCategory,
-} from "../../../api/courseCategoryApi";
+} from "../../../api/courseTypeApi";
 import CourseCategoryForm from "../../../components/admin/courses/CourseCategoryForm";
 import Toast from "../../../components/ui/Toast";
 import Modal from "../../../components/ui/Modal";
@@ -21,6 +21,7 @@ export default function CourseCategoryPanel() {
     try {
       const data = await fetchCourseCategories();
       setCategories(data);
+      console.log(`courseCategoryPanel loadcategories ${data}`);
     } catch (err) {
       setToast({
         type: "error",

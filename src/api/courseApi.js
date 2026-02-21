@@ -1,47 +1,39 @@
-import { BASE_URL } from "./config";
-import { handleResponse } from "./handleResponse";
+// src/api/courseApi.js
 
-const COURSE_URL = `${BASE_URL}/course/index.php`;
+import { apiRequest } from "./client";
 
-/* -------------------------
-   FACULTY (for CoursePanel)
-   This fetches ALL faculty
--------------------------- */
-export async function fetchAllFaculty() {
-  const res = await fetch(`${COURSE_URL}?type=faculty`);
-  return handleResponse(res);
-}
+const ENDPOINT = "/course/index.php";
 
 /* -------------------------
-   COURSES
+   Fetch Courses by Faculty
 -------------------------- */
-
-export async function fetchCourses(facultyId) {
+export function fetchCourses(facultyId) {
   if (!facultyId) {
     throw new Error("Faculty ID is required");
   }
 
-  const res = await fetch(`${COURSE_URL}?type=course&faculty_id=${facultyId}`);
-
-  return handleResponse(res);
+  return apiRequest(`${ENDPOINT}?type=course&faculty_id=${facultyId}`);
 }
 
-export async function createCourse({
-  facultyId,
-  name,
-  duration,
-  durationType,
-}) {
+/* -------------------------
+   Fetch ALL Courses
+-------------------------- */
+export function fetchAllCourses() {
+  return apiRequest(`${ENDPOINT}?type=course`);
+}
+
+/* -------------------------
+   Create Course
+-------------------------- */
+export function createCourse({ facultyId, name, duration, durationType }) {
   if (!facultyId) throw new Error("Faculty ID is required");
   if (!name?.trim()) throw new Error("Course name is required");
   if (!duration) throw new Error("Duration is required");
   if (!durationType) throw new Error("Duration type is required");
 
-  const res = await fetch(`${BASE_URL}/course/index.php`, {
+  return apiRequest(ENDPOINT, {
     method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
+    headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
       type: "course",
       name: name.trim(),
@@ -50,16 +42,17 @@ export async function createCourse({
       faculty_id: facultyId,
     }),
   });
-
-  return handleResponse(res);
 }
 
-export async function deleteCourse(id) {
+/* -------------------------
+   Delete Course
+-------------------------- */
+export function deleteCourse(id) {
   if (!id) {
     throw new Error("Course ID is required");
   }
 
-  const res = await fetch(COURSE_URL, {
+  return apiRequest(ENDPOINT, {
     method: "DELETE",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
@@ -67,6 +60,4 @@ export async function deleteCourse(id) {
       id: String(id),
     }),
   });
-
-  return handleResponse(res);
 }

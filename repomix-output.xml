@@ -1,0 +1,365 @@
+This file is a merged representation of the entire codebase, combined into a single document by Repomix.
+
+<file_summary>
+This section contains a summary of this file.
+
+<purpose>
+This file contains a packed representation of the entire repository's contents.
+It is designed to be easily consumable by AI systems for analysis, code review,
+or other automated processes.
+</purpose>
+
+<file_format>
+The content is organized as follows:
+1. This summary section
+2. Repository information
+3. Directory structure
+4. Repository files (if enabled)
+5. Multiple file entries, each consisting of:
+  - File path as an attribute
+  - Full contents of the file
+</file_format>
+
+<usage_guidelines>
+- This file should be treated as read-only. Any changes should be made to the
+  original repository files, not this packed version.
+- When processing this file, use the file path to distinguish
+  between different files in the repository.
+- Be aware that this file may contain sensitive information. Handle it with
+  the same level of security as you would the original repository.
+</usage_guidelines>
+
+<notes>
+- Some files may have been excluded based on .gitignore rules and Repomix's configuration
+- Binary files are not included in this packed representation. Please refer to the Repository Structure section for a complete list of file paths, including binary files
+- Files matching patterns in .gitignore are excluded
+- Files matching default ignore patterns are excluded
+- Files are sorted by Git change count (files with more changes are at the bottom)
+</notes>
+
+</file_summary>
+
+<directory_structure>
+config.js
+courseApi.js
+courseCategoryApi.js
+facultyApi.js
+handleResponse.js
+settingAPI.js
+streamApi.js
+</directory_structure>
+
+<files>
+This section contains the contents of the repository's files.
+
+<file path="config.js">
+// src/api/config.js
+export const BASE_URL = "https://api.nsprowebtech.com/backend/api/v1";
+</file>
+
+<file path="courseApi.js">
+// src/api/courseApi.js
+import { BASE_URL } from "./config";
+import { handleResponse } from "./handleResponse";
+
+const COURSE_URL = `${BASE_URL}/course/index.php`;
+
+/* -------------------------
+   FACULTY (for CoursePanel)
+   This fetches ALL faculty
+-------------------------- */
+export async function fetchAllFaculty() {
+  const res = await fetch(`${COURSE_URL}?type=faculty`);
+  return handleResponse(res);
+}
+
+/* -------------------------
+   COURSES
+-------------------------- */
+
+export async function fetchCourses(facultyId) {
+  if (!facultyId) {
+    throw new Error("Faculty ID is required");
+  }
+
+  const res = await fetch(`${COURSE_URL}?type=course&faculty_id=${facultyId}`);
+
+  return handleResponse(res);
+}
+
+export async function createCourse({
+  facultyId,
+  name,
+  duration,
+  durationType,
+}) {
+  if (!facultyId) throw new Error("Faculty ID is required");
+  if (!name?.trim()) throw new Error("Course name is required");
+  if (!duration) throw new Error("Duration is required");
+  if (!durationType) throw new Error("Duration type is required");
+
+  const res = await fetch(`${BASE_URL}/course/index.php`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      type: "course",
+      name: name.trim(),
+      duration,
+      duration_type: durationType,
+      faculty_id: facultyId,
+    }),
+  });
+
+  return handleResponse(res);
+}
+
+export async function deleteCourse(id) {
+  if (!id) {
+    throw new Error("Course ID is required");
+  }
+
+  const res = await fetch(COURSE_URL, {
+    method: "DELETE",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      type: "course",
+      id: String(id),
+    }),
+  });
+
+  return handleResponse(res);
+}
+</file>
+
+<file path="courseCategoryApi.js">
+// src/api/courseApi.js
+import { BASE_URL } from "./config";
+import { handleResponse } from "./handleResponse";
+
+const COURSE_LIST_URL = `${BASE_URL}/course/index.php?type=course_type`;
+
+const COURSE_CREATE_URL = `${BASE_URL}/course/`;
+
+const COURSE_DELETE_URL = `${BASE_URL}/course/index.php`;
+
+// Fetch all course categories
+export async function fetchCourseCategories() {
+  const res = await fetch(COURSE_LIST_URL);
+  return handleResponse(res);
+}
+
+// Create a new course category
+export async function createCourseCategory(name) {
+  const trimmed = name?.trim();
+
+  if (!trimmed) {
+    throw new Error("Category name is required");
+  }
+
+  const formData = new FormData();
+  formData.append("type", "course_type");
+  formData.append("name", trimmed);
+
+  const res = await fetch(COURSE_CREATE_URL, {
+    method: "POST",
+    body: formData,
+  });
+
+  return handleResponse(res);
+}
+
+// Delete a course category
+export async function deleteCourseCategory(id) {
+  if (!id) {
+    throw new Error("Category ID is required");
+  }
+
+  const res = await fetch(COURSE_DELETE_URL, {
+    method: "DELETE",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      type: "course_type",
+      id: String(id),
+    }),
+  });
+
+  return handleResponse(res);
+}
+</file>
+
+<file path="facultyApi.js">
+// src/api/facultyApi.js
+import { BASE_URL } from "./config";
+import { handleResponse } from "./handleResponse";
+
+const FACULTY_URL = `${BASE_URL}/course/index.php`;
+
+// Fetch faculty by course type
+export async function fetchFaculty(courseTypeId) {
+  if (!courseTypeId) {
+    throw new Error("Course type is required");
+  }
+
+  const res = await fetch(
+    `${FACULTY_URL}?type=faculty&course_type_id=${courseTypeId}`,
+  );
+
+  return handleResponse(res);
+}
+
+// Create faculty
+export async function createFaculty(courseTypeId, name) {
+  const trimmed = name?.trim();
+
+  if (!courseTypeId) {
+    throw new Error("Course type is required");
+  }
+
+  if (!trimmed) {
+    throw new Error("Faculty name required");
+  }
+
+  const formData = new FormData();
+  formData.append("type", "faculty");
+  formData.append("course_type_id", courseTypeId);
+  formData.append("name", trimmed);
+
+  const res = await fetch(FACULTY_URL, {
+    method: "POST",
+    body: formData,
+  });
+
+  return handleResponse(res);
+}
+
+// Delete faculty
+export async function deleteFaculty(id) {
+  if (!id) {
+    throw new Error("Faculty ID required");
+  }
+
+  const res = await fetch(FACULTY_URL, {
+    method: "DELETE",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      type: "faculty",
+      id: String(id),
+    }),
+  });
+
+  return handleResponse(res);
+}
+</file>
+
+<file path="handleResponse.js">
+// src/utils/handleResponse.js
+export async function handleResponse(res) {
+  if (!res.ok) {
+    throw new Error(`HTTP ${res.status}`);
+  }
+
+  const json = await res.json();
+
+  if (!json.success) {
+    throw new Error(json.message || "Request failed");
+  }
+
+  return json.data;
+}
+</file>
+
+<file path="settingAPI.js">
+// src/api/api.js
+const BASE_URL = "https://api.nsprowebtech.com/backend/api/v1";
+
+// settings
+// sitesettings
+export async function fetchSiteSettings() {
+  const res = await fetch(`${BASE_URL}/settings/`);
+  const json = await res.json();
+  return json.data;
+}
+
+export async function updateSiteSettings(formData) {
+  const res = await fetch(`${BASE_URL}/settings/`, {
+    method: "POST",
+    body: formData,
+  });
+
+  return res.json();
+}
+</file>
+
+<file path="streamApi.js">
+// src/api/streamApi.js
+import { BASE_URL } from "./config";
+import { handleResponse } from "./handleResponse";
+
+const STREAM_URL = `${BASE_URL}/course/index.php`;
+
+// Fetch streams by course
+export async function fetchStreams(courseId) {
+  if (!courseId) {
+    throw new Error("Course ID is required");
+  }
+
+  const res = await fetch(`${STREAM_URL}?type=stream&course_id=${courseId}`);
+
+  return handleResponse(res);
+}
+
+// Fetch ALL courses (no faculty filter)
+export async function fetchAllCourses() {
+  const res = await fetch(`${BASE_URL}/course/index.php?type=course`);
+
+  return handleResponse(res);
+}
+
+// Create stream
+export async function createStream(courseId, name) {
+  const trimmed = name?.trim();
+
+  if (!courseId) throw new Error("Course ID is required");
+  if (!trimmed) throw new Error("Stream name is required");
+
+  const res = await fetch(STREAM_URL, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      type: "stream",
+      name: trimmed,
+      course_id: courseId,
+    }),
+  });
+
+  return handleResponse(res);
+}
+
+// Delete stream
+export async function deleteStream(id) {
+  if (!id) throw new Error("Stream ID is required");
+
+  const res = await fetch(STREAM_URL, {
+    method: "DELETE",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      type: "stream",
+      id: String(id),
+    }),
+  });
+
+  return handleResponse(res);
+}
+</file>
+
+</files>

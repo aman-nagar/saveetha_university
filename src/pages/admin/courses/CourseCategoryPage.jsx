@@ -6,7 +6,7 @@ import {
   createCourseCategory,
   deleteCourseCategory,
   updateCourseCategory,
-} from "../../../api/courseTypeApi";
+} from "../../../api/courses/courseTypeApi";
 
 import { useCrud } from "../../../hooks/useCrud";
 import { useToast } from "../../../hooks/useToast";

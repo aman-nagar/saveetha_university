@@ -1,16 +1,14 @@
 import { useEffect, useState } from "react";
-import { fetchCourseCategories } from "../../../api/courseTypeApi";
+import { fetchCourseCategories } from "../../../api/courses/courseTypeApi";
 import {
   fetchFaculty,
   createFaculty,
   deleteFaculty,
   updateFaculty,
-} from "../../../api/facultyApi";
-
+} from "../../../api/courses/facultyApi";
 import { useCrud } from "../../../hooks/useCrud";
 import { useConfirm } from "../../../hooks/useConfirm";
 import { useToast } from "../../../hooks/useToast";
-
 import FacultyForm from "../../../components/admin/courses/FacultyForm";
 import Toast from "../../../components/ui/Toast";
 import Modal from "../../../components/ui/Modal";

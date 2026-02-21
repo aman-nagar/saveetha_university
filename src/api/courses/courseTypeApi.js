@@ -1,6 +1,6 @@
 // src/api/courseTypeApi.js
 
-import { apiRequest } from "./client";
+import { apiRequest } from "../client";
 
 const COURSE_ENDPOINT = "/course/index.php";
 

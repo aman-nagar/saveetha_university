@@ -1,5 +1,5 @@
 // src/api/settingsApi.js
-import { apiRequest } from "./client";
+import { apiRequest } from "../client";
 
 const ENDPOINT = "/settings/";
 

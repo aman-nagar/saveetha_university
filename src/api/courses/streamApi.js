@@ -1,6 +1,6 @@
 // src/api/streamApi.js
 
-import { apiRequest } from "./client";
+import { apiRequest } from "../client";
 
 const ENDPOINT = "/course/index.php";
 

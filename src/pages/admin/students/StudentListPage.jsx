@@ -6,7 +6,7 @@ import Table from "../../../components/table/Table";
 import Modal from "../../../components/ui/Modal";
 import Toast from "../../../components/ui/Toast";
 import { useToast } from "../../../hooks/useToast";
-import { fetchStudents } from "../../../api/students/studentApi";
+import { fetchStudentById, fetchStudents } from "../../../api/students/studentApi";
 import StatusBadge from "../../../components/ui/StatusBadge";
 
 export default function StudentListPage() {

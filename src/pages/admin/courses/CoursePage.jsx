@@ -1,12 +1,12 @@
 // src/pages/admin/courses/CoursePage.jsx
 import { useEffect, useState } from "react";
-import { fetchAllFaculty } from "../../../api/facultyApi";
+import { fetchAllFaculty } from "../../../api/courses/facultyApi";
 import {
   fetchCourses,
   createCourse,
   deleteCourse,
   updateCourse,
-} from "../../../api/courseApi";
+} from "../../../api/courses/courseApi";
 
 import { useCrud } from "../../../hooks/useCrud";
 import { useConfirm } from "../../../hooks/useConfirm";

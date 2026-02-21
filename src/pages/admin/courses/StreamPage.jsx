@@ -1,12 +1,12 @@
 // src/pages/admin/courses/StreamPage.jsx
 import { useEffect, useState } from "react";
-import { fetchAllCourses } from "../../../api/courseApi";
+import { fetchAllCourses } from "../../../api/courses/courseApi";
 import {
   fetchStreams,
   createStream,
   deleteStream,
   updateStream,
-} from "../../../api/streamApi";
+} from "../../../api/courses//streamApi";
 
 import { useCrud } from "../../../hooks/useCrud";
 import { useConfirm } from "../../../hooks/useConfirm";

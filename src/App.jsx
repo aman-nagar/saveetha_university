@@ -15,7 +15,7 @@ import FacultyPage from "./pages/admin/courses/FacultyPage";
 import CoursePage from "./pages/admin/courses/CoursePage";
 import StudentDashboard from "./pages/student/StudentDashboard";
 import StreamPage from "./pages/admin/courses/StreamPage";
-import AllStudentsPage from "./pages/admin/students/AllStudentsPage";
+import StudentListPage from "./pages/admin/students/StudentListPage";
 
 function App() {
   return (
@@ -44,7 +44,7 @@ function App() {
 
           {/* admin students */}
           <Route path="students/add" element={<AddStudent />} />
-          <Route path="students" element={<AllStudentsPage />} />
+          <Route path="students" element={<StudentListPage />} />
 
           {/* settings */}
           <Route path="site-settings" element={<SiteSettingsPage />} />

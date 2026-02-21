@@ -2,14 +2,6 @@
 
 const BASE_URL = "https://api.nsprowebtech.com/backend/api/v1";
 
-/**
- * Core API request wrapper
- * Handles:
- * - base URL
- * - JSON parsing
- * - HTTP errors
- * - backend success flag
- */
 export async function apiRequest(endpoint, options = {}) {
   const res = await fetch(`${BASE_URL}${endpoint}`, options);
 

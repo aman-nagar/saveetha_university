@@ -8,13 +8,13 @@ import Contact from "./pages/public/Contact";
 import Login from "./pages/Login";
 import AdminDashboard from "./pages/admin/AdminDashboardPanel";
 import News from "./pages/public/News";
-import SiteSettings from "./pages/admin/settings/SiteSettingsPanel";
+import SiteSettingsPage from "./pages/admin/settings/SiteSettingsPage";
 import AddStudent from "./pages/admin/students/AddStudent";
-import CourseCategoryPanel from "./pages/admin/courses/CourseCategoryPanel";
-import FacultyPanel from "./pages/admin/courses/FacultyPanel";
-import CoursePanel from "./pages/admin/courses/CoursePanel";
+import CourseCategoryPage from "./pages/admin/courses/CourseCategoryPage";
+import FacultyPage from "./pages/admin/courses/FacultyPage";
+import CoursePage from "./pages/admin/courses/CoursePage";
 import StudentDashboard from "./pages/student/StudentDashboard";
-import StreamPanel from "./pages/admin/courses/StreamPanel";
+import StreamPage from "./pages/admin/courses/StreamPage";
 
 function App() {
   return (
@@ -39,13 +39,13 @@ function App() {
           <Route path="students/add" element={<AddStudent />} />
 
           {/* course category */}
-          <Route path="course-category" element={<CourseCategoryPanel />} />
-          <Route path="faculty" element={<FacultyPanel />} />
-          <Route path="course" element={<CoursePanel />} />
-          <Route path="stream" element={<StreamPanel />} />
+          <Route path="course-category" element={<CourseCategoryPage />} />
+          <Route path="faculty" element={<FacultyPage />} />
+          <Route path="course" element={<CoursePage />} />
+          <Route path="stream" element={<StreamPage />} />
 
           {/* settings */}
-          <Route path="site-settings" element={<SiteSettings />} />
+          <Route path="site-settings" element={<SiteSettingsPage />} />
         </Route>
       </Routes>
     </BrowserRouter>

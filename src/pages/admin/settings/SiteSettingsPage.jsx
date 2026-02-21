@@ -3,7 +3,7 @@ import { useState } from "react";
 import SettingsForm from "../../../components/admin/settings/SettingsForm";
 import { updateSiteSettings } from "../../../api/settingAPI";
 
-export default function SiteSettingsPanel() {
+export default function SiteSettingsPage() {
   const [loading, setLoading] = useState(false);
 
   const handleSubmit = async (formData) => {

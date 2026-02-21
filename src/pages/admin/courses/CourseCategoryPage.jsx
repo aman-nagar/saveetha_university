@@ -1,6 +1,6 @@
-// src/pages/admin/courses/CourseCategoryPanel.jsx
+// src/pages/admin/courses/CourseCategoryPage.jsx
 
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import {
   fetchCourseCategories,
   createCourseCategory,
@@ -9,14 +9,17 @@ import {
 
 import { useCrud } from "../../../hooks/useCrud";
 
+import { useToast } from "../../../hooks/useToast";
+
 import CourseCategoryForm from "../../../components/admin/courses/CourseCategoryForm";
 import Toast from "../../../components/ui/Toast";
 import Modal from "../../../components/ui/Modal";
 import Table from "../../../components/table/Table";
+import { useConfirm } from "../../../hooks/useConfirm";
 
-export default function CourseCategoryPanel() {
-  const [toast, setToast] = useState(null);
-  const [deleteTarget, setDeleteTarget] = useState(null);
+export default function CourseCategoryPage() {
+  const { toast, show, clear } = useToast();
+  const { target, isOpen, open, close } = useConfirm();
 
   const {
     data: categories,
@@ -38,37 +41,28 @@ export default function CourseCategoryPanel() {
 
     try {
       await createCourseCategory(name);
-      setToast({ type: "success", message: `Category "${name}" created` });
+      show("success", `Category "${name}" created`);
       load();
     } catch (err) {
-      setToast({
-        type: "error",
-        message: err.message || "Failed to create category",
-      });
+      show("error", err.message);
     }
   };
 
   const confirmDelete = async () => {
-    if (!deleteTarget) return;
+    if (!target) return;
 
     try {
-      await remove(deleteTarget.id);
-      setToast({
-        type: "success",
-        message: `Category "${deleteTarget.name}" deleted`,
-      });
+      await remove(target.id);
+      show("success", `Category "${target.name}" deleted`);
     } catch (err) {
-      setToast({
-        type: "error",
-        message: err.message || "Failed to delete category",
-      });
+      show("error", err.message);
     } finally {
-      setDeleteTarget(null);
+      close();
     }
   };
 
   const columns = [
-    { key: "serial", label: "#", render: (_, index) => index + 1 },
+    { key: "serial", label: "#", render: (_, i) => i + 1 },
     { key: "name", label: "Category Name" },
   ];
 
@@ -76,14 +70,14 @@ export default function CourseCategoryPanel() {
     {
       icon: "🗑",
       className:
-        "px-3 py-1 rounded bg-red-600 text-white hover:bg-red-700 text-sm font-medium",
-      onClick: (row) => setDeleteTarget(row),
+        "px-3 py-1 rounded bg-red-600 text-white hover:bg-red-700 text-sm",
+      onClick: open,
     },
   ];
 
   return (
-    <div className="w-full space-y-8 p-6">
-      {toast && <Toast {...toast} onClose={() => setToast(null)} />}
+    <div className="space-y-8 p-6">
+      {toast && <Toast {...toast} onClose={clear} />}
 
       <CourseCategoryForm onSubmit={handleCreate} loading={loading} />
 
@@ -96,15 +90,12 @@ export default function CourseCategoryPanel() {
       />
 
       <Modal
-        isOpen={!!deleteTarget}
+        isOpen={isOpen}
         title="Confirm Delete"
-        onClose={() => setDeleteTarget(null)}
+        onClose={close}
         footer={
           <>
-            <button
-              onClick={() => setDeleteTarget(null)}
-              className="px-4 py-2 border rounded"
-            >
+            <button onClick={close} className="px-4 py-2 border rounded">
               Cancel
             </button>
             <button
@@ -116,9 +107,9 @@ export default function CourseCategoryPanel() {
           </>
         }
       >
-        {deleteTarget && (
+        {target && (
           <p>
-            Delete "<strong>{deleteTarget.name}</strong>"?
+            Delete "<strong>{target.name}</strong>"?
           </p>
         )}
       </Modal>

@@ -1,4 +1,4 @@
-// src/pages/admin/courses/StreamPanel.jsx
+// src/pages/admin/courses/StreamPage.jsx
 
 import { useEffect, useState } from "react";
 import { fetchAllCourses } from "../../../api/courseApi";
@@ -9,17 +9,20 @@ import {
 } from "../../../api/streamApi";
 
 import { useCrud } from "../../../hooks/useCrud";
+import { useConfirm } from "../../../hooks/useConfirm";
+import { useToast } from "../../../hooks/useToast";
 
 import StreamForm from "../../../components/admin/courses/StreamForm";
-import Table from "../../../components/table/Table";
 import Toast from "../../../components/ui/Toast";
 import Modal from "../../../components/ui/Modal";
+import Table from "../../../components/table/Table";
 
-export default function StreamPanel() {
+export default function StreamPage() {
+  const { toast, show, clear } = useToast();
+  const { target, isOpen, open, close } = useConfirm();
+
   const [courseList, setCourseList] = useState([]);
   const [selectedCourse, setSelectedCourse] = useState("");
-  const [toast, setToast] = useState(null);
-  const [deleteTarget, setDeleteTarget] = useState(null);
 
   const {
     data: streams,
@@ -40,12 +43,13 @@ export default function StreamPanel() {
       const data = await fetchAllCourses();
       setCourseList(data);
     } catch (err) {
-      setToast({ type: "error", message: err.message });
+      show("error", err.message);
     }
   };
 
   const handleCourseChange = (value) => {
     setSelectedCourse(value);
+
     if (value) {
       load(value);
     }
@@ -54,32 +58,28 @@ export default function StreamPanel() {
   const handleCreate = async (streamData) => {
     try {
       await createStream(streamData.courseId, streamData.name);
-      setToast({ type: "success", message: "Stream created" });
+      show("success", "Stream created");
       load(streamData.courseId);
     } catch (err) {
-      setToast({ type: "error", message: err.message });
+      show("error", err.message);
     }
   };
 
   const confirmDelete = async () => {
-    if (!deleteTarget) return;
+    if (!target) return;
 
     try {
-      await remove(deleteTarget.id);
-      setToast({ type: "success", message: "Stream deleted" });
+      await remove(target.id);
+      show("success", "Stream deleted");
     } catch (err) {
-      setToast({ type: "error", message: err.message });
+      show("error", err.message);
     } finally {
-      setDeleteTarget(null);
+      close();
     }
   };
 
   const columns = [
-    {
-      key: "serial",
-      label: "#",
-      render: (_, index) => index + 1,
-    },
+    { key: "serial", label: "#", render: (_, i) => i + 1 },
     { key: "name", label: "Stream Name" },
   ];
 
@@ -88,19 +88,13 @@ export default function StreamPanel() {
       icon: "🗑",
       className:
         "px-3 py-1 rounded bg-red-600 text-white hover:bg-red-700 text-sm",
-      onClick: (row) => setDeleteTarget(row),
+      onClick: open,
     },
   ];
 
   return (
     <div className="space-y-8 p-6">
-      {toast && (
-        <Toast
-          type={toast.type}
-          message={toast.message}
-          onClose={() => setToast(null)}
-        />
-      )}
+      {toast && <Toast {...toast} onClose={clear} />}
 
       <StreamForm
         courseList={courseList}
@@ -119,15 +113,12 @@ export default function StreamPanel() {
       />
 
       <Modal
-        isOpen={!!deleteTarget}
+        isOpen={isOpen}
         title="Confirm Delete"
-        onClose={() => setDeleteTarget(null)}
+        onClose={close}
         footer={
           <>
-            <button
-              onClick={() => setDeleteTarget(null)}
-              className="px-4 py-2 border rounded"
-            >
+            <button onClick={close} className="px-4 py-2 border rounded">
               Cancel
             </button>
             <button
@@ -139,9 +130,9 @@ export default function StreamPanel() {
           </>
         }
       >
-        {deleteTarget && (
+        {target && (
           <p>
-            Delete "<strong>{deleteTarget.name}</strong>"?
+            Delete "<strong>{target.name}</strong>"?
           </p>
         )}
       </Modal>

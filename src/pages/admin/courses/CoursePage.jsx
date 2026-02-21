@@ -1,4 +1,4 @@
-// src/pages/admin/courses/CoursePanel.jsx
+// src/pages/admin/courses/CoursePage.jsx
 
 import { useEffect, useState } from "react";
 import { fetchAllFaculty } from "../../../api/facultyApi";
@@ -9,17 +9,20 @@ import {
 } from "../../../api/courseApi";
 
 import { useCrud } from "../../../hooks/useCrud";
+import { useConfirm } from "../../../hooks/useConfirm";
+import { useToast } from "../../../hooks/useToast";
 
 import CourseForm from "../../../components/admin/courses/CourseForm";
-import Table from "../../../components/table/Table";
 import Toast from "../../../components/ui/Toast";
 import Modal from "../../../components/ui/Modal";
+import Table from "../../../components/table/Table";
 
-export default function CoursePanel() {
+export default function CoursePage() {
+  const { toast, show, clear } = useToast();
+  const { target, isOpen, open, close } = useConfirm();
+
   const [facultyList, setFacultyList] = useState([]);
   const [selectedFaculty, setSelectedFaculty] = useState("");
-  const [toast, setToast] = useState(null);
-  const [deleteTarget, setDeleteTarget] = useState(null);
 
   const {
     data: courses,
@@ -40,7 +43,7 @@ export default function CoursePanel() {
       const data = await fetchAllFaculty();
       setFacultyList(data);
     } catch (err) {
-      setToast({ type: "error", message: err.message });
+      show("error", err.message);
     }
   };
 
@@ -52,28 +55,28 @@ export default function CoursePanel() {
   const handleCreate = async (courseData) => {
     try {
       await createCourse(courseData);
-      setToast({ type: "success", message: "Course created" });
+      show("success", "Course created");
       load(courseData.facultyId);
     } catch (err) {
-      setToast({ type: "error", message: err.message });
+      show("error", err.message);
     }
   };
 
   const confirmDelete = async () => {
-    if (!deleteTarget) return;
+    if (!target) return;
 
     try {
-      await remove(deleteTarget.id);
-      setToast({ type: "success", message: "Course deleted" });
+      await remove(target.id);
+      show("success", "Course deleted");
     } catch (err) {
-      setToast({ type: "error", message: err.message });
+      show("error", err.message);
     } finally {
-      setDeleteTarget(null);
+      close();
     }
   };
 
   const columns = [
-    { key: "serial", label: "#", render: (_, index) => index + 1 },
+    { key: "serial", label: "#", render: (_, i) => i + 1 },
     { key: "name", label: "Course Name" },
   ];
 
@@ -82,13 +85,13 @@ export default function CoursePanel() {
       icon: "🗑",
       className:
         "px-3 py-1 rounded bg-red-600 text-white hover:bg-red-700 text-sm",
-      onClick: (row) => setDeleteTarget(row),
+      onClick: open,
     },
   ];
 
   return (
     <div className="space-y-8 p-6">
-      {toast && <Toast {...toast} onClose={() => setToast(null)} />}
+      {toast && <Toast {...toast} onClose={clear} />}
 
       <CourseForm
         facultyList={facultyList}
@@ -107,15 +110,12 @@ export default function CoursePanel() {
       />
 
       <Modal
-        isOpen={!!deleteTarget}
+        isOpen={isOpen}
         title="Confirm Delete"
-        onClose={() => setDeleteTarget(null)}
+        onClose={close}
         footer={
           <>
-            <button
-              onClick={() => setDeleteTarget(null)}
-              className="px-4 py-2 border rounded"
-            >
+            <button onClick={close} className="px-4 py-2 border rounded">
               Cancel
             </button>
             <button
@@ -127,9 +127,9 @@ export default function CoursePanel() {
           </>
         }
       >
-        {deleteTarget && (
+        {target && (
           <p>
-            Delete "<strong>{deleteTarget.name}</strong>"?
+            Delete "<strong>{target.name}</strong>"?
           </p>
         )}
       </Modal>

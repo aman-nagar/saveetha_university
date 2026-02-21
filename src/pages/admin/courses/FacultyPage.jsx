@@ -1,4 +1,4 @@
-// src/pages/admin/courses/FacultyPanel.jsx
+// src/pages/admin/courses/FacultyPage.jsx
 
 import { useEffect, useState } from "react";
 import { fetchCourseCategories } from "../../../api/courseTypeApi";
@@ -9,17 +9,20 @@ import {
 } from "../../../api/facultyApi";
 
 import { useCrud } from "../../../hooks/useCrud";
+import { useConfirm } from "../../../hooks/useConfirm";
+import { useToast } from "../../../hooks/useToast";
 
 import FacultyForm from "../../../components/admin/courses/FacultyForm";
 import Toast from "../../../components/ui/Toast";
 import Modal from "../../../components/ui/Modal";
 import Table from "../../../components/table/Table";
 
-export default function FacultyPanel() {
+export default function FacultyPage() {
+  const { toast, show, clear } = useToast();
+  const { target, isOpen, open, close } = useConfirm();
+
   const [courseTypes, setCourseTypes] = useState([]);
   const [selectedCourseType, setSelectedCourseType] = useState("");
-  const [toast, setToast] = useState(null);
-  const [deleteTarget, setDeleteTarget] = useState(null);
 
   const {
     data: facultyList,
@@ -40,7 +43,7 @@ export default function FacultyPanel() {
       const data = await fetchCourseCategories();
       setCourseTypes(data);
     } catch (err) {
-      setToast({ type: "error", message: err.message });
+      show("error", err.message);
     }
   };
 
@@ -51,40 +54,34 @@ export default function FacultyPanel() {
 
   const handleCreateFaculty = async (name) => {
     if (!selectedCourseType) {
-      setToast({
-        type: "warning",
-        message: "Please select a course type first",
-      });
+      show("warning", "Please select a course type first");
       return;
     }
 
     try {
       await createFaculty(selectedCourseType, name);
-      setToast({ type: "success", message: "Faculty created" });
+      show("success", "Faculty created");
       load(selectedCourseType);
     } catch (err) {
-      setToast({ type: "error", message: err.message });
+      show("error", err.message);
     }
   };
 
   const confirmDelete = async () => {
-    if (!deleteTarget) return;
+    if (!target) return;
 
     try {
-      await remove(deleteTarget.id);
-      setToast({
-        type: "success",
-        message: "Faculty deleted successfully",
-      });
+      await remove(target.id);
+      show("success", "Faculty deleted");
     } catch (err) {
-      setToast({ type: "error", message: err.message });
+      show("error", err.message);
     } finally {
-      setDeleteTarget(null);
+      close();
     }
   };
 
   const columns = [
-    { key: "serial", label: "#", render: (_, index) => index + 1 },
+    { key: "serial", label: "#", render: (_, i) => i + 1 },
     { key: "name", label: "Faculty Name" },
   ];
 
@@ -93,13 +90,13 @@ export default function FacultyPanel() {
       icon: "🗑",
       className:
         "px-3 py-1 rounded bg-red-600 text-white hover:bg-red-700 text-sm",
-      onClick: (row) => setDeleteTarget(row),
+      onClick: open,
     },
   ];
 
   return (
     <div className="space-y-8 p-6">
-      {toast && <Toast {...toast} onClose={() => setToast(null)} />}
+      {toast && <Toast {...toast} onClose={clear} />}
 
       <FacultyForm
         courseTypes={courseTypes}
@@ -118,15 +115,12 @@ export default function FacultyPanel() {
       />
 
       <Modal
-        isOpen={!!deleteTarget}
+        isOpen={isOpen}
         title="Confirm Delete"
-        onClose={() => setDeleteTarget(null)}
+        onClose={close}
         footer={
           <>
-            <button
-              onClick={() => setDeleteTarget(null)}
-              className="px-4 py-2 border rounded"
-            >
+            <button onClick={close} className="px-4 py-2 border rounded">
               Cancel
             </button>
             <button
@@ -138,9 +132,9 @@ export default function FacultyPanel() {
           </>
         }
       >
-        {deleteTarget && (
+        {target && (
           <p>
-            Delete "<strong>{deleteTarget.name}</strong>"?
+            Delete "<strong>{target.name}</strong>"?
           </p>
         )}
       </Modal>

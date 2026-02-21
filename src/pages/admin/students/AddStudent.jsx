@@ -14,6 +14,7 @@ export default function AddStudent() {
     handleSubmit,
     reset,
     trigger,
+    watch,
     formState: { errors },
   } = useForm();
   const [step, setStep] = useState(1);
@@ -87,7 +88,9 @@ export default function AddStudent() {
       <AdmissionStepper step={step} />
 
       <form>
-        {step === 1 && <StepPersonal register={register} errors={errors} />}
+        {step === 1 && (
+          <StepPersonal register={register} errors={errors} watch={watch} />
+        )}
         {step === 2 && (
           <StepCommunication register={register} errors={errors} />
         )}

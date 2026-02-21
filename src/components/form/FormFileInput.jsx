@@ -53,9 +53,7 @@ export default function FormFileInput({
         />
       </div>
 
-      {error && (
-        <p className="text-xs text-red-500">{error.message}</p>
-      )}
+      {error && <p className="text-xs text-red-500">{error.message}</p>}
     </div>
   );
 }

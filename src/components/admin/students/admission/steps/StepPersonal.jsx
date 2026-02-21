@@ -14,7 +14,7 @@ export default function StepPersonal({ register, errors, watch }) {
         label="Candidate Name"
         name="candidate_name"
         register={register}
-        required="Candidate name is required"
+        // required="Candidate name is required"
         error={errors.candidate_name}
       />
 
@@ -27,7 +27,7 @@ export default function StepPersonal({ register, errors, watch }) {
         name="dob"
         type="date"
         register={register}
-        required="Date of birth is required"
+        // required="Date of birth is required"
         error={errors.dob}
       />
 
@@ -37,7 +37,7 @@ export default function StepPersonal({ register, errors, watch }) {
         label="Gender"
         name="gender"
         register={register}
-        required="Gender is required"
+        // required="Gender is required"
         options={[
           { label: "Male", value: "Male" },
           { label: "Female", value: "Female" },

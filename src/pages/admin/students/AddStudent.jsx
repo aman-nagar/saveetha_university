@@ -92,7 +92,11 @@ export default function AddStudent() {
           <StepPersonal register={register} errors={errors} watch={watch} />
         )}
         {step === 2 && (
-          <StepCommunication register={register} errors={errors} />
+          <StepCommunication
+            register={register}
+            errors={errors}
+            watch={watch}
+          />
         )}
         {step === 3 && (
           <StepQualification register={register} errors={errors} />

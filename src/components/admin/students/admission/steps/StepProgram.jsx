@@ -16,12 +16,14 @@ export default function StepProgram({ register, errors }) {
           { label: "Postgraduate", value: "pg" },
           { label: "Diploma", value: "diploma" },
         ]}
+        error={errors.course_type}
       />
 
       <FormSelect
         label="Faculty"
         name="faculty"
         register={register}
+        error={errors.faculty}
         options={[
           { label: "Select department", value: "" },
           { label: "Science", value: "science" },
@@ -34,6 +36,7 @@ export default function StepProgram({ register, errors }) {
         label="Course"
         name="course"
         register={register}
+        error={errors.course}
         options={[
           { label: "Select course", value: "" },
           { label: "BCA", value: "bca" },
@@ -46,6 +49,7 @@ export default function StepProgram({ register, errors }) {
         label="Stream"
         name="stream"
         register={register}
+        error={errors.stream}
         options={[
           { label: "Select stream", value: "" },
           { label: "General", value: "general" },
@@ -53,41 +57,27 @@ export default function StepProgram({ register, errors }) {
         ]}
       />
 
-      <FormSelect
+      <FormInput
         label="Year"
         name="year"
         register={register}
-        options={[
-          { label: "2025", value: "2025" },
-          { label: "2026", value: "2026" },
-          { label: "2027", value: "2027" },
-        ]}
+        error={errors.year}
       />
 
-      <FormSelect
+      <FormInput
         label="Month Session"
         name="month_session"
         register={register}
-        options={[
-          { label: "January", value: "january" },
-          { label: "July", value: "july" },
-        ]}
+        error={errors.month_session}
       />
 
-      <FormSelect
-        label="Session"
-        name="session"
-        register={register}
-        options={[
-          { label: "2025–26", value: "2025" },
-          { label: "2026–27", value: "2026" },
-        ]}
-      />
+      <FormInput label="Session" name="session" register={register} />
 
       <FormSelect
         label="Mode of Study"
         name="mode_of_study"
         register={register}
+        error={errors.mode_of_study}
         options={[
           { label: "Regular", value: "Regular" },
           { label: "Distance", value: "Distance" },
@@ -98,6 +88,7 @@ export default function StepProgram({ register, errors }) {
         label="Hostel Facility"
         name="hostel_facility"
         register={register}
+        error={errors.hostel_facility}
         options={[
           { label: "Yes", value: 1 },
           { label: "No", value: 0 },
@@ -109,6 +100,7 @@ export default function StepProgram({ register, errors }) {
         name="application_fee"
         register={register}
         type="number"
+        error={errors.application_fee}
       />
 
       <FormInput
@@ -117,6 +109,7 @@ export default function StepProgram({ register, errors }) {
         register={register}
         type="text"
         placeholder="e.g. 3 Years"
+        error={errors.duration}
       />
     </FormSection>
   );

@@ -1,4 +1,6 @@
-import { useState } from "react";
+// src/pages/admin/students/AddStudent.jsx
+
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import StepPersonal from "../../../components/admin/students/admission/steps/StepPersonal";
 import StepCommunication from "../../../components/admin/students/admission/steps/StepCommunication";
@@ -7,19 +9,117 @@ import StepProgram from "../../../components/admin/students/admission/steps/Step
 import AdmissionStepper from "../../../components/admin/students/admission/AdmissionStepper";
 import { createStudent } from "../../../api/students/studentApi";
 import { useToast } from "../../../hooks/useToast";
+import { fetchCourseCategories } from "../../../api/courses/courseTypeApi";
+import { fetchFaculty } from "../../../api/courses/facultyApi";
+import { fetchCourses } from "../../../api/courses/courseApi";
+import { fetchStreams } from "../../../api/courses/streamApi";
 
 export default function AddStudent() {
+  const [courseTypes, setCourseTypes] = useState([]);
+  const [faculties, setFaculties] = useState([]);
+  const [courses, setCourses] = useState([]);
+  const [streams, setStreams] = useState([]);
+
   const {
     register,
     handleSubmit,
     reset,
     trigger,
     watch,
+    setValue,
     formState: { errors },
   } = useForm();
+
   const [step, setStep] = useState(1);
   const [loading, setLoading] = useState(false);
   const { show } = useToast();
+
+  const selectedCourseType = watch("course_type");
+  const selectedFaculty = watch("faculty");
+  const selectedCourse = watch("course");
+
+  // ✅ Load Course Types ONCE
+  useEffect(() => {
+    const loadCourseTypes = async () => {
+      try {
+        const data = await fetchCourseCategories();
+        setCourseTypes(data);
+      } catch (err) {
+        show("error", err.message);
+      }
+    };
+
+    loadCourseTypes();
+  }, []);
+
+  // ✅ Course Type → Faculty
+  useEffect(() => {
+    if (!selectedCourseType) {
+      setFaculties([]);
+      setCourses([]);
+      setStreams([]);
+      return;
+    }
+
+    const loadFaculty = async () => {
+      try {
+        const data = await fetchFaculty(selectedCourseType);
+        setFaculties(data);
+        setCourses([]);
+        setStreams([]);
+        setValue("faculty", "");
+        setValue("course", "");
+        setValue("stream", "");
+      } catch (err) {
+        show("error", err.message);
+      }
+    };
+
+    loadFaculty();
+  }, [selectedCourseType]);
+
+  // ✅ Faculty → Course
+  useEffect(() => {
+    if (!selectedFaculty) {
+      setCourses([]);
+      setStreams([]);
+      return;
+    }
+
+    const loadCourses = async () => {
+      try {
+        const data = await fetchCourses(selectedFaculty);
+        setCourses(data);
+        setStreams([]);
+        setValue("course", "");
+        setValue("stream", "");
+      } catch (err) {
+        show("error", err.message);
+      }
+    };
+
+    loadCourses();
+  }, [selectedFaculty]);
+
+  // ✅ Course → Stream
+  useEffect(() => {
+    if (!selectedCourse) {
+      setStreams([]);
+      return;
+    }
+
+    const loadStreams = async () => {
+      try {
+        const data = await fetchStreams(selectedCourse);
+        setStreams(data);
+        setValue("stream", "");
+      } catch (err) {
+        show("error", err.message);
+      }
+    };
+
+    loadStreams();
+  }, [selectedCourse]);
 
   const stepFields = {
     1: ["candidate_name", "dob", "gender"],
@@ -27,31 +127,19 @@ export default function AddStudent() {
     3: [],
     4: [],
   };
+
   const next = async () => {
     const fields = stepFields[step] || [];
-
     const valid = await trigger(fields);
 
     if (!valid) {
       show("error", "Please fill all required fields");
-
-      // Find first invalid field manually
-      const firstInvalidField = fields.find((field) => errors[field]);
-
-      if (firstInvalidField) {
-        const element = document.querySelector(`[name="${firstInvalidField}"]`);
-        element?.focus();
-        element?.scrollIntoView({
-          behavior: "smooth",
-          block: "center",
-        });
-      }
-
       return;
     }
 
     setStep((s) => Math.min(s + 1, 4));
   };
+
   const prev = () => setStep((s) => Math.max(s - 1, 1));
 
   const onSubmit = async (data) => {
@@ -101,7 +189,16 @@ export default function AddStudent() {
         {step === 3 && (
           <StepQualification register={register} errors={errors} />
         )}
-        {step === 4 && <StepProgram register={register} errors={errors} />}
+        {step === 4 && (
+          <StepProgram
+            register={register}
+            errors={errors}
+            courseTypes={courseTypes}
+            faculties={faculties}
+            courses={courses}
+            streams={streams}
+          />
+        )}
 
         <div className="flex justify-between">
           {step > 1 && (
@@ -109,7 +206,7 @@ export default function AddStudent() {
               type="button"
               onClick={prev}
               disabled={loading}
-              className="px-4 py-2 mt-5 border border-border rounded-md text-text disabled:opacity-50"
+              className="px-4 py-2 mt-5 border border-border rounded-md disabled:opacity-50"
             >
               Back
             </button>

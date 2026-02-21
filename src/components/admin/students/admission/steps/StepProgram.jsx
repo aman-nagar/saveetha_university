@@ -2,21 +2,44 @@
 import FormSection from "../../../../form/FormSection";
 import FormSelect from "../../../../form/FormSelect";
 import FormInput from "../../../../form/FormInput";
+import { useMemo } from "react";
 
-export default function StepProgram({ register, errors }) {
+export default function StepProgram({
+  register,
+  errors,
+  courseTypes = [],
+  faculties = [],
+  courses = [],
+  streams = [],
+}) {
+  const courseTypeOptions = useMemo(
+    () => courseTypes.map((ct) => ({ label: ct.name, value: ct.id })),
+    [courseTypes],
+  );
+
+  const facultyOptions = useMemo(
+    () => faculties.map((f) => ({ label: f.name, value: f.id })),
+    [faculties],
+  );
+
+  const courseOptions = useMemo(
+    () => courses.map((c) => ({ label: c.name, value: c.id })),
+    [courses],
+  );
+
+  const streamOptions = useMemo(
+    () => streams.map((s) => ({ label: s.name, value: s.id })),
+    [streams],
+  );
+
   return (
     <FormSection title="Programme Details">
       <FormSelect
         label="Course Type"
         name="course_type"
         register={register}
-        options={[
-          { label: "Select course type", value: "" },
-          { label: "Undergraduate", value: "ug" },
-          { label: "Postgraduate", value: "pg" },
-          { label: "Diploma", value: "diploma" },
-        ]}
         error={errors.course_type}
+        options={courseTypeOptions}
       />
 
       <FormSelect
@@ -24,12 +47,7 @@ export default function StepProgram({ register, errors }) {
         name="faculty"
         register={register}
         error={errors.faculty}
-        options={[
-          { label: "Select department", value: "" },
-          { label: "Science", value: "science" },
-          { label: "Management", value: "management" },
-          { label: "Engineering", value: "engineering" },
-        ]}
+        options={facultyOptions}
       />
 
       <FormSelect
@@ -37,12 +55,7 @@ export default function StepProgram({ register, errors }) {
         name="course"
         register={register}
         error={errors.course}
-        options={[
-          { label: "Select course", value: "" },
-          { label: "BCA", value: "bca" },
-          { label: "BBA", value: "bba" },
-          { label: "MBA", value: "mba" },
-        ]}
+        options={courseOptions}
       />
 
       <FormSelect
@@ -50,11 +63,7 @@ export default function StepProgram({ register, errors }) {
         name="stream"
         register={register}
         error={errors.stream}
-        options={[
-          { label: "Select stream", value: "" },
-          { label: "General", value: "general" },
-          { label: "Honours", value: "honours" },
-        ]}
+        options={streamOptions}
       />
 
       <FormInput
@@ -71,7 +80,12 @@ export default function StepProgram({ register, errors }) {
         error={errors.month_session}
       />
 
-      <FormInput label="Session" name="session" register={register} />
+      <FormInput
+        label="Session"
+        name="session"
+        register={register}
+        error={errors.session}
+      />
 
       <FormSelect
         label="Mode of Study"

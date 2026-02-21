@@ -321,6 +321,8 @@ News cards:
 - Theme via CSS variables
 - Sidebar state persisted in localStorage
 - Minimal, working, fast-delivery architecture
+  Hierarchy:
+  Course Type → Faculty → Course → Stream
 
 ---
 

@@ -2,7 +2,7 @@
 import FormSection from "../../../../form/FormSection";
 import FormFileInput from "../../../../form/FormFileInput";
 
-export default function StepQualification({ register }) {
+export default function StepQualification({ register, errors }) {
   const rows = [
     { label: "Secondary", key: "secondary" },
     { label: "Sr. Secondary", key: "sr_secondary" },

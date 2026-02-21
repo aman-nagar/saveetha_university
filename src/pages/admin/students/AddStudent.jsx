@@ -1,10 +1,11 @@
 import { useState } from "react";
 import { useForm } from "react-hook-form";
-import AdmissionStepper from "../../../components/admin/admission/AdmissionStepper";
-import StepPersonal from "../../../components/admin/admission/steps/StepPersonal";
-import StepCommunication from "../../../components/admin/admission/steps/StepCommunication";
-import StepQualification from "../../../components/admin/admission/steps/StepQualification";
-import StepProgram from "../../../components/admin/admission/steps/StepProgram";
+// import AdmissionStepper from "../../../components//students/admission/AdmissionStepper";
+import StepPersonal from "../../../components/admin/students/admission/steps/StepPersonal";
+import StepCommunication from "../../../components/admin/students/admission/steps/StepCommunication";
+import StepQualification from "../../../components/admin/students/admission/steps/StepQualification";
+import StepProgram from "../../../components/admin/students/admission/steps/StepProgram";
+import AdmissionStepper from "../../../components/admin/students/admission/AdmissionStepper";
 
 export default function AddStudent() {
   const { register, handleSubmit } = useForm();

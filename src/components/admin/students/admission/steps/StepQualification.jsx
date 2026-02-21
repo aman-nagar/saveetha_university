@@ -1,5 +1,5 @@
-import FormSection from "../../../form/FormSection";
-import FormFileInput from "../../../form/FormFileInput";
+import FormSection from "../../../../form/FormSection";
+import FormFileInput from "../../../../form/FormFileInput";
 
 export default function StepQualification({ register }) {
   const rows = [

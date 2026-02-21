@@ -1,6 +1,6 @@
-import FormInput from "../../../form/FormInput";
-import FormTextarea from "../../../form/FormTextarea";
-import FormSection from "../../../form/FormSection";
+import FormInput from "../../../../form/FormInput";
+import FormTextarea from "../../../../form/FormTextarea";
+import FormSection from "../../../../form/FormSection";
 
 export default function StepCommunication({ register }) {
   return (

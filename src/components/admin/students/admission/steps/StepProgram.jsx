@@ -1,6 +1,6 @@
-import FormSection from "../../../form/FormSection";
-import FormSelect from "../../../form/FormSelect";
-import FormInput from "../../../form/FormInput";
+import FormSection from "../../../../form/FormSection";
+import FormSelect from "../../../../form/FormSelect";
+import FormInput from "../../../../form/FormInput";
 
 export default function StepProgram({ register }) {
   return (

@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { useForm } from "react-hook-form";
-// import AdmissionStepper from "../../../components//students/admission/AdmissionStepper";
 import StepPersonal from "../../../components/admin/students/admission/steps/StepPersonal";
 import StepCommunication from "../../../components/admin/students/admission/steps/StepCommunication";
 import StepQualification from "../../../components/admin/students/admission/steps/StepQualification";
@@ -10,17 +9,18 @@ import { createStudent } from "../../../api/students/studentApi";
 import { useToast } from "../../../hooks/useToast";
 
 export default function AddStudent() {
-  const { register, handleSubmit } = useForm();
+  const { register, handleSubmit, reset } = useForm();
   const [step, setStep] = useState(1);
+  const [loading, setLoading] = useState(false);
   const { show } = useToast();
 
   const next = () => setStep((s) => Math.min(s + 1, 4));
   const prev = () => setStep((s) => Math.max(s - 1, 1));
 
   const onSubmit = async (data) => {
-    if (step !== 4) return; // prevent early submission
-
     try {
+      setLoading(true);
+
       const payload = {
         candidate_name: data.candidate_name,
         email: data.email,
@@ -32,9 +32,13 @@ export default function AddStudent() {
 
       show("success", `Student Created: ${response.enrollment_no}`);
 
-      console.log("Created:", response);
+      // Reset everything
+      reset();
+      setStep(1);
     } catch (err) {
       show("error", err.message);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -42,7 +46,7 @@ export default function AddStudent() {
     <div className="w-full max-w-7xl">
       <AdmissionStepper step={step} />
 
-      <form onSubmit={handleSubmit(onSubmit)}>
+      <form>
         {step === 1 && <StepPersonal register={register} />}
         {step === 2 && <StepCommunication register={register} />}
         {step === 3 && <StepQualification register={register} />}
@@ -53,7 +57,8 @@ export default function AddStudent() {
             <button
               type="button"
               onClick={prev}
-              className="px-4 py-2 border border-border rounded-md text-text"
+              disabled={loading}
+              className="px-4 py-2 mt-5 border border-border rounded-md text-text disabled:opacity-50"
             >
               Back
             </button>
@@ -63,17 +68,19 @@ export default function AddStudent() {
             <button
               type="button"
               onClick={next}
-              className="ml-auto bg-primary text-white px-6 py-2 rounded-md"
+              disabled={loading}
+              className="ml-auto bg-primary text-white px-6 py-2 mt-5 rounded-md disabled:opacity-50"
             >
               Next
             </button>
           ) : (
             <button
-              type="button" // ← IMPORTANT CHANGE
-              onClick={handleSubmit(onSubmit)} // manual trigger
-              className="ml-auto bg-accent text-primary px-6 py-2 rounded-md font-semibold"
+              type="button"
+              onClick={handleSubmit(onSubmit)}
+              disabled={loading}
+              className="ml-auto bg-accent text-primary px-6 py-2 mt-5 rounded-md font-semibold disabled:opacity-50"
             >
-              Submit Admission
+              {loading ? "Submitting..." : "Submit Admission"}
             </button>
           )}
         </div>

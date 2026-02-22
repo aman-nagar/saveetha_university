@@ -1,4 +1,4 @@
-// src/components/admin/courses/Table.jsx
+// src/components/table/Table.jsx
 export default function Table({
   title = "List",
   columns = [],
@@ -6,14 +6,19 @@ export default function Table({
   actions = [],
   loading = false,
   emptyMessage = "No data found",
+  toolbar = null, // optional slot: rendered in the table header bar
 }) {
   const colSpan = columns.length + (actions.length > 0 ? 1 : 0);
 
   return (
     <div className="bg-surface border border-border rounded-xl overflow-hidden shadow-sm">
-      {title && (
-        <div className="px-6 py-4 border-b border-border">
-          <h2 className="text-lg font-semibold text-text">{title}</h2>
+      {/* ── Header bar ── */}
+      {(title || toolbar) && (
+        <div className="px-6 py-4 border-b border-border flex items-center justify-between gap-4 flex-wrap">
+          {title && (
+            <h2 className="text-lg font-semibold text-text shrink-0">{title}</h2>
+          )}
+          {toolbar && <div className="flex items-center gap-3 flex-wrap flex-1 justify-end">{toolbar}</div>}
         </div>
       )}
 
@@ -41,7 +46,10 @@ export default function Table({
             {loading ? (
               <tr>
                 <td colSpan={colSpan} className="text-center py-10 text-muted">
-                  Loading...
+                  <div className="flex flex-col items-center gap-2">
+                    <div className="w-6 h-6 border-2 border-primary border-t-transparent rounded-full animate-spin" />
+                    <span>Loading...</span>
+                  </div>
                 </td>
               </tr>
             ) : data.length === 0 ? (

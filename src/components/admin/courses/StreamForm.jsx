@@ -1,12 +1,12 @@
-// src/components/admin/courses/FacultyForm.jsx
+// src/components/admin/courses/StreamForm.jsx
 import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import FormSection from "../../form/FormSection";
 import FormInput from "../../form/FormInput";
 
-export default function FacultyForm({
-  courseTypes = [],
-  selectedCourseType,
+export default function StreamForm({
+  courseList = [],
+  selectedCourse,
   onCourseChange,
   onSubmit,
   initialData = null,
@@ -18,34 +18,38 @@ export default function FacultyForm({
   useEffect(() => {
     if (initialData) {
       reset({
-        faculty: initialData.name,
+        stream: initialData.name,
       });
-      onCourseChange(initialData.course_type_id);
+      onCourseChange(initialData.course_id);
     } else {
-      reset({ faculty: "" });
+      reset({ stream: "" });
     }
   }, [initialData, reset, onCourseChange]);
 
   const submitForm = async (data) => {
-    await onSubmit(data.faculty);
+    await onSubmit({
+      courseId: selectedCourse,
+      name: data.stream,
+    });
+
     if (mode === "create") reset();
   };
 
   return (
     <form onSubmit={handleSubmit(submitForm)} className="space-y-6">
-      <FormSection title={mode === "edit" ? "Edit Faculty" : "Add Faculty"}>
+      <FormSection title={mode === "edit" ? "Edit Stream" : "Add Stream"}>
         {/* Wrapped select in space-y-1 with label for alignment consistency */}
         <div className="space-y-1">
           <label className="text-sm font-medium text-text">
-            Select Course Type *
+            Select Course *
           </label>
           <select
-            value={selectedCourseType}
+            value={selectedCourse}
             onChange={(e) => onCourseChange(e.target.value)}
             className="w-full border border-border rounded-md px-3 py-2 bg-surface text-text focus:outline-none focus:ring-2 focus:ring-accent"
           >
-            <option value="">Select Course Type</option>
-            {courseTypes.map((c) => (
+            <option value="">Select Course</option>
+            {courseList.map((c) => (
               <option key={c.id} value={c.id}>
                 {c.name}
               </option>
@@ -54,10 +58,10 @@ export default function FacultyForm({
         </div>
 
         <FormInput
-          label="Faculty Name"
-          name="faculty"
+          label="Stream Name"
+          name="stream"
           register={register}
-          required="Enter faculty name"
+          required="Enter stream name"
         />
       </FormSection>
 
@@ -66,7 +70,7 @@ export default function FacultyForm({
           type="submit"
           className="px-6 py-2.5 rounded-md text-white bg-primary"
         >
-          {mode === "edit" ? "Update Faculty" : "Create Faculty"}
+          {mode === "edit" ? "Update Stream" : "Create Stream"}
         </button>
 
         {mode === "edit" && (

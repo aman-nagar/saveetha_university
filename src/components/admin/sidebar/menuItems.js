@@ -35,7 +35,7 @@ export const menuItems = [
       { label: "Course Category", path: "/admin/course-category" },
       { label: "Faculty", path: "/admin/faculty" },
       { label: "Course", path: "/admin/course" },
-      { label: "Timetable", path: "/admin/timetable" },
+      { label: "stream", path: "/admin/stream" },
     ],
   },
   {

@@ -1,67 +1,23 @@
-import { useState } from "react";
-import { useForm } from "react-hook-form";
-import AdmissionStepper from "../../../components/admin/admission/AdmissionStepper";
-import StepPersonal from "../../../components/admin/admission/steps/StepPersonal";
-import StepCommunication from "../../../components/admin/admission/steps/StepCommunication";
-import StepQualification from "../../../components/admin/admission/steps/StepQualification";
-import StepProgram from "../../../components/admin/admission/steps/StepProgram";
+// src/pages/admin/students/AddStudent.jsx
+import { useNavigate } from "react-router-dom";
+import { createStudent } from "../../../api/students/studentApi";
+import StudentFormStepper from "../../../components/admin/students/admission/StudentFormStepper";
 
 export default function AddStudent() {
-  const { register, handleSubmit } = useForm();
-  const [step, setStep] = useState(1);
+  const navigate = useNavigate();
 
-  const next = () => setStep((s) => Math.min(s + 1, 4));
-  const prev = () => setStep((s) => Math.max(s - 1, 1));
-
-  const onSubmit = (data) => {
-    const formData = new FormData();
-
-    Object.keys(data).forEach((key) => {
-      formData.append(key, data[key]);
-    });
-
-    console.log("Final Admission Data:", data);
+  const handleSubmit = async (formData) => {
+    const res = await createStudent(formData, true);
+    // Navigate after a brief moment so the success toast in the stepper is visible
+    setTimeout(() => navigate("/admin/students"), 1500);
+    return res;
   };
 
   return (
-    <div className="w-full max-w-7xl">
-      <AdmissionStepper step={step} />
-
-      <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-        {step === 1 && <StepPersonal register={register} />}
-        {step === 2 && <StepCommunication register={register} />}
-        {step === 3 && <StepQualification register={register} />}
-        {step === 4 && <StepProgram register={register} />}
-
-        <div className="flex justify-between">
-          {step > 1 && (
-            <button
-              type="button"
-              onClick={prev}
-              className="px-4 py-2 border border-border rounded-md text-text"
-            >
-              Back
-            </button>
-          )}
-
-          {step < 4 ? (
-            <button
-              type="button"
-              onClick={next}
-              className="ml-auto bg-primary text-white px-6 py-2 rounded-md"
-            >
-              Next
-            </button>
-          ) : (
-            <button
-              type="submit"
-              className="ml-auto bg-accent text-primary px-6 py-2 rounded-md font-semibold"
-            >
-              Submit Admission
-            </button>
-          )}
-        </div>
-      </form>
-    </div>
+    <StudentFormStepper
+      mode="create"
+      onSubmit={handleSubmit}
+      submitLabel="Submit Admission"
+    />
   );
 }

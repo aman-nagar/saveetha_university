@@ -1,0 +1,5453 @@
+This file is a merged representation of the entire codebase, combined into a single document by Repomix.
+
+<file_summary>
+This section contains a summary of this file.
+
+<purpose>
+This file contains a packed representation of the entire repository's contents.
+It is designed to be easily consumable by AI systems for analysis, code review,
+or other automated processes.
+</purpose>
+
+<file_format>
+The content is organized as follows:
+1. This summary section
+2. Repository information
+3. Directory structure
+4. Repository files (if enabled)
+5. Multiple file entries, each consisting of:
+  - File path as an attribute
+  - Full contents of the file
+</file_format>
+
+<usage_guidelines>
+- This file should be treated as read-only. Any changes should be made to the
+  original repository files, not this packed version.
+- When processing this file, use the file path to distinguish
+  between different files in the repository.
+- Be aware that this file may contain sensitive information. Handle it with
+  the same level of security as you would the original repository.
+</usage_guidelines>
+
+<notes>
+- Some files may have been excluded based on .gitignore rules and Repomix's configuration
+- Binary files are not included in this packed representation. Please refer to the Repository Structure section for a complete list of file paths, including binary files
+- Files matching patterns in .gitignore are excluded
+- Files matching default ignore patterns are excluded
+- Files are sorted by Git change count (files with more changes are at the bottom)
+</notes>
+
+</file_summary>
+
+<directory_structure>
+public/
+  vite.svg
+src/
+  api/
+    config.js
+    courseApi.js
+    courseCategoryApi.js
+    facultyApi.js
+    handleResponse.js
+    settingAPI.js
+    streamApi.js
+  assets/
+    images/
+      logo.png
+      logo2.png
+      logo3.png
+      student.jpg
+  components/
+    admin/
+      admission/
+        steps/
+          StepCommunication.jsx
+          StepPersonal.jsx
+          StepProgram.jsx
+          StepQualification.jsx
+        AdmissionStepper.jsx
+      courses/
+        CourseCategoryForm.jsx
+        CourseForm.jsx
+        FacultyForm.jsx
+        StreamForm.jsx
+      settings/
+        SettingsForm.jsx
+      sidebar/
+        AdminSidebar.jsx
+        menuItems.js
+        SidebarFooter.jsx
+        SidebarHeader.jsx
+        SidebarMenuItem.jsx
+        SidebarSearch.jsx
+      AdminHeader.jsx
+    form/
+      FormFileInput.jsx
+      FormInput.jsx
+      FormSection.jsx
+      FormSelect.jsx
+      FormTextarea.jsx
+    public/
+      AnnouncementBar.jsx
+      CTA.jsx
+      Hero.jsx
+      HeroSlider.jsx
+      HighlightNews.jsx
+      Programs.jsx
+      PublicFooter.jsx
+      PublicHeader.jsx
+      Stats.jsx
+      WhyUS.jsx
+    table/
+      Table.jsx
+    ui/
+      Button.jsx
+      Modal.jsx
+      Toast.jsx
+      ToastContainer.jsx
+  context/
+    AuthContext.jsx
+  layouts/
+    AdminLayout.jsx
+    PublicLayout.jsx
+  pages/
+    admin/
+      courses/
+        CourseCategoryPanel.jsx
+        CoursePanel.jsx
+        FacultyPanel.jsx
+        StreamPanel.jsx
+      settings/
+        SiteSettingsPanel.jsx
+      students/
+        AddStudent.jsx
+      AdminDashboardPanel.jsx
+    public/
+      About.jsx
+      Contact.jsx
+      Home.jsx
+      News.jsx
+    student/
+      StudentDashboard.jsx
+    Login.jsx
+  services/
+    data.js
+  App.jsx
+  index.css
+  main.jsx
+.gitignore
+index.html
+package.json
+prompt.md
+README.md
+vite.config.js
+</directory_structure>
+
+<files>
+This section contains the contents of the repository's files.
+
+<file path="src/api/streamApi.js">
+// src/api/streamApi.js
+import { BASE_URL } from "./config";
+import { handleResponse } from "./handleResponse";
+
+const STREAM_URL = `${BASE_URL}/course/index.php`;
+
+// Fetch streams by course
+export async function fetchStreams(courseId) {
+  if (!courseId) {
+    throw new Error("Course ID is required");
+  }
+
+  const res = await fetch(`${STREAM_URL}?type=stream&course_id=${courseId}`);
+
+  return handleResponse(res);
+}
+
+// Fetch ALL courses (no faculty filter)
+export async function fetchAllCourses() {
+  const res = await fetch(`${BASE_URL}/course/index.php?type=course`);
+
+  return handleResponse(res);
+}
+
+// Create stream
+export async function createStream(courseId, name) {
+  const trimmed = name?.trim();
+
+  if (!courseId) throw new Error("Course ID is required");
+  if (!trimmed) throw new Error("Stream name is required");
+
+  const res = await fetch(STREAM_URL, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      type: "stream",
+      name: trimmed,
+      course_id: courseId,
+    }),
+  });
+
+  return handleResponse(res);
+}
+
+// Delete stream
+export async function deleteStream(id) {
+  if (!id) throw new Error("Stream ID is required");
+
+  const res = await fetch(STREAM_URL, {
+    method: "DELETE",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      type: "stream",
+      id: String(id),
+    }),
+  });
+
+  return handleResponse(res);
+}
+</file>
+
+<file path="src/components/admin/courses/StreamForm.jsx">
+// src/components/admin/courses/StreamForm.jsx
+import { useForm } from "react-hook-form";
+import FormSection from "../../form/FormSection";
+import FormInput from "../../form/FormInput";
+
+export default function StreamForm({
+  courseList = [],
+  selectedCourse,
+  onCourseChange,
+  onSubmit,
+}) {
+  const {
+    register,
+    handleSubmit,
+    reset,
+    formState: { errors },
+  } = useForm();
+
+  const submitForm = async (data) => {
+    await onSubmit({
+      courseId: selectedCourse,
+      name: data.stream,
+    });
+    reset();
+  };
+
+  return (
+    <form onSubmit={handleSubmit(submitForm)} className="space-y-6">
+      <FormSection title="Add Stream">
+        <select
+          value={selectedCourse}
+          onChange={(e) => onCourseChange(e.target.value)}
+          className="w-full border border-border rounded-md px-3 py-2 bg-surface text-text"
+        >
+          <option value="">Select Course</option>
+          {courseList.map((c) => (
+            <option key={c.id} value={c.id}>
+              {c.name}
+            </option>
+          ))}
+        </select>
+
+        <FormInput
+          label="Stream Name"
+          name="stream"
+          register={register}
+          required="Enter stream name"
+          error={errors.stream?.message}
+        />
+      </FormSection>
+
+      <button
+        type="submit"
+        disabled={!selectedCourse}
+        className={`px-6 py-2.5 rounded-md text-white ${
+          selectedCourse
+            ? "bg-primary"
+            : "bg-gray-400 cursor-not-allowed"
+        }`}
+      >
+        Create Stream
+      </button>
+    </form>
+  );
+}
+</file>
+
+<file path="src/pages/admin/courses/StreamPanel.jsx">
+// src/pages/admin/courses/StreamPanel.jsx
+import { useEffect, useState } from "react";
+import { fetchCourses } from "../../../api/courseApi";
+import {
+  fetchAllCourses,
+  fetchStreams,
+  createStream,
+  deleteStream,
+} from "../../../api/streamApi";
+
+import StreamForm from "../../../components/admin/courses/StreamForm";
+import Table from "../../../components/table/Table";
+import Toast from "../../../components/ui/Toast";
+import Modal from "../../../components/ui/Modal";
+
+export default function StreamPanel() {
+  const [courseList, setCourseList] = useState([]);
+  const [selectedCourse, setSelectedCourse] = useState("");
+  const [streams, setStreams] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [toast, setToast] = useState(null);
+  const [deleteTarget, setDeleteTarget] = useState(null);
+
+  useEffect(() => {
+    loadCourses();
+  }, []);
+
+  const loadCourses = async () => {
+    try {
+      const data = await fetchAllCourses();
+      setCourseList(data);
+    } catch (err) {
+      setToast({ type: "error", message: err.message });
+    }
+  };
+
+  const loadStreams = async (courseId) => {
+    setLoading(true);
+    try {
+      const data = await fetchStreams(courseId);
+      setStreams(data);
+    } catch (err) {
+      setToast({ type: "error", message: err.message });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleCourseChange = (value) => {
+    setSelectedCourse(value);
+    if (value) {
+      loadStreams(value);
+    } else {
+      setStreams([]);
+    }
+  };
+
+  const handleCreate = async (streamData) => {
+    try {
+      await createStream(streamData.courseId, streamData.name);
+      setToast({ type: "success", message: "Stream created" });
+      loadStreams(streamData.courseId);
+    } catch (err) {
+      setToast({ type: "error", message: err.message });
+    }
+  };
+
+  const confirmDelete = async () => {
+    if (!deleteTarget) return;
+
+    const original = [...streams];
+    setStreams((prev) => prev.filter((s) => s.id !== deleteTarget.id));
+
+    try {
+      await deleteStream(deleteTarget.id);
+      setToast({ type: "success", message: "Stream deleted" });
+    } catch (err) {
+      setStreams(original);
+      setToast({ type: "error", message: err.message });
+    } finally {
+      setDeleteTarget(null);
+    }
+  };
+
+  const columns = [
+    {
+      key: "serial",
+      label: "#",
+      render: (_, index) => index + 1,
+    },
+    {
+      key: "name",
+      label: "Stream Name",
+    },
+  ];
+
+  const actions = [
+    {
+      icon: "🗑",
+      className:
+        "px-3 py-1 rounded bg-red-600 text-white hover:bg-red-700 text-sm",
+      onClick: (row) => setDeleteTarget(row),
+    },
+  ];
+
+  return (
+    <div className="space-y-8 p-6">
+      {toast && (
+        <Toast
+          type={toast.type}
+          message={toast.message}
+          onClose={() => setToast(null)}
+        />
+      )}
+
+      <StreamForm
+        courseList={courseList}
+        selectedCourse={selectedCourse}
+        onCourseChange={handleCourseChange}
+        onSubmit={handleCreate}
+      />
+
+      <Table
+        title="Stream List"
+        columns={columns}
+        data={streams}
+        actions={actions}
+        loading={loading}
+        emptyMessage="No streams found"
+      />
+
+      <Modal
+        isOpen={!!deleteTarget}
+        title="Confirm Delete"
+        onClose={() => setDeleteTarget(null)}
+        footer={
+          <>
+            <button
+              onClick={() => setDeleteTarget(null)}
+              className="px-4 py-2 border rounded"
+            >
+              Cancel
+            </button>
+            <button
+              onClick={confirmDelete}
+              className="px-4 py-2 bg-red-600 text-white rounded"
+            >
+              Delete
+            </button>
+          </>
+        }
+      >
+        {deleteTarget && (
+          <p>
+            Delete "<strong>{deleteTarget.name}</strong>"?
+          </p>
+        )}
+      </Modal>
+    </div>
+  );
+}
+</file>
+
+<file path="public/vite.svg">
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" role="img" class="iconify iconify--logos" width="31.88" height="32" preserveAspectRatio="xMidYMid meet" viewBox="0 0 256 257"><defs><linearGradient id="IconifyId1813088fe1fbc01fb466" x1="-.828%" x2="57.636%" y1="7.652%" y2="78.411%"><stop offset="0%" stop-color="#41D1FF"></stop><stop offset="100%" stop-color="#BD34FE"></stop></linearGradient><linearGradient id="IconifyId1813088fe1fbc01fb467" x1="43.376%" x2="50.316%" y1="2.242%" y2="89.03%"><stop offset="0%" stop-color="#FFEA83"></stop><stop offset="8.333%" stop-color="#FFDD35"></stop><stop offset="100%" stop-color="#FFA800"></stop></linearGradient></defs><path fill="url(#IconifyId1813088fe1fbc01fb466)" d="M255.153 37.938L134.897 252.976c-2.483 4.44-8.862 4.466-11.382.048L.875 37.958c-2.746-4.814 1.371-10.646 6.827-9.67l120.385 21.517a6.537 6.537 0 0 0 2.322-.004l117.867-21.483c5.438-.991 9.574 4.796 6.877 9.62Z"></path><path fill="url(#IconifyId1813088fe1fbc01fb467)" d="M185.432.063L96.44 17.501a3.268 3.268 0 0 0-2.634 3.014l-5.474 92.456a3.268 3.268 0 0 0 3.997 3.378l24.777-5.718c2.318-.535 4.413 1.507 3.936 3.838l-7.361 36.047c-.495 2.426 1.782 4.5 4.151 3.78l15.304-4.649c2.372-.72 4.652 1.36 4.15 3.788l-11.698 56.621c-.732 3.542 3.979 5.473 5.943 2.437l1.313-2.028l72.516-144.72c1.215-2.423-.88-5.186-3.54-4.672l-25.505 4.922c-2.396.462-4.435-1.77-3.759-4.114l16.646-57.705c.677-2.35-1.37-4.583-3.769-4.113Z"></path></svg>
+</file>
+
+<file path="src/api/config.js">
+// src/api/config.js
+export const BASE_URL = "https://api.nsprowebtech.com/backend/api/v1";
+</file>
+
+<file path="src/api/courseCategoryApi.js">
+// src/api/courseApi.js
+import { BASE_URL } from "./config";
+import { handleResponse } from "./handleResponse";
+
+const COURSE_LIST_URL = `${BASE_URL}/course/index.php?type=course_type`;
+
+const COURSE_CREATE_URL = `${BASE_URL}/course/`;
+
+const COURSE_DELETE_URL = `${BASE_URL}/course/index.php`;
+
+// Fetch all course categories
+export async function fetchCourseCategories() {
+  const res = await fetch(COURSE_LIST_URL);
+  return handleResponse(res);
+}
+
+// Create a new course category
+export async function createCourseCategory(name) {
+  const trimmed = name?.trim();
+
+  if (!trimmed) {
+    throw new Error("Category name is required");
+  }
+
+  const formData = new FormData();
+  formData.append("type", "course_type");
+  formData.append("name", trimmed);
+
+  const res = await fetch(COURSE_CREATE_URL, {
+    method: "POST",
+    body: formData,
+  });
+
+  return handleResponse(res);
+}
+
+// Delete a course category
+export async function deleteCourseCategory(id) {
+  if (!id) {
+    throw new Error("Category ID is required");
+  }
+
+  const res = await fetch(COURSE_DELETE_URL, {
+    method: "DELETE",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      type: "course_type",
+      id: String(id),
+    }),
+  });
+
+  return handleResponse(res);
+}
+</file>
+
+<file path="src/api/facultyApi.js">
+// src/api/facultyApi.js
+import { BASE_URL } from "./config";
+import { handleResponse } from "./handleResponse";
+
+const FACULTY_URL = `${BASE_URL}/course/index.php`;
+
+// Fetch faculty by course type
+export async function fetchFaculty(courseTypeId) {
+  if (!courseTypeId) {
+    throw new Error("Course type is required");
+  }
+
+  const res = await fetch(
+    `${FACULTY_URL}?type=faculty&course_type_id=${courseTypeId}`,
+  );
+
+  return handleResponse(res);
+}
+
+// Create faculty
+export async function createFaculty(courseTypeId, name) {
+  const trimmed = name?.trim();
+
+  if (!courseTypeId) {
+    throw new Error("Course type is required");
+  }
+
+  if (!trimmed) {
+    throw new Error("Faculty name required");
+  }
+
+  const formData = new FormData();
+  formData.append("type", "faculty");
+  formData.append("course_type_id", courseTypeId);
+  formData.append("name", trimmed);
+
+  const res = await fetch(FACULTY_URL, {
+    method: "POST",
+    body: formData,
+  });
+
+  return handleResponse(res);
+}
+
+// Delete faculty
+export async function deleteFaculty(id) {
+  if (!id) {
+    throw new Error("Faculty ID required");
+  }
+
+  const res = await fetch(FACULTY_URL, {
+    method: "DELETE",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      type: "faculty",
+      id: String(id),
+    }),
+  });
+
+  return handleResponse(res);
+}
+</file>
+
+<file path="src/api/handleResponse.js">
+// src/utils/handleResponse.js
+export async function handleResponse(res) {
+  if (!res.ok) {
+    throw new Error(`HTTP ${res.status}`);
+  }
+
+  const json = await res.json();
+
+  if (!json.success) {
+    throw new Error(json.message || "Request failed");
+  }
+
+  return json.data;
+}
+</file>
+
+<file path="src/api/settingAPI.js">
+// src/api/api.js
+const BASE_URL = "https://api.nsprowebtech.com/backend/api/v1";
+
+// settings
+// sitesettings
+export async function fetchSiteSettings() {
+  const res = await fetch(`${BASE_URL}/settings/`);
+  const json = await res.json();
+  return json.data;
+}
+
+export async function updateSiteSettings(formData) {
+  const res = await fetch(`${BASE_URL}/settings/`, {
+    method: "POST",
+    body: formData,
+  });
+
+  return res.json();
+}
+</file>
+
+<file path="src/components/admin/admission/AdmissionStepper.jsx">
+export default function AdmissionStepper({ step }) {
+  const steps = [
+    "Personal Details",
+    "Communication",
+    "Qualification",
+    "Program",
+  ];
+
+  return (
+    <div className="flex items-center justify-between mb-8">
+      {steps.map((label, index) => {
+        const active = index + 1 === step;
+        const completed = index + 1 < step;
+
+        return (
+          <div key={label} className="flex-1 text-center">
+            <div
+              className={`
+                w-10 h-10 mx-auto rounded-full flex items-center justify-center
+                text-sm font-semibold
+                ${
+                  completed
+                    ? "bg-accent text-primary"
+                    : active
+                      ? "bg-primary text-white"
+                      : "bg-border text-muted"
+                }
+              `}
+            >
+              {index + 1}
+            </div>
+            <p className="mt-2 text-xs text-muted">{label}</p>
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+</file>
+
+<file path="src/components/admin/sidebar/SidebarMenuItem.jsx">
+import { useRef, useEffect } from "react";
+import { Link } from "react-router-dom";
+import { FaChevronDown } from "react-icons/fa";
+import { motion, AnimatePresence } from "framer-motion";
+
+export const SidebarMenuItem = ({
+  menu,
+  isActive,
+  isExpanded,
+  onToggle,
+  isCollapsed,
+}) => {
+  const menuRef = useRef(null);
+
+  useEffect(() => {
+    if (isExpanded && menuRef.current) {
+      menuRef.current.scrollIntoView({
+        behavior: "smooth",
+        block: "nearest",
+      });
+    }
+  }, [isExpanded]);
+  const Icon = menu.icon;
+  return (
+    <div ref={menuRef} className="mb-1 group">
+      {/* Parent button */}
+      <button
+        onClick={() => onToggle(menu.id)}
+        className={`w-full flex items-center px-2 py-2 rounded-lg transition-colors duration-200 ${
+          isExpanded
+            ? "bg-accent/10 text-accent"
+            : "hover:bg-white/10 text-white/80"
+        }`}
+      >
+        {/* Icon */}
+        <span
+          className={`text-lg ${
+            isCollapsed ? "" : "mr-2"
+          } flex items-center justify-center w-6`}
+        >
+          <Icon />
+        </span>
+
+        {/* Label + arrow */}
+        <div
+          className={`flex-1 flex items-center justify-between transition-opacity duration-200 ${
+            isCollapsed ? "opacity-0 w-0 overflow-hidden" : "opacity-100 w-auto"
+          }`}
+        >
+          <span className="font-medium text-left text-sm whitespace-nowrap text-white">
+            {menu.label}
+          </span>
+
+          <FaChevronDown
+            className={`w-3 h-3 transform transition-transform duration-200 ml-2 ${
+              isExpanded ? "rotate-180" : ""
+            } text-white/60`}
+          />
+        </div>
+
+        {/* Tooltip when collapsed */}
+        {isCollapsed && (
+          <div className="fixed left-14 hidden md:block bg-primary text-white text-sm py-1.5 px-3 rounded-md shadow-lg opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none group-hover:pointer-events-auto z-50 whitespace-nowrap border border-white/10">
+            {menu.label}
+          </div>
+        )}
+      </button>
+
+      {/* Children */}
+      <AnimatePresence>
+        {isExpanded && !isCollapsed && (
+          <motion.div
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: "auto" }}
+            exit={{ opacity: 0, height: 0 }}
+            transition={{ duration: 0.2, ease: "easeInOut" }}
+            className="ml-3 mt-1 overflow-hidden"
+          >
+            <div className="py-1 max-h-[300px] overflow-y-auto scrollbar-none">
+              {menu.children.map((child) => (
+                <Link
+                  key={child.path}
+                  to={child.path}
+                  className={`
+                    block px-3 py-1.5 rounded-md text-xs transition-colors duration-200 group relative
+                    ${
+                      isActive(child.path)
+                        ? "bg-accent/20 text-accent"
+                        : "text-white/70 hover:text-accent hover:bg-white/5"
+                    }
+                  `}
+                >
+                  {!isCollapsed && child.label}
+
+                  {/* Tooltip when collapsed */}
+                  {isCollapsed && (
+                    <div className="fixed left-14 hidden md:block bg-primary text-white text-sm py-1.5 px-3 rounded-md shadow-lg opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none group-hover:pointer-events-auto z-50 whitespace-nowrap border border-white/10">
+                      {child.label}
+                    </div>
+                  )}
+                </Link>
+              ))}
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
+  );
+};
+</file>
+
+<file path="src/components/admin/sidebar/SidebarSearch.jsx">
+import { FaSearch } from "react-icons/fa";
+
+export default function SidebarSearch({
+  isCollapsed,
+  searchTerm,
+  setSearchTerm,
+}) {
+  return (
+    <div
+      className={`overflow-hidden transition-[height] duration-200 ${
+        isCollapsed ? "h-0" : "h-auto"
+      }`}
+    >
+      <div className="p-2">
+        <div className="relative">
+          <input
+            type="text"
+            placeholder="Search..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="w-full pl-8 pr-3 py-1.5 text-xs rounded-lg bg-white/10 border border-white/20 text-white placeholder-white/50 focus:ring-2 focus:ring-accent/50 outline-none"
+          />
+          <FaSearch className="absolute left-2.5 top-1/2 -translate-y-1/2 text-white/40 w-3 h-3" />
+        </div>
+      </div>
+    </div>
+  );
+}
+</file>
+
+<file path="src/components/public/AnnouncementBar.jsx">
+import { Banner, BannerCollapseButton } from "flowbite-react";
+import { HiArrowRight, HiX } from "react-icons/hi";
+import { MdPercent } from "react-icons/md";
+
+export default function AnnouncementBar() {
+  return (
+    <Banner>
+      <div className="flex w-full justify-between border-t border-gray-200 bg-gray-50 p-4 dark:border-gray-600 dark:bg-gray-700">
+        <div className="mx-auto flex items-center">
+          <p className="flex items-center text-sm font-normal text-gray-500 dark:text-gray-400">
+            <span className="mr-3 inline-flex h-6 w-6 items-center justify-center rounded-full bg-gray-200 p-1 dark:bg-gray-600">
+              <MdPercent className="h-4 w-4" />
+            </span>
+            <span className="[&_p]:inline">
+              Get 5% commision per sale&nbsp;
+              <a
+                href="https://flowbite.com"
+                className="ml-0 flex items-center text-sm font-medium text-cyan-600 hover:underline md:ml-1 md:inline-flex dark:text-cyan-500"
+              >
+                Become a partner
+                <HiArrowRight className="ml-2" />
+              </a>
+            </span>
+          </p>
+        </div>
+        <BannerCollapseButton
+          color="gray"
+          className="border-0 bg-transparent text-gray-500 dark:text-gray-400"
+        >
+          <HiX className="h-4 w-4" />
+        </BannerCollapseButton>
+      </div>
+    </Banner>
+  );
+}
+</file>
+
+<file path="src/components/public/CTA.jsx">
+import React from "react";
+
+export default function CTA() {
+  return (
+    <section className="bg-primary text-white py-16">
+      <div className="max-w-4xl mx-auto text-center px-6">
+        <h2 className="text-3xl font-heading font-bold">
+          Start Your Academic Journey Today
+        </h2>
+        <p className="mt-4 text-white/90">
+          Admissions are open for the upcoming session. Apply now and secure
+          your future.
+        </p>
+
+        <button className="mt-8 bg-accent text-primary font-semibold px-8 py-3 rounded-lg hover:opacity-90 transition">
+          Apply Now
+        </button>
+      </div>
+    </section>
+  );
+}
+</file>
+
+<file path="src/components/table/Table.jsx">
+// src/components/admin/courses/Table.jsx
+export default function Table({
+  title = "List",
+  columns = [],
+  data = [],
+  actions = [],
+  loading = false,
+  emptyMessage = "No data found",
+}) {
+  const colSpan = columns.length + (actions.length > 0 ? 1 : 0);
+
+  return (
+    <div className="bg-surface border border-border rounded-xl overflow-hidden shadow-sm">
+      {title && (
+        <div className="px-6 py-4 border-b border-border">
+          <h2 className="text-lg font-semibold text-text">{title}</h2>
+        </div>
+      )}
+
+      <div className="overflow-x-auto">
+        <table className="w-full text-sm text-left">
+          <thead className="bg-bg text-muted">
+            <tr>
+              {columns.map((col) => (
+                <th
+                  key={col.key}
+                  className="px-6 py-3 font-medium border-b border-border"
+                >
+                  {col.label}
+                </th>
+              ))}
+              {actions.length > 0 && (
+                <th className="px-6 py-3 font-medium border-b border-border">
+                  Actions
+                </th>
+              )}
+            </tr>
+          </thead>
+
+          <tbody>
+            {loading ? (
+              <tr>
+                <td colSpan={colSpan} className="text-center py-10 text-muted">
+                  Loading...
+                </td>
+              </tr>
+            ) : data.length === 0 ? (
+              <tr>
+                <td
+                  colSpan={colSpan}
+                  className="text-center py-10 text-muted italic"
+                >
+                  {emptyMessage}
+                </td>
+              </tr>
+            ) : (
+              data.map((row, index) => (
+                <tr
+                  key={row.id ?? index}
+                  className="border-b border-border hover:bg-bg/50 transition-colors"
+                >
+                  {columns.map((col) => (
+                    <td key={col.key} className="px-6 py-4 text-text">
+                      {col.render
+                        ? col.render(row, index)
+                        : (row[col.key] ?? "—")}
+                    </td>
+                  ))}
+
+                  {actions.length > 0 && (
+                    <td className="px-6 py-4">
+                      <div className="flex items-center gap-2">
+                        {actions.map((action, idx) => (
+                          <button
+                            key={idx}
+                            onClick={() => action.onClick(row)}
+                            className={action.className}
+                            title={action.title || "Action"}
+                          >
+                            {action.icon}
+                          </button>
+                        ))}
+                      </div>
+                    </td>
+                  )}
+                </tr>
+              ))
+            )}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  );
+}
+</file>
+
+<file path="src/components/ui/Button.jsx">
+// src/components/ui/Button.jsx
+import clsx from "clsx";
+
+export default function Button({
+  children,
+  type = "button",
+  variant = "primary",
+  size = "md",
+  loading = false,
+  disabled = false,
+  icon = null,
+  className = "",
+  ...props
+}) {
+  const baseStyles =
+    "inline-flex items-center justify-center gap-2 font-medium rounded-md transition focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed";
+
+  const variants = {
+    primary: "bg-primary text-white hover:bg-primary/90 focus:ring-primary/50",
+    secondary:
+      "bg-surface border border-border text-text hover:bg-bg focus:ring-border",
+    danger: "bg-red-600 text-white hover:bg-red-700 focus:ring-red-500/50",
+    ghost: "bg-transparent text-text hover:bg-bg focus:ring-border",
+  };
+
+  const sizes = {
+    sm: "px-3 py-1.5 text-sm",
+    md: "px-4 py-2 text-sm",
+    lg: "px-6 py-2.5 text-base",
+  };
+
+  return (
+    <button
+      type={type}
+      disabled={disabled || loading}
+      className={clsx(baseStyles, variants[variant], sizes[size], className)}
+      {...props}
+    >
+      {loading && (
+        <span className="animate-spin h-4 w-4 border-2 border-white border-t-transparent rounded-full" />
+      )}
+      {icon && !loading && icon}
+      <span>{children}</span>
+    </button>
+  );
+}
+</file>
+
+<file path="src/components/ui/Toast.jsx">
+// src/components/ui/Toast.jsx
+import { useEffect, useState } from "react";
+import {
+  HiCheckCircle,
+  HiXCircle,
+  HiInformationCircle,
+  HiExclamation,
+} from "react-icons/hi";
+
+const variants = {
+  success: {
+    icon: HiCheckCircle,
+    bg: "bg-green-100 dark:bg-green-800",
+    text: "text-green-600 dark:text-green-200",
+  },
+  error: {
+    icon: HiXCircle,
+    bg: "bg-red-100 dark:bg-red-800",
+    text: "text-red-600 dark:text-red-200",
+  },
+  warning: {
+    icon: HiExclamation,
+    bg: "bg-yellow-100 dark:bg-yellow-800",
+    text: "text-yellow-600 dark:text-yellow-200",
+  },
+  info: {
+    icon: HiInformationCircle,
+    bg: "bg-blue-100 dark:bg-blue-800",
+    text: "text-blue-600 dark:text-blue-200",
+  },
+};
+
+export default function Toast({
+  type = "info",
+  title,
+  message,
+  duration = 3000,
+  onClose,
+}) {
+  const [visible, setVisible] = useState(true);
+  const config = variants[type] || variants.info;
+  const Icon = config.icon;
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setVisible(false);
+      onClose && onClose();
+    }, duration);
+
+    return () => clearTimeout(timer);
+  }, [duration, onClose]);
+
+  if (!visible) return null;
+
+  return (
+    <div className="fixed top-5 right-5 z-50">
+      <div className="bg-surface border border-border shadow-lg rounded-lg p-4 flex items-start gap-3 min-w-[260px]">
+        <div
+          className={`w-8 h-8 flex items-center justify-center rounded-lg ${config.bg} ${config.text}`}
+        >
+          <Icon className="w-5 h-5" />
+        </div>
+
+        <div className="flex-1">
+          {title && <p className="font-semibold text-text">{title}</p>}
+          <p className="text-sm text-muted">{message}</p>
+        </div>
+
+        <button
+          onClick={() => setVisible(false)}
+          className="text-muted hover:text-text"
+        >
+          ✕
+        </button>
+      </div>
+    </div>
+  );
+}
+</file>
+
+<file path="src/components/ui/ToastContainer.jsx">
+export default function ToastContainer({ children }) {
+  return <div className="fixed top-5 right-5 z-50 space-y-3">{children}</div>;
+}
+</file>
+
+<file path="src/context/AuthContext.jsx">
+import { createContext, useContext, useState } from "react";
+
+const AuthContext = createContext();
+
+export function AuthProvider({ children }) {
+  const [user, setUser] = useState(null);
+
+  const login = (userData) => {
+    setUser(userData);
+    localStorage.setItem("user", JSON.stringify(userData));
+  };
+
+  const logout = () => {
+    setUser(null);
+    localStorage.removeItem("user");
+  };
+
+  return (
+    <AuthContext.Provider value={{ user, login, logout }}>
+      {children}
+    </AuthContext.Provider>
+  );
+}
+
+export function useAuth() {
+  return useContext(AuthContext);
+}
+</file>
+
+<file path="src/pages/admin/AdminDashboardPanel.jsx">
+import React from "react";
+import {
+  HiUserGroup,
+  HiOfficeBuilding,
+  HiDocumentText,
+  HiClipboardList,
+  HiCheckCircle,
+  HiXCircle,
+  HiBookOpen,
+  HiPhotograph,
+  HiUser,
+  HiIdentification,
+} from "react-icons/hi";
+
+export default function AdminDashboard() {
+  const stats = [
+    {
+      title: "Total Students",
+      value: 7,
+      icon: HiUserGroup,
+      approved: 4,
+      pending: 3,
+      approvedPercent: 57,
+      pendingPercent: 43,
+      color: "from-primary to-primary/80",
+    },
+    {
+      title: "Total Centers",
+      value: 20,
+      icon: HiOfficeBuilding,
+      approved: 20,
+      pending: 0,
+      approvedPercent: 100,
+      pendingPercent: 0,
+      color: "from-secondary to-secondary/80",
+    },
+    {
+      title: "Certificates Issued",
+      value: 0,
+      icon: HiDocumentText,
+      subtitle: "CERTIFICATES ISSUED",
+      color: "from-accent to-accent/80",
+    },
+    {
+      title: "Results Issued",
+      value: 5,
+      icon: HiClipboardList,
+      subtitle: "71% of Students",
+      color: "from-primary to-secondary",
+    },
+  ];
+
+  return (
+    <div className="hi h-full overflow-y-auto bg-bg p-6">
+      <div className="space-y-6">
+        {/* Page Heading */}
+        <div className="flex justify-between items-center">
+          <div>
+            <h1 className="text-3xl font-bold text-[#0b1f4b]">
+              Dashboard Overview
+            </h1>
+            <p className="text-[#6b7280] mt-1">
+              Complete Statistics and Analytics
+            </p>
+          </div>
+          <div className="flex gap-2">
+            <span className="px-3 py-1 bg-[#0b1f4b]/10 text-[#0b1f4b] rounded-full text-sm font-medium">
+              Last updated: Today
+            </span>
+          </div>
+        </div>
+
+        {/* Stats Grid */}
+        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          {stats.map((item, i) => {
+            const Icon = item.icon;
+            const colorMap = {
+              "from-primary to-primary/80": {
+                bg: "#0b1f4b",
+                icon: "#0b1f4b",
+                header: "#0b1f4b",
+              },
+              "from-secondary to-secondary/80": {
+                bg: "#b23a3a",
+                icon: "#b23a3a",
+                header: "#b23a3a",
+              },
+              "from-accent to-accent/80": {
+                bg: "#c9a227",
+                icon: "#c9a227",
+                header: "#c9a227",
+              },
+              "from-primary to-secondary": {
+                bg: "#0b1f4b",
+                icon: "#0b1f4b",
+                header: "#0b1f4b",
+              },
+            };
+            const colors = colorMap[item.color] || {
+              bg: "#0b1f4b",
+              icon: "#0b1f4b",
+              header: "#0b1f4b",
+            };
+
+            return (
+              <div
+                key={i}
+                className="bg-white border border-[#e5e7eb] rounded-lg shadow-sm hover:shadow-md transition-all overflow-hidden group"
+              >
+                {/* Colored Header */}
+                <div
+                  className="h-1"
+                  style={{ backgroundColor: colors.header }}
+                ></div>
+
+                <div className="p-5">
+                  <div className="flex items-center justify-between mb-4">
+                    <div>
+                      <p className="text-[#6b7280] text-sm font-medium">
+                        {item.title}
+                      </p>
+                      <h2 className="text-3xl font-bold text-[#0b1f4b] mt-1">
+                        {item.value}
+                      </h2>
+                    </div>
+
+                    <div
+                      className="w-12 h-12 flex items-center justify-center rounded-lg group-hover:scale-110 transition-transform"
+                      style={{ backgroundColor: `${colors.bg}20` }}
+                    >
+                      <Icon
+                        className="text-2xl"
+                        style={{ color: colors.icon }}
+                      />
+                    </div>
+                  </div>
+
+                  {/* Approval Stats */}
+                  {item.approved !== undefined && (
+                    <div className="space-y-3 mt-4">
+                      <div className="flex items-center justify-between text-sm">
+                        <div className="flex items-center gap-1">
+                          <HiCheckCircle className="text-green-600" />
+                          <span className="text-[#6b7280]">Approved</span>
+                        </div>
+                        <span className="font-semibold text-[#0b1f4b]">
+                          {item.approved} ({item.approvedPercent}%)
+                        </span>
+                      </div>
+
+                      <div className="flex items-center justify-between text-sm">
+                        <div className="flex items-center gap-1">
+                          <HiXCircle className="text-orange-600" />
+                          <span className="text-[#6b7280]">Pending</span>
+                        </div>
+                        <span className="font-semibold text-[#0b1f4b]">
+                          {item.pending} ({item.pendingPercent}%)
+                        </span>
+                      </div>
+
+                      {item.title === "Total Students" && (
+                        <div className="pt-2 text-xs text-[#c9a227] font-semibold flex items-center gap-1">
+                          <HiBookOpen />
+                          <span>Available Courses</span>
+                        </div>
+                      )}
+                    </div>
+                  )}
+
+                  {/* Certificate/Results Subtitle */}
+                  {item.subtitle && (
+                    <div className="mt-4 pt-3 border-t border-[#e5e7eb]">
+                      <div className="flex items-center justify-between">
+                        <span className="text-xs text-[#6b7280] uppercase tracking-wider font-medium">
+                          {item.subtitle}
+                        </span>
+                        <span className="text-sm font-semibold text-[#0b1f4b]">
+                          {item.value === 0 ? "0" : `${item.value} Total`}
+                        </span>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </div>
+            );
+          })}
+        </div>
+
+        {/* Student Status Distribution */}
+        <div className="grid lg:grid-cols-3 gap-4">
+          {/* Main Status Card */}
+          <div className="lg:col-span-2 bg-white border border-[#e5e7eb] rounded-lg shadow-sm p-6">
+            <h3 className="text-lg font-bold text-[#0b1f4b] mb-6">
+              Student Status Distribution
+            </h3>
+
+            <div className="grid sm:grid-cols-2 gap-5">
+              {/* Approved Students */}
+              <div className="bg-gradient-to-br from-green-50 to-green-100/30 rounded-lg p-5 border border-green-200">
+                <div className="flex items-center justify-between mb-2">
+                  <HiCheckCircle className="text-green-600 text-2xl" />
+                  <span className="text-3xl font-bold text-green-700">4</span>
+                </div>
+                <p className="text-green-900 font-semibold">
+                  Approved Students
+                </p>
+                <p className="text-green-700 text-sm mt-1">
+                  57% of total students
+                </p>
+                <div className="mt-3 h-2 bg-green-200 rounded-full overflow-hidden">
+                  <div className="h-full w-[57%] bg-green-600 rounded-full"></div>
+                </div>
+              </div>
+
+              {/* Pending Students */}
+              <div className="bg-gradient-to-br from-orange-50 to-orange-100/30 rounded-lg p-5 border border-orange-200">
+                <div className="flex items-center justify-between mb-2">
+                  <HiXCircle className="text-orange-600 text-2xl" />
+                  <span className="text-3xl font-bold text-orange-700">3</span>
+                </div>
+                <p className="text-orange-900 font-semibold">
+                  Pending Students
+                </p>
+                <p className="text-orange-700 text-sm mt-1">
+                  43% of total students
+                </p>
+                <div className="mt-3 h-2 bg-orange-200 rounded-full overflow-hidden">
+                  <div className="h-full w-[43%] bg-orange-600 rounded-full"></div>
+                </div>
+              </div>
+            </div>
+
+            {/* Distribution Chart */}
+            <div className="mt-6 p-4 bg-[#f9fafb] rounded-lg border border-[#e5e7eb]">
+              <div className="flex items-center justify-between mb-2">
+                <span className="text-sm font-semibold text-[#0b1f4b]">
+                  Overall Distribution
+                </span>
+                <span className="text-xs text-[#6b7280]">
+                  Total: 7 Students
+                </span>
+              </div>
+              <div className="flex h-3 rounded-full overflow-hidden gap-1">
+                <div
+                  className="h-full bg-green-600"
+                  style={{ width: "57%" }}
+                ></div>
+                <div
+                  className="h-full bg-orange-600"
+                  style={{ width: "43%" }}
+                ></div>
+              </div>
+              <div className="flex justify-between mt-2 text-xs font-medium">
+                <span className="text-green-700">Approved: 4</span>
+                <span className="text-orange-700">Pending: 3</span>
+              </div>
+            </div>
+          </div>
+
+          {/* Quick Actions / Footer Links */}
+          <div className="bg-white border border-[#e5e7eb] rounded-lg shadow-sm p-6">
+            <h3 className="text-lg font-bold text-[#0b1f4b] mb-4">
+              Quick Actions
+            </h3>
+
+            <div className="space-y-3">
+              <button className="w-full flex items-center gap-3 p-3 rounded-lg hover:bg-[#f9fafb] transition-colors group text-left">
+                <div className="w-10 h-10 rounded-lg bg-[#0b1f4b]/10 flex items-center justify-center group-hover:bg-[#0b1f4b]/20 transition-colors flex-shrink-0">
+                  <HiPhotograph className="text-[#0b1f4b]" />
+                </div>
+                <div>
+                  <p className="font-semibold text-[#0b1f4b] text-sm">
+                    Gallery Category
+                  </p>
+                  <p className="text-xs text-[#6b7280]">Manage categories</p>
+                </div>
+              </button>
+
+              <button className="w-full flex items-center gap-3 p-3 rounded-lg hover:bg-[#f9fafb] transition-colors group text-left">
+                <div className="w-10 h-10 rounded-lg bg-[#b23a3a]/10 flex items-center justify-center group-hover:bg-[#b23a3a]/20 transition-colors flex-shrink-0">
+                  <HiPhotograph className="text-[#b23a3a]" />
+                </div>
+                <div>
+                  <p className="font-semibold text-[#0b1f4b] text-sm">
+                    Image Gallery
+                  </p>
+                  <p className="text-xs text-[#6b7280]">Upload & manage</p>
+                </div>
+              </button>
+
+              <button className="w-full flex items-center gap-3 p-3 rounded-lg hover:bg-[#f9fafb] transition-colors group text-left">
+                <div className="w-10 h-10 rounded-lg bg-[#c9a227]/10 flex items-center justify-center group-hover:bg-[#c9a227]/20 transition-colors flex-shrink-0">
+                  <HiUser className="text-[#c9a227]" />
+                </div>
+                <div>
+                  <p className="font-semibold text-[#0b1f4b] text-sm">
+                    Students
+                  </p>
+                  <p className="text-xs text-[#6b7280]">Manage records</p>
+                </div>
+              </button>
+
+              <button className="w-full flex items-center gap-3 p-3 rounded-lg hover:bg-[#f9fafb] transition-colors group text-left">
+                <div className="w-10 h-10 rounded-lg bg-[#0b1f4b]/10 flex items-center justify-center group-hover:bg-[#0b1f4b]/20 transition-colors flex-shrink-0">
+                  <HiIdentification className="text-[#0b1f4b]" />
+                </div>
+                <div>
+                  <p className="font-semibold text-[#0b1f4b] text-sm">
+                    ID Card
+                  </p>
+                  <p className="text-xs text-[#6b7280]">Generate IDs</p>
+                </div>
+              </button>
+            </div>
+
+            {/* Recent Activity */}
+            <div className="mt-6 pt-4 border-t border-[#e5e7eb]">
+              <h4 className="text-sm font-bold text-[#0b1f4b] mb-3">
+                Recent Activity
+              </h4>
+              <div className="space-y-2">
+                <div className="flex items-center gap-2 text-xs">
+                  <span className="w-2 h-2 bg-green-500 rounded-full flex-shrink-0"></span>
+                  <span className="text-[#6b7280]">New student registered</span>
+                  <span className="text-[#6b7280] ml-auto flex-shrink-0">
+                    2 min ago
+                  </span>
+                </div>
+                <div className="flex items-center gap-2 text-xs">
+                  <span className="w-2 h-2 bg-[#c9a227] rounded-full flex-shrink-0"></span>
+                  <span className="text-[#6b7280]">Certificate issued</span>
+                  <span className="text-[#6b7280] ml-auto flex-shrink-0">
+                    1 hour ago
+                  </span>
+                </div>
+                <div className="flex items-center gap-2 text-xs">
+                  <span className="w-2 h-2 bg-[#b23a3a] rounded-full flex-shrink-0"></span>
+                  <span className="text-[#6b7280]">New center added</span>
+                  <span className="text-[#6b7280] ml-auto flex-shrink-0">
+                    3 hours ago
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+</file>
+
+<file path="src/pages/public/News.jsx">
+import React from "react";
+
+function NewsList({ title, items }) {
+  return (
+    <div className="bg-surface border border-border rounded-xl p-6 shadow-sm">
+      <h2 className="text-2xl font-heading font-bold text-primary mb-6">
+        {title}
+      </h2>
+
+      <div className="space-y-4">
+        {items.map((item, i) => (
+          <div key={i} className="border-b border-border pb-4 last:border-none">
+            <p className="text-text font-medium">{item.title}</p>
+            <p className="text-muted text-sm mt-1">Date: {item.date}</p>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+export default function News() {
+  const campusNews = [
+    { title: "Diploma exam notice", date: "08/12/2025" },
+    { title: "Promotion notice for teachers", date: "21/11/2025" },
+    { title: "Scholarship notice", date: "30/10/2025" },
+  ];
+
+  const announcements = [
+    { title: "Project Associate recruitment", date: "16/01/2026" },
+    { title: "Research incentive notice", date: "25/12/2025" },
+    { title: "Assistant professor recruitment", date: "18/11/2025" },
+  ];
+
+  const universityNews = [
+    { title: "Registration instructions", date: "07/02/2026" },
+    { title: "Semester course notice", date: "07/02/2026" },
+    { title: "Education policy update", date: "06/02/2026" },
+  ];
+
+  return (
+    <div className="bg-bg text-text">
+      {/* Page header */}
+      <section className="bg-primary text-white py-14">
+        <div className="max-w-6xl mx-auto px-6 text-center">
+          <h1 className="text-3xl md:text-4xl font-heading font-bold">
+            University News & Announcements
+          </h1>
+        </div>
+      </section>
+
+      {/* News sections */}
+      <section className="py-16">
+        <div className="max-w-6xl mx-auto px-6 space-y-10">
+          <NewsList title="Campus News" items={campusNews} />
+          <NewsList title="Announcements" items={announcements} />
+          <NewsList title="University News" items={universityNews} />
+        </div>
+      </section>
+    </div>
+  );
+}
+</file>
+
+<file path="src/pages/Login.jsx">
+import React, { useState } from "react";
+
+export default function Login() {
+  const [form, setForm] = useState({
+    username: "",
+    password: "",
+  });
+
+  const handleChange = (e) => {
+    setForm({
+      ...form,
+      [e.target.name]: e.target.value,
+    });
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+
+    // Replace with API call
+    console.log("Login data:", form);
+
+    /*
+    Example backend response:
+    {
+      role: "admin"
+    }
+    or
+    {
+      role: "student"
+    }
+
+    Then redirect accordingly.
+    */
+    //    if (role === "admin") navigate("/admin");
+    //     if (role === "student") navigate("/student/dashboard");
+    //     if (role === "center") navigate("/center/dashboard");
+  };
+
+  return (
+    <div className="min-h-screen bg-bg flex items-center justify-center px-4">
+      <div className="w-full max-w-md bg-surface border border-border rounded-xl shadow-sm p-8">
+        {/* Heading */}
+        <div className="text-center mb-6">
+          <h1 className="text-2xl font-heading font-bold text-primary">
+            Login
+          </h1>
+          <p className="text-muted mt-2">Enter your credentials to continue</p>
+        </div>
+
+        {/* Form */}
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <input
+            type="text"
+            name="username"
+            placeholder="Username"
+            value={form.username}
+            onChange={handleChange}
+            required
+            className="w-full border border-border rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-secondary"
+          />
+
+          <input
+            type="password"
+            name="password"
+            placeholder="Password"
+            value={form.password}
+            onChange={handleChange}
+            required
+            className="w-full border border-border rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-secondary"
+          />
+
+          <button
+            type="submit"
+            className="w-full bg-secondary text-white py-2 rounded-md font-semibold hover:bg-secondary/90 transition"
+          >
+            Login
+          </button>
+        </form>
+      </div>
+    </div>
+  );
+}
+</file>
+
+<file path="src/services/data.js">
+// src/data/adminMenuItems.js
+import {
+  FaHome,
+  FaUserGraduate,
+  FaBook,
+  FaCalendarAlt,
+  FaClipboardList,
+  FaEnvelope,
+  FaChartBar,
+  FaCog,
+} from "react-icons/fa";
+
+export const adminMenuItems = [
+  {
+    id: 1,
+    label: "Dashboard",
+    icon: <FaHome />,
+    children: [{ label: "Overview", path: "/admin" }],
+  },
+  {
+    id: 2,
+    label: "Students",
+    icon: <FaUserGraduate />,
+    children: [
+      { label: "All Students", path: "/admin/students" },
+      { label: "Add New", path: "/admin/students/add" },
+      { label: "Admissions", path: "/admin/admissions" },
+      { label: "Attendance", path: "/admin/attendance" },
+    ],
+  },
+  {
+    id: 3,
+    label: "Academics",
+    icon: <FaBook />,
+    children: [
+      { label: "Courses", path: "/admin/courses" },
+      { label: "Programs", path: "/admin/programs" },
+      { label: "Faculty", path: "/admin/faculty" },
+      { label: "Timetable", path: "/admin/timetable" },
+    ],
+  },
+  {
+    id: 4,
+    label: "Examinations",
+    icon: <FaClipboardList />,
+    children: [
+      { label: "Results", path: "/admin/results" },
+      { label: "Schedule", path: "/admin/exam-schedule" },
+      { label: "Hall Tickets", path: "/admin/hall-tickets" },
+    ],
+  },
+  {
+    id: 5,
+    label: "Events",
+    icon: <FaCalendarAlt />,
+    children: [
+      { label: "Calendar", path: "/admin/calendar" },
+      { label: "Add Event", path: "/admin/events/add" },
+    ],
+  },
+  {
+    id: 6,
+    label: "Communications",
+    icon: <FaEnvelope />,
+    children: [
+      { label: "Notifications", path: "/admin/notifications" },
+      { label: "Announcements", path: "/admin/announcements" },
+    ],
+  },
+  {
+    id: 7,
+    label: "Reports",
+    icon: <FaChartBar />,
+    children: [
+      { label: "Analytics", path: "/admin/analytics" },
+      { label: "Generate Reports", path: "/admin/reports" },
+    ],
+  },
+  {
+    id: 8,
+    label: "Settings",
+    icon: <FaCog />,
+    children: [
+      { label: "General", path: "/admin/settings" },
+      { label: "Users", path: "/admin/users" },
+      { label: "Permissions", path: "/admin/permissions" },
+    ],
+  },
+];
+</file>
+
+<file path=".gitignore">
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+node_modules
+dist
+dist-ssr
+*.local
+
+# Editor directories and files
+.vscode/*
+!.vscode/extensions.json
+.idea
+.DS_Store
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+</file>
+
+<file path="src/components/admin/admission/steps/StepCommunication.jsx">
+import FormInput from "../../../form/FormInput";
+import FormTextarea from "../../../form/FormTextarea";
+import FormSection from "../../../form/FormSection";
+
+export default function StepCommunication({ register }) {
+  return (
+    <FormSection title="Communication Details">
+      <FormInput label="Phone" name="phone" register={register} required />
+      <FormInput label="Email" name="email" register={register} required />
+      <FormInput
+        label="Father's contact"
+        name="phone"
+        register={register}
+        required
+      />
+      <FormInput
+        label="Mother's contact"
+        name="phone"
+        register={register}
+        required
+      />
+      <FormTextarea
+        label="Address"
+        name="address"
+        register={register}
+        required
+      />
+      <FormInput label="Pincode" name="pin" register={register} required />
+    </FormSection>
+  );
+}
+</file>
+
+<file path="src/components/admin/admission/steps/StepPersonal.jsx">
+import FormInput from "../../../form/FormInput";
+import FormSelect from "../../../form/FormSelect";
+import FormSection from "../../../form/FormSection";
+import FormFileInput from "../../../form/FormFileInput";
+
+export default function StepPersonal({ register }) {
+  return (
+    <FormSection title="Personal Details">
+      <FormInput
+        label="Candidate Name"
+        name="candidate_name"
+        register={register}
+        required
+      />
+
+      <FormInput
+        label="Father's Name"
+        name="father_name"
+        register={register}
+        required
+      />
+
+      <FormInput
+        label="Mother's Name"
+        name="mother_name"
+        register={register}
+        required
+      />
+
+      <FormInput
+        label="Date of Birth"
+        name="dob"
+        type="date"
+        register={register}
+        required
+      />
+      <FormFileInput label="photo" name="photo" register={register} />
+
+      <FormSelect
+        label="Gender"
+        name="gender"
+        register={register}
+        required
+        options={[
+          { label: "Male", value: "male" },
+          { label: "Female", value: "female" },
+        ]}
+      />
+    </FormSection>
+  );
+}
+</file>
+
+<file path="src/components/admin/admission/steps/StepProgram.jsx">
+import FormSection from "../../../form/FormSection";
+import FormSelect from "../../../form/FormSelect";
+import FormInput from "../../../form/FormInput";
+
+export default function StepProgram({ register }) {
+  return (
+    <FormSection title="Programme Details">
+      <FormSelect
+        label="Course Type"
+        name="course_type"
+        register={register}
+        required
+        options={[
+          { label: "Select course type", value: "" },
+          { label: "Undergraduate", value: "ug" },
+          { label: "Postgraduate", value: "pg" },
+          { label: "Diploma", value: "diploma" },
+        ]}
+      />
+
+      <FormSelect
+        label="Faculty"
+        name="faculty"
+        register={register}
+        required
+        options={[
+          { label: "Select department", value: "" },
+          { label: "Science", value: "science" },
+          { label: "Management", value: "management" },
+          { label: "Engineering", value: "engineering" },
+        ]}
+      />
+
+      <FormSelect
+        label="Course"
+        name="course"
+        register={register}
+        required
+        options={[
+          { label: "Select course", value: "" },
+          { label: "BCA", value: "bca" },
+          { label: "BBA", value: "bba" },
+          { label: "MBA", value: "mba" },
+        ]}
+      />
+
+      <FormSelect
+        label="Stream"
+        name="stream"
+        register={register}
+        required
+        options={[
+          { label: "Select stream", value: "" },
+          { label: "General", value: "general" },
+          { label: "Honours", value: "honours" },
+        ]}
+      />
+
+      <FormSelect
+        label="Year"
+        name="year"
+        register={register}
+        required
+        options={[
+          { label: "2025", value: "2025" },
+          { label: "2026", value: "2026" },
+          { label: "2027", value: "2027" },
+        ]}
+      />
+
+      <FormSelect
+        label="Month Session"
+        name="month_session"
+        register={register}
+        required
+        options={[
+          { label: "January", value: "january" },
+          { label: "July", value: "july" },
+        ]}
+      />
+
+      <FormSelect
+        label="Session"
+        name="session"
+        register={register}
+        required
+        options={[
+          { label: "2025–26", value: "2025" },
+          { label: "2026–27", value: "2026" },
+        ]}
+      />
+
+      <FormSelect
+        label="Mode of Study"
+        name="mode"
+        register={register}
+        required
+        options={[
+          { label: "Regular", value: "regular" },
+          { label: "Distance", value: "distance" },
+        ]}
+      />
+
+      <FormSelect
+        label="Hostel Facility"
+        name="hostel"
+        register={register}
+        required
+        options={[
+          { label: "Yes", value: "yes" },
+          { label: "No", value: "no" },
+        ]}
+      />
+
+      <FormInput
+        label="Application Fee"
+        name="application_fee"
+        register={register}
+        required
+        type="number"
+      />
+
+      <FormInput
+        label="Duration"
+        name="duration"
+        register={register}
+        type="text"
+        placeholder="e.g. 3 Years"
+      />
+    </FormSection>
+  );
+}
+</file>
+
+<file path="src/components/admin/admission/steps/StepQualification.jsx">
+import FormSection from "../../../form/FormSection";
+import FormFileInput from "../../../form/FormFileInput";
+
+export default function StepQualification({ register }) {
+  const rows = [
+    { label: "Secondary", key: "secondary" },
+    { label: "Sr. Secondary", key: "sr_secondary" },
+    { label: "Graduation", key: "graduation" },
+    { label: "Post Graduation", key: "post_graduation" },
+    { label: "Other", key: "other" },
+  ];
+
+  return (
+    <FormSection title="Previous Qualification Details">
+      <div className="w-full md:col-span-2">
+        <table className="w-full text-sm border border-border rounded-lg overflow-hidden">
+          <thead className="bg-bg text-text">
+            <tr className="border-b border-border">
+              <th className="text-left p-3">Examination</th>
+              <th className="text-left p-3">Year of Passing</th>
+              <th className="text-left p-3">Board/University</th>
+              <th className="text-left p-3">Percentage/CGPA</th>
+              <th className="text-left p-3">Upload Document</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            {rows.map((row) => (
+              <tr key={row.key} className="border-b border-border">
+                <td className="p-3 text-text font-medium">{row.label}</td>
+
+                <td className="p-3">
+                  <input
+                    type="text"
+                    {...register(`${row.key}_year`)}
+                    className="w-full border border-border rounded-md px-3 py-2 bg-surface text-text"
+                    placeholder="Year"
+                  />
+                </td>
+
+                <td className="p-3">
+                  <input
+                    type="text"
+                    {...register(`${row.key}_board`)}
+                    className="w-full border border-border rounded-md px-3 py-2 bg-surface text-text"
+                    placeholder="Board/University"
+                  />
+                </td>
+
+                <td className="p-3">
+                  <input
+                    type="text"
+                    {...register(`${row.key}_percentage`)}
+                    className="w-full border border-border rounded-md px-3 py-2 bg-surface text-text"
+                    placeholder="% / CGPA"
+                  />
+                </td>
+
+                <td className="p-3">
+                  <input
+                    type="file"
+                    {...register(`${row.key}_document`)}
+                    className="text-sm text-text"
+                  />
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </FormSection>
+  );
+}
+</file>
+
+<file path="src/components/admin/courses/CourseForm.jsx">
+// src/components/admin/courses/CourseForm.jsx
+import { useForm } from "react-hook-form";
+import FormSection from "../../form/FormSection";
+import FormInput from "../../form/FormInput";
+
+export default function CourseForm({
+  facultyList = [],
+  selectedFaculty,
+  onFacultyChange,
+  onSubmit,
+}) {
+  const {
+    register,
+    handleSubmit,
+    reset,
+    formState: { errors },
+  } = useForm();
+
+  const submitForm = async (data) => {
+    await onSubmit({
+      facultyId: selectedFaculty,
+      name: data.course,
+      duration: Number(data.duration),
+      durationType: data.duration_type,
+    });
+
+    reset();
+  };
+
+  return (
+    <form onSubmit={handleSubmit(submitForm)} className="space-y-6">
+      <FormSection title="Add Course">
+        <select
+          value={selectedFaculty}
+          onChange={(e) => onFacultyChange(e.target.value)}
+          className="w-full border border-border rounded-md px-3 py-2 bg-surface text-text"
+        >
+          <option value="">Select Faculty</option>
+          {facultyList.map((f) => (
+            <option key={f.id} value={f.id}>
+              {f.name}
+            </option>
+          ))}
+        </select>
+
+        <FormInput
+          label="Course Name"
+          name="course"
+          register={register}
+          required="Enter course name"
+          error={errors.course?.message}
+        />
+
+        <FormInput
+          label="Duration"
+          name="duration"
+          type="number"
+          register={register}
+          required="Enter duration"
+          error={errors.duration?.message}
+        />
+
+        <select
+          {...register("duration_type", {
+            required: "Select duration type",
+          })}
+          className="w-full border border-border rounded-md px-3 py-2 bg-surface text-text"
+        >
+          <option value="">Select Duration Type</option>
+          <option value="Year">Year</option>
+          <option value="Month">Month</option>
+        </select>
+
+        {errors.duration_type && (
+          <p className="text-sm text-red-500">
+            {errors.duration_type.message}
+          </p>
+        )}
+      </FormSection>
+
+      <button
+        type="submit"
+        disabled={!selectedFaculty}
+        className={`px-6 py-2.5 rounded-md text-white ${
+          selectedFaculty
+            ? "bg-primary"
+            : "bg-gray-400 cursor-not-allowed"
+        }`}
+      >
+        Create Course
+      </button>
+    </form>
+  );
+}
+</file>
+
+<file path="src/components/admin/courses/FacultyForm.jsx">
+// src/components/admin/courses/FacultyForm.jsx
+import { useForm } from "react-hook-form";
+import FormSection from "../../form/FormSection";
+import FormInput from "../../form/FormInput";
+
+export default function FacultyForm({
+  courseTypes = [],
+  selectedCourseType,
+  onCourseChange,
+  onSubmit,
+}) {
+  const {
+    register,
+    handleSubmit,
+    reset,
+    formState: { errors },
+  } = useForm();
+
+  const submitForm = async (data) => {
+    await onSubmit(data.faculty);
+    reset();
+  };
+
+  const options = courseTypes.map((c) => ({
+    value: c.id,
+    label: c.name,
+  }));
+
+  return (
+    <form onSubmit={handleSubmit(submitForm)} className="space-y-6">
+      <FormSection title="Add Faculty">
+        <select
+          value={selectedCourseType}
+          onChange={(e) => onCourseChange(e.target.value)}
+          className="w-full border border-border rounded-md px-3 py-2 bg-surface text-text"
+        >
+          <option value="">Select Course Type</option>
+          {options.map((opt) => (
+            <option key={opt.value} value={opt.value}>
+              {opt.label}
+            </option>
+          ))}
+        </select>
+
+        <FormInput
+          label="Faculty Name"
+          name="faculty"
+          register={register}
+          required="Enter faculty name"
+          placeholder="e.g. Science, Commerce..."
+        />
+      </FormSection>
+
+      <div>
+        <button
+          type="submit"
+          disabled={!selectedCourseType}
+          className={`px-6 py-2.5 rounded-md text-white ${
+            selectedCourseType ? "bg-primary" : "bg-gray-400 cursor-not-allowed"
+          }`}
+        >
+          Create Faculty
+        </button>
+      </div>
+    </form>
+  );
+}
+</file>
+
+<file path="src/components/admin/sidebar/AdminSidebar.jsx">
+// src/components/admin/sidebar/AdminSidebar.jsx
+import { useState, useRef, useEffect } from "react";
+import { useLocation } from "react-router-dom";
+import { menuItems } from "./menuItems";
+import { SidebarMenuItem } from "./SidebarMenuItem";
+import SidebarHeader from "./SidebarHeader";
+import SidebarSearch from "./SidebarSearch";
+import SidebarFooter from "./SidebarFooter";
+
+export const AdminSidebar = ({ theme, toggleTheme }) => {
+  const location = useLocation();
+  const sidebarRef = useRef(null);
+
+  // Load collapsed state from localStorage
+  const [isCollapsed, setIsCollapsed] = useState(() => {
+    const stored = localStorage.getItem("adminSidebarCollapsed");
+    return stored ? JSON.parse(stored) : false;
+  });
+
+  // Load pinned state from localStorage
+  const [isPinned, setIsPinned] = useState(() => {
+    const stored = localStorage.getItem("adminSidebarPinned");
+    return stored ? JSON.parse(stored) : true;
+  });
+
+  const [expandedMenus, setExpandedMenus] = useState([]);
+  const [searchTerm, setSearchTerm] = useState("");
+
+  // Sync to localStorage
+  useEffect(() => {
+    localStorage.setItem("adminSidebarCollapsed", JSON.stringify(isCollapsed));
+  }, [isCollapsed]);
+
+  useEffect(() => {
+    localStorage.setItem("adminSidebarPinned", JSON.stringify(isPinned));
+  }, [isPinned]);
+
+  // If collapsed, close all menus
+  useEffect(() => {
+    if (isCollapsed) {
+      setExpandedMenus([]);
+    }
+  }, [isCollapsed]);
+
+  const toggleMenu = (menuId) => {
+    setExpandedMenus((prev) =>
+      prev.includes(menuId) ? prev.filter((id) => id !== menuId) : [menuId],
+    );
+  };
+
+  const isActive = (path) => location.pathname === path;
+
+  const filteredMenuItems = menuItems.filter(
+    (menu) =>
+      menu.label.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      menu.children.some((child) =>
+        child.label.toLowerCase().includes(searchTerm.toLowerCase()),
+      ),
+  );
+
+  // Hover logic
+  const handleMouseEnter = () => {
+    if (!isPinned) {
+      setIsCollapsed(false);
+    }
+  };
+
+  const handleMouseLeave = () => {
+    if (!isPinned) {
+      setIsCollapsed(true);
+    }
+  };
+
+  // Pin toggle logic
+  const togglePin = () => {
+    const newPinned = !isPinned;
+    setIsPinned(newPinned);
+
+    if (newPinned) {
+      // If pinned, sidebar should stay open
+      setIsCollapsed(false);
+    } else {
+      // If unpinned, sidebar should collapse
+      setIsCollapsed(true);
+    }
+  };
+
+  // Manual collapse button (only when pinned)
+  const toggleCollapse = () => {
+    if (isPinned) {
+      setIsCollapsed((prev) => !prev);
+    }
+  };
+
+  return (
+    <div
+      ref={sidebarRef}
+      className={`h-screen bg-primary flex flex-col hidden md:flex ${
+        isCollapsed ? "w-14" : "w-64"
+      } transition-[width] duration-200 ease-in-out sticky top-0`}
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
+      style={{ overflow: "hidden" }}
+    >
+      <SidebarHeader
+        isCollapsed={isCollapsed}
+        isPinned={isPinned}
+        togglePin={togglePin}
+        toggleCollapse={toggleCollapse}
+        theme={theme}
+        toggleTheme={toggleTheme}
+      />
+
+      <SidebarSearch
+        isCollapsed={isCollapsed}
+        searchTerm={searchTerm}
+        setSearchTerm={setSearchTerm}
+      />
+
+      <nav className="flex-1 overflow-hidden py-2 px-2">
+        <div className="h-full overflow-y-auto scrollbar-none">
+          {filteredMenuItems.map((menu) => (
+            <SidebarMenuItem
+              key={menu.id}
+              menu={menu}
+              isActive={isActive}
+              isExpanded={expandedMenus.includes(menu.id)}
+              onToggle={toggleMenu}
+              isCollapsed={isCollapsed}
+            />
+          ))}
+        </div>
+      </nav>
+
+      <SidebarFooter isCollapsed={isCollapsed} />
+    </div>
+  );
+};
+</file>
+
+<file path="src/components/admin/sidebar/SidebarFooter.jsx">
+import { FaBell, FaCog } from "react-icons/fa";
+
+export default function SidebarFooter({ isCollapsed }) {
+  return (
+    <div className="p-2 border-t border-white/10">
+      <div className="flex items-center justify-center">
+        {isCollapsed ? (
+          <div className="group relative w-full flex justify-center">
+            <div className="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center border border-white/20">
+              <span className="text-xs text-white">👤</span>
+            </div>
+            <div className="fixed left-14 hidden md:block bg-primary text-white text-sm py-1.5 px-3 rounded-md shadow-lg opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-50 whitespace-nowrap border border-white/10">
+              Admin User
+            </div>
+          </div>
+        ) : (
+          <div className="flex items-center justify-between w-full">
+            <div className="flex items-center space-x-2">
+              <div className="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center border border-white/20">
+                <span className="text-xs text-white">👤</span>
+              </div>
+              <div className="text-left">
+                <p className="text-xs font-medium text-white">Admin User</p>
+                <p className="text-xs text-white/60">admin@univ.edu</p>
+              </div>
+            </div>
+            {/* <div className="flex space-x-1">
+              <button className="p-1.5 rounded-lg hover:bg-white/10 transition-colors relative">
+                <FaBell className="w-3.5 h-3.5 text-white/60 hover:text-accent" />
+              </button>
+              <button className="p-1.5 rounded-lg hover:bg-white/10 transition-colors">
+                <FaCog className="w-3.5 h-3.5 text-white/60 hover:text-accent" />
+              </button>
+            </div> */}
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+</file>
+
+<file path="src/components/admin/sidebar/SidebarHeader.jsx">
+// src/components/admin/sidebar/SidebarHeader.jsx
+import { Link } from "react-router-dom";
+import { FaThumbtack, FaChevronRight, FaSun, FaMoon } from "react-icons/fa";
+import logo2 from "../../../assets/images/logo2.png";
+
+export default function SidebarHeader({
+  isCollapsed,
+  isPinned,
+  togglePin,
+  toggleCollapse,
+  theme,
+  toggleTheme,
+}) {
+  return (
+    <div className="p-2 border-b border-white/10">
+      <div className="flex items-center justify-between">
+        {isCollapsed ? (
+          <button
+            onClick={toggleCollapse}
+            className="p-1.5 rounded-lg hover:bg-white/10 transition-colors w-full flex items-center justify-center group relative"
+          >
+            <img src={logo2} className="h-8 w-auto rounded-xl" alt="Logo" />
+          </button>
+        ) : (
+          <div className="flex items-center justify-between w-full">
+            <Link
+              to="/admin"
+              className="flex items-center space-x-2 p-1.5 rounded-lg hover:bg-white/10 transition-colors"
+            >
+              <img src={logo2} className="h-8 w-auto rounded-xl" alt="Logo" />
+              <span className="text-sm font-bold text-white whitespace-nowrap">
+                S.A. University
+              </span>
+            </Link>
+
+            <div className="flex items-center space-x-1">
+              {/* Dark mode toggle */}
+              <button
+                onClick={toggleTheme}
+                className="p-1.5 rounded-lg hover:bg-white/10 transition-colors text-white/70 hover:text-accent cursor-pointer"
+                title="Toggle theme"
+              >
+                {theme === "dark" ? (
+                  <FaSun className="w-3.5 h-3.5" />
+                ) : (
+                  <FaMoon className="w-3.5 h-3.5" />
+                )}
+              </button>
+
+              {/* Pin toggle */}
+              <button
+                onClick={togglePin}
+                className={`p-1.5 rounded-lg hover:bg-white/10 transition-colors cursor-pointer ${
+                  isPinned ? "text-accent" : "text-white/40"
+                }`}
+                title={isPinned ? "Unpin sidebar" : "Pin sidebar"}
+              >
+                <FaThumbtack className="w-3.5 h-3.5" />
+              </button>
+
+              {/* Collapse toggle */}
+              <button
+                onClick={toggleCollapse}
+                className="p-1.5 rounded-lg hover:bg-white/10 transition-colors text-white/60 hover:text-white cursor-pointer"
+                title="Collapse sidebar"
+              >
+                <FaChevronRight className="w-3.5 h-3.5" />
+              </button>
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+</file>
+
+<file path="src/components/form/FormSection.jsx">
+// src/components/form/FormSection.jsx
+export default function FormSection({ title, children }) {
+  return (
+    <div className="bg-surface border border-border rounded-xl p-6">
+      <h2 className="text-lg font-heading font-semibold text-text mb-4">
+        {title}
+      </h2>
+      <div className="grid md:grid-cols-2 gap-4">{children}</div>
+    </div>
+  );
+}
+</file>
+
+<file path="src/components/form/FormSelect.jsx">
+// src/components/form/FormSelect.jsx
+export default function FormSelect({
+  label,
+  name,
+  register,
+  options = [],
+  required,
+}) {
+  return (
+    <div className="space-y-1">
+      <label className="text-sm font-medium text-text">
+        {label} {required && "*"}
+      </label>
+      <select
+        {...register(name, { required })}
+        className="w-full border border-border rounded-md px-3 py-2 bg-surface text-text"
+      >
+        <option value="">Select</option>
+        {options.map((opt) => (
+          <option key={opt.value} value={opt.value}>
+            {opt.label}
+          </option>
+        ))}
+      </select>
+    </div>
+  );
+}
+</file>
+
+<file path="src/components/form/FormTextarea.jsx">
+// src/components/form/FormTextarea.jsx
+export default function FormTextarea({
+  label,
+  name,
+  register,
+  required,
+  placeholder,
+}) {
+  return (
+    <div className="space-y-1">
+      <label className="text-sm font-medium text-text">
+        {label} {required && "*"}
+      </label>
+      <textarea
+        rows={3}
+        placeholder={placeholder}
+        {...register(name, { required })}
+        className="w-full border border-border rounded-md px-3 py-2 bg-surface text-text"
+      />
+    </div>
+  );
+}
+</file>
+
+<file path="src/components/public/HighlightNews.jsx">
+import React from "react";
+import { Link } from "react-router-dom";
+
+function NewsColumn({ title, items, headerColor }) {
+  return (
+    <div className="bg-surface border border-border rounded-3xl overflow-hidden shadow-md">
+      {/* Header */}
+      <div
+        className="text-white text-center py-3 font-heading font-semibold"
+        style={{ backgroundColor: headerColor }}
+      >
+        {title}
+      </div>
+
+      {/* Scrolling area */}
+      <div className="h-64 overflow-hidden relative">
+        <div className="absolute w-full animate-scroll">
+          {[...items, ...items].map((item, i) => (
+            <div
+              key={i}
+              className="flex gap-3 px-4 py-3 border-b border-border"
+            >
+              <div className="w-10 h-10 bg-primary/10 rounded-full flex items-center justify-center text-primary font-bold">
+                N
+              </div>
+
+              <div className="text-sm">
+                <p className="text-text font-medium">{item.title}</p>
+                <p className="text-muted text-xs">Date: {item.date}</p>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Footer */}
+      <div className="text-center py-3">
+        <Link
+          to="/news"
+          className="text-secondary font-semibold text-sm hover:underline"
+        >
+          VIEW ALL
+        </Link>
+      </div>
+    </div>
+  );
+}
+
+export default function HighlightNews() {
+  const campusNews = [
+    { title: "Diploma exam notice", date: "08/12/2025" },
+    { title: "Promotion notice for teachers", date: "21/11/2025" },
+    { title: "Scholarship notice", date: "30/10/2025" },
+  ];
+
+  const announcements = [
+    { title: "Project Associate recruitment", date: "16/01/2026" },
+    { title: "Research incentive notice", date: "25/12/2025" },
+    { title: "Assistant professor recruitment", date: "18/11/2025" },
+  ];
+
+  const universityNews = [
+    { title: "Registration instructions", date: "07/02/2026" },
+    { title: "Semester course notice", date: "07/02/2026" },
+    { title: "Education policy update", date: "06/02/2026" },
+  ];
+
+  return (
+    <section className="py-16 bg-bg">
+      <div className="max-w-6xl mx-auto px-6">
+        {/* Better heading */}
+        <div className="text-center mb-12">
+          <h3 className="text-3xl md:text-4xl font-heading font-bold text-text relative inline-block">
+            News & Updates
+            <span className="absolute -bottom-3 left-1/2 transform -translate-x-1/2 w-24 h-1 bg-gradient-to-r from-primary via-secondary to-accent rounded-full"></span>
+          </h3>
+        </div>
+
+        <div className="grid md:grid-cols-3 gap-6">
+          <NewsColumn
+            title="Campus News"
+            items={campusNews}
+            headerColor="#0b1f4b"
+          />
+          <NewsColumn
+            title="Announcements"
+            items={announcements}
+            headerColor="#b23a3a"
+          />
+          <NewsColumn
+            title="University News"
+            items={universityNews}
+            headerColor="#c9a227"
+          />
+        </div>
+      </div>
+    </section>
+  );
+}
+</file>
+
+<file path="src/components/public/Programs.jsx">
+import React from "react";
+
+export default function Programs() {
+  const programs = [
+    "Management",
+    "Law",
+    "Computer Science",
+    "Pharmacy",
+    "Education",
+    "Humanities",
+  ];
+
+  return (
+    <section className="py-16 bg-bg">
+      <div className="max-w-6xl mx-auto px-6">
+        <div className="text-center mb-12">
+          <h2 className="text-3xl font-heading font-bold text-primary">
+            Our Programs
+          </h2>
+          <p className="text-muted mt-3">
+            Explore industry-relevant courses designed for real-world success.
+          </p>
+        </div>
+
+        <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-6">
+          {programs.map((program, i) => (
+            <div
+              key={i}
+              className="bg-surface border border-border rounded-xl p-6 shadow-sm hover:shadow-md transition"
+            >
+              <h3 className="font-heading font-semibold text-lg text-primary">
+                {program}
+              </h3>
+              <p className="text-muted mt-2 text-sm">
+                High-quality curriculum with industry-focused learning.
+              </p>
+
+              <button className="mt-4 text-secondary font-medium hover:underline">
+                View details →
+              </button>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+</file>
+
+<file path="src/components/public/PublicFooter.jsx">
+// components/Footer.jsx
+import {
+  Footer,
+  FooterCopyright,
+  FooterIcon,
+  FooterLink,
+  FooterLinkGroup,
+  FooterTitle,
+} from "flowbite-react";
+import { BsFacebook, BsInstagram, BsTwitter } from "react-icons/bs";
+import { Link } from "react-router-dom";
+
+export default function PublicFooter() {
+  return (
+    <Footer className="bg-primary text-white rounded-none">
+      <div className="w-full">
+        <div className="grid w-full grid-cols-2 gap-8 px-6 py-10 md:grid-cols-4">
+          <div>
+            <FooterTitle title="University" className="text-accent" />
+            <FooterLinkGroup col>
+              <FooterLink href="#" className="text-white/80 hover:text-accent">
+                About
+              </FooterLink>
+              <FooterLink href="#" className="text-white/80 hover:text-accent">
+                Centers
+              </FooterLink>
+              <FooterLink href="#" className="text-white/80 hover:text-accent">
+                Admissions
+              </FooterLink>
+              <FooterLink href="#" className="text-white/80 hover:text-accent">
+                Contact
+              </FooterLink>
+            </FooterLinkGroup>
+          </div>
+
+          <div>
+            <FooterTitle title="Students" className="text-accent" />
+            <FooterLinkGroup col>
+              <FooterLink href="#" className="text-white/80 hover:text-accent">
+                Student Portal
+              </FooterLink>
+              <FooterLink href="#" className="text-white/80 hover:text-accent">
+                Results
+              </FooterLink>
+              <FooterLink href="#" className="text-white/80 hover:text-accent">
+                Academic Calendar
+              </FooterLink>
+            </FooterLinkGroup>
+          </div>
+
+          <div>
+            <FooterTitle title="Legal" className="text-accent" />
+            <FooterLinkGroup col>
+              <FooterLink href="#" className="text-white/80 hover:text-accent">
+                Privacy Policy
+              </FooterLink>
+              <FooterLink href="#" className="text-white/80 hover:text-accent">
+                Terms & Conditions
+              </FooterLink>
+            </FooterLinkGroup>
+          </div>
+
+          <div>
+            <FooterTitle title="Contact" className="text-accent" />
+            <p className="text-white/80 text-sm">
+              Aryavart International University
+              <br />
+              Uttar Pradesh, India
+              <br />
+              info@university.edu
+            </p>
+          </div>
+        </div>
+
+        {/* Bottom bar */}
+        <div className="w-full border-t border-white/20 px-6 py-4 sm:flex sm:items-center sm:justify-between">
+          <FooterCopyright
+            href="#"
+            by="Copyright 2018–2026 Aryavart International University"
+            className="text-white/70"
+          />
+
+          <div className="mt-4 flex space-x-6 sm:mt-0">
+            <FooterIcon
+              href="#"
+              icon={BsFacebook}
+              className="text-white/70 hover:text-accent"
+            />
+            <FooterIcon
+              href="#"
+              icon={BsInstagram}
+              className="text-white/70 hover:text-accent"
+            />
+            <FooterIcon
+              href="#"
+              icon={BsTwitter}
+              className="text-white/70 hover:text-accent"
+            />
+          </div>
+
+          <div className="text-white/70 text-sm mt-4 sm:mt-0">
+            Designed by <Link to="#">NSpro-webtech</Link>
+          </div>
+        </div>
+      </div>
+    </Footer>
+  );
+}
+</file>
+
+<file path="src/components/public/Stats.jsx">
+import React from "react";
+
+export default function Stats() {
+  const stats = [
+    { number: "50+", label: "Programs" },
+    { number: "100+", label: "Expert Faculty" },
+    { number: "5000+", label: "Students" },
+    { number: "25+", label: "Research Centers" },
+  ];
+
+  return (
+    <section className="bg-bg py-12">
+      <div className="max-w-6xl mx-auto px-6 grid grid-cols-2 md:grid-cols-4 gap-6">
+        {stats.map((stat, i) => (
+          <div
+            key={i}
+            className="bg-surface rounded-xl shadow-sm border border-border p-6 text-center"
+          >
+            <div className="text-2xl md:text-3xl font-heading font-bold text-primary">
+              {stat.number}
+            </div>
+            <div className="text-muted mt-2">{stat.label}</div>
+          </div>
+        ))}
+      </div>
+    </section>
+  );
+}
+</file>
+
+<file path="src/components/public/WhyUS.jsx">
+// src/components/public/WhyUS.jsx
+import React from "react";
+
+export default function WhyUs() {
+  return (
+    <section className="py-16 px-4 bg-primary">
+      <div className="container mx-auto max-w-6xl">
+        <div className="text-center mb-12">
+          <h2 className="text-3xl md:text-4xl font-heading font-bold text-white mb-4">
+            Why <span className="text-accent">Aryavart</span> International
+            University?
+          </h2>
+          <div className="w-24 h-1 bg-accent mx-auto rounded-full"></div>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-12">
+          {/* Left Column */}
+          <div className="space-y-6">
+            <div className="bg-surface/10 backdrop-blur-sm p-6 rounded-xl border border-white/2">
+              <h3 className="text-xl font-heading font-semibold text-accent mb-3 flex items-center gap-2">
+                <span className="w-2 h-2 bg-accent rounded-full"></span>
+                Academic Excellence
+              </h3>
+              <p className="text-white/90 leading-relaxed">
+                Aryavart International University offers a wide range of
+                academic programs in fields such as management, law, computer
+                science, education, humanities, pharmacy, social sciences, skill
+                and vocational education and many more. The University has a
+                diverse faculty with many experts in their respective fields who
+                provide students with a high-quality education.
+              </p>
+            </div>
+
+            <div className="bg-white/10 backdrop-blur-sm p-6 rounded-xl border border-white/20">
+              <h3 className="text-xl font-heading font-semibold text-accent mb-3 flex items-center gap-2">
+                <span className="w-2 h-2 bg-accent rounded-full"></span>
+                Industry-Oriented Learning
+              </h3>
+              <p className="text-white/90 leading-relaxed">
+                The curriculum is designed to ensure that students receive both
+                theoretical and industry oriented practical knowledge, which
+                prepares them for real-world challenges.
+              </p>
+            </div>
+          </div>
+
+          {/* Right Column */}
+          <div className="space-y-6">
+            <div className="bg-white/10 backdrop-blur-sm p-6 rounded-xl border border-white/20">
+              <h3 className="text-xl font-heading font-semibold text-accent mb-3 flex items-center gap-2">
+                <span className="w-2 h-2 bg-accent rounded-full"></span>
+                State-of-the-Art Campus
+              </h3>
+              <p className="text-white/90 leading-relaxed">
+                The University has a state-of-the-art campus with modern
+                facilities. The campus has a library, computer labs, science
+                labs, and sports facilities. The campus environment is conducive
+                to learning and provides students with an excellent experience.
+              </p>
+            </div>
+
+            <div className="bg-white/10 backdrop-blur-sm p-6 rounded-xl border border-white/20">
+              <h3 className="text-xl font-heading font-semibold text-accent mb-3 flex items-center gap-2">
+                <span className="w-2 h-2 bg-accent rounded-full"></span>
+                Research & Innovation
+              </h3>
+              <p className="text-white/90 leading-relaxed">
+                The University has a strong focus on research and innovation.
+                Research centers in various fields promote research and
+                development. Students participate in research projects and gain
+                practical experience through collaborations with leading
+                industries and research institutions.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        {/* Stats/Highlights */}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-12">
+          {[
+            { number: "50+", label: "Programs" },
+            { number: "100+", label: "Expert Faculty" },
+            { number: "5000+", label: "Students" },
+            { number: "25+", label: "Research Centers" },
+          ].map((stat, i) => (
+            <div
+              key={i}
+              className="text-center bg-surface/5 backdrop-blur-sm p-4 rounded-lg"
+            >
+              <div className="text-2xl md:text-3xl font-heading font-bold text-accent">
+                {stat.number}
+              </div>
+              <div className="text-sm text-white/80">{stat.label}</div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+</file>
+
+<file path="src/components/ui/Modal.jsx">
+// src/components/ui/Modal.jsx
+export default function Modal({
+  isOpen,
+  onClose,
+  title,
+  children,
+  footer,
+  size = "max-w-lg",
+}) {
+  if (!isOpen) return null;
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center">
+      {/* Overlay */}
+      <div className="absolute inset-0 bg-black/50" onClick={onClose} />
+
+      {/* Modal */}
+      <div
+        className={`
+          relative bg-surface text-text rounded-xl shadow-lg
+          w-full ${size} mx-4 border border-border
+        `}
+      >
+        {/* Header */}
+        <div className="px-6 py-4 border-b border-border flex justify-between items-center">
+          <h2 className="text-lg font-heading font-semibold">{title}</h2>
+          <button onClick={onClose} className="text-muted hover:text-text">
+            ✕
+          </button>
+        </div>
+
+        {/* Body */}
+        <div className="p-6">{children}</div>
+
+        {/* Footer */}
+        {footer && (
+          <div className="px-6 py-4 border-t border-border flex justify-end gap-3">
+            {footer}
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+</file>
+
+<file path="src/pages/admin/courses/CoursePanel.jsx">
+// src/pages/admin/courses/CoursePanel.jsx
+import { useEffect, useState } from "react";
+import {
+  fetchAllFaculty,
+  fetchCourses,
+  createCourse,
+  deleteCourse,
+} from "../../../api/courseApi";
+
+import CourseForm from "../../../components/admin/courses/CourseForm";
+import Table from "../../../components/table/Table";
+import Toast from "../../../components/ui/Toast";
+import Modal from "../../../components/ui/Modal";
+
+export default function CoursePanel() {
+  const [facultyList, setFacultyList] = useState([]);
+  const [selectedFaculty, setSelectedFaculty] = useState("");
+  const [courses, setCourses] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [toast, setToast] = useState(null);
+  const [deleteTarget, setDeleteTarget] = useState(null);
+
+  useEffect(() => {
+    loadFaculty();
+  }, []);
+
+  const loadFaculty = async () => {
+    try {
+      const data = await fetchAllFaculty();
+      setFacultyList(data);
+    } catch (err) {
+      setToast({ type: "error", message: err.message });
+    }
+  };
+  const loadCourses = async (facultyId) => {
+    setLoading(true);
+    try {
+      const data = await fetchCourses(facultyId);
+      setCourses(data);
+    } catch (err) {
+      setToast({ type: "error", message: err.message });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleFacultyChange = (value) => {
+    setSelectedFaculty(value);
+    if (value) {
+      loadCourses(value);
+    } else {
+      setCourses([]);
+    }
+  };
+
+  const handleCreate = async (courseData) => {
+    try {
+      await createCourse(courseData);
+      setToast({ type: "success", message: "Course created" });
+      loadCourses(courseData.facultyId);
+    } catch (err) {
+      setToast({ type: "error", message: err.message });
+    }
+  };
+
+  const confirmDelete = async () => {
+    if (!deleteTarget) return;
+
+    const original = [...courses];
+    setCourses((prev) => prev.filter((c) => c.id !== deleteTarget.id));
+
+    try {
+      await deleteCourse(deleteTarget.id);
+      setToast({ type: "success", message: "Course deleted" });
+    } catch (err) {
+      setCourses(original);
+      setToast({ type: "error", message: err.message });
+    } finally {
+      setDeleteTarget(null);
+    }
+  };
+
+  const columns = [
+    {
+      key: "serial",
+      label: "#",
+      render: (_, index) => index + 1,
+    },
+    {
+      key: "name",
+      label: "Course Name",
+    },
+  ];
+
+  const actions = [
+    {
+      icon: "🗑",
+      className:
+        "px-3 py-1 rounded bg-red-600 text-white hover:bg-red-700 text-sm",
+      onClick: (row) => setDeleteTarget(row),
+    },
+  ];
+
+  return (
+    <div className="space-y-8 p-6">
+      {toast && (
+        <Toast
+          type={toast.type}
+          message={toast.message}
+          onClose={() => setToast(null)}
+        />
+      )}
+
+      <CourseForm
+        facultyList={facultyList}
+        selectedFaculty={selectedFaculty}
+        onFacultyChange={handleFacultyChange}
+        onSubmit={handleCreate}
+      />
+
+      <Table
+        title="Course List"
+        columns={columns}
+        data={courses}
+        actions={actions}
+        loading={loading}
+        emptyMessage="No courses found"
+      />
+
+      <Modal
+        isOpen={!!deleteTarget}
+        title="Confirm Delete"
+        onClose={() => setDeleteTarget(null)}
+        footer={
+          <>
+            <button
+              onClick={() => setDeleteTarget(null)}
+              className="px-4 py-2 border rounded"
+            >
+              Cancel
+            </button>
+            <button
+              onClick={confirmDelete}
+              className="px-4 py-2 bg-red-600 text-white rounded"
+            >
+              Delete
+            </button>
+          </>
+        }
+      >
+        {deleteTarget && (
+          <p>
+            Delete "<strong>{deleteTarget.name}</strong>"?
+          </p>
+        )}
+      </Modal>
+    </div>
+  );
+}
+</file>
+
+<file path="src/pages/admin/courses/FacultyPanel.jsx">
+// src/pages/admin/courses/FacultyPanel.jsx
+import React, { useEffect, useState } from "react";
+import { fetchCourseCategories } from "../../../api/courseCategoryApi";
+import {
+  fetchFaculty,
+  createFaculty,
+  deleteFaculty,
+} from "../../../api/facultyApi";
+import FacultyForm from "../../../components/admin/courses/FacultyForm";
+import Toast from "../../../components/ui/Toast";
+import Modal from "../../../components/ui/Modal";
+import Table from "../../../components/table/Table";
+
+export default function FacultyPanel() {
+  const [courseTypes, setCourseTypes] = useState([]);
+  const [selectedCourseType, setSelectedCourseType] = useState("");
+  const [facultyList, setFacultyList] = useState([]);
+  const [toast, setToast] = useState(null);
+  const [deleteTarget, setDeleteTarget] = useState(null);
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    loadCourseTypes();
+  }, []);
+
+  const loadCourseTypes = async () => {
+    try {
+      const data = await fetchCourseCategories();
+      setCourseTypes(data);
+    } catch (err) {
+      setToast({ type: "error", message: err.message });
+    }
+  };
+
+  const loadFaculty = async (courseTypeId) => {
+    setLoading(true);
+    try {
+      const data = await fetchFaculty(courseTypeId);
+      setFacultyList(data);
+    } catch (err) {
+      setToast({ type: "error", message: err.message });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleCourseChange = (value) => {
+    setSelectedCourseType(value);
+    if (value) {
+      loadFaculty(value);
+    } else {
+      setFacultyList([]);
+    }
+  };
+
+  const handleCreateFaculty = async (name) => {
+    if (!selectedCourseType) {
+      setToast({
+        type: "warning",
+        message: "Please select a course type first",
+      });
+      return;
+    }
+
+    try {
+      await createFaculty(selectedCourseType, name);
+      setToast({ type: "success", message: "Faculty created" });
+      loadFaculty(selectedCourseType);
+    } catch (err) {
+      setToast({ type: "error", message: err.message });
+    }
+  };
+
+  const confirmDelete = async () => {
+    if (!deleteTarget) return;
+
+    const original = [...facultyList];
+
+    setFacultyList((prev) => prev.filter((f) => f.id !== deleteTarget.id));
+
+    try {
+      await deleteFaculty(deleteTarget.id);
+      setToast({
+        type: "success",
+        message: "Faculty deleted successfully",
+      });
+    } catch (err) {
+      setFacultyList(original);
+      setToast({
+        type: "error",
+        message: err.message,
+      });
+    } finally {
+      setDeleteTarget(null);
+    }
+  };
+
+  const columns = [
+    {
+      key: "serial",
+      label: "#",
+      render: (_, index) => index + 1,
+    },
+    {
+      key: "name",
+      label: "Faculty Name",
+    },
+  ];
+  const actions = [
+    {
+      icon: "🗑",
+      className:
+        "px-3 py-1 rounded bg-red-600 text-white hover:bg-red-700 text-sm",
+      onClick: (row) => setDeleteTarget(row),
+    },
+  ];
+
+  return (
+    <div className="space-y-8 p-6">
+      {toast && (
+        <Toast
+          type={toast.type}
+          message={toast.message}
+          onClose={() => setToast(null)}
+        />
+      )}
+
+      <FacultyForm
+        courseTypes={courseTypes}
+        selectedCourseType={selectedCourseType}
+        onCourseChange={handleCourseChange}
+        onSubmit={handleCreateFaculty}
+      />
+
+      <Table
+        title="Faculty List"
+        columns={columns}
+        data={facultyList}
+        actions={actions}
+        loading={loading}
+        emptyMessage="No faculty found"
+      />
+
+      <Modal
+        isOpen={!!deleteTarget}
+        title="Confirm Delete"
+        onClose={() => setDeleteTarget(null)}
+        footer={
+          <>
+            <button
+              onClick={() => setDeleteTarget(null)}
+              className="px-4 py-2 border rounded"
+            >
+              Cancel
+            </button>
+            <button
+              onClick={confirmDelete}
+              className="px-4 py-2 bg-red-600 text-white rounded"
+            >
+              Delete
+            </button>
+          </>
+        }
+      >
+        {deleteTarget && (
+          <p>
+            Delete "<strong>{deleteTarget.name}</strong>"?
+          </p>
+        )}
+      </Modal>
+    </div>
+  );
+}
+</file>
+
+<file path="src/pages/public/About.jsx">
+import React from "react";
+
+export default function About() {
+  return (
+    <div className="bg-bg text-text">
+      {/* Hero / Page Title */}
+      <section className="bg-primary text-white py-16">
+        <div className="max-w-5xl mx-auto px-6 text-center">
+          <h1 className="text-3xl md:text-4xl font-heading font-bold">
+            About Saveetha Amaravati University
+          </h1>
+          <p className="mt-4 text-white/90">
+            A transformative educational experience built on academic
+            excellence, innovation, and holistic development.
+          </p>
+        </div>
+      </section>
+
+      {/* Main Content */}
+      <section className="py-16">
+        <div className="max-w-5xl mx-auto px-6 space-y-14">
+          {/* Intro */}
+          <div>
+            <p className="text-lg leading-relaxed text-muted">
+              Saveetha Amaravati University is located on an 80-acre green
+              campus in Vijayawada, Andhra Pradesh, and is committed to
+              delivering a transformative educational experience that blends
+              academic excellence, innovation, and holistic development.
+            </p>
+          </div>
+
+          {/* Legacy */}
+          <div>
+            <h2 className="text-2xl font-heading font-bold text-primary mb-4">
+              Our Legacy & Identity
+            </h2>
+            <p className="text-muted leading-relaxed">
+              Established as part of the renowned Saveetha Group of Educational
+              Institutions, the university inherits a tradition of quality
+              education and institutional excellence. It is recognised under the
+              Andhra Pradesh Amendment Act No. 8 of 2005 and under Section 2(f)
+              of the University Grants Commission (UGC) Act, 1956.
+            </p>
+            <p className="text-muted leading-relaxed mt-4">
+              Saveetha Amaravati University was founded with the vision of
+              advancing world-class education in the emerging capital region of
+              Amaravati. It offers a dynamic and interdisciplinary learning
+              environment, with a strong focus on Allied Health Sciences,
+              Paramedical Studies, research, and professional education.
+            </p>
+          </div>
+
+          {/* Vision & Mission */}
+          <div className="grid md:grid-cols-2 gap-8">
+            <div className="bg-surface border border-border rounded-xl p-6">
+              <h3 className="text-xl font-heading font-bold text-primary mb-3">
+                Vision
+              </h3>
+              <p className="text-muted leading-relaxed">
+                To become a globally respected university known for academic
+                brilliance, social commitment, and innovation-driven learning.
+                The university aims to prepare young minds to solve real-world
+                challenges with responsibility, creativity, and compassion.
+              </p>
+            </div>
+
+            <div className="bg-surface border border-border rounded-xl p-6">
+              <h3 className="text-xl font-heading font-bold text-primary mb-3">
+                Mission
+              </h3>
+              <p className="text-muted leading-relaxed">
+                To provide transformative education that equips students with
+                knowledge, skills, and ethical values needed to excel in their
+                careers and make meaningful contributions to society. This
+                mission integrates academic inquiry with real-world impact
+                through experiential learning, interdisciplinary research, and
+                holistic development.
+              </p>
+            </div>
+          </div>
+
+          {/* Campus */}
+          <div>
+            <h2 className="text-2xl font-heading font-bold text-primary mb-4">
+              Campus & Infrastructure
+            </h2>
+            <p className="text-muted leading-relaxed">
+              The university campus spans 80 acres and includes smart
+              classrooms, state-of-the-art laboratories, research centers,
+              libraries, hostels, and sports facilities — all designed to
+              inspire innovation and collaboration.
+            </p>
+          </div>
+
+          {/* Career Focus */}
+          <div>
+            <h2 className="text-2xl font-heading font-bold text-primary mb-4">
+              Academic & Career Focus
+            </h2>
+            <p className="text-muted leading-relaxed">
+              Saveetha Amaravati University emphasizes outcome-based education,
+              student-centric learning, and strong industry partnerships. A
+              robust Career Development and Placement Cell connects students
+              with top recruiters through training, internships, and campus
+              recruitment drives.
+            </p>
+          </div>
+
+          {/* Partnerships */}
+          <div>
+            <h2 className="text-2xl font-heading font-bold text-primary mb-4">
+              Partnerships & Innovation
+            </h2>
+            <p className="text-muted leading-relaxed">
+              The university collaborates with leading global institutions,
+              research bodies, and industries to promote academic excellence,
+              innovation, and entrepreneurship. Its incubation center supports
+              startup initiatives through mentorship, funding, and
+              infrastructure.
+            </p>
+          </div>
+        </div>
+      </section>
+    </div>
+  );
+}
+</file>
+
+<file path="src/pages/public/Contact.jsx">
+import React from "react";
+
+export default function Contact() {
+  return (
+    <div className="bg-bg text-text">
+      {/* Page Title */}
+      <section className="bg-primary text-white py-14">
+        <div className="max-w-6xl mx-auto px-6 text-center">
+          <h1 className="text-3xl md:text-4xl font-heading font-bold">
+            Contact <span className="text-accent">Us</span>
+          </h1>
+        </div>
+      </section>
+
+      {/* Info Cards */}
+      <section className="py-12">
+        <div className="max-w-6xl mx-auto px-6 grid md:grid-cols-3 gap-6">
+          {/* Address */}
+          <div className="bg-surface border border-border rounded-xl p-6 shadow-sm">
+            <h3 className="text-xl font-heading font-semibold text-primary mb-3">
+              Address
+            </h3>
+            <p className="text-muted leading-relaxed">
+              Vaishnavi Complex, Chennai - Kolkata Hwy,
+              <br />
+              Guru Nanak Colony,
+              <br />
+              Vijayawada, Andhra Pradesh 520008
+            </p>
+          </div>
+
+          {/* Mobile */}
+          <div className="bg-surface border border-border rounded-xl p-6 shadow-sm">
+            <h3 className="text-xl font-heading font-semibold text-primary mb-3">
+              Mobile No.
+            </h3>
+            <p className="text-muted text-lg">08062182405</p>
+          </div>
+
+          {/* Email */}
+          <div className="bg-surface border border-border rounded-xl p-6 shadow-sm">
+            <h3 className="text-xl font-heading font-semibold text-primary mb-3">
+              Mail
+            </h3>
+            <p className="text-muted">info@saveethaamaravatiuniversity.ac.in</p>
+          </div>
+        </div>
+      </section>
+
+      {/* Map + Form */}
+      <section className="pb-16">
+        <div className="max-w-6xl mx-auto px-6 grid md:grid-cols-2 gap-8">
+          {/* Map */}
+          <div className="bg-surface border border-border rounded-xl overflow-hidden shadow-sm">
+            <iframe
+              title="University Location"
+              src="https://www.google.com/maps?q=Saveetha%20Amaravati%20University&output=embed"
+              className="w-full h-[400px] border-0"
+              loading="lazy"
+            />
+          </div>
+
+          {/* Enquiry Form */}
+          <div className="bg-surface border border-border rounded-xl p-6 shadow-sm">
+            <h3 className="text-2xl font-heading font-bold text-primary mb-6">
+              Enquiry Form
+            </h3>
+
+            <form className="space-y-4">
+              <input
+                type="text"
+                placeholder="Enter Name"
+                className="w-full border border-border rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-secondary"
+              />
+
+              <div className="grid grid-cols-2 gap-4">
+                <input
+                  type="text"
+                  placeholder="Enter Contact"
+                  className="border border-border rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-secondary"
+                />
+                <input
+                  type="email"
+                  placeholder="Enter Email"
+                  className="border border-border rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-secondary"
+                />
+              </div>
+
+              <textarea
+                placeholder="Enter Query..."
+                rows="4"
+                className="w-full border border-border rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-secondary"
+              />
+
+              <div className="flex justify-between">
+                <button
+                  type="submit"
+                  className="bg-secondary text-white px-6 py-2 rounded-md hover:bg-secondary/90"
+                >
+                  Submit
+                </button>
+
+                <button
+                  type="reset"
+                  className="border border-border text-muted px-6 py-2 rounded-md hover:bg-bg"
+                >
+                  Reset
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </section>
+    </div>
+  );
+}
+</file>
+
+<file path="src/pages/student/StudentDashboard.jsx">
+// src/pages/StudentDashboard.jsx
+import React from "react";
+import { Card } from "flowbite-react";
+import {
+  HiAcademicCap,
+  HiCalendar,
+  HiCash,
+  HiChartBar,
+  HiClock,
+} from "react-icons/hi";
+
+export default function StudentDashboard() {
+  // Dummy data (later you'll replace with real API data)
+  const student = {
+    name: "Aman Nagar",
+    rollNo: "SU2023CS045",
+    branch: "Computer Science & Engineering",
+    semester: "6th Semester",
+    cgpa: "8.4",
+    attendance: "92%",
+  };
+
+  const upcomingEvents = [
+    { title: "Mid Semester Exam", date: "March 10–14, 2026" },
+    { title: "Cultural Fest – Srijan", date: "March 20–22, 2026" },
+    { title: "Fee Payment Deadline", date: "March 31, 2026" },
+  ];
+
+  const quickStats = [
+    { icon: HiAcademicCap, label: "Current SGPA", value: "8.7" },
+    { icon: HiClock, label: "Attendance", value: student.attendance },
+    { icon: HiCash, label: "Pending Fee", value: "₹ 0" },
+    { icon: HiChartBar, label: "Backlogs", value: "0" },
+  ];
+
+  return (
+    <div className="min-h-screen bg-bg text-text p-4 md:p-6">
+      {/* Header / Welcome */}
+      <div className="mb-8">
+        <h1 className="text-2xl md:text-3xl font-bold text-primary">
+          Welcome back, {student.name.split(" ")[0]}
+        </h1>
+        <p className="text-muted mt-1">
+          {student.rollNo} • {student.branch}
+        </p>
+      </div>
+
+      {/* Quick Stats Cards */}
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+        {quickStats.map((stat, idx) => (
+          <Card
+            key={idx}
+            className="border-l-4 border-accent hover:shadow-md transition-shadow"
+          >
+            <div className="flex items-center gap-3">
+              <stat.icon className="w-8 h-8 text-accent" />
+              <div>
+                <p className="text-sm text-muted">{stat.label}</p>
+                <p className="text-xl font-semibold">{stat.value}</p>
+              </div>
+            </div>
+          </Card>
+        ))}
+      </div>
+
+      {/* Main Sections */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        {/* Left – Student Info Card */}
+        <Card className="lg:col-span-1 border-t-4 border-primary">
+          <h2 className="text-lg font-semibold mb-4 flex items-center gap-2">
+            <HiAcademicCap className="w-5 h-5 text-primary" />
+            Student Profile
+          </h2>
+
+          <div className="space-y-3 text-sm">
+            <div className="flex justify-between">
+              <span className="text-muted">Name</span>
+              <span className="font-medium">{student.name}</span>
+            </div>
+            <div className="flex justify-between">
+              <span className="text-muted">Roll No</span>
+              <span className="font-medium">{student.rollNo}</span>
+            </div>
+            <div className="flex justify-between">
+              <span className="text-muted">Semester</span>
+              <span className="font-medium">{student.semester}</span>
+            </div>
+            <div className="flex justify-between">
+              <span className="text-muted">CGPA</span>
+              <span className="font-semibold text-success">{student.cgpa}</span>
+            </div>
+          </div>
+        </Card>
+
+        {/* Center – Upcoming Events */}
+        <Card className="lg:col-span-2 border-t-4 border-secondary">
+          <h2 className="text-lg font-semibold mb-4 flex items-center gap-2">
+            <HiCalendar className="w-5 h-5 text-secondary" />
+            Upcoming Important Dates
+          </h2>
+
+          <div className="space-y-4">
+            {upcomingEvents.map((event, idx) => (
+              <div
+                key={idx}
+                className="flex justify-between items-center p-3 bg-surface/50 rounded-lg border border-border hover:bg-surface transition"
+              >
+                <div>
+                  <p className="font-medium">{event.title}</p>
+                  <p className="text-sm text-muted">{event.date}</p>
+                </div>
+                <span className="text-xs px-2.5 py-1 bg-accent/10 text-accent rounded-full">
+                  Soon
+                </span>
+              </div>
+            ))}
+          </div>
+        </Card>
+      </div>
+
+      {/* Optional small footer note */}
+      <p className="text-center text-muted text-sm mt-10">
+        Saveetha University Student Portal • Data will be updated from API soon
+      </p>
+    </div>
+  );
+}
+</file>
+
+<file path="index.html">
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@600;700&display=swap"
+      rel="stylesheet"
+    />
+
+    <title>collage-managment</title>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.jsx"></script>
+  </body>
+</html>
+</file>
+
+<file path="prompt.md">
+**Project Title:** University Management System (Admin + Public Portal)
+
+**Project Type:** Full-stack web application (Admin dashboard + public website)
+
+## 1. Tech Stack
+
+### Frontend
+
+- React (Vite)
+- React Router (routing)
+- Tailwind CSS (utility styling)
+- Flowbite (UI components)
+- React Hook Form (form handling)
+- Framer Motion (animations)
+- React Icons
+
+### Backend (existing API)
+
+- REST API (external backend provided)
+- Base URL:
+  `https://api.nsprowebtech.com/backend/api/v1`
+
+---
+
+## 2. Main App Structure
+
+The app has **two separate UI systems**:
+
+### 1. Public Website
+
+Accessible to everyone:
+
+- Home
+- About
+- Contact
+- News
+- Login
+
+Uses:
+
+```
+PublicLayout
+```
+
+### 2. Admin Panel
+
+Accessible after login:
+
+- Dashboard
+- Students
+- Academics
+- Examinations
+- Events
+- Communications
+- Reports
+- Settings
+
+Uses:
+
+```
+AdminLayout
+```
+
+Each layout has:
+
+- Separate header
+- Separate sidebar
+- Separate theme logic
+
+---
+
+## 3. Routing Structure
+
+Example routes:
+
+### Public Routes
+
+```
+/
+ /about
+ /contact
+ /news
+ /login
+```
+
+### Admin Routes
+
+```
+/admin
+/admin/students
+/admin/students/add
+/admin/settings/site-settings
+```
+
+---
+
+## 4. Folder Structure
+
+```
+src/
+│
+├── api/
+│   └── settingsApi.js
+│
+├── assets/
+│   └── images/
+│
+├── components/
+│   ├── admin/
+│   │   ├── AdminHeader.jsx
+│   │   ├── sidebar/
+│   │   │   ├── AdminSidebar.jsx
+│   │   │   ├── SidebarHeader.jsx
+│   │   │   ├── SidebarMenuItem.jsx
+│   │   │   ├── SidebarSearch.jsx
+│   │   │   └── SidebarFooter.jsx
+│   │   │
+│   │   └── settings/
+│   │       ├── SettingsForm.jsx
+│   │
+│   └── form/
+│       ├── FormInput.jsx
+│       ├── FormSelect.jsx
+│       ├── FormFileInput.jsx
+│       └── FormSection.jsx
+│
+├── layouts/
+│   ├── PublicLayout.jsx
+│   └── AdminLayout.jsx
+│
+├── pages/
+│   ├── public/
+│   │   ├── Home.jsx
+│   │   ├── About.jsx
+│   │   ├── Contact.jsx
+│   │   └── News.jsx
+│   │
+│   ├── admin/
+│   │   ├── AdminDashboard.jsx
+│   │   │
+│   │   ├── students/
+│   │   │   └── AddStudent.jsx
+│   │   │
+│   │   └── settings/
+│   │       └── SiteSettingsPanel.jsx
+│
+├── utils/
+│   └── adminSettings.js
+│
+├── App.jsx
+└── index.css
+```
+
+---
+
+## 5. Theme System
+
+The app uses **CSS variables** for theming.
+
+### Light Mode
+
+- Background: light gray
+- Surface: white
+- Text: dark gray
+- Primary: academic navy
+- Accent: university gold
+
+### Dark Mode
+
+- Background: deep blue-black
+- Surface: dark slate
+- Text: light gray
+- Primary: brighter navy
+- Accent: brighter gold
+
+Dark mode is:
+
+- Admin-only
+- Stored in `localStorage`
+- Applied via `.dark` class in `AdminLayout`
+
+---
+
+## 6. Admin Panel Features
+
+### Sidebar
+
+- Collapsible
+- Pinned/unpinned state
+- Hover auto-expand
+- Search filter
+- State stored in localStorage
+
+### Header
+
+- Breadcrumb navigation
+- Dynamic page title
+- Admin user display
+- Dark mode toggle
+
+---
+
+## 7. Forms System
+
+All forms use:
+
+- React Hook Form
+- Reusable components
+
+### Reusable Form Components
+
+```
+FormInput
+FormSelect
+FormFileInput
+FormSection
+```
+
+---
+
+## 8. Student Admission Flow
+
+The “Add Student” page is a **4-step form wizard**:
+
+### Step 1: Personal Details
+
+- Candidate name
+- Father’s name
+- Mother’s name
+- DOB
+- Gender
+- Category
+- ID proof
+- Photo upload
+
+### Step 2: Communication Details
+
+- Address
+- Phone
+- Email
+- City, State, etc.
+
+### Step 3: Previous Qualification
+
+Table-based input:
+
+- Secondary
+- Sr. Secondary
+- Graduation
+- Post Graduation
+- Other
+
+Each row:
+
+- Year
+- Board
+- Percentage
+- Document upload
+
+### Step 4: Programme Details
+
+- Course type
+- Faculty
+- Stream
+- Session
+- Year
+- Hostel option
+- Application fee
+
+---
+
+## 9. Site Settings Page
+
+Admin can submit:
+
+- College name
+- Short name
+- Email
+- Phone
+- Address
+- Logo
+- Additional logo
+- Favicon
+
+Uses:
+
+```
+POST /settings/
+```
+
+Form sends:
+
+```
+multipart/form-data
+```
+
+---
+
+## 10. Public Homepage Features
+
+Sections:
+
+- Hero/banner
+- Highlight news (auto vertical scrolling)
+- Campus news
+- Announcements
+- University news
+- Footer
+
+News cards:
+
+- Scroll automatically
+- “View All” opens `/news` page
+
+---
+
+## 11. Design Principles Used
+
+- Admin and Public UI are completely separate
+- Reusable form components for scalability
+- Theme via CSS variables
+- Sidebar state persisted in localStorage
+- Minimal, working, fast-delivery architecture
+
+---
+
+## 12. Current Project Status
+
+Completed:
+
+- Public layout and pages
+- Admin layout and sidebar
+- Dark mode (admin only)
+- Site settings form
+- Student admission multi-step form
+- News section with scrolling
+- Reusable form system
+
+Pending:
+
+- Full backend integration
+- Validation rules
+- Role-based login redirect
+- Data tables for students/centers
+</file>
+
+<file path="vite.config.js">
+// vite.config.js
+import { defineConfig } from "vite";
+import react from "@vitejs/plugin-react";
+import tailwindcss from "@tailwindcss/vite";
+
+// https://vite.dev/config/
+export default defineConfig({
+  plugins: [react(), tailwindcss()],
+});
+</file>
+
+<file path="src/components/admin/courses/CourseCategoryForm.jsx">
+// src/components/admin/courses/CourseCategoryForm.jsx
+import { useForm } from "react-hook-form";
+import FormSection from "../../form/FormSection";
+import FormInput from "../../form/FormInput";
+
+export default function CourseCategoryForm({ onSubmit, loading }) {
+  const {
+    register,
+    handleSubmit,
+    reset,
+    formState: { errors, isSubmitting },
+  } = useForm();
+
+  const onFormSubmit = async (data) => {
+    await onSubmit(data);
+    reset();
+  };
+
+  return (
+    <form onSubmit={handleSubmit(onFormSubmit)} className="space-y-6">
+      <FormSection title="Add New Course Category">
+        <FormInput
+          label="Category Name"
+          name="category"
+          register={register}
+          required="Please enter a category name"
+          placeholder="e.g. Under Graduate, Diploma, Certificate..."
+          error={errors.category?.message}
+        />
+      </FormSection>
+
+      <div>
+        <button
+          type="submit"
+          disabled={loading || isSubmitting}
+          className={`px-6 py-2.5 rounded-md text-white font-medium transition focus:outline-none focus:ring-2 focus:ring-offset-2 ${
+            loading || isSubmitting
+              ? "bg-gray-400 cursor-not-allowed"
+              : "bg-primary hover:bg-primary/90 focus:ring-primary/50"
+          }`}
+        >
+          {loading || isSubmitting ? "Creating..." : "Create Category"}
+        </button>
+      </div>
+    </form>
+  );
+}
+</file>
+
+<file path="src/components/admin/settings/SettingsForm.jsx">
+// src/components/admin/settings/SettingsForm.jsx
+import { useForm } from "react-hook-form";
+import FormInput from "../../form/FormInput";
+import FormTextarea from "../../form/FormTextarea";
+import FormFileInput from "../../form/FormFileInput";
+import FormSection from "../../form/FormSection";
+
+export default function SettingsForm({ onSubmit, loading }) {
+  const { register, handleSubmit, reset } = useForm();
+
+  const submitHandler = async (data) => {
+    const formData = new FormData();
+
+    Object.keys(data).forEach((key) => {
+      if (data[key]) {
+        if (data[key][0] instanceof File) {
+          formData.append(key, data[key][0]);
+        } else {
+          formData.append(key, data[key]);
+        }
+      }
+    });
+
+    await onSubmit(formData);
+    reset();
+  };
+
+  return (
+    <form
+      onSubmit={handleSubmit(submitHandler)}
+      className="bg-surface border border-border rounded-xl p-6 space-y-8"
+    >
+      <FormSection title="Basic Information">
+        <FormInput
+          label="College Name"
+          name="college_name"
+          register={register}
+          required
+          placeholder="College Name"
+        />
+
+        <FormInput
+          label="Short Name"
+          name="short_name"
+          register={register}
+          placeholder="Short Name"
+        />
+
+        <FormInput
+          label="Email"
+          name="email"
+          register={register}
+          type="email"
+          placeholder="Email"
+        />
+
+        <FormInput
+          label="Phone"
+          name="phone"
+          register={register}
+          placeholder="Phone"
+        />
+
+        <FormInput
+          label="Alternate Phone"
+          name="alternate_phone"
+          register={register}
+          placeholder="Alternate Phone"
+        />
+
+        <div className="md:col-span-2">
+          <FormTextarea
+            label="Address"
+            name="address"
+            register={register}
+            placeholder="Address"
+          />
+        </div>
+      </FormSection>
+
+      <FormSection title="Branding">
+        <FormFileInput label="Logo" name="logo" register={register} />
+
+        <FormFileInput
+          label="Additional Logo"
+          name="additional_logo"
+          register={register}
+        />
+
+        <FormFileInput label="Favicon" name="favicon" register={register} />
+      </FormSection>
+
+      <button
+        type="submit"
+        disabled={loading}
+        className="bg-primary text-white px-6 py-2 rounded-md hover:opacity-90 transition"
+      >
+        {loading ? "Saving..." : "Save Settings"}
+      </button>
+    </form>
+  );
+}
+</file>
+
+<file path="src/components/form/FormFileInput.jsx">
+// src/components/form/FormFileInput.jsx
+import { useState } from "react";
+
+export default function FormFileInput({
+  label,
+  name,
+  register,
+  accept = "image/*",
+  required = false,
+}) {
+  const [preview, setPreview] = useState(null);
+
+  // Get the onChange and ref from register
+  const { onChange, ...rest } = register(name, { required });
+
+  const handlePreview = (e) => {
+    const file = e.target.files[0];
+    if (file && file.type.startsWith("image/")) {
+      setPreview(URL.createObjectURL(file));
+    }
+    // Crucial: Call the original React Hook Form onChange
+    onChange(e);
+  };
+
+  return (
+    <div className="space-y-1">
+      <label className="text-xs font-semibold text-text uppercase tracking-wider">
+        {label} {required && "*"}
+      </label>
+
+      <div className="flex items-center gap-3 p-2 border border-border rounded-md bg-surface transition-sm focus-within:ring-1 focus-within:ring-primary">
+        {/* Compact Thumbnail */}
+        <div className="flex-shrink-0">
+          {preview ? (
+            <img
+              src={preview}
+              alt="Preview"
+              className="h-10 w-10 object-cover rounded shadow-sm border border-border"
+            />
+          ) : (
+            <></>
+          )}
+        </div>
+
+        {/* Lean Input */}
+        <input
+          type="file"
+          accept={accept}
+          {...rest}
+          onChange={handlePreview}
+          className="pl-5 block w-full text-xs text-text 
+            file:mr-3 file:py-1 file:px-3
+            file:rounded file:border-0
+            file:text-xs file:font-medium
+            file:bg-primary file:text-white
+            hover:file:bg-primary/90 cursor-pointer"
+        />
+      </div>
+    </div>
+  );
+}
+</file>
+
+<file path="src/components/form/FormInput.jsx">
+// src/components/form/FormInput.jsx
+export default function FormInput({
+  label,
+  name,
+  register,
+  required,
+  type = "text",
+  placeholder,
+}) {
+  return (
+    <div className="space-y-1">
+      <label className="text-sm font-medium text-text">
+        {label} {required && "*"}
+      </label>
+      <input
+        type={type}
+        placeholder={placeholder}
+        {...register(name, { required })}
+        className="w-full border border-border rounded-md px-3 py-2 bg-surface text-text focus:outline-none focus:ring-2 focus:ring-accent placeholder:text-xs placeholder-gray-500"
+      />
+    </div>
+  );
+}
+</file>
+
+<file path="src/components/public/Hero.jsx">
+// src/components/public/Hero.jsx
+import React from "react";
+
+export default function Hero() {
+  return (
+    <>
+      <section className="h-[70vh] bg-primary text-white ">
+        <div className="max-w-6xl mx-auto px-6 py-16 md:py-24 grid md:grid-cols-2 gap-10 items-center">
+          {/* Left content */}
+          <div>
+            <h1 className="text-3xl md:text-5xl font-heading font-bold leading-tight">
+              Shaping Futures Through Quality Education
+            </h1>
+
+            <p className="mt-6 text-white/90 text-lg">
+              Industry-oriented programs, experienced faculty, and a modern
+              campus designed for tomorrow’s leaders.
+            </p>
+
+            <div className="mt-8 flex gap-4">
+              <button className="bg-secondary hover:bg-secondary/90 text-white px-6 py-3 rounded-lg font-semibold">
+                Apply Now
+              </button>
+              <button className="border border-white text-white px-6 py-3 rounded-lg hover:bg-white hover:text-primary transition">
+                Explore Programs
+              </button>
+            </div>
+          </div>
+
+          {/* Right image */}
+          <div className="hidden md:block">
+            <img
+              src="https://saveethaamaravatiuniversity.ac.in/uploads/slider__17705748893.jpg"
+              alt="Campus"
+              className="rounded-xl shadow-lg"
+            />
+          </div>
+        </div>
+      </section>
+    </>
+  );
+}
+</file>
+
+<file path="src/components/public/HeroSlider.jsx">
+// src/components/public/HeroSlider.jsx
+import { Carousel } from "flowbite-react";
+
+export function HeroSlider() {
+  return (
+    <div className="h-[80vh]">
+      <Carousel className="!rounded-none">
+        <div className="flex h-full items-center justify-center bg-primary relative">
+          <img
+            src="https://saveethaamaravatiuniversity.ac.in/uploads/slider__17705748893.jpg"
+            className="absolute w-full h-full object-cover"
+            alt="Campus"
+          />
+          <div className="absolute inset-0 bg-[var(--color-overlay)]"></div>
+          <div className="relative z-10 text-white text-center">
+            <h3 className="text-2xl font-bold">Welcome to University</h3>
+            <p className="text-lg">Excellence in Education</p>
+          </div>
+        </div>
+
+        <div className="flex h-full items-center justify-center bg-primary relative">
+          <img
+            src="https://images.unsplash.com/photo-1541339907198-e08756dedf3f"
+            alt="Students studying"
+            className="absolute w-full h-full object-cover"
+          />
+          <div className="absolute inset-0 bg-[var(--color-overlay)]"></div>
+          <div className="relative z-10 text-white text-center">
+            <h3 className="text-2xl font-bold">Modern Facilities</h3>
+            <p className="text-lg">State-of-the-art campus</p>
+          </div>
+        </div>
+
+        <div className="flex h-full items-center justify-center bg-primary relative">
+          <img
+            src="https://images.unsplash.com/photo-1523240795612-9a054b0db644"
+            alt="Graduation ceremony"
+            className="absolute w-full h-full object-cover"
+          />
+          <div className="absolute inset-0 bg-[var(--color-overlay)]"></div>
+          <div className="relative z-10 text-white text-center">
+            <h3 className="text-2xl font-bold">Bright Future</h3>
+            <p className="text-lg">Shape your career with us</p>
+          </div>
+        </div>
+      </Carousel>
+    </div>
+  );
+}
+</file>
+
+<file path="src/layouts/PublicLayout.jsx">
+// src/layouts/PublicLayout.jsx
+
+import AnnouncementBar from "../components/public/AnnouncementBar";
+import PublicFooter from "../components/public/PublicFooter";
+import PublicHeader from "../components/public/PublicHeader";
+import { Outlet } from "react-router-dom";
+
+export default function PublicLayout() {
+  return (
+    <div className="min-h-screen flex flex-col">
+      {/* <AnnouncementBar /> */}
+      <PublicHeader />
+      <main className="flex-1">
+        <Outlet />
+      </main>
+      <PublicFooter />
+    </div>
+  );
+}
+</file>
+
+<file path="src/pages/admin/students/AddStudent.jsx">
+import { useState } from "react";
+import { useForm } from "react-hook-form";
+import AdmissionStepper from "../../../components/admin/admission/AdmissionStepper";
+import StepPersonal from "../../../components/admin/admission/steps/StepPersonal";
+import StepCommunication from "../../../components/admin/admission/steps/StepCommunication";
+import StepQualification from "../../../components/admin/admission/steps/StepQualification";
+import StepProgram from "../../../components/admin/admission/steps/StepProgram";
+
+export default function AddStudent() {
+  const { register, handleSubmit } = useForm();
+  const [step, setStep] = useState(1);
+
+  const next = () => setStep((s) => Math.min(s + 1, 4));
+  const prev = () => setStep((s) => Math.max(s - 1, 1));
+
+  const onSubmit = (data) => {
+    const formData = new FormData();
+
+    Object.keys(data).forEach((key) => {
+      formData.append(key, data[key]);
+    });
+
+    console.log("Final Admission Data:", data);
+  };
+
+  return (
+    <div className="w-full max-w-7xl">
+      <AdmissionStepper step={step} />
+
+      <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+        {step === 1 && <StepPersonal register={register} />}
+        {step === 2 && <StepCommunication register={register} />}
+        {step === 3 && <StepQualification register={register} />}
+        {step === 4 && <StepProgram register={register} />}
+
+        <div className="flex justify-between">
+          {step > 1 && (
+            <button
+              type="button"
+              onClick={prev}
+              className="px-4 py-2 border border-border rounded-md text-text"
+            >
+              Back
+            </button>
+          )}
+
+          {step < 4 ? (
+            <button
+              type="button"
+              onClick={next}
+              className="ml-auto bg-primary text-white px-6 py-2 rounded-md"
+            >
+              Next
+            </button>
+          ) : (
+            <button
+              type="submit"
+              className="ml-auto bg-accent text-primary px-6 py-2 rounded-md font-semibold"
+            >
+              Submit Admission
+            </button>
+          )}
+        </div>
+      </form>
+    </div>
+  );
+}
+</file>
+
+<file path="src/main.jsx">
+// src/main.jsx
+import { StrictMode } from "react";
+import { createRoot } from "react-dom/client";
+import "./index.css";
+import App from "./App.jsx";
+
+createRoot(document.getElementById("root")).render(
+  <StrictMode>
+    <App />
+  </StrictMode>,
+);
+</file>
+
+<file path="src/api/courseApi.js">
+// src/api/courseApi.js
+import { BASE_URL } from "./config";
+import { handleResponse } from "./handleResponse";
+
+const COURSE_URL = `${BASE_URL}/course/index.php`;
+
+/* -------------------------
+   FACULTY (for CoursePanel)
+   This fetches ALL faculty
+-------------------------- */
+export async function fetchAllFaculty() {
+  const res = await fetch(`${COURSE_URL}?type=faculty`);
+  return handleResponse(res);
+}
+
+/* -------------------------
+   COURSES
+-------------------------- */
+
+export async function fetchCourses(facultyId) {
+  if (!facultyId) {
+    throw new Error("Faculty ID is required");
+  }
+
+  const res = await fetch(`${COURSE_URL}?type=course&faculty_id=${facultyId}`);
+
+  return handleResponse(res);
+}
+
+export async function createCourse({
+  facultyId,
+  name,
+  duration,
+  durationType,
+}) {
+  if (!facultyId) throw new Error("Faculty ID is required");
+  if (!name?.trim()) throw new Error("Course name is required");
+  if (!duration) throw new Error("Duration is required");
+  if (!durationType) throw new Error("Duration type is required");
+
+  const res = await fetch(`${BASE_URL}/course/index.php`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      type: "course",
+      name: name.trim(),
+      duration,
+      duration_type: durationType,
+      faculty_id: facultyId,
+    }),
+  });
+
+  return handleResponse(res);
+}
+
+export async function deleteCourse(id) {
+  if (!id) {
+    throw new Error("Course ID is required");
+  }
+
+  const res = await fetch(COURSE_URL, {
+    method: "DELETE",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      type: "course",
+      id: String(id),
+    }),
+  });
+
+  return handleResponse(res);
+}
+</file>
+
+<file path="src/components/admin/AdminHeader.jsx">
+import { useLocation, Link } from "react-router-dom";
+
+const routeTitles = {
+  "/admin": "Dashboard",
+  "/admin/students": "Students",
+  "/admin/students/add": "New Admission",
+  "/admin/site-settings": "Site Settings",
+};
+
+export default function AdminHeader() {
+  const location = useLocation();
+  const path = location.pathname;
+
+  // Split path into parts for breadcrumb
+  const parts = path.split("/").filter(Boolean);
+
+  let breadcrumb = [];
+  let accumulatedPath = "";
+
+  parts.forEach((part) => {
+    accumulatedPath += `/${part}`;
+    breadcrumb.push({
+      label:
+        routeTitles[accumulatedPath] ||
+        part.charAt(0).toUpperCase() + part.slice(1),
+      path: accumulatedPath,
+    });
+  });
+
+  const pageTitle =
+    routeTitles[path] ||
+    breadcrumb[breadcrumb.length - 1]?.label ||
+    "Admin Panel";
+
+  return (
+    <header className="bg-surface border-b border-border px-6 py-3">
+      <div className="flex items-center justify-between">
+        {/* Left: Breadcrumb + Title */}
+        <div>
+          {/* Breadcrumb */}
+          <div className="text-sm text-muted mb-1">
+            {breadcrumb.map((item, index) => (
+              <span key={item.path}>
+                {index !== 0 && " / "}
+                <Link to={item.path} className="hover:text-primary transition">
+                  {item.label}
+                </Link>
+              </span>
+            ))}
+          </div>
+
+          {/* Page Title */}
+          <h1 className="text-xl font-heading font-bold text-primary">
+            {pageTitle}
+          </h1>
+        </div>
+
+        {/* Right: User Info */}
+        <div className="text-sm text-muted">
+          Logged in as <span className="text-text font-medium">Admin</span>
+        </div>
+      </div>
+    </header>
+  );
+}
+</file>
+
+<file path="src/pages/admin/courses/CourseCategoryPanel.jsx">
+// src/pages/admin/courses/CourseCategoryPanel.jsx
+import React, { useEffect, useState } from "react";
+import {
+  fetchCourseCategories,
+  createCourseCategory,
+  deleteCourseCategory,
+} from "../../../api/courseCategoryApi";
+import CourseCategoryForm from "../../../components/admin/courses/CourseCategoryForm";
+import Toast from "../../../components/ui/Toast";
+import Modal from "../../../components/ui/Modal";
+import Table from "../../../components/table/Table";
+
+export default function CourseCategoryPanel() {
+  const [categories, setCategories] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [toast, setToast] = useState(null);
+  const [deleteTarget, setDeleteTarget] = useState(null);
+
+  const loadCategories = async () => {
+    setLoading(true);
+    try {
+      const data = await fetchCourseCategories();
+      setCategories(data);
+      console.log(`courseCategoryPanel loadcategories ${data}`);
+    } catch (err) {
+      setToast({
+        type: "error",
+        message: `Failed to load categories: ${err.message}`,
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    loadCategories();
+  }, []);
+
+  const handleCreate = async (formValues) => {
+    const name = formValues.category?.trim();
+    if (!name) return;
+
+    setLoading(true);
+    try {
+      await createCourseCategory(name);
+      setToast({ type: "success", message: `Category "${name}" created` });
+      await loadCategories();
+    } catch (err) {
+      setToast({
+        type: "error",
+        message: err.message || "Failed to create category",
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleDeleteClick = (row) => {
+    setDeleteTarget(row);
+  };
+
+  const confirmDelete = async () => {
+    if (!deleteTarget) return;
+
+    const originalCategories = [...categories];
+
+    // optimistic update
+    setCategories((prev) => prev.filter((c) => c.id !== deleteTarget.id));
+
+    try {
+      await deleteCourseCategory(deleteTarget.id);
+
+      setToast({
+        type: "success",
+        message: `Category "${deleteTarget.name}" deleted successfully`,
+      });
+
+      await loadCategories();
+    } catch (err) {
+      // rollback
+      setCategories(originalCategories);
+
+      setToast({
+        type: "error",
+        message: err.message || "Failed to delete category",
+      });
+    } finally {
+      setDeleteTarget(null);
+    }
+  };
+
+  const columns = [
+    {
+      key: "serial",
+      label: "#",
+      render: (_, index) => index + 1,
+    },
+    {
+      key: "name",
+      label: "Category Name",
+    },
+  ];
+
+  const actions = [
+    {
+      icon: "🗑",
+      className:
+        "px-3 py-1 rounded bg-red-600 text-white hover:bg-red-700 text-sm font-medium transition",
+      onClick: handleDeleteClick,
+    },
+  ];
+
+  return (
+    <div className="w-full space-y-8 p-6">
+      {toast && (
+        <Toast
+          type={toast.type}
+          message={toast.message}
+          onClose={() => setToast(null)}
+        />
+      )}
+
+      <CourseCategoryForm onSubmit={handleCreate} loading={loading} />
+
+      <Table
+        title="Course Categories"
+        columns={columns}
+        data={categories}
+        actions={actions}
+      />
+
+      <Modal
+        isOpen={!!deleteTarget}
+        title="Confirm Delete"
+        onClose={() => setDeleteTarget(null)}
+        footer={
+          <>
+            <button
+              onClick={() => setDeleteTarget(null)}
+              className="px-4 py-2 rounded border border-border text-muted hover:bg-bg"
+            >
+              Cancel
+            </button>
+            <button
+              onClick={confirmDelete}
+              className="px-4 py-2 rounded bg-red-600 text-white hover:bg-red-700"
+            >
+              Delete
+            </button>
+          </>
+        }
+      >
+        {deleteTarget && (
+          <p>
+            Are you sure you want to delete "
+            <strong>{deleteTarget.name}</strong>"?
+            <br />
+            This action cannot be undone.
+          </p>
+        )}
+      </Modal>
+    </div>
+  );
+}
+</file>
+
+<file path="README.md">
+<!-- folder structure -->
+
+src/
+│
+├── components/
+│ ├── public/
+│ │ ├── Navbar.jsx
+│ │ └── Footer.jsx
+│ │
+│ └── admin/
+│ ├── AdminSidebar.jsx
+│ └── AdminHeader.jsx
+│
+├── layouts/
+│ ├── PublicLayout.jsx
+│ └── AdminLayout.jsx
+│
+├── pages/
+│ ├── public/
+│ │ ├── Home.jsx
+│ │ ├── About.jsx
+│ │ ├── Contact.jsx
+│ │ └── Centers.jsx
+│ │
+│ ├── student/
+│ │ ├── StudentLogin.jsx
+│ │ └── StudentDashboard.jsx
+│ │
+│ └── admin/
+│ ├── AdminLogin.jsx
+│ ├── AdminDashboard.jsx
+│ ├── Centers.jsx
+│ ├── Students.jsx
+│ └── Pages.jsx
+│
+├── context/
+│ └── AuthContext.jsx
+│
+├── services/
+│ └── api.js
+│
+├── App.jsx
+└── main.jsx
+
+5-day delivery plan (realistic)
+
+Day 1:
+
+Project setup
+
+Routing
+
+Layouts
+
+Navbar + Footer
+
+Day 2:
+
+Home
+
+About
+
+Contact
+
+Centers page (API)
+
+Day 3:
+
+Student login
+
+Student dashboard
+
+Day 4:
+
+Admin login
+
+Admin dashboard
+
+Centers CRUD
+
+Day 5:
+
+Students + Pages CRUD
+
+Responsive fixes
+
+Bug fixing
+
+
+/* src/index.css */
+@import "tailwindcss";
+@import "flowbite";
+
+@theme {
+  /* PRIMARY BRAND COLORS - Academic & Professional */
+  --color-primary: #003d82; /* Deep Academic Navy - Main brand color */
+  --color-primary-light: #1555b0; /* Lighter navy for hover states */
+  --color-primary-dark: #001a3d; /* Darker for text on light backgrounds */
+  
+  /* SECONDARY BRAND - Supporting accent */
+  --color-secondary: #d4a574; /* Warm university gold - Trust & prestige */
+  --color-secondary-light: #e8c4a0; /* Light gold for backgrounds */
+  --color-secondary-dark: #b8860b; /* Dark gold for text */
+  
+  /* TERTIARY - Complementary accent */
+  --color-tertiary: #2d7a8a; /* Teal-blue for secondary actions */
+  --color-tertiary-light: #5a99a8; /* Light teal for hover */
+  --color-tertiary-dark: #1a4a52; /* Dark teal */
+  
+  /* STATUS COLORS */
+  --color-success: #10b981; /* Emerald green - Success, approval, passing */
+  --color-success-light: #d1fae5; /* Light success background */
+  --color-success-dark: #047857; /* Dark success text */
+  
+  --color-error: #ef4444; /* Red - Error, rejection, failing */
+  --color-error-light: #fee2e2; /* Light error background */
+  --color-error-dark: #991b1b; /* Dark error text */
+  
+  --color-warning: #f59e0b; /* Amber - Warning, pending, inactive */
+  --color-warning-light: #fef3c7; /* Light warning background */
+  --color-warning-dark: #92400e; /* Dark warning text */
+  
+  --color-info: #3b82f6; /* Blue - Information, updates */
+  --color-info-light: #dbeafe; /* Light info background */
+  --color-info-dark: #1e40af; /* Dark info text */
+  
+  /* ROLE-SPECIFIC ACCENT COLORS */
+  --color-admin: #8b5cf6; /* Purple - Admin/Authority */
+  --color-admin-light: #ede9fe; /* Light admin background */
+  
+  --color-faculty: #ec4899; /* Pink - Faculty/Instructors */
+  --color-faculty-light: #fce7f3; /* Light faculty background */
+  
+  --color-student: #06b6d4; /* Cyan - Students/Learners */
+  --color-student-light: #cffafe; /* Light student background */
+  
+  /* NEUTRAL COLORS - UI Foundation */
+  --color-bg: #f8fafc; /* Soft white - Main page background */
+  --color-bg-secondary: #f1f5f9; /* Slightly darker background */
+  --color-bg-tertiary: #e2e8f0; /* Even darker for nested areas */
+  
+  --color-surface: #ffffff; /* Pure white - Cards, panels, modals */
+  --color-surface-hover: #f8fafc; /* Hover state for cards */
+  --color-surface-secondary: #f9fafb; /* Secondary surface */
+  
+  --color-text: #0f172a; /* Almost black - Primary text */
+  --color-text-secondary: #475569; /* Muted gray - Secondary text */
+  --color-text-muted: #64748b; /* Light gray - Tertiary text, labels */
+  --color-text-disabled: #94a3b8; /* Very light gray - Disabled text */
+  
+  --color-border: #cbd5e1; /* Medium gray - Default borders */
+  --color-border-light: #e2e8f0; /* Light borders for subtle dividers */
+  --color-border-focus: #003d82; /* Navy - Focus borders */
+  
+  /* INTERACTIVE STATES */
+  --color-hover: #f1f5f9; /* Hover background */
+  --color-active: #e2e8f0; /* Active/pressed background */
+  --color-focus: #003d82; /* Focus ring color */
+  --color-disabled-bg: #f1f5f9; /* Disabled background */
+  
+  /* OVERLAY & TRANSPARENCY */
+  --color-overlay: rgba(15, 23, 42, 0.5); /* Dark overlay for modals */
+  --color-overlay-light: rgba(15, 23, 42, 0.25); /* Light overlay */
+  --color-overlay-brand: rgba(0, 61, 130, 0.1); /* Brand color overlay */
+  
+  /* GRADIENTS (optional - can be used for hero sections) */
+  --color-gradient-primary: linear-gradient(135deg, #003d82 0%, #1555b0 100%);
+  --color-gradient-warm: linear-gradient(135deg, #d4a574 0%, #b8860b 100%);
+  --color-gradient-accent: linear-gradient(135deg, #2d7a8a 0%, #1a4a52 100%);
+  
+  /* FONTS */
+  --font-sans: "Inter", "Segoe UI", sans-serif;
+  --font-heading: "Poppins", "Segoe UI", sans-serif;
+  --font-mono: "Fira Code", monospace;
+  
+  /* SEMANTIC TOKENS FOR COMPONENTS */
+  --color-link: #003d82; /* Links */
+  --color-link-hover: #1555b0; /* Link hover */
+  --color-badge-default: #e2e8f0; /* Default badge */
+  --color-badge-primary: #dbeafe; /* Primary badge */
+}
+</file>
+
+<file path="src/components/admin/sidebar/menuItems.js">
+import {
+  FaHome,
+  FaUserGraduate,
+  FaBook,
+  FaCalendarAlt,
+  FaClipboardList,
+  FaChartBar,
+  FaCog,
+  FaEnvelope,
+} from "react-icons/fa";
+
+export const menuItems = [
+  {
+    id: 1,
+    label: "Dashboard",
+    icon: FaHome,
+    children: [{ label: "Overview", path: "/admin" }],
+  },
+  {
+    id: 2,
+    label: "Students",
+    icon: FaUserGraduate,
+    children: [
+      { label: "All Students", path: "/admin/students" },
+      { label: "Add New", path: "/admin/students/add" },
+      { label: "Admissions", path: "/admin/admissions" },
+      { label: "Attendance", path: "/admin/attendance" },
+    ],
+  },
+  {
+    id: 3,
+    label: "Courses",
+    icon: FaBook,
+    children: [
+      { label: "Course Category", path: "/admin/course-category" },
+      { label: "Faculty", path: "/admin/faculty" },
+      { label: "Course", path: "/admin/course" },
+      { label: "stream", path: "/admin/stream" },
+    ],
+  },
+  {
+    id: 4,
+    label: "Examinations",
+    icon: FaClipboardList,
+    children: [
+      { label: "Results", path: "/admin/results" },
+      { label: "Schedule", path: "/admin/exam-schedule" },
+      { label: "Hall Tickets", path: "/admin/hall-tickets" },
+    ],
+  },
+  {
+    id: 5,
+    label: "Events",
+    icon: FaCalendarAlt,
+    children: [
+      { label: "Calendar", path: "/admin/calendar" },
+      { label: "Add Event", path: "/admin/events/add" },
+    ],
+  },
+  {
+    id: 6,
+    label: "Communications",
+    icon: FaEnvelope,
+    children: [
+      { label: "Notifications", path: "/admin/notifications" },
+      { label: "Announcements", path: "/admin/announcements" },
+    ],
+  },
+  {
+    id: 7,
+    label: "Reports",
+    icon: FaChartBar,
+    children: [
+      { label: "Analytics", path: "/admin/analytics" },
+      { label: "Generate Reports", path: "/admin/reports" },
+    ],
+  },
+  {
+    id: 8,
+    label: "Settings",
+    icon: FaCog,
+    children: [
+      { label: "Site Setting", path: "/admin/site-settings" },
+      { label: "Users", path: "/admin/users" },
+      { label: "Permissions", path: "/admin/permissions" },
+    ],
+  },
+];
+</file>
+
+<file path="src/components/public/PublicHeader.jsx">
+// src/components/public/PublicHeader.jsx
+import {
+  Navbar,
+  NavbarBrand,
+  NavbarCollapse,
+  NavbarLink,
+  NavbarToggle,
+} from "flowbite-react";
+import { Link } from "react-router-dom";
+import logo from "../../assets/images/logo.png";
+
+export default function PublicHeader() {
+  return (
+    <Navbar fluid className="bg-surface border-b border-border shadow-sm px-20">
+      <NavbarBrand as={Link} to="/">
+        <img src={logo} className="mr-3 h-16" alt="University Logo" />
+      </NavbarBrand>
+
+      <NavbarToggle />
+
+      <NavbarCollapse>
+        <NavbarLink as={Link} to="/" className="text-text hover:text-secondary">
+          Home
+        </NavbarLink>
+        <NavbarLink
+          as={Link}
+          to="/about"
+          className="text-text hover:text-secondary"
+        >
+          About
+        </NavbarLink>
+        <NavbarLink
+          as={Link}
+          to="/centers"
+          className="text-text hover:text-secondary"
+        >
+          Centers
+        </NavbarLink>
+        <NavbarLink
+          as={Link}
+          to="/news"
+          className="text-text hover:text-secondary"
+        >
+          News
+        </NavbarLink>
+        <NavbarLink
+          as={Link}
+          to="/contact"
+          className="text-text hover:text-secondary"
+        >
+          Contact
+        </NavbarLink>
+
+        {/* Student login button style */}
+        <NavbarLink as={Link} to="/login">
+          <span className="bg-secondary text-white px-4 py-2 rounded-md hover:bg-secondary/90">
+            Login
+          </span>
+        </NavbarLink>
+      </NavbarCollapse>
+    </Navbar>
+  );
+}
+</file>
+
+<file path="src/pages/admin/settings/SiteSettingsPanel.jsx">
+// src/pages/admin/settings/SiteSettingsPanel.jsx
+import { useState } from "react";
+import SettingsForm from "../../../components/admin/settings/SettingsForm";
+import { updateSiteSettings } from "../../../api/settingAPI";
+
+export default function SiteSettingsPanel() {
+  const [loading, setLoading] = useState(false);
+
+  const handleSubmit = async (formData) => {
+    setLoading(true);
+    const res = await updateSiteSettings(formData);
+    setLoading(false);
+
+    console.log("Response:", res);
+    alert("Settings submitted successfully");
+  };
+
+  return (
+    <div className="w-full">
+      <SettingsForm onSubmit={handleSubmit} loading={loading} />
+    </div>
+  );
+}
+</file>
+
+<file path="src/pages/public/Home.jsx">
+// src/pages/public/Home.jsx
+import React from "react";
+import Hero from "../../components/public/Hero";
+import WhyUS from "../../components/public/WhyUS";
+import { HeroSlider } from "../../components/public/HeroSlider";
+import Stats from "../../components/public/Stats";
+import Programs from "../../components/public/Programs";
+import CTA from "../../components/public/CTA";
+import HighlightNews from "../../components/public/HighlightNews";
+
+export default function Home() {
+  return (
+    <div className="bg-bg">
+      <Hero />
+      <HeroSlider />
+      <HighlightNews />
+      <Stats />
+      <WhyUS />
+      <Programs />
+      <CTA />
+    </div>
+  );
+}
+</file>
+
+<file path="src/layouts/AdminLayout.jsx">
+// src/layouts/AdminLayout.jsx
+import { useEffect, useState } from "react";
+import { Outlet } from "react-router-dom";
+import AdminHeader from "../components/admin/AdminHeader";
+import { AdminSidebar } from "../components/admin/sidebar/AdminSidebar";
+
+export default function AdminLayout() {
+  const [theme, setTheme] = useState(
+    localStorage.getItem("adminTheme") || "light",
+  );
+
+  // Save theme to localStorage when it changes
+  useEffect(() => {
+    localStorage.setItem("adminTheme", theme);
+  }, [theme]);
+
+  // Toggle function
+  const toggleTheme = () => {
+    setTheme((prev) => (prev === "dark" ? "light" : "dark"));
+  };
+
+  return (
+    <div
+      className={`min-h-screen flex flex-col ${theme === "dark" ? "dark" : ""}`}
+    >
+      <div className="flex flex-1 bg-bg text-text">
+        <AdminSidebar theme={theme} toggleTheme={toggleTheme} />
+        <div className="flex-1 flex flex-col">
+          <AdminHeader />
+          <main className="p-6 flex-1">
+            <Outlet />
+          </main>
+        </div>
+      </div>
+    </div>
+  );
+}
+</file>
+
+<file path="package.json">
+{
+  "name": "collage-managment",
+  "homepage": "https://aman-nagar.github.io/saveetha_university",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "lint": "eslint .",
+    "preview": "vite preview",
+    "predeploy": "npm run build",
+    "deploy": "gh-pages -d dist"
+  },
+  "dependencies": {
+    "@tailwindcss/vite": "^4.1.18",
+    "clsx": "^2.1.1",
+    "flowbite": "^4.0.1",
+    "flowbite-react": "^0.12.17",
+    "framer-motion": "^12.34.0",
+    "react": "^19.2.0",
+    "react-dom": "^19.2.0",
+    "react-hook-form": "^7.71.1",
+    "react-icons": "^5.5.0",
+    "react-router-dom": "^7.13.0",
+    "tailwindcss": "^4.1.18"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.39.1",
+    "@types/react": "^19.2.7",
+    "@types/react-dom": "^19.2.3",
+    "@vitejs/plugin-react": "^5.1.1",
+    "eslint": "^9.39.1",
+    "eslint-plugin-react-hooks": "^7.0.1",
+    "eslint-plugin-react-refresh": "^0.4.24",
+    "gh-pages": "^6.3.0",
+    "globals": "^16.5.0",
+    "vite": "^7.3.1"
+  }
+}
+</file>
+
+<file path="src/index.css">
+/* src/index.css */
+@import "tailwindcss";
+@import "flowbite";
+
+@theme {
+  /* Brand colors */
+  --color-primary: #0b1f4b; /* deep academic navy */
+  --color-secondary: #9e2f2f; /* refined maroon */
+  --color-accent: #c9a227; /* university gold */
+
+  /* Neutrals (light mode) */
+  --color-bg: #f8fafc; /* softer page background */
+  --color-surface: #ffffff; /* cards */
+  --color-text: #0f172a; /* deep readable text */
+  --color-muted: #64748b; /* secondary text */
+  --color-border: #e2e8f0; /* borders */
+
+  --color-success: #16a34a;
+  --color-warning: #f59e0b;
+  --color-danger: #dc2626;
+
+  /* Overlay */
+  --color-overlay: rgba(0, 0, 0, 0.4);
+
+  /* Fonts */
+  --font-sans: Inter, sans-serif;
+  --font-heading: Poppins, sans-serif;
+}
+
+.dark {
+  /* Brand colors slightly brighter for visibility */
+  --color-primary: #1e3a8a; /* brighter academic navy */
+  --color-secondary: #c24141; /* brighter maroon */
+  --color-accent: #e0b93b; /* brighter gold */
+
+  /* Neutrals */
+  --color-bg: #0b1220; /* deep blue-black */
+  --color-surface: #111827; /* card surface */
+  --color-text: #e5e7eb; /* readable light text */
+  --color-muted: #9ca3af; /* secondary text */
+  --color-border: #1f2937; /* borders */
+
+  --color-success: #22c55e;
+  --color-warning: #fbbf24;
+  --color-danger: #ef4444;
+}
+
+/* admin settings preferences */
+:root[data-density="compact"] table td,
+:root[data-density="compact"] table th {
+  padding: 6px 8px;
+  font-size: 0.85rem;
+}
+.input {
+  @apply w-full border border-border rounded-lg px-3 py-2 bg-surface text-text placeholder-muted focus:outline-none focus:ring-2 focus:ring-accent/40 focus:border-accent transition;
+}
+
+/* this animation is for HighlightNews.jsx section */
+@keyframes scroll-up {
+  0% {
+    transform: translateY(0);
+  }
+  100% {
+    transform: translateY(-50%);
+  }
+}
+
+.animate-scroll {
+  animation: scroll-up 12s linear infinite;
+}
+</file>
+
+<file path="src/App.jsx">
+// src/App.jsx
+import { BrowserRouter, Route, Routes } from "react-router-dom";
+import PublicLayout from "./layouts/PublicLayout";
+import Home from "./pages/public/Home";
+import AdminLayout from "./layouts/AdminLayout";
+import About from "./pages/public/About";
+import Contact from "./pages/public/Contact";
+import Login from "./pages/Login";
+import AdminDashboard from "./pages/admin/AdminDashboardPanel";
+import News from "./pages/public/News";
+import SiteSettings from "./pages/admin/settings/SiteSettingsPanel";
+import AddStudent from "./pages/admin/students/AddStudent";
+import CourseCategoryPanel from "./pages/admin/courses/CourseCategoryPanel";
+import FacultyPanel from "./pages/admin/courses/FacultyPanel";
+import CoursePanel from "./pages/admin/courses/CoursePanel";
+import StudentDashboard from "./pages/student/StudentDashboard";
+import StreamPanel from "./pages/admin/courses/StreamPanel";
+
+function App() {
+  return (
+    <BrowserRouter>
+      <Routes>
+        <Route element={<PublicLayout />}>
+          <Route path="/" element={<Home />} />
+          <Route path="/about" element={<About />} />
+          <Route path="/contact" element={<Contact />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/news" element={<News />} />
+        </Route>
+
+        {/* students */}
+        <Route path="/student-dashboard" element={<StudentDashboard />} />
+
+        {/* admin */}
+        <Route path="/admin" element={<AdminLayout />}>
+          <Route index element={<AdminDashboard />} />
+
+          {/* students */}
+          <Route path="students/add" element={<AddStudent />} />
+
+          {/* course category */}
+          <Route path="course-category" element={<CourseCategoryPanel />} />
+          <Route path="faculty" element={<FacultyPanel />} />
+          <Route path="course" element={<CoursePanel />} />
+          <Route path="stream" element={<StreamPanel />} />
+
+          {/* settings */}
+          <Route path="site-settings" element={<SiteSettings />} />
+        </Route>
+      </Routes>
+    </BrowserRouter>
+  );
+}
+
+export default App;
+</file>
+
+</files>

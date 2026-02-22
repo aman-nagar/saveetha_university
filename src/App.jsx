@@ -6,14 +6,17 @@ import AdminLayout from "./layouts/AdminLayout";
 import About from "./pages/public/About";
 import Contact from "./pages/public/Contact";
 import Login from "./pages/Login";
-import AdminDashboard from "./pages/admin/AdminDashboardPanel";
+import AdminDashboard from "./pages/admin/AdminDashboardPage";
 import News from "./pages/public/News";
-import SiteSettings from "./pages/admin/settings/SiteSettingsPanel";
+import SiteSettingsPage from "./pages/admin/settings/SiteSettingsPage";
 import AddStudent from "./pages/admin/students/AddStudent";
-import CourseCategoryPanel from "./pages/admin/courses/CourseCategoryPanel";
-import FacultyPanel from "./pages/admin/courses/FacultyPanel";
-import CoursePanel from "./pages/admin/courses/CoursePanel";
+import EditStudent from "./pages/admin/students/EditStudent";
+import CourseCategoryPage from "./pages/admin/courses/CourseCategoryPage";
+import FacultyPage from "./pages/admin/courses/FacultyPage";
+import CoursePage from "./pages/admin/courses/CoursePage";
 import StudentDashboard from "./pages/student/StudentDashboard";
+import StreamPage from "./pages/admin/courses/StreamPage";
+import StudentListPage from "./pages/admin/students/StudentListPage";
 
 function App() {
   return (
@@ -26,19 +29,27 @@ function App() {
           <Route path="/login" element={<Login />} />
           <Route path="/news" element={<News />} />
         </Route>
+
         {/* students */}
         <Route path="/student-dashboard" element={<StudentDashboard />} />
+
         {/* admin */}
         <Route path="/admin" element={<AdminLayout />}>
           <Route index element={<AdminDashboard />} />
-          {/* students */}
+
+          {/* admin course category */}
+          <Route path="course-category" element={<CourseCategoryPage />} />
+          <Route path="faculty" element={<FacultyPage />} />
+          <Route path="course" element={<CoursePage />} />
+          <Route path="stream" element={<StreamPage />} />
+
+          {/* admin students */}
           <Route path="students/add" element={<AddStudent />} />
-          {/* course category */}
-          <Route path="course-category" element={<CourseCategoryPanel />} />
-          <Route path="faculty" element={<FacultyPanel />} />
-          <Route path="course" element={<CoursePanel />} />
+          <Route path="students/edit/:id" element={<EditStudent />} />
+          <Route path="students" element={<StudentListPage />} />
+
           {/* settings */}
-          <Route path="site-settings" element={<SiteSettings />} />
+          <Route path="site-settings" element={<SiteSettingsPage />} />
         </Route>
       </Routes>
     </BrowserRouter>

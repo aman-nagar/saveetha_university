@@ -1,8 +1,11 @@
 // src/components/admin/students/admission/steps/StepQualification.jsx
 import FormSection from "../../../../form/FormSection";
-import FormFileInput from "../../../../form/FormFileInput";
 
-export default function StepQualification({ register, errors }) {
+export default function StepQualification({
+  register,
+  errors,
+  setQualificationFiles,
+}) {
   const rows = [
     { label: "Secondary", key: "secondary" },
     { label: "Sr. Secondary", key: "sr_secondary" },
@@ -60,8 +63,15 @@ export default function StepQualification({ register, errors }) {
                 <td className="p-3">
                   <input
                     type="file"
-                    {...register(`${row.key}_document`)}
-                    className="text-sm text-text"
+                    onChange={(e) => {
+                      const file = e.target.files[0];
+                      if (file) {
+                        setQualificationFiles((prev) => ({
+                          ...prev,
+                          [row.key]: file,
+                        }));
+                      }
+                    }}
                   />
                 </td>
               </tr>

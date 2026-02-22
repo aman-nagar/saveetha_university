@@ -1,17 +1,22 @@
 // src/pages/admin/students/StudentListPage.jsx
-
 import { useEffect, useState } from "react";
-
 import Table from "../../../components/table/Table";
 import Modal from "../../../components/ui/Modal";
 import Toast from "../../../components/ui/Toast";
 import { useToast } from "../../../hooks/useToast";
-import { fetchStudentById, fetchStudents } from "../../../api/students/studentApi";
+import {
+  fetchStudentById,
+  fetchStudents,
+  updateStudentStatus,
+  deleteStudent,
+  restoreStudent,
+  updateStudent,
+} from "../../../api/students/studentApi";
 import StatusBadge from "../../../components/ui/StatusBadge";
+import EditStudentForm from "../../../components/admin/students/EditStudentForm";
 
 export default function StudentListPage() {
   const { toast, show, clear } = useToast();
-
   const [students, setStudents] = useState([]);
   const [search, setSearch] = useState("");
   const [loading, setLoading] = useState(false);
@@ -20,11 +25,15 @@ export default function StudentListPage() {
   const [selectedStudent, setSelectedStudent] = useState(null);
   const [viewOpen, setViewOpen] = useState(false);
   const [viewLoading, setViewLoading] = useState(false);
+  const [mode, setMode] = useState("active");
+  const [editOpen, setEditOpen] = useState(false);
+  const [editLoading, setEditLoading] = useState(false);
+  const [editStudent, setEditStudent] = useState(null);
 
   // Load page 1
   useEffect(() => {
-    loadStudents(1, "");
-  }, []);
+    loadStudents(1, search);
+  }, [mode]);
 
   const loadStudents = async (page = 1, searchTerm = "") => {
     setLoading(true);
@@ -32,6 +41,7 @@ export default function StudentListPage() {
       const data = await fetchStudents({
         page,
         search: searchTerm,
+        deleted: mode === "deleted" ? 1 : 0,
       });
 
       setStudents(data.students || []);
@@ -66,13 +76,67 @@ export default function StudentListPage() {
       setViewLoading(false);
     }
   };
+  const handleEdit = async (row) => {
+    setEditLoading(true);
+    setEditOpen(true);
 
+    try {
+      const fullData = await fetchStudentById(row.id);
+      setEditStudent(fullData);
+    } catch (err) {
+      show("error", err.message);
+      setEditOpen(false);
+    } finally {
+      setEditLoading(false);
+    }
+  };
   const statusMap = {
     1: "Active",
     2: "Pending",
     3: "Rejected",
   };
 
+  const handleToggleStatus = async (row) => {
+    const newStatus = row.status === 1 ? 0 : 1;
+
+    // Optimistic update
+    setStudents((prev) =>
+      prev.map((s) => (s.id === row.id ? { ...s, status: newStatus } : s)),
+    );
+
+    try {
+      await updateStudentStatus(row.id, newStatus);
+      show("success", "Status updated successfully");
+    } catch (err) {
+      // Rollback if failed
+      setStudents((prev) =>
+        prev.map((s) => (s.id === row.id ? { ...s, status: row.status } : s)),
+      );
+      show("error", err.message);
+    }
+  };
+
+  const handleDelete = async (row) => {
+    try {
+      const response = await deleteStudent(row.id);
+
+      setStudents((prev) => prev.filter((s) => s.id !== row.id));
+
+      show("success", response.message);
+    } catch (err) {
+      show("error", err.message);
+    }
+  };
+
+  const handleRestore = async (row) => {
+    try {
+      await restoreStudent(row.id);
+      setStudents((prev) => prev.filter((s) => s.id !== row.id));
+      show("success", "Student restored");
+    } catch (err) {
+      show("error", err.message);
+    }
+  };
   const columns = [
     { key: "serial", label: "#", render: (_, i) => i + 1 },
     {
@@ -117,19 +181,75 @@ export default function StudentListPage() {
     },
   ];
 
-  const actions = [
-    {
-      icon: "👁",
-      className:
-        "px-3 py-1 rounded bg-primary text-white hover:bg-primary/90 text-sm",
-      onClick: handleView,
-    },
-  ];
+  const actions =
+    mode === "active"
+      ? [
+          {
+            icon: "🔄",
+            title: "Toggle Status",
+            className: "px-3 py-1 rounded bg-accent text-primary text-sm",
+            onClick: handleToggleStatus,
+          },
+          {
+            icon: "✏️",
+            title: "Edit",
+            className: "px-3 py-1 rounded bg-blue-600 text-white text-sm",
+            onClick: handleEdit,
+          },
+          {
+            icon: "🗑",
+            title: "Delete",
+            className: "px-3 py-1 rounded bg-red-600 text-white text-sm",
+            onClick: handleDelete,
+          },
+          {
+            icon: "👁",
+            title: "View",
+            className: "px-3 py-1 rounded bg-primary text-white text-sm",
+            onClick: handleView,
+          },
+        ]
+      : [
+          {
+            icon: "♻",
+            title: "Restore",
+            className: "px-3 py-1 rounded bg-green-600 text-white text-sm",
+            onClick: handleRestore,
+          },
+          {
+            icon: "🗑",
+            title: "Permanent Delete",
+            className: "px-3 py-1 rounded bg-red-800 text-white text-sm",
+            onClick: handleDelete,
+          },
+        ];
 
   return (
     <div className="space-y-6 p-6">
       {toast && <Toast {...toast} onClose={clear} />}
+      <div className="flex gap-3">
+        <button
+          onClick={() => setMode("active")}
+          className={`px-4 py-2 rounded-md ${
+            mode === "active"
+              ? "bg-primary text-white"
+              : "bg-surface border border-border"
+          }`}
+        >
+          Active Students
+        </button>
 
+        <button
+          onClick={() => setMode("deleted")}
+          className={`px-4 py-2 rounded-md ${
+            mode === "deleted"
+              ? "bg-primary text-white"
+              : "bg-surface border border-border"
+          }`}
+        >
+          Recycle Bin
+        </button>
+      </div>
       {/* Search */}
       <div>
         <input
@@ -234,6 +354,34 @@ export default function StudentListPage() {
               </div>
             )}
           </div>
+        ) : null}
+      </Modal>
+      <Modal
+        isOpen={editOpen}
+        title="Edit Student"
+        onClose={() => {
+          setEditOpen(false);
+          setEditStudent(null);
+        }}
+      >
+        {editLoading ? (
+          <div className="py-10 text-center">Loading...</div>
+        ) : editStudent ? (
+          <EditStudentForm
+            student={editStudent}
+            onClose={() => {
+              setEditOpen(false);
+              setEditStudent(null);
+            }}
+            onUpdated={(updatedData) => {
+              // Update only that row in table
+              setStudents((prev) =>
+                prev.map((s) =>
+                  s.id === updatedData.id ? { ...s, ...updatedData } : s,
+                ),
+              );
+            }}
+          />
         ) : null}
       </Modal>
     </div>

@@ -19,7 +19,7 @@ export default function AddStudent() {
   const [faculties, setFaculties] = useState([]);
   const [courses, setCourses] = useState([]);
   const [streams, setStreams] = useState([]);
-
+  const [qualificationFiles, setQualificationFiles] = useState({});
   const {
     register,
     handleSubmit,
@@ -148,7 +148,26 @@ export default function AddStudent() {
 
       const formData = new FormData();
 
+      // 🧠 1️⃣ Build qualification array
+      const qualificationKeys = [
+        "secondary",
+        "sr_secondary",
+        "graduation",
+        "post_graduation",
+        "other",
+      ];
+
+      // 🧠 2️⃣ Append normal fields
       Object.entries(data).forEach(([key, value]) => {
+        if (
+          key.includes("_year") ||
+          key.includes("_board") ||
+          key.includes("_percentage") ||
+          key.includes("_document")
+        ) {
+          return; // skip raw qualification fields
+        }
+
         if (value instanceof FileList) {
           if (value.length > 0) {
             formData.append(key, value[0]);
@@ -156,6 +175,38 @@ export default function AddStudent() {
         } else {
           formData.append(key, value ?? "");
         }
+      });
+
+      // 🧠 3️⃣ Append structured qualifications
+      let qIndex = 0;
+
+      qualificationKeys.forEach((key) => {
+        const year = data[`${key}_year`];
+        const board = data[`${key}_board`];
+        const percentage = data[`${key}_percentage`];
+        const document = qualificationFiles[key];
+
+        if (!year && !board && !percentage) return;
+
+        formData.append(`qualifications[${qIndex}][examination]`, key);
+        formData.append(
+          `qualifications[${qIndex}][year_of_passing]`,
+          year || "",
+        );
+        formData.append(
+          `qualifications[${qIndex}][board_university]`,
+          board || "",
+        );
+        formData.append(
+          `qualifications[${qIndex}][percentage_cgpa]`,
+          percentage || "",
+        );
+
+        if (document) {
+          formData.append(`qualifications[${qIndex}][document]`, document);
+        }
+
+        qIndex++;
       });
 
       const response = await createStudent(formData, true);
@@ -187,7 +238,11 @@ export default function AddStudent() {
           />
         )}
         {step === 3 && (
-          <StepQualification register={register} errors={errors} />
+          <StepQualification
+            register={register}
+            errors={errors}
+            setQualificationFiles={setQualificationFiles}
+          />
         )}
         {step === 4 && (
           <StepProgram

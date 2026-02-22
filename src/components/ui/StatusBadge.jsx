@@ -1,18 +1,15 @@
+
 // src/components/ui/StatusBadge.jsx
 
 export default function StatusBadge({ status }) {
   const map = {
-    1: {
-      label: "Active",
-      style: "bg-green-100 text-green-700",
-    },
-    2: {
+    0: {
       label: "Pending",
       style: "bg-yellow-100 text-yellow-700",
     },
-    3: {
-      label: "Rejected",
-      style: "bg-red-100 text-red-700",
+    1: {
+      label: "Active",
+      style: "bg-green-100 text-green-700",
     },
   };
 

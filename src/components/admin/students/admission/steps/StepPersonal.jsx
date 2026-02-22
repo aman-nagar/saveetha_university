@@ -4,7 +4,7 @@ import FormSelect from "../../../../form/FormSelect";
 import FormSection from "../../../../form/FormSection";
 import FormFileInput from "../../../../form/FormFileInput";
 
-export default function StepPersonal({ register, errors, watch }) {
+export default function StepPersonal({ register, errors, watch, existingUrls = {} }) {
   const selectedIdProof = watch("id_proof_type");
   const isEmployed = watch("employed");
 
@@ -31,7 +31,12 @@ export default function StepPersonal({ register, errors, watch }) {
         error={errors.dob}
       />
 
-      <FormFileInput label="Photo" name="photo" register={register} />
+      <FormFileInput
+        label="Photo"
+        name="photo"
+        register={register}
+        existingUrl={existingUrls.photo_url || null}
+      />
 
       <FormSelect
         label="Gender"
@@ -95,12 +100,14 @@ export default function StepPersonal({ register, errors, watch }) {
             label="Aadhar Card Front"
             name="id_proof_front"
             register={register}
+            existingUrl={existingUrls.id_proof_front_url || null}
           />
 
           <FormFileInput
             label="Aadhar Card Back"
             name="id_proof_back"
             register={register}
+            existingUrl={existingUrls.id_proof_back_url || null}
           />
         </>
       )}
@@ -111,6 +118,7 @@ export default function StepPersonal({ register, errors, watch }) {
           label="Upload ID Proof"
           name="id_proof_document"
           register={register}
+          existingUrl={existingUrls.id_proof_document_url || null}
         />
       )}
 

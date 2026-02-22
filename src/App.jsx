@@ -10,6 +10,7 @@ import AdminDashboard from "./pages/admin/AdminDashboardPage";
 import News from "./pages/public/News";
 import SiteSettingsPage from "./pages/admin/settings/SiteSettingsPage";
 import AddStudent from "./pages/admin/students/AddStudent";
+import EditStudent from "./pages/admin/students/EditStudent";
 import CourseCategoryPage from "./pages/admin/courses/CourseCategoryPage";
 import FacultyPage from "./pages/admin/courses/FacultyPage";
 import CoursePage from "./pages/admin/courses/CoursePage";
@@ -44,6 +45,7 @@ function App() {
 
           {/* admin students */}
           <Route path="students/add" element={<AddStudent />} />
+          <Route path="students/edit/:id" element={<EditStudent />} />
           <Route path="students" element={<StudentListPage />} />
 
           {/* settings */}

@@ -1,10 +1,12 @@
 // src/pages/admin/students/StudentListPage.jsx
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { FaSyncAlt, FaPen, FaTrash, FaEye, FaRecycle } from "react-icons/fa";
 import Table from "../../../components/table/Table";
 import Modal from "../../../components/ui/Modal";
 import Toast from "../../../components/ui/Toast";
 import { useToast } from "../../../hooks/useToast";
+import StudentDetailView from "../../../components/admin/students/StudentDetailView";
 import {
   fetchStudentById,
   fetchStudents,
@@ -14,10 +16,10 @@ import {
   restoreStudent,
 } from "../../../api/students/studentApi";
 import StatusBadge from "../../../components/ui/StatusBadge";
-import EditStudentForm from "../../../components/admin/students/EditStudentForm";
 
 export default function StudentListPage() {
   const { toast, show, clear } = useToast();
+  const navigate = useNavigate();
 
   const [students, setStudents] = useState([]);
   const [search, setSearch] = useState("");
@@ -30,9 +32,6 @@ export default function StudentListPage() {
   const [viewOpen, setViewOpen] = useState(false);
   const [viewLoading, setViewLoading] = useState(false);
 
-  const [editOpen, setEditOpen] = useState(false);
-  const [editLoading, setEditLoading] = useState(false);
-  const [editStudent, setEditStudent] = useState(null);
 
   // 🔥 Only one loader, controlled by mode
   useEffect(() => {
@@ -85,20 +84,11 @@ export default function StudentListPage() {
     }
   };
 
-  const handleEdit = async (row) => {
-    setEditLoading(true);
-    setEditOpen(true);
-
-    try {
-      const fullData = await fetchStudentById(row.id);
-      setEditStudent(fullData);
-    } catch (err) {
-      show("error", err.message);
-      setEditOpen(false);
-    } finally {
-      setEditLoading(false);
-    }
+  // Navigate directly to the edit page — no modal needed
+  const handleEdit = (row) => {
+    navigate(`/admin/students/edit/${row.id}`);
   };
+
 
   const handleToggleStatus = async (row) => {
     const newStatus = row.status === 1 ? 0 : 1;
@@ -282,47 +272,23 @@ export default function StudentListPage() {
       <Modal
         isOpen={viewOpen}
         title="Student Details"
+        size="max-w-3xl"
         onClose={() => {
           setViewOpen(false);
           setSelectedStudent(null);
         }}
       >
         {viewLoading ? (
-          <div className="py-10 text-center">Loading...</div>
+          <div className="py-16 flex flex-col items-center gap-3 text-text-muted">
+            <div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin" />
+            <p className="text-sm">Loading student details...</p>
+          </div>
         ) : selectedStudent ? (
-          <div>{selectedStudent.candidate_name}</div>
+          <StudentDetailView student={selectedStudent} />
         ) : null}
       </Modal>
 
-      {/* Edit Modal */}
-      <Modal
-        isOpen={editOpen}
-        title="Edit Student"
-        size="max-w-4xl"
-        onClose={() => {
-          setEditOpen(false);
-          setEditStudent(null);
-        }}
-      >
-        {editLoading ? (
-          <div className="py-10 text-center">Loading...</div>
-        ) : editStudent ? (
-          <EditStudentForm
-            student={editStudent}
-            onClose={() => {
-              setEditOpen(false);
-              setEditStudent(null);
-            }}
-            onUpdated={(updated) =>
-              setStudents((prev) =>
-                prev.map((s) =>
-                  s.id === updated.id ? { ...s, ...updated } : s,
-                ),
-              )
-            }
-          />
-        ) : null}
-      </Modal>
     </div>
   );
 }
+

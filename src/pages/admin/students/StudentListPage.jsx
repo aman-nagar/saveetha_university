@@ -1,3 +1,4 @@
+// src/pages/admin/students/StudentListPage.jsx
 import { useEffect, useState } from "react";
 import { FaSyncAlt, FaPen, FaTrash, FaEye, FaRecycle } from "react-icons/fa";
 import Table from "../../../components/table/Table";
@@ -297,6 +298,7 @@ export default function StudentListPage() {
       <Modal
         isOpen={editOpen}
         title="Edit Student"
+        size="max-w-4xl"
         onClose={() => {
           setEditOpen(false);
           setEditStudent(null);

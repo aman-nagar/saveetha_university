@@ -40,10 +40,10 @@ export const menuItems = [
   },
   {
     id: 4,
-    label: "Examinations",
+    label: "Center",
     icon: FaClipboardList,
     children: [
-      { label: "Results", path: "/admin/results" },
+      { label: "Add Center", path: "/admin/add-center" },
       { label: "Schedule", path: "/admin/exam-schedule" },
       { label: "Hall Tickets", path: "/admin/hall-tickets" },
     ],

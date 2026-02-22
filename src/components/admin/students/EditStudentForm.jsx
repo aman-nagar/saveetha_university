@@ -11,9 +11,28 @@ import FormFileInput from "../../form/FormFileInput";
 import FormTextarea from "../../form/FormTextarea";
 import FormSection from "../../form/FormSection";
 
+/* ── Qualification rows config (same as StepQualification) ── */
+const QUAL_ROWS = [
+  { label: "Secondary", key: "secondary" },
+  { label: "Sr. Secondary", key: "sr_secondary" },
+  { label: "Graduation", key: "graduation" },
+  { label: "Post Graduation", key: "post_graduation" },
+  { label: "Other", key: "other" },
+];
+
+/* Helper — find existing qualification data by examination key */
+function findQual(qualifications, key) {
+  if (!Array.isArray(qualifications)) return {};
+  return qualifications.find((q) => q.examination === key) || {};
+}
+
+/* ── Main Component ── */
 export default function EditStudentForm({ student, onClose, onUpdated }) {
   const { toast, show, clear } = useToast();
   const [loading, setLoading] = useState(false);
+
+  // Qualification file state — same pattern as AddStudent
+  const [qualificationFiles, setQualificationFiles] = useState({});
 
   const {
     register,
@@ -22,7 +41,7 @@ export default function EditStudentForm({ student, onClose, onUpdated }) {
     formState: { errors },
   } = useForm({
     defaultValues: {
-      // Personal
+      // ── Personal ──
       candidate_name: student.candidate_name || "",
       father_name: student.father_name || "",
       mother_name: student.mother_name || "",
@@ -30,17 +49,17 @@ export default function EditStudentForm({ student, onClose, onUpdated }) {
       gender: student.gender || "",
       category: student.category || "",
 
-      // ID Proof
+      // ── ID Proof ──
       id_proof_type: student.id_proof_type || "",
       id_proof_no: student.id_proof_no || "",
 
-      // Employment
+      // ── Employment ──
       employed:
         student.employed === 1 || student.employed === "yes" ? "yes" : "no",
       employer_name: student.employer_name || "",
       designation: student.designation || "",
 
-      // Communication
+      // ── Communication ──
       contact_number: student.contact_number || "",
       email: student.email || "",
       father_contact_number: student.father_contact_number || "",
@@ -52,7 +71,16 @@ export default function EditStudentForm({ student, onClose, onUpdated }) {
       address: student.address || "",
       pincode: student.pincode || "",
 
-      // Programme
+      // ── Qualification flat fields (pre-populate from student.qualifications) ──
+      ...QUAL_ROWS.reduce((acc, { key }) => {
+        const q = findQual(student.qualifications, key);
+        acc[`${key}_year`] = q.year_of_passing || "";
+        acc[`${key}_board`] = q.board_university || "";
+        acc[`${key}_percentage`] = q.percentage_cgpa || "";
+        return acc;
+      }, {}),
+
+      // ── Programme ──
       year: student.year || "",
       month_session: student.month_session || "",
       session: student.session || "",
@@ -63,51 +91,69 @@ export default function EditStudentForm({ student, onClose, onUpdated }) {
     },
   });
 
-  // Conditional watchers — same logic as AddStudent
+  // Conditional watchers (same logic as AddStudent)
   const selectedIdProof = watch("id_proof_type");
   const isEmployed = watch("employed");
 
+  /* ── Submit ── */
   const onSubmit = async (data) => {
     try {
       setLoading(true);
 
-      // Check if any file fields were filled (photo, id proof docs)
-      const hasPhoto = data.photo instanceof FileList && data.photo.length > 0;
-      const hasIdFront =
-        data.id_proof_front instanceof FileList &&
-        data.id_proof_front.length > 0;
-      const hasIdBack =
-        data.id_proof_back instanceof FileList &&
-        data.id_proof_back.length > 0;
-      const hasIdDocument =
-        data.id_proof_document instanceof FileList &&
-        data.id_proof_document.length > 0;
+      const formData = new FormData();
+      formData.append("id", student.id);
 
-      const hasFiles = hasPhoto || hasIdFront || hasIdBack || hasIdDocument;
+      // Qualification keys to skip from normal field loop
+      const qualKeys = new Set(
+        QUAL_ROWS.flatMap(({ key }) => [
+          `${key}_year`,
+          `${key}_board`,
+          `${key}_percentage`,
+        ]),
+      );
 
-      if (hasFiles) {
-        // Send as multipart/form-data
-        const formData = new FormData();
-        formData.append("id", student.id);
+      // 1️⃣ Normal fields
+      Object.entries(data).forEach(([key, value]) => {
+        if (qualKeys.has(key)) return; // handled separately below
 
-        Object.entries(data).forEach(([key, value]) => {
-          if (value instanceof FileList) {
-            if (value.length > 0) formData.append(key, value[0]);
-          } else {
-            formData.append(key, value ?? "");
-          }
-        });
+        if (value instanceof FileList) {
+          if (value.length > 0) formData.append(key, value[0]);
+        } else {
+          formData.append(key, value ?? "");
+        }
+      });
 
-        await updateStudent(student.id, formData, true);
-      } else {
-        // No files — send as JSON (simpler, cleaner)
-        const payload = { ...data };
-        // Remove FileList keys
-        Object.keys(payload).forEach((k) => {
-          if (payload[k] instanceof FileList) delete payload[k];
-        });
-        await updateStudent(student.id, payload);
-      }
+      // 2️⃣ Structured qualifications — same format as AddStudent
+      let qIndex = 0;
+      QUAL_ROWS.forEach(({ key }) => {
+        const year = data[`${key}_year`];
+        const board = data[`${key}_board`];
+        const percentage = data[`${key}_percentage`];
+        const file = qualificationFiles[key];
+
+        if (!year && !board && !percentage) return;
+
+        formData.append(`qualifications[${qIndex}][examination]`, key);
+        formData.append(
+          `qualifications[${qIndex}][year_of_passing]`,
+          year || "",
+        );
+        formData.append(
+          `qualifications[${qIndex}][board_university]`,
+          board || "",
+        );
+        formData.append(
+          `qualifications[${qIndex}][percentage_cgpa]`,
+          percentage || "",
+        );
+        if (file) {
+          formData.append(`document[]`, file);
+        }
+
+        qIndex++;
+      });
+
+      await updateStudent(student.id, formData, true);
 
       show("success", "Student updated successfully");
       onUpdated({ id: student.id, ...data });
@@ -156,7 +202,12 @@ export default function EditStudentForm({ student, onClose, onUpdated }) {
             type="date"
             register={register}
           />
-          <FormFileInput label="Photo" name="photo" register={register} />
+          <FormFileInput
+            label="Photo"
+            name="photo"
+            register={register}
+            existingUrl={student.photo_url || null}
+          />
           <FormSelect
             label="Gender"
             name="gender"
@@ -200,8 +251,6 @@ export default function EditStudentForm({ student, onClose, onUpdated }) {
               { label: "Other", value: "other" },
             ]}
           />
-
-          {/* Show ID number whenever a type is chosen */}
           {selectedIdProof && (
             <FormInput
               label="ID Proof Number"
@@ -209,29 +258,28 @@ export default function EditStudentForm({ student, onClose, onUpdated }) {
               register={register}
             />
           )}
-
-          {/* Aadhar → front + back images */}
           {selectedIdProof === "aadhar_card" && (
             <>
               <FormFileInput
                 label="Aadhar Card Front"
                 name="id_proof_front"
                 register={register}
+                existingUrl={student.id_proof_front_url || null}
               />
               <FormFileInput
                 label="Aadhar Card Back"
                 name="id_proof_back"
                 register={register}
+                existingUrl={student.id_proof_back_url || null}
               />
             </>
           )}
-
-          {/* Any other ID type → single document */}
           {selectedIdProof && selectedIdProof !== "aadhar_card" && (
             <FormFileInput
               label="Upload ID Proof Document"
               name="id_proof_document"
               register={register}
+              existingUrl={student.id_proof_document_url || null}
             />
           )}
         </FormSection>
@@ -303,7 +351,6 @@ export default function EditStudentForm({ student, onClose, onUpdated }) {
           />
           <FormInput label="State" name="state" register={register} />
           <FormInput label="City" name="city" register={register} />
-          {/* Address spans full width — we wrap it in a col-span-2 div */}
           <div className="md:col-span-2">
             <FormTextarea label="Address" name="address" register={register} />
           </div>
@@ -313,6 +360,86 @@ export default function EditStudentForm({ student, onClose, onUpdated }) {
             type="number"
             register={register}
           />
+        </FormSection>
+
+        {/* ── QUALIFICATION ── */}
+        <FormSection title="Previous Qualification Details">
+          <div className="md:col-span-2 overflow-x-auto">
+            <table className="w-full text-sm border border-border rounded-lg overflow-hidden">
+              <thead className="bg-bg text-text">
+                <tr className="border-b border-border">
+                  <th className="text-left p-3 font-medium">Examination</th>
+                  <th className="text-left p-3 font-medium">Year of Passing</th>
+                  <th className="text-left p-3 font-medium">Board / University</th>
+                  <th className="text-left p-3 font-medium">% / CGPA</th>
+                  <th className="text-left p-3 font-medium">Upload Document</th>
+                </tr>
+              </thead>
+              <tbody>
+                {QUAL_ROWS.map((row) => (
+                  <tr key={row.key} className="border-b border-border">
+                    <td className="p-3 text-text font-medium whitespace-nowrap">
+                      {row.label}
+                    </td>
+                    <td className="p-3">
+                      <input
+                        type="text"
+                        {...register(`${row.key}_year`)}
+                        placeholder="Year"
+                        className="w-full border border-border rounded-md px-3 py-2 bg-surface text-text text-sm focus:outline-none focus:ring-1 focus:ring-primary"
+                      />
+                    </td>
+                    <td className="p-3">
+                      <input
+                        type="text"
+                        {...register(`${row.key}_board`)}
+                        placeholder="Board / University"
+                        className="w-full border border-border rounded-md px-3 py-2 bg-surface text-text text-sm focus:outline-none focus:ring-1 focus:ring-primary"
+                      />
+                    </td>
+                    <td className="p-3">
+                      <input
+                        type="text"
+                        {...register(`${row.key}_percentage`)}
+                        placeholder="% / CGPA"
+                        className="w-full border border-border rounded-md px-3 py-2 bg-surface text-text text-sm focus:outline-none focus:ring-1 focus:ring-primary"
+                      />
+                    </td>
+                    <td className="p-3">
+                      <input
+                        type="file"
+                        accept=".pdf,image/*"
+                        className="text-sm text-text file:mr-2 file:py-1 file:px-3 file:rounded file:border-0 file:text-xs file:bg-primary file:text-white"
+                        onChange={(e) => {
+                          const file = e.target.files[0];
+                          if (file) {
+                            setQualificationFiles((prev) => ({
+                              ...prev,
+                              [row.key]: file,
+                            }));
+                          }
+                        }}
+                      />
+                      {/* Show existing document preview using document_url */}
+                      {findQual(student.qualifications, row.key).document_url && !qualificationFiles[row.key] && (
+                        <div className="mt-1 flex items-center gap-2">
+                          <img
+                            src={findQual(student.qualifications, row.key).document_url}
+                            alt="current doc"
+                            className="h-10 w-10 object-cover rounded border border-border"
+                            onError={(e) => { e.target.style.display = "none"; }}
+                          />
+                          <span className="text-[10px] text-text-muted">
+                            Saved · select file to replace
+                          </span>
+                        </div>
+                      )}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         </FormSection>
 
         {/* ── PROGRAMME ── */}

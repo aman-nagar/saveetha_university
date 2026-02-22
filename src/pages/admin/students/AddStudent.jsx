@@ -203,7 +203,7 @@ export default function AddStudent() {
         );
 
         if (document) {
-          formData.append(`qualifications[${qIndex}][document]`, document);
+          formData.append(`document[]`, document);
         }
 
         qIndex++;

@@ -1,6 +1,7 @@
 // src/api/studentApi.js
 import { apiRequest } from "../client";
 
+// get all students pagination wise
 export async function fetchStudents({
   page = 1,
   search = "",
@@ -15,11 +16,34 @@ export async function fetchStudents({
   return apiRequest(endpoint);
 }
 
+// fetch  students by id
 export async function fetchStudentById(id) {
   if (!id) throw new Error("Student ID required");
   return apiRequest(`/students/index.php?id=${id}`);
 }
 
+// get recycle list
+export async function getRecycleStudentsList({ page = 1, search = "" } = {}) {
+  let endpoint = `/students/students-recycle.php?page=${page}`;
+
+  if (search.trim()) {
+    endpoint += `&search=${encodeURIComponent(search.trim())}`;
+  }
+
+  const response = await apiRequest(endpoint, {
+    method: "GET",
+  });
+
+  return {
+    students: response.data || [],
+    current_page: response.errors?.page || page,
+    total_pages: response.errors?.total_pages || 1,
+    total: response.errors?.total || 0,
+    message: response.message,
+  };
+}
+
+// create student
 export async function createStudent(payload, isMultipart = false) {
   if (isMultipart) {
     return apiRequest("/students/index.php", {

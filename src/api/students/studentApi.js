@@ -24,22 +24,27 @@ export async function fetchStudentById(id) {
 
 // get recycle list
 export async function getRecycleStudentsList({ page = 1, search = "" } = {}) {
+  const BASE_URL = "https://api.nsprowebtech.com/backend/api/v1";
   let endpoint = `/students/students-recycle.php?page=${page}`;
 
   if (search.trim()) {
     endpoint += `&search=${encodeURIComponent(search.trim())}`;
   }
 
-  const response = await apiRequest(endpoint, {
-    method: "GET",
-  });
+  const res = await fetch(`${BASE_URL}${endpoint}`);
+
+  if (!res.ok) throw new Error(`HTTP ${res.status}`);
+
+  const json = await res.json();
+
+  if (json.success === false) throw new Error(json.message || "Request failed");
 
   return {
-    students: response.data || [],
-    current_page: response.errors?.page || page,
-    total_pages: response.errors?.total_pages || 1,
-    total: response.errors?.total || 0,
-    message: response.message,
+    students: json.data || [],
+    current_page: json.errors?.page || page,
+    total_pages: json.errors?.total_pages || 1,
+    total: json.errors?.total || 0,
+    message: json.message,
   };
 }
 
@@ -110,7 +115,7 @@ export async function deleteStudent(id) {
 // Restore from recycle bin
 export async function restoreStudent(id) {
   return apiRequest("/students/restore_delete.php", {
-    method: "POST",
+    method: "PUT",
     headers: {
       "Content-Type": "application/json",
     },

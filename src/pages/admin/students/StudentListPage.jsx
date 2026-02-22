@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { FaSyncAlt, FaPen, FaTrash, FaEye, FaRecycle } from "react-icons/fa";
 import Table from "../../../components/table/Table";
 import Modal from "../../../components/ui/Modal";
 import Toast from "../../../components/ui/Toast";
@@ -168,25 +169,25 @@ export default function StudentListPage() {
     mode === "active"
       ? [
           {
-            icon: "🔄",
+            icon: <FaSyncAlt />,
             title: "Toggle Status",
             className: "px-3 py-1 bg-accent rounded text-sm",
             onClick: handleToggleStatus,
           },
           {
-            icon: "✏️",
+            icon: <FaPen />,
             title: "Edit",
             className: "px-3 py-1 bg-blue-600 text-white rounded text-sm",
             onClick: handleEdit,
           },
           {
-            icon: "🗑",
+            icon: <FaTrash />,
             title: "Delete",
             className: "px-3 py-1 bg-red-600 text-white rounded text-sm",
             onClick: handleDelete,
           },
           {
-            icon: "👁",
+            icon: <FaEye />,
             title: "View",
             className: "px-3 py-1 bg-primary text-white rounded text-sm",
             onClick: handleView,
@@ -194,13 +195,13 @@ export default function StudentListPage() {
         ]
       : [
           {
-            icon: "♻",
+            icon: <FaRecycle />,
             title: "Restore",
             className: "px-3 py-1 bg-green-600 text-white rounded text-sm",
             onClick: handleRestore,
           },
           {
-            icon: "🗑",
+            icon: <FaTrash />,
             title: "Permanent Delete",
             className: "px-3 py-1 bg-red-800 text-white rounded text-sm",
             onClick: handleDelete,

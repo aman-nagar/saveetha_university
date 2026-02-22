@@ -1,5 +1,6 @@
 // src/pages/admin/courses/StreamPage.jsx
 import { useEffect, useState } from "react";
+import { FaPen, FaTrash } from "react-icons/fa";
 import { fetchAllCourses } from "../../../api/courses/courseApi";
 import {
   fetchStreams,
@@ -107,7 +108,7 @@ export default function StreamPage() {
 
   const actions = [
     {
-      icon: "✏️",
+      icon: <FaPen />,
       className:
         "px-3 py-1 rounded bg-blue-600 text-white hover:bg-blue-700 text-sm",
       onClick: (row) => {
@@ -116,7 +117,7 @@ export default function StreamPage() {
       },
     },
     {
-      icon: "🗑",
+      icon: <FaTrash />,
       className:
         "px-3 py-1 rounded bg-red-600 text-white hover:bg-red-700 text-sm",
       onClick: open,

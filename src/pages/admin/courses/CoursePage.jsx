@@ -1,5 +1,6 @@
 // src/pages/admin/courses/CoursePage.jsx
 import { useEffect, useState } from "react";
+import { FaPen, FaTrash } from "react-icons/fa";
 import { fetchAllFaculty } from "../../../api/courses/facultyApi";
 import {
   fetchCourses,
@@ -119,7 +120,7 @@ export default function CoursePage() {
 
   const actions = [
     {
-      icon: "✏️",
+      icon: <FaPen />,
       className:
         "px-3 py-1 rounded bg-blue-600 text-white hover:bg-blue-700 text-sm",
       onClick: (row) => {
@@ -128,7 +129,7 @@ export default function CoursePage() {
       },
     },
     {
-      icon: "🗑",
+      icon: <FaTrash />,
       className:
         "px-3 py-1 rounded bg-red-600 text-white hover:bg-red-700 text-sm",
       onClick: open,

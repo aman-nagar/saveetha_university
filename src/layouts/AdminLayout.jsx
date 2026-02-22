@@ -25,9 +25,9 @@ export default function AdminLayout() {
     >
       <div className="flex flex-1 bg-bg text-text">
         <AdminSidebar theme={theme} toggleTheme={toggleTheme} />
-        <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
+        <div className="flex-1 flex flex-col min-w-0 ">
           <AdminHeader />
-          <main className="p-6 flex-1 overflow-x-auto">
+          <main className="flex flex-1 items-center justify-center p-2 overflow-x-hidden">
             <Outlet />
           </main>
         </div>

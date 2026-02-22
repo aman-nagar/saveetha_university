@@ -1,3 +1,4 @@
+// src/components/admin/AdminHeader.jsx
 import { useLocation, Link } from "react-router-dom";
 
 const routeTitles = {
@@ -33,7 +34,7 @@ export default function AdminHeader() {
     "Admin Panel";
 
   return (
-    <header className="bg-surface border-b border-border px-6 py-3">
+    <header className="bg-surface border-b border-border px-6 py-1">
       <div className="flex items-center justify-between">
         {/* Left: Breadcrumb + Title */}
         <div>

@@ -11,14 +11,20 @@ export default function Table({
   const colSpan = columns.length + (actions.length > 0 ? 1 : 0);
 
   return (
-    <div className="bg-surface border border-border rounded-xl overflow-hidden shadow-sm">
+    <div className="w-full bg-surface border border-border rounded-xl overflow-hidden shadow-sm">
       {/* ── Header bar ── */}
       {(title || toolbar) && (
         <div className="px-6 py-4 border-b border-border flex items-center justify-between gap-4 flex-wrap">
           {title && (
-            <h2 className="text-lg font-semibold text-text shrink-0">{title}</h2>
+            <h2 className="text-lg font-semibold text-text shrink-0">
+              {title}
+            </h2>
           )}
-          {toolbar && <div className="flex items-center gap-3 flex-wrap flex-1 justify-end">{toolbar}</div>}
+          {toolbar && (
+            <div className="flex items-center gap-3 flex-wrap flex-1 justify-end">
+              {toolbar}
+            </div>
+          )}
         </div>
       )}
 

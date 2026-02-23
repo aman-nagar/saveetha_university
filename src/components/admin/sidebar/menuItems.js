@@ -40,39 +40,12 @@ export const menuItems = [
   },
   {
     id: 4,
-    label: "Center",
+    label: "Centers",
     icon: FaClipboardList,
     children: [
-      { label: "Add Center", path: "/admin/add-center" },
-      { label: "Schedule", path: "/admin/exam-schedule" },
+      { label: "Add Center", path: "/admin/centers/add" },
+      { label: "Centers List", path: "/admin/centers" },
       { label: "Hall Tickets", path: "/admin/hall-tickets" },
-    ],
-  },
-  {
-    id: 5,
-    label: "Events",
-    icon: FaCalendarAlt,
-    children: [
-      { label: "Calendar", path: "/admin/calendar" },
-      { label: "Add Event", path: "/admin/events/add" },
-    ],
-  },
-  {
-    id: 6,
-    label: "Communications",
-    icon: FaEnvelope,
-    children: [
-      { label: "Notifications", path: "/admin/notifications" },
-      { label: "Announcements", path: "/admin/announcements" },
-    ],
-  },
-  {
-    id: 7,
-    label: "Reports",
-    icon: FaChartBar,
-    children: [
-      { label: "Analytics", path: "/admin/analytics" },
-      { label: "Generate Reports", path: "/admin/reports" },
     ],
   },
   {

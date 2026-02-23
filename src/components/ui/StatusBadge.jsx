@@ -1,4 +1,3 @@
-
 // src/components/ui/StatusBadge.jsx
 
 export default function StatusBadge({ status }) {

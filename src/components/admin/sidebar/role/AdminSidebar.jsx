@@ -1,11 +1,11 @@
-// src/components/admin/sidebar/AdminSidebar.jsx
+// src/components/admin/sidebar/role/AdminSidebar.jsx
 import { useState, useRef, useEffect } from "react";
 import { useLocation } from "react-router-dom";
-import { menuItems } from "./menuItems";
-import { SidebarMenuItem } from "./SidebarMenuItem";
-import SidebarHeader from "./SidebarHeader";
-import SidebarSearch from "./SidebarSearch";
-import SidebarFooter from "./SidebarFooter";
+import { menuItems } from "../menuItems";
+import { SidebarMenuItem } from "../SidebarMenuItem";
+import SidebarHeader from "../SidebarHeader";
+import SidebarSearch from "../SidebarSearch";
+import SidebarFooter from "../SidebarFooter";
 
 export const AdminSidebar = ({ theme, toggleTheme }) => {
   const location = useLocation();

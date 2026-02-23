@@ -2,7 +2,7 @@
 import { useEffect, useState } from "react";
 import { Outlet } from "react-router-dom";
 import AdminHeader from "../components/admin/AdminHeader";
-import { AdminSidebar } from "../components/admin/sidebar/AdminSidebar";
+import { AdminSidebar } from "../components/admin/sidebar/role/AdminSidebar";
 
 export default function AdminLayout() {
   const [theme, setTheme] = useState(

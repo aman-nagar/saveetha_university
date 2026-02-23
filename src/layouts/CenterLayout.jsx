@@ -2,7 +2,7 @@
 import { useEffect, useState } from "react";
 import { Outlet } from "react-router-dom";
 import AdminHeader from "../components/admin/AdminHeader"; // reuse for now
-import { AdminSidebar } from "../components/admin/sidebar/AdminSidebar"; // we'll restrict menu later
+import { AdminSidebar } from "../components/admin/sidebar/role/AdminSidebar"; // we'll restrict menu later
 
 export default function CenterLayout() {
   const [theme, setTheme] = useState(

@@ -1,3 +1,4 @@
+// src/components/admin/sidebar/menuItems.js
 import {
   FaHome,
   FaUserGraduate,

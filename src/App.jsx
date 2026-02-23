@@ -21,6 +21,7 @@ import AddCenterPage from "./pages/admin/centers/AddCenterPage";
 import CenterLayout from "./layouts/CenterLayout";
 import CenterDashboardPage from "./pages/center/CenterDashboardPage";
 import CenterListPage from "./pages/admin/centers/CenterListPage";
+import SubCenterDashboardPage from "./pages/sub-center/SubCenterDashboardPage";
 
 function App() {
   return (
@@ -34,9 +35,6 @@ function App() {
           <Route path="/news" element={<News />} />
           <Route path="/login" element={<Login />} />
         </Route>
-
-        {/* Student (standalone for now) */}
-        <Route path="/student-dashboard" element={<StudentDashboard />} />
 
         {/* Admin – full access */}
         <Route path="/admin" element={<AdminLayout />}>
@@ -59,9 +57,15 @@ function App() {
 
         {/* Center role – limited access */}
         <Route path="/center" element={<CenterLayout />}>
-          <Route path="dashboard" element={<CenterDashboardPage />} />
-          {/* Add more later: subcenters/create, profile, etc. */}
+          <Route index element={<CenterDashboardPage />} />
         </Route>
+        {/* Sub-center */}
+        <Route path="/sub-center" element={<CenterLayout />}>
+          <Route index element={<SubCenterDashboardPage />} />
+        </Route>
+
+        {/* Student (standalone for now) */}
+        <Route path="/student-dashboard" element={<StudentDashboard />} />
       </Routes>
     </BrowserRouter>
   );

@@ -1,80 +1,84 @@
-import React, { useState } from "react";
+// src/pages/Login.jsx
+
+// src/pages/Login.jsx
+
+import { useState } from "react";
+import { useForm } from "react-hook-form";
+import { useNavigate } from "react-router-dom";
+
+import { useToast } from "../hooks/useToast";
+
+import FormInput from "../components/form/FormInput";
+import Button from "../components/ui/Button";
+import Toast from "../components/ui/Toast";
+import { useAuth } from "../context/AuthContext";
 
 export default function Login() {
-  const [form, setForm] = useState({
-    username: "",
-    password: "",
-  });
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const { login } = useAuth(); // Grabbing login function from context
+  const navigate = useNavigate();
+  const { toast, show, clear } = useToast();
 
-  const handleChange = (e) => {
-    setForm({
-      ...form,
-      [e.target.name]: e.target.value,
-    });
-  };
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm();
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
+  const onSubmit = async (data) => {
+    console.log("[Login.jsx] Attempting Student Login...", data.email);
+    setIsSubmitting(true);
 
-    // Replace with API call
-    console.log("Login data:", form);
+    try {
+      await login(data.email, data.password);
+      show("success", "Login Successful! Redirecting...");
 
-    /*
-    Example backend response:
-    {
-      role: "admin"
+      // Navigate to the student dashboard after a short delay
+      setTimeout(() => navigate("/student-dashboard"), 1500);
+    } catch (err) {
+      console.error("[Login.jsx] Login failed:", err);
+      show("error", err.message || "Invalid credentials. Please try again.");
+    } finally {
+      setIsSubmitting(false);
     }
-    or
-    {
-      role: "student"
-    }
-
-    Then redirect accordingly.
-    */
-    //    if (role === "admin") navigate("/admin");
-    //     if (role === "student") navigate("/student/dashboard");
-    //     if (role === "center") navigate("/center/dashboard");
   };
 
   return (
-    <div className="min-h-screen bg-bg flex items-center justify-center px-4">
-      <div className="w-full max-w-md bg-surface border border-border rounded-xl shadow-sm p-8">
-        {/* Heading */}
-        <div className="text-center mb-6">
-          <h1 className="text-2xl font-heading font-bold text-primary">
-            Login
-          </h1>
-          <p className="text-muted mt-2">Enter your credentials to continue</p>
+    <div className="min-h-[80vh] flex items-center justify-center bg-bg px-4">
+      {toast && <Toast {...toast} onClose={clear} />}
+
+      <div className="bg-surface border border-border rounded-xl shadow-lg p-8 w-full max-w-md">
+        <div className="text-center mb-8">
+          <h1 className="text-2xl font-bold text-text">Welcome Back</h1>
+          <p className="text-muted text-sm mt-2">
+            Sign in to your student account
+          </p>
         </div>
 
-        {/* Form */}
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <input
-            type="text"
-            name="username"
-            placeholder="Username"
-            value={form.username}
-            onChange={handleChange}
-            required
-            className="w-full border border-border rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-secondary"
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+          <FormInput
+            label="Email Address"
+            name="email"
+            type="email"
+            placeholder="you@example.com"
+            register={register}
+            required="Email is required"
+            error={errors.email}
           />
 
-          <input
-            type="password"
+          <FormInput
+            label="Password"
             name="password"
-            placeholder="Password"
-            value={form.password}
-            onChange={handleChange}
-            required
-            className="w-full border border-border rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-secondary"
+            type="password"
+            placeholder="••••••••"
+            register={register}
+            required="Password is required"
+            error={errors.password}
           />
 
-          <button
-            type="submit"
-            className="w-full bg-secondary text-white py-2 rounded-md font-semibold hover:bg-secondary/90 transition"
-          >
-            Login
-          </button>
+          <Button type="submit" className="w-full" loading={isSubmitting}>
+            Sign In
+          </Button>
         </form>
       </div>
     </div>

@@ -1,3 +1,4 @@
+// src/pages/public/News.jsx
 import React from "react";
 
 function NewsList({ title, items }) {

@@ -2,7 +2,12 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
-  FaPen, FaTrash, FaEye, FaRecycle, FaFilePdf, FaSearch,
+  FaPen,
+  FaTrash,
+  FaEye,
+  FaRecycle,
+  FaFilePdf,
+  FaSearch,
 } from "react-icons/fa";
 import Table from "../../../components/table/Table";
 import Modal from "../../../components/ui/Modal";
@@ -58,7 +63,10 @@ function downloadStudentPdf(student) {
       <h1>${student.candidate_name}</h1>
       <p class="enroll">Enrollment: ${student.enrollment_no}</p>
       <table>
-        ${rows.filter(([, v]) => v).map(([l, v]) => `<tr><th>${l}</th><td>${v}</td></tr>`).join("")}
+        ${rows
+          .filter(([, v]) => v)
+          .map(([l, v]) => `<tr><th>${l}</th><td>${v}</td></tr>`)
+          .join("")}
       </table>
     </body>
   </html>`;
@@ -67,7 +75,9 @@ function downloadStudentPdf(student) {
   win.document.write(html);
   win.document.close();
   win.focus();
-  setTimeout(() => { win.print(); }, 500);
+  setTimeout(() => {
+    win.print();
+  }, 500);
 }
 
 /* ─── Clickable status toggle badge ─── */
@@ -80,13 +90,16 @@ function StatusToggle({ row, onToggle }) {
       className={`
         inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold
         transition-colors cursor-pointer
-        ${isActive
-          ? "bg-green-100 text-green-700 hover:bg-green-200"
-          : "bg-yellow-100 text-yellow-700 hover:bg-yellow-200"
+        ${
+          isActive
+            ? "bg-green-100 text-green-700 hover:bg-green-200"
+            : "bg-yellow-100 text-yellow-700 hover:bg-yellow-200"
         }
       `}
     >
-      <span className={`w-1.5 h-1.5 rounded-full ${isActive ? "bg-green-500" : "bg-yellow-500"}`} />
+      <span
+        className={`w-1.5 h-1.5 rounded-full ${isActive ? "bg-green-500" : "bg-yellow-500"}`}
+      />
       {isActive ? "Active" : "Inactive"}
     </button>
   );
@@ -160,7 +173,7 @@ export default function StudentListPage() {
     const newStatus = row.status === 1 ? 0 : 1;
     // Optimistic update
     setStudents((prev) =>
-      prev.map((s) => (s.id === row.id ? { ...s, status: newStatus } : s))
+      prev.map((s) => (s.id === row.id ? { ...s, status: newStatus } : s)),
     );
     try {
       await updateStudentStatus(row.id, newStatus);
@@ -168,7 +181,7 @@ export default function StudentListPage() {
     } catch (err) {
       // Rollback
       setStudents((prev) =>
-        prev.map((s) => (s.id === row.id ? { ...s, status: row.status } : s))
+        prev.map((s) => (s.id === row.id ? { ...s, status: row.status } : s)),
       );
       show("error", err.message || "Failed to update status");
     }
@@ -185,7 +198,10 @@ export default function StudentListPage() {
     try {
       await deleteStudent(row.id);
       setStudents((prev) => prev.filter((s) => s.id !== row.id));
-      show("success", isPermanent ? "Permanently deleted" : "Moved to Recycle Bin");
+      show(
+        "success",
+        isPermanent ? "Permanently deleted" : "Moved to Recycle Bin",
+      );
     } catch (err) {
       show("error", err.message || "Delete failed");
     }
@@ -255,25 +271,29 @@ export default function StudentListPage() {
           {
             icon: <FaEye />,
             title: "View",
-            className: "p-2 bg-primary text-white rounded hover:opacity-80 transition",
+            className:
+              "p-2 bg-primary text-white rounded hover:opacity-80 transition",
             onClick: handleView,
           },
           {
             icon: <FaPen />,
             title: "Edit",
-            className: "p-2 bg-blue-600 text-white rounded hover:opacity-80 transition",
+            className:
+              "p-2 bg-blue-600 text-white rounded hover:opacity-80 transition",
             onClick: handleEdit,
           },
           {
             icon: <FaFilePdf />,
             title: "Download PDF",
-            className: "p-2 bg-orange-500 text-white rounded hover:opacity-80 transition",
+            className:
+              "p-2 bg-orange-500 text-white rounded hover:opacity-80 transition",
             onClick: handleDownloadPdf,
           },
           {
             icon: <FaTrash />,
             title: "Delete",
-            className: "p-2 bg-red-600 text-white rounded hover:opacity-80 transition",
+            className:
+              "p-2 bg-red-600 text-white rounded hover:opacity-80 transition",
             onClick: handleDelete,
           },
         ]
@@ -281,13 +301,15 @@ export default function StudentListPage() {
           {
             icon: <FaRecycle />,
             title: "Restore",
-            className: "p-2 bg-green-600 text-white rounded hover:opacity-80 transition",
+            className:
+              "p-2 bg-green-600 text-white rounded hover:opacity-80 transition",
             onClick: handleRestore,
           },
           {
             icon: <FaTrash />,
             title: "Permanent Delete",
-            className: "p-2 bg-red-800 text-white rounded hover:opacity-80 transition",
+            className:
+              "p-2 bg-red-800 text-white rounded hover:opacity-80 transition",
             onClick: handleDelete,
           },
         ];
@@ -312,7 +334,9 @@ export default function StudentListPage() {
         <button
           onClick={() => setMode("active")}
           className={`px-4 py-2 text-sm font-medium transition ${
-            mode === "active" ? "bg-primary text-white" : "bg-surface text-text hover:bg-bg"
+            mode === "active"
+              ? "bg-primary text-white"
+              : "bg-surface text-text hover:bg-bg"
           }`}
         >
           Active Students
@@ -320,7 +344,9 @@ export default function StudentListPage() {
         <button
           onClick={() => setMode("recycle")}
           className={`px-4 py-2 text-sm font-medium border-l border-border transition ${
-            mode === "recycle" ? "bg-primary text-white" : "bg-surface text-text hover:bg-bg"
+            mode === "recycle"
+              ? "bg-primary text-white"
+              : "bg-surface text-text hover:bg-bg"
           }`}
         >
           Recycle Bin

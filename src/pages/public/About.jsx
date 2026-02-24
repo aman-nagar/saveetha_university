@@ -1,3 +1,4 @@
+// src/pages/public/About.jsx
 import React from "react";
 
 export default function About() {

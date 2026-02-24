@@ -1,6 +1,6 @@
 // src/api/client.js
 
-import Cookies from "js-cookie"; 
+import Cookies from "js-cookie";
 
 const BASE_URL = "https://api.nsprowebtech.com/backend/api/v1";
 
@@ -11,7 +11,7 @@ export async function apiRequest(endpoint, options = {}) {
   // Prepare headers
   const headers = {
     ...options.headers,
-    "Content-Type": "application/json", 
+    "Content-Type": "application/json",
   };
 
   if (token) {
@@ -40,7 +40,7 @@ export async function apiRequest(endpoint, options = {}) {
   }
 
   const json = await res.json();
-  
+
   if (json.success === false) {
     throw new Error(json.message || "Request failed");
   }

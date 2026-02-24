@@ -1,7 +1,7 @@
 // src/context/AuthContext.jsx
 import { createContext, useContext, useState, useEffect } from "react";
 import Cookies from "js-cookie";
-import { loginStudent } from "../api/auth/studentAuthApi";
+import { loginStudent, logoutStudent } from "../api/auth/studentAuthApi";
 import { fetchStudentById } from "../api/students/studentApi";
 
 const AuthContext = createContext(null);
@@ -47,7 +47,7 @@ export function AuthProvider({ children }) {
       father_name: data.father_name,
       mother_name: data.mother_name,
       dob: data.dob,
-      photo: data.photo,
+      photo: data.photo, // This now contains the full URL
       gender: data.gender,
       category: data.category,
       contact_number: data.contact_number,
@@ -72,7 +72,7 @@ export function AuthProvider({ children }) {
       father_name: data.father_name,
       mother_name: data.mother_name,
       dob: data.dob,
-      photo: data.photo,
+      photo: data.photo, // This contains the full URL
       gender: data.gender,
       category: data.category,
       contact_number: data.contact_number,
@@ -87,10 +87,24 @@ export function AuthProvider({ children }) {
     };
   };
 
-  const logout = () => {
-    setUser(null);
-    Cookies.remove("authToken");
-    localStorage.removeItem("studentId");
+  // Updated logout to call API
+  const logout = async () => {
+    try {
+      const token = Cookies.get("authToken");
+      if (token) {
+        await logoutStudent(token).catch((err) => {
+          console.warn(
+            "Logout API failed, but continuing with local logout:",
+            err,
+          );
+        });
+      }
+    } finally {
+      // Always clear local state regardless of API success/failure
+      setUser(null);
+      Cookies.remove("authToken");
+      localStorage.removeItem("studentId");
+    }
   };
 
   return (

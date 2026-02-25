@@ -21,5 +21,5 @@ export async function loginAdmin(email, password) {
   }
 
   // Admin user data is inside "errors" (weird but that's the API)
-  return json.errors;
+  return json.data;
 }

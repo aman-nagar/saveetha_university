@@ -1,5 +1,4 @@
 // src/layouts/PublicLayout.jsx
-
 import AnnouncementBar from "../components/public/AnnouncementBar";
 import PublicFooter from "../components/public/PublicFooter";
 import PublicHeader from "../components/public/PublicHeader";

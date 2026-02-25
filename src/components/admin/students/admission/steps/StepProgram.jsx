@@ -11,12 +11,10 @@ export default function StepProgram({
   faculties = [],
   courses = [],
   streams = [],
-  onCourseTypeChange,
-  onFacultyChange,
-  onCourseChange,
 }) {
   const courseTypeOptions = useMemo(
-    () => courseTypes.map((ct) => ({ label: ct.name, value: ct.name, id: ct.id })),
+    () =>
+      courseTypes.map((ct) => ({ label: ct.name, value: ct.name, id: ct.id })),
     [courseTypes],
   );
 
@@ -43,7 +41,6 @@ export default function StepProgram({
         register={register}
         error={errors.course_type}
         options={courseTypeOptions}
-        onChangeCb={(opt) => onCourseTypeChange?.(opt?.id ?? null)}
       />
 
       <FormSelect
@@ -52,7 +49,6 @@ export default function StepProgram({
         register={register}
         error={errors.faculty}
         options={facultyOptions}
-        onChangeCb={(opt) => onFacultyChange?.(opt?.id ?? null)}
       />
 
       <FormSelect
@@ -61,7 +57,6 @@ export default function StepProgram({
         register={register}
         error={errors.course}
         options={courseOptions}
-        onChangeCb={(opt) => onCourseChange?.(opt?.id ?? null)}
       />
 
       <FormSelect

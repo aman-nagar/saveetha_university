@@ -131,6 +131,11 @@ export default function StudentFormStepper({
     defaultValues: isEdit ? buildDefaultValues(student) : {},
   });
 
+  // Watch the dropdown fields to detect user changes
+  const watchedCourseType = watch("course_type");
+  const watchedFaculty = watch("faculty");
+  const watchedCourse = watch("course");
+
   // ── Load Course Types + Init cascade (handles both create & edit) ──
   useEffect(() => {
     const init = async () => {
@@ -145,13 +150,14 @@ export default function StudentFormStepper({
         }
 
         // 2. Edit mode: find course type by name match → get its ID
-        const ctMatch = ctList.find(
-          (ct) => ct.name === student.course_type,
-        );
+        const ctMatch = ctList.find((ct) => ct.name === student.course_type);
         const ctId = ctMatch?.id ?? null;
 
-        let fList = [], cList = [], sList = [];
-        let fId = null, cId = null;
+        let fList = [],
+          cList = [],
+          sList = [];
+        let fId = null,
+          cId = null;
 
         if (ctId) {
           fList = await fetchFaculty(ctId);
@@ -193,61 +199,114 @@ export default function StudentFormStepper({
 
   // ── User-triggered: Course Type changed → reload Faculty list ──
   useEffect(() => {
-    // Skip the mount-time set (cascadeReady is false during init)
     if (!cascadeReady) return;
-    if (!selectedIds.courseTypeId) return;
+    if (!watchedCourseType) {
+      // Clear dependent fields
+      setFaculties([]);
+      setCourses([]);
+      setStreams([]);
+      setValue("faculty", "");
+      setValue("course", "");
+      setValue("stream", "");
+      setSelectedIds({ courseTypeId: null, facultyId: null, courseId: null });
+      return;
+    }
+
+    // Find the ID of the selected course type
+    const ctMatch = courseTypes.find((ct) => ct.name === watchedCourseType);
+    const ctId = ctMatch?.id ?? null;
+
+    if (!ctId) return;
+
+    // Only trigger if this is a user change (not initial load)
+    if (selectedIds.courseTypeId === ctId) return;
+
     const load = async () => {
       try {
-        const data = await fetchFaculty(selectedIds.courseTypeId);
+        const data = await fetchFaculty(ctId);
         setFaculties(data);
         setCourses([]);
         setStreams([]);
         setValue("faculty", "");
         setValue("course", "");
         setValue("stream", "");
-        setSelectedIds((prev) => ({ ...prev, facultyId: null, courseId: null }));
+        setSelectedIds({ courseTypeId: ctId, facultyId: null, courseId: null });
       } catch (err) {
         show("error", err.message);
       }
     };
     load();
-  }, [selectedIds.courseTypeId]);
+  }, [watchedCourseType, courseTypes, cascadeReady]);
 
   // ── User-triggered: Faculty changed → reload Course list ──
   useEffect(() => {
     if (!cascadeReady) return;
-    if (!selectedIds.facultyId) return;
+    if (!watchedFaculty) {
+      // Clear dependent fields
+      setCourses([]);
+      setStreams([]);
+      setValue("course", "");
+      setValue("stream", "");
+      setSelectedIds((prev) => ({ ...prev, facultyId: null, courseId: null }));
+      return;
+    }
+
+    // Find the ID of the selected faculty
+    const fMatch = faculties.find((f) => f.name === watchedFaculty);
+    const fId = fMatch?.id ?? null;
+
+    if (!fId) return;
+
+    // Only trigger if this is a user change (not initial load)
+    if (selectedIds.facultyId === fId) return;
+
     const load = async () => {
       try {
-        const data = await fetchCourses(selectedIds.facultyId);
+        const data = await fetchCourses(fId);
         setCourses(data);
         setStreams([]);
         setValue("course", "");
         setValue("stream", "");
-        setSelectedIds((prev) => ({ ...prev, courseId: null }));
+        setSelectedIds((prev) => ({ ...prev, facultyId: fId, courseId: null }));
       } catch (err) {
         show("error", err.message);
       }
     };
     load();
-  }, [selectedIds.facultyId]);
+  }, [watchedFaculty, faculties, cascadeReady]);
 
   // ── User-triggered: Course changed → reload Stream list ──
   useEffect(() => {
     if (!cascadeReady) return;
-    if (!selectedIds.courseId) return;
+    if (!watchedCourse) {
+      // Clear dependent fields
+      setStreams([]);
+      setValue("stream", "");
+      setSelectedIds((prev) => ({ ...prev, courseId: null }));
+      return;
+    }
+
+    // Find the ID of the selected course
+    const cMatch = courses.find((c) => c.name === watchedCourse);
+    const cId = cMatch?.id ?? null;
+
+    if (!cId) return;
+
+    // Only trigger if this is a user change (not initial load)
+    if (selectedIds.courseId === cId) return;
+
     const load = async () => {
       try {
-        const data = await fetchStreams(selectedIds.courseId);
+        const data = await fetchStreams(cId);
         setStreams(data);
         setValue("stream", "");
+        setSelectedIds((prev) => ({ ...prev, courseId: cId }));
       } catch (err) {
         show("error", err.message);
       }
     };
     load();
-  }, [selectedIds.courseId]);
-
+  }, [watchedCourse, courses, cascadeReady]);
 
   // ── Step validation fields ──
   const stepFields = {
@@ -282,7 +341,11 @@ export default function StudentFormStepper({
 
       // Qualification keys to skip from main loop
       const qualKeys = new Set(
-        QUAL_KEYS.flatMap((k) => [`${k}_year`, `${k}_board`, `${k}_percentage`]),
+        QUAL_KEYS.flatMap((k) => [
+          `${k}_year`,
+          `${k}_board`,
+          `${k}_percentage`,
+        ]),
       );
 
       // Append normal fields
@@ -308,14 +371,22 @@ export default function StudentFormStepper({
         formData.append(`qualifications[${qi}][examination]`, key);
         formData.append(`qualifications[${qi}][year_of_passing]`, year || "");
         formData.append(`qualifications[${qi}][board_university]`, board || "");
-        formData.append(`qualifications[${qi}][percentage_cgpa]`, percentage || "");
+        formData.append(
+          `qualifications[${qi}][percentage_cgpa]`,
+          percentage || "",
+        );
         if (file) formData.append(`document[]`, file);
         qi++;
       });
 
       await onSubmitProp(formData);
 
-      show("success", isEdit ? "Student updated successfully!" : "Student created successfully!");
+      show(
+        "success",
+        isEdit
+          ? "Student updated successfully!"
+          : "Student created successfully!",
+      );
 
       if (!isEdit) {
         reset();
@@ -381,15 +452,6 @@ export default function StudentFormStepper({
             faculties={faculties}
             courses={courses}
             streams={streams}
-            onCourseTypeChange={(id) =>
-              setSelectedIds((prev) => ({ ...prev, courseTypeId: id }))
-            }
-            onFacultyChange={(id) =>
-              setSelectedIds((prev) => ({ ...prev, facultyId: id }))
-            }
-            onCourseChange={(id) =>
-              setSelectedIds((prev) => ({ ...prev, courseId: id }))
-            }
           />
         )}
 

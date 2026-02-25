@@ -7,6 +7,7 @@ const ENDPOINT = "/course/index.php";
 /* -------------------------
    Fetch Streams by Course
 -------------------------- */
+
 export function fetchStreams(courseId) {
   if (!courseId) {
     throw new Error("Course ID is required");
@@ -15,6 +16,9 @@ export function fetchStreams(courseId) {
   return apiRequest(`${ENDPOINT}?type=stream&course_id=${courseId}`);
 }
 
+export function fetchAllStreams() {
+  return apiRequest(`${ENDPOINT}?type=stream`);
+}
 /* -------------------------
    Create Stream
 -------------------------- */

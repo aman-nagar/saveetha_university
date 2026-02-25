@@ -1,4 +1,5 @@
-// src/api/studentApi.js
+// src/api/students/studentApi.js
+
 import { apiRequest } from "../client";
 
 // get all students pagination wise
@@ -115,7 +116,7 @@ export async function deleteStudent(id) {
 // Restore from recycle bin
 export async function restoreStudent(id) {
   return apiRequest("/students/restore_delete.php", {
-    method: "PUT",
+    method: "POST",
     headers: {
       "Content-Type": "application/json",
     },

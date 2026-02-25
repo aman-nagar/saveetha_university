@@ -1,3 +1,4 @@
+// src/components/admin/sidebar/menuItems.js
 import {
   FaHome,
   FaUserGraduate,
@@ -36,6 +37,7 @@ export const menuItems = [
       { label: "Faculty", path: "/admin/faculty" },
       { label: "Course", path: "/admin/course" },
       { label: "stream", path: "/admin/stream" },
+      { label: "subjects", path: "/admin/subject" },
     ],
   },
   {
@@ -45,17 +47,12 @@ export const menuItems = [
     children: [
       { label: "Add Center", path: "/admin/centers/add" },
       { label: "Centers List", path: "/admin/centers" },
-      { label: "Hall Tickets", path: "/admin/hall-tickets" },
     ],
   },
   {
     id: 8,
     label: "Settings",
     icon: FaCog,
-    children: [
-      { label: "Site Setting", path: "/admin/site-settings" },
-      { label: "Users", path: "/admin/users" },
-      { label: "Permissions", path: "/admin/permissions" },
-    ],
+    children: [{ label: "Site Setting", path: "/admin/site-settings" }],
   },
 ];

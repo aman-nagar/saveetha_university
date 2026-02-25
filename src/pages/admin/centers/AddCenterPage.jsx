@@ -5,17 +5,29 @@ import FormInput from "../../../components/form/FormInput";
 import FormTextarea from "../../../components/form/FormTextarea";
 import FormSelect from "../../../components/form/FormSelect";
 import FormFileInput from "../../../components/form/FormFileInput";
-import { useNavigate } from "react-router-dom";
-import { useState } from "react";
+import { useNavigate, useSearchParams } from "react-router-dom";
+import { useEffect, useState, useRef } from "react";
 import Button from "../../../components/ui/Button";
 import Toast from "../../../components/ui/Toast";
 import { useToast } from "../../../hooks/useToast";
-import { createCenter } from "../../../api/center/centerApi";
+import {
+  createCenter,
+  updateCenter,
+  fetchCenterById,
+} from "../../../api/center/centerApi";
+import { FaSpinner } from "react-icons/fa";
 
 export default function AddCenterPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [loading, setLoading] = useState(false);
   const { toast, show, clear } = useToast();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const centerId = searchParams.get("id");
+  const isEditMode = !!centerId;
+
+  const initialLoadDone = useRef(false);
+  const [hasFile, setHasFile] = useState(false);
 
   const {
     register,
@@ -24,36 +36,140 @@ export default function AddCenterPage() {
     formState: { errors },
   } = useForm();
 
+  // Load center data if in edit mode - with proper dependency array
+  useEffect(() => {
+    // Prevent infinite loop by checking if we've already loaded
+    if (isEditMode && !initialLoadDone.current) {
+      const loadCenter = async () => {
+        try {
+          setLoading(true);
+          const centerData = await fetchCenterById(centerId);
+
+          // Reset form with fetched data
+          reset({
+            institute_owner_name: centerData.institute_owner_name || "",
+            institute_name: centerData.institute_name || "",
+            date_of_birth: centerData.date_of_birth || "",
+            pan_number: centerData.pan_number || "",
+            aadhar_number: centerData.aadhar_number || "",
+            institute_full_address: centerData.institute_full_address || "",
+            state: centerData.state || "",
+            district: centerData.district || "",
+            pincode: centerData.pincode || "",
+            contact_number: centerData.contact_number || "",
+            email: centerData.email || "",
+            username: "", // Don't populate password fields
+            password: "",
+          });
+
+          initialLoadDone.current = true;
+        } catch (err) {
+          console.error("[AddCenterPage.jsx] Error loading center:", err);
+          show("error", "Failed to load center data");
+        } finally {
+          setLoading(false);
+        }
+      };
+
+      loadCenter();
+    } else if (!isEditMode && !initialLoadDone.current) {
+      // Reset to empty form for create mode (only once)
+      reset({
+        institute_owner_name: "",
+        institute_name: "",
+        date_of_birth: "",
+        pan_number: "",
+        aadhar_number: "",
+        institute_full_address: "",
+        state: "",
+        district: "",
+        pincode: "",
+        contact_number: "",
+        email: "",
+        username: "",
+        password: "",
+      });
+      initialLoadDone.current = true;
+    }
+  }, [centerId, isEditMode, reset, show]); // Added all dependencies
+
   const onSubmit = async (data) => {
-    console.log("[AddCenterPage.jsx] Raw Form Data:", data);
+    console.log(
+      `[AddCenterPage.jsx] ${isEditMode ? "Updating" : "Creating"} center:`,
+      data,
+    );
     setIsSubmitting(true);
+
     try {
       const formData = new FormData();
+
+      // Add ID if in edit mode
+      if (isEditMode) {
+        formData.append("id", centerId);
+      }
+
+      // Add all other fields
       Object.keys(data).forEach((key) => {
-        if (key === "owner_image" && data[key][0]) {
+        if (key === "owner_image" && data[key]?.[0]) {
           formData.append("owner_image", data[key][0]);
-        } else if (data[key] !== undefined && data[key] !== null) {
+        } else if (
+          data[key] !== undefined &&
+          data[key] !== null &&
+          data[key] !== ""
+        ) {
           formData.append(key, data[key]);
         }
       });
-      const response = await createCenter(formData);
-      console.log("[AddCenterPage.jsx] Success Response:", response);
-      show("success", "Center created successfully!");
-      reset();
-      // Optional: Redirect to centers list after short delay
-      // setTimeout(() => navigate("/admin/centers"), 2000);
+
+      // Only include password in create mode, or if provided in edit mode
+      if (!isEditMode || (isEditMode && data.password)) {
+        formData.append("password", data.password);
+      }
+
+      let response;
+      if (isEditMode) {
+        response = await updateCenter(formData);
+        show("success", "Center updated successfully!");
+      } else {
+        response = await createCenter(formData);
+        show("success", "Center created successfully!");
+      }
+
+      console.log(`[AddCenterPage.jsx] Success Response:`, response);
+
+      // Redirect back to centers list after short delay
+      setTimeout(() => navigate("/admin/centers"), 1500);
     } catch (err) {
-      console.error("[AddCenterPage.jsx] Error creating center:", err);
-      show("error", err.message || "Failed to create center");
+      console.error(
+        `[AddCenterPage.jsx] Error ${isEditMode ? "updating" : "creating"} center:`,
+        err,
+      );
+      show(
+        "error",
+        err.message || `Failed to ${isEditMode ? "update" : "create"} center`,
+      );
     } finally {
       setIsSubmitting(false);
     }
   };
 
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="flex items-center gap-2 text-primary">
+          <FaSpinner className="animate-spin" />
+          <span>Loading center data...</span>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="p-6 space-y-6">
       {toast && <Toast {...toast} onClose={clear} />}
-      <h1 className="text-2xl font-semibold text-text">Create New Center</h1>
+      <h1 className="text-2xl font-semibold text-text">
+        {isEditMode ? "Edit Center" : "Create New Center"}
+      </h1>
 
       <form
         onSubmit={handleSubmit(onSubmit)}
@@ -90,6 +206,7 @@ export default function AddCenterPage() {
             label="PAN Number"
             name="pan_number"
             register={register}
+            required="PAN number is required"
             error={errors.pan_number}
             placeholder="ABCDE1234F"
           />
@@ -98,6 +215,7 @@ export default function AddCenterPage() {
             label="Aadhar Number"
             name="aadhar_number"
             register={register}
+            required="Aadhar number is required"
             error={errors.aadhar_number}
             placeholder="12 digit Aadhar"
           />
@@ -106,6 +224,7 @@ export default function AddCenterPage() {
             label="Owner Profile Image"
             name="owner_image"
             register={register}
+            existingUrl={isEditMode ? null : undefined}
           />
         </FormSection>
 
@@ -116,6 +235,7 @@ export default function AddCenterPage() {
               label="Institute Full Address"
               name="institute_full_address"
               register={register}
+              required="Address is required"
               error={errors.institute_full_address}
             />
           </div>
@@ -124,6 +244,8 @@ export default function AddCenterPage() {
             label="State"
             name="state"
             register={register}
+            required="State is required"
+            error={errors.state}
             options={[
               { label: "Select State", value: "" },
               { label: "Uttar Pradesh", value: "Uttar Pradesh" },
@@ -135,6 +257,8 @@ export default function AddCenterPage() {
             label="District"
             name="district"
             register={register}
+            required="District is required"
+            error={errors.district}
             options={[
               { label: "Select District", value: "" },
               { label: "Lucknow", value: "Lucknow" },
@@ -146,6 +270,7 @@ export default function AddCenterPage() {
             label="Pincode"
             name="pincode"
             register={register}
+            required="Pincode is required"
             error={errors.pincode}
           />
 
@@ -169,19 +294,32 @@ export default function AddCenterPage() {
         </FormSection>
 
         {/* SECTION 3: ACCOUNT ACCESS */}
-        <FormSection title="Account Credentials">
+        <FormSection
+          title={
+            isEditMode
+              ? "Account Credentials (Optional)"
+              : "Account Credentials"
+          }
+        >
           <FormInput
             label="Username"
             name="username"
             register={register}
-            placeholder="Usually the email address"
+            placeholder={
+              isEditMode ? "Leave blank to keep current" : "Username"
+            }
+            required={!isEditMode && "Username is required"}
+            error={errors.username}
           />
           <FormInput
             label="Password"
             name="password"
             type="password"
             register={register}
-            required="Password is required"
+            placeholder={
+              isEditMode ? "Leave blank to keep current" : "Password"
+            }
+            required={!isEditMode && "Password is required"}
             error={errors.password}
           />
         </FormSection>
@@ -192,10 +330,10 @@ export default function AddCenterPage() {
             onClick={() => navigate("/admin/centers")}
             disabled={isSubmitting}
           >
-            Cancle
+            Cancel
           </Button>
           <Button type="submit" loading={isSubmitting}>
-            Create Center
+            {isEditMode ? "Update Center" : "Create Center"}
           </Button>
         </div>
       </form>

@@ -20,7 +20,7 @@ export default function PublicHeader() {
 
       <NavbarCollapse>
         <NavbarLink as={Link} to="/" className="text-text hover:text-secondary">
-          Home
+          Home/shubham
         </NavbarLink>
         <NavbarLink
           as={Link}

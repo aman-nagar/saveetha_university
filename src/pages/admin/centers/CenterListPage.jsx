@@ -1,56 +1,91 @@
-//src/pages/admin/centers/CenterListPage.jsx
-import React, { useEffect } from "react";
+// src/pages/admin/centers/CenterListPage.jsx
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { fetchCenters } from "@api/center/centerApi";
-import { useCrud } from "@hooks/useCrud";
-import { useToast } from "@hooks/useToast";
-import Table from "@components/table/Table";
-import Button from "@components/ui/Button";
-import Toast from "@components/ui/Toast";
+import { fetchCenters, updateCenter } from "../../../api/center/centerApi";
+import { useCrud } from "../../../hooks/useCrud";
+import { useToast } from "../../../hooks/useToast";
+import Table from "../../../components/table/Table";
+import Button from "../../../components/ui/Button";
+import Toast from "../../../components/ui/Toast";
 import { HiPlus, HiPencil, HiTrash } from "react-icons/hi";
-import { useConfirm } from "@/hooks/useConfirm";
-import StatusBadge from "@components/ui/StatusBadge";
-import Modal from "@components/ui/Modal";
+import { FaToggleOn, FaToggleOff, FaSpinner } from "react-icons/fa";
+import { useConfirm } from "../../../hooks/useConfirm";
+import Modal from "../../../components/ui/Modal";
 
 export default function CenterListPage() {
   const navigate = useNavigate();
   const { toast, show, clear } = useToast();
   const { target, isOpen, open, close } = useConfirm();
+  const [togglingId, setTogglingId] = useState(null);
 
   const {
     data: centers,
     loading,
     load,
+    setData,
     remove,
   } = useCrud({
     fetchFn: fetchCenters,
     deleteFn: async (id) => {
-      // Logic for delete would go here (e.g., deleteCenter API call)
-      console.log(`[CenterListPage.jsx] Attempting to delete ID: ${id}`);
+      // Placeholder for delete API
+      console.log(`[CenterListPage.jsx] Delete ID: ${id}`);
     },
   });
 
   useEffect(() => {
-    console.log(
-      "[CenterListPage.jsx] Component mounted. Fetching centers... [from useEffect]",
-    );
     load();
   }, [load]);
+
+  const handleToggle = async (row, field) => {
+    try {
+      setTogglingId(row.id);
+      // Prepare form data with all required fields
+      const formData = new FormData();
+      formData.append("id", row.id);
+      formData.append("institute_owner_name", row.institute_owner_name);
+      formData.append("institute_name", row.institute_name);
+      formData.append("date_of_birth", row.date_of_birth);
+      formData.append("pan_number", row.pan_number || "");
+      formData.append("aadhar_number", row.aadhar_number || "");
+      formData.append("institute_full_address", row.institute_full_address);
+      formData.append("state", row.state);
+      formData.append("district", row.district);
+      formData.append("pincode", row.pincode);
+      formData.append("contact_number", row.contact_number);
+      formData.append("email", row.email);
+      // Add the toggled field with opposite value
+      formData.append(field, row[field] ? 0 : 1);
+      // If there's an existing image, we could send it, but backend may keep it if not sent
+      // Optional: send owner_image if exists, but not required
+
+      await updateCenter(formData);
+
+      // Update local state optimistically
+      setData((prev) =>
+        prev.map((item) =>
+          item.id === row.id ? { ...item, [field]: !item[field] } : item,
+        ),
+      );
+      show("success", `${field} updated successfully`);
+    } catch (err) {
+      show("error", err.message || "Failed to update");
+    } finally {
+      setTogglingId(null);
+    }
+  };
 
   const confirmDelete = async () => {
     if (!target) return;
     try {
       await remove(target.id);
-      show("success", `Center "${target.institute_name}" deleted successfully`);
+      show("success", `Center "${target.institute_name}" deleted`);
     } catch (err) {
-      console.log(err);
       show("error", "Failed to delete center");
     } finally {
       close();
     }
   };
 
-  // Define columns based on your API response keys
   const columns = [
     {
       key: "serial",
@@ -89,7 +124,50 @@ export default function CenterListPage() {
         </div>
       ),
     },
+    {
+      key: "is_form_enabled",
+      label: "Form Enabled",
+      render: (row) => (
+        <button
+          onClick={() => handleToggle(row, "is_form_enabled")}
+          disabled={togglingId === row.id}
+          className="flex items-center gap-2 focus:outline-none"
+        >
+          {togglingId === row.id ? (
+            <FaSpinner className="animate-spin text-primary" />
+          ) : row.is_form_enabled ? (
+            <FaToggleOn className="w-6 h-6 text-green-600" />
+          ) : (
+            <FaToggleOff className="w-6 h-6 text-gray-400" />
+          )}
+          <span className="text-sm">{row.is_form_enabled ? "Yes" : "No"}</span>
+        </button>
+      ),
+    },
+    {
+      key: "is_active",
+      label: "Active Status",
+      render: (row) => (
+        <button
+          onClick={() => handleToggle(row, "is_active")}
+          disabled={togglingId === row.id}
+          className="flex items-center gap-2 focus:outline-none"
+        >
+          {togglingId === row.id ? (
+            <FaSpinner className="animate-spin text-primary" />
+          ) : row.is_active ? (
+            <FaToggleOn className="w-6 h-6 text-green-600" />
+          ) : (
+            <FaToggleOff className="w-6 h-6 text-gray-400" />
+          )}
+          <span className="text-sm">
+            {row.is_active ? "Active" : "Inactive"}
+          </span>
+        </button>
+      ),
+    },
   ];
+
   const actions = [
     {
       icon: <HiPencil className="w-4 h-4" />,
@@ -103,15 +181,23 @@ export default function CenterListPage() {
       className:
         "bg-red-100 text-red-600 hover:bg-red-200 p-2 rounded-md transition",
       title: "Delete Center",
-      // Simply call open(row) to trigger your modal!
       onClick: (row) => open(row),
     },
   ];
 
+  const toolbar = (
+    <Button
+      onClick={() => navigate("/admin/centers/add")}
+      className="flex items-center gap-2"
+    >
+      <HiPlus className="w-4 h-4" />
+      Add New Center
+    </Button>
+  );
+
   return (
     <div className="w-full">
       {toast && <Toast {...toast} onClose={clear} />}
-
       <div className="bg-surface rounded-xl shadow-sm border border-border">
         <Table
           title="All Registered Centers"
@@ -120,6 +206,7 @@ export default function CenterListPage() {
           actions={actions}
           loading={loading}
           emptyMessage="No centers found. Click 'Add New Center' to get started."
+          toolbar={toolbar}
         />
       </div>
       <Modal

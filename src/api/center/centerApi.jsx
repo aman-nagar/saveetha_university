@@ -19,9 +19,13 @@ export function createCenter(formData) {
   });
 }
 
-export function updateCenter(formData) {
+export function updateCenter(data) {
+  // data is a plain object (not FormData)
   return apiRequest(`${UPDATE_ENDPOINT}`, {
-    method: "POST",
-    body: formData,
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(data),
   });
 }

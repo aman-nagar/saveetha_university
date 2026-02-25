@@ -25,6 +25,7 @@ import { AuthProvider } from "./context/AuthContext";
 import ProtectedRoute from "./context/ProtectedRoute";
 import StudentLogin from "./pages/StudentLogin";
 import AdminLogin from "./pages/admin/AdminLogin";
+import SubjectPage from "./pages/admin/courses/SubjectPage";
 
 function App() {
   return (
@@ -56,6 +57,7 @@ function App() {
             <Route path="faculty" element={<FacultyPage />} />
             <Route path="course" element={<CoursePage />} />
             <Route path="stream" element={<StreamPage />} />
+            <Route path="subject" element={<SubjectPage />} />
             {/* students menu */}
             <Route path="students" element={<StudentListPage />} />
             <Route path="students/add" element={<AddStudent />} />

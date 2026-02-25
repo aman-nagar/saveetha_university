@@ -26,8 +26,8 @@ export default function AddCenterPage() {
   const centerId = searchParams.get("id");
   const isEditMode = !!centerId;
 
-  // Use a ref to track if initial data has been loaded
   const initialLoadDone = useRef(false);
+  const [hasFile, setHasFile] = useState(false);
 
   const {
     register,

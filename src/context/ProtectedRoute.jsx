@@ -16,9 +16,11 @@ export default function ProtectedRoute({ children, allowedRoles }) {
 
   // 2. If they don't have a token, kick them to login
   if (!isAuthenticated) {
+    if (window.location.pathname.startsWith("/admin")) {
+      return <Navigate to="/admin/login" replace />;
+    }
     return <Navigate to="/login" replace />;
   }
-
   // 3. Optional: Role-Based checking (If a student tries to go to /admin)
   if (allowedRoles && !allowedRoles.includes(user.role)) {
     return <Navigate to="/unauthorized" replace />; // or redirect to their own dashboard

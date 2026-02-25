@@ -1,346 +1,251 @@
-**Project Title:** University Management System (Admin + Public Portal)
+I am building a College Management System (CMS) using:
 
-**Project Type:** Full-stack web application (Admin dashboard + public website)
+Frontend:
 
-## 1. Tech Stack
+React (Vite)
 
-### Frontend
+React Router
 
-- React (Vite)
-- React Router (routing)
-- Tailwind CSS (utility styling)
-- Flowbite (UI components)
-- React Hook Form (form handling)
-- Framer Motion (animations)
-- React Icons
+TailwindCSS
 
-### Backend (existing API)
+React Hook Form
 
-- REST API (external backend provided)
-- Base URL:
-  `https://api.nsprowebtech.com/backend/api/v1`
+Context API for auth
 
----
+js-cookie for token storage
 
-## 2. Main App Structure
+Backend:
 
-The app has **two separate UI systems**:
+PHP REST APIs
 
-### 1. Public Website
+MySQL database
 
-Accessible to everyone:
+Token-based authentication (Bearer token)
 
-- Home
-- About
-- Contact
-- News
-- Login
+Role-based system (admin, center, sub-center, student)
 
-Uses:
+Base API URL:
+https://api.nsprowebtech.com/backend/api/v1
 
-```
-PublicLayout
-```
+🏗 PROJECT STRUCTURE
 
-### 2. Admin Panel
+The system has four main roles:
 
-Accessible after login:
+Admin (full access)
 
-- Dashboard
-- Students
-- Academics
-- Examinations
-- Events
-- Communications
-- Reports
-- Settings
+Center (limited access)
 
-Uses:
+Sub-center (more restricted)
 
-```
-AdminLayout
-```
+Student (portal access)
 
-Each layout has:
+We separated authentication domains:
 
-- Separate header
-- Separate sidebar
-- Separate theme logic
+Student login:
+POST /students/login.php
 
----
+Admin / Center / Sub-center login:
+POST /admin_login.php
 
-## 3. Routing Structure
+Backend returns token + role.
 
-Example routes:
+Token is stored in:
 
-### Public Routes
+Cookie (authToken)
 
-```
-/
- /about
- /contact
- /news
- /login
-```
+User object in localStorage
 
-### Admin Routes
+All API requests go through a global client wrapper that:
 
-```
-/admin
-/admin/students
-/admin/students/add
-/admin/settings/site-settings
-```
+Auto-injects Authorization: Bearer <token>
 
----
+Handles 401 globally
 
-## 4. Folder Structure
+Redirects to login if session expired
 
-```
+📚 CURRENT FEATURES IMPLEMENTED
+Authentication
+
+Admin login
+
+Student login
+
+Role-based route protection
+
+ProtectedRoute component
+
+Unauthorized redirect
+
+Token auto-injection
+
+Global 401 handling
+
+Student Management
+
+Multi-step admission form
+
+File uploads (FormData)
+
+Student list with pagination
+
+Search
+
+Status toggle (Pending/Active)
+
+Soft delete (Recycle Bin)
+
+Permanent delete
+
+Restore from recycle bin
+
+Edit student via modal
+
+View student details modal
+
+Recycle bin uses separate endpoint:
+GET /students/students-recycle.php
+
+Soft delete:
+DELETE /students/delete.php
+
+Restore:
+POST /students/restore_delete.php
+
+Courses Module
+
+Course Categories
+
+Faculties
+
+Courses
+
+Streams
+
+Dependent dropdown loading
+
+Centers Module (In Progress)
+
+Admin can:
+
+Create centers
+
+Manage centers
+
+Assign role
+
+Centers can:
+
+Create sub-centers
+
+Role-based restriction planned.
+
+🔐 SECURITY ARCHITECTURE
+
+Frontend:
+
+Separate login screens (student vs admin)
+
+Role-based route protection
+
+Token stored in cookie (SameSite Strict)
+
+Global 401 redirect
+
+Backend:
+
+Issues token + expires_at
+
+Must validate token for each protected route
+
+Must validate role per endpoint
+
+Current concern:
+Ensuring backend actually enforces:
+
+Token validation
+
+Role-based permission checks
+
+📁 FOLDER STRUCTURE (Frontend)
+
 src/
-│
-├── api/
-│   └── settingsApi.js
-│
-├── assets/
-│   └── images/
-│
-├── components/
-│   ├── admin/
-│   │   ├── AdminHeader.jsx
-│   │   ├── sidebar/
-│   │   │   ├── AdminSidebar.jsx
-│   │   │   ├── SidebarHeader.jsx
-│   │   │   ├── SidebarMenuItem.jsx
-│   │   │   ├── SidebarSearch.jsx
-│   │   │   └── SidebarFooter.jsx
-│   │   │
-│   │   └── settings/
-│   │       ├── SettingsForm.jsx
-│   │
-│   └── form/
-│       ├── FormInput.jsx
-│       ├── FormSelect.jsx
-│       ├── FormFileInput.jsx
-│       └── FormSection.jsx
-│
-├── layouts/
-│   ├── PublicLayout.jsx
-│   └── AdminLayout.jsx
-│
-├── pages/
-│   ├── public/
-│   │   ├── Home.jsx
-│   │   ├── About.jsx
-│   │   ├── Contact.jsx
-│   │   └── News.jsx
-│   │
-│   ├── admin/
-│   │   ├── AdminDashboard.jsx
-│   │   │
-│   │   ├── students/
-│   │   │   └── AddStudent.jsx
-│   │   │
-│   │   └── settings/
-│   │       └── SiteSettingsPanel.jsx
-│
-├── utils/
-│   └── adminSettings.js
-│
-├── App.jsx
-└── index.css
-```
 
----
+api/
 
-## 5. Theme System
+client.js
 
-The app uses **CSS variables** for theming.
+auth/
 
-### Light Mode
+context/
 
-- Background: light gray
-- Surface: white
-- Text: dark gray
-- Primary: academic navy
-- Accent: university gold
+AuthContext.jsx
 
-### Dark Mode
+ProtectedRoute.jsx
 
-- Background: deep blue-black
-- Surface: dark slate
-- Text: light gray
-- Primary: brighter navy
-- Accent: brighter gold
+pages/
 
-Dark mode is:
+Login.jsx (student)
 
-- Admin-only
-- Stored in `localStorage`
-- Applied via `.dark` class in `AdminLayout`
+admin/AdminLogin.jsx
 
----
+layouts/
 
-## 6. Admin Panel Features
+AdminLayout
 
-### Sidebar
+CenterLayout
 
-- Collapsible
-- Pinned/unpinned state
-- Hover auto-expand
-- Search filter
-- State stored in localStorage
+components/
 
-### Header
+students
 
-- Breadcrumb navigation
-- Dynamic page title
-- Admin user display
-- Dark mode toggle
+courses
 
----
+centers
 
-## 7. Forms System
+🎯 FUTURE ROADMAP
 
-All forms use:
+Full center/sub-center role system
 
-- React Hook Form
-- Reusable components
+Permission-based access (not just role)
 
-### Reusable Form Components
+Dashboard analytics
 
-```
-FormInput
-FormSelect
-FormFileInput
-FormSection
-```
+Token refresh mechanism
 
----
+Idle timeout auto logout
 
-## 8. Student Admission Flow
+Activity logs
 
-The “Add Student” page is a **4-step form wizard**:
+Audit trail for edits/deletes
 
-### Step 1: Personal Details
+Center-based data isolation
 
-- Candidate name
-- Father’s name
-- Mother’s name
-- DOB
-- Gender
-- Category
-- ID proof
-- Photo upload
+Scalable student pagination for large datasets
 
-### Step 2: Communication Details
+Possibly migration to JWT if backend supports
 
-- Address
-- Phone
-- Email
-- City, State, etc.
+⚠️ DESIGN DECISIONS
 
-### Step 3: Previous Qualification
+Separate login systems for scalability and database load separation
 
-Table-based input:
+Recycle bin uses backend logic (double delete for permanent)
 
-- Secondary
-- Sr. Secondary
-- Graduation
-- Post Graduation
-- Other
+No mixed role login screen
 
-Each row:
+Frontend route protection is NOT considered security — backend must enforce.
 
-- Year
-- Board
-- Percentage
-- Document upload
+📌 WHAT I WANT FROM YOU
 
-### Step 4: Programme Details
+When helping me:
 
-- Course type
-- Faculty
-- Stream
-- Session
-- Year
-- Hostel option
-- Application fee
+Think in terms of scalability
 
----
+Suggest architecture improvements
 
-## 9. Site Settings Page
+Avoid quick hacks
 
-Admin can submit:
+Consider security implications
 
-- College name
-- Short name
-- Email
-- Phone
-- Address
-- Logo
-- Additional logo
-- Favicon
+Assume this project may go production
 
-Uses:
-
-```
-POST /settings/
-```
-
-Form sends:
-
-```
-multipart/form-data
-```
-
----
-
-## 10. Public Homepage Features
-
-Sections:
-
-- Hero/banner
-- Highlight news (auto vertical scrolling)
-- Campus news
-- Announcements
-- University news
-- Footer
-
-News cards:
-
-- Scroll automatically
-- “View All” opens `/news` page
-
----
-
-## 11. Design Principles Used
-
-- Admin and Public UI are completely separate
-- Reusable form components for scalability
-- Theme via CSS variables
-- Sidebar state persisted in localStorage
-- Minimal, working, fast-delivery architecture
-  Hierarchy:
-  Course Type → Faculty → Course → Stream
-
----
-
-## 12. Current Project Status
-
-Completed:
-
-- Public layout and pages
-- Admin layout and sidebar
-- Dark mode (admin only)
-- Site settings form
-- Student admission multi-step form
-- News section with scrolling
-- Reusable form system
-
-Pending:
-
-- Full backend integration
-- Validation rules
-- Role-based login redirect
-- Data tables for students/centers
+Treat this as a real SaaS system, not a tutorial project.

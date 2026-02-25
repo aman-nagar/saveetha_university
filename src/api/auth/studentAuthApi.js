@@ -12,39 +12,14 @@ export async function loginStudent(email, password) {
   });
 
   if (!res.ok) {
-    throw new Error(`HTTP Error: ${res.status}`);
+    throw new Error("Invalid student credentials");
   }
 
   const json = await res.json();
 
-  if (json.success === false) {
-    throw new Error(
-      json.message || "Login failed. Please check your credentials.",
-    );
+  if (!json.success) {
+    throw new Error(json.message || "Login failed");
   }
 
-  // The backend returns the user data inside the "data" object
   return json.data;
-}
-
-export async function logoutStudent(token) {
-  const res = await fetch(`${BASE_URL}/students/logout.php`, {
-    method: "POST",
-    headers: {
-      Authorization: `Bearer ${token}`,
-      "Content-Type": "application/json",
-    },
-  });
-
-  if (!res.ok) {
-    throw new Error(`HTTP Error: ${res.status}`);
-  }
-
-  const json = await res.json();
-
-  if (json.success === false) {
-    throw new Error(json.message || "Logout failed");
-  }
-
-  return json;
 }

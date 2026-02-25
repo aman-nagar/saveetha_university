@@ -5,7 +5,6 @@ import Home from "./pages/public/Home";
 import AdminLayout from "./layouts/AdminLayout";
 import About from "./pages/public/About";
 import Contact from "./pages/public/Contact";
-import Login from "./pages/Login";
 import AdminDashboard from "./pages/admin/AdminDashboardPage";
 import News from "./pages/public/News";
 import SiteSettingsPage from "./pages/admin/settings/SiteSettingsPage";
@@ -24,23 +23,33 @@ import CenterListPage from "./pages/admin/centers/CenterListPage";
 import SubCenterDashboardPage from "./pages/sub-center/SubCenterDashboardPage";
 import { AuthProvider } from "./context/AuthContext";
 import ProtectedRoute from "./context/ProtectedRoute";
+import StudentLogin from "./pages/StudentLogin";
+import AdminLogin from "./pages/admin/AdminLogin";
 
 function App() {
   return (
     <AuthProvider>
       <BrowserRouter>
         <Routes>
+          <Route path="/login" element={<StudentLogin />} />
+          <Route path="/admin/login" element={<AdminLogin />} />
           {/* Public + Login */}
           <Route element={<PublicLayout />}>
             <Route path="/" element={<Home />} />
             <Route path="/about" element={<About />} />
             <Route path="/contact" element={<Contact />} />
             <Route path="/news" element={<News />} />
-            <Route path="/login" element={<Login />} />
           </Route>
 
           {/* Admin – full access */}
-          <Route path="/admin" element={<AdminLayout />}>
+          <Route
+            path="/admin"
+            element={
+              <ProtectedRoute allowedRoles={["admin"]}>
+                <AdminLayout />
+              </ProtectedRoute>
+            }
+          >
             <Route index element={<AdminDashboard />} />
             {/* course menu*/}
             <Route path="course-category" element={<CourseCategoryPage />} />

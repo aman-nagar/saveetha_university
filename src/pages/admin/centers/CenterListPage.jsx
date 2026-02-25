@@ -96,7 +96,7 @@ export default function CenterListPage() {
       className:
         "bg-blue-100 text-blue-600 hover:bg-blue-200 p-2 rounded-md transition",
       title: "Edit Center",
-      onClick: (row) => navigate(`/admin/centers/edit/${row.id}`),
+      onClick: (row) => navigate(`/admin/centers/add?id=${row.id}`),
     },
     {
       icon: <HiTrash className="w-4 h-4" />,

@@ -1,5 +1,5 @@
 // src/components/ui/Button.jsx
-import clsx from "clsx";
+import { Children, cloneElement, isValidElement } from "react";
 
 export default function Button({
   children,
@@ -8,43 +8,78 @@ export default function Button({
   size = "md",
   loading = false,
   disabled = false,
-  icon = null,
   className = "",
   ...props
 }) {
+  // Base styles
   const baseStyles =
-    "inline-flex items-center justify-center gap-1.5 sm:gap-2 font-medium rounded-md transition focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed active:scale-95";
+    "inline-flex items-center justify-center font-medium rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed disabled:active:scale-100 active:scale-95";
 
-  const variants = {
-    primary: "bg-primary text-white hover:bg-primary/90 focus:ring-primary/50",
+  // Variant styles
+  const variantStyles = {
+    primary:
+      "bg-primary text-white hover:bg-primary/90 focus:ring-primary/50 shadow-sm shadow-primary/20",
     secondary:
-      "bg-surface border border-border text-text hover:bg-bg focus:ring-border",
-    danger: "bg-red-600 text-white hover:bg-red-700 focus:ring-red-500/50",
+      "bg-surface border border-border text-text hover:bg-bg hover:border-muted focus:ring-border",
+    danger:
+      "bg-danger text-white hover:bg-danger/90 focus:ring-danger/50 shadow-sm shadow-danger/20",
     ghost: "bg-transparent text-text hover:bg-bg focus:ring-border",
   };
 
-  const sizes = {
-    sm: "px-2.5 sm:px-3 py-1.5 text-xs sm:text-sm",
-    md: "px-3 sm:px-4 py-2 text-sm",
-    lg: "px-4 sm:px-6 py-2 sm:py-2.5 text-sm sm:text-base",
+  // Size styles
+  const sizeStyles = {
+    sm: "px-3 py-1.5 text-xs gap-1.5",
+    md: "px-4 py-2 text-sm gap-2",
+    lg: "px-6 py-2.5 text-base gap-2",
   };
+
+  // Build final class string
+  const buttonClasses = [
+    baseStyles,
+    variantStyles[variant] || variantStyles.primary,
+    sizeStyles[size] || sizeStyles.md,
+    className,
+  ]
+    .filter(Boolean)
+    .join(" ");
+
+  // Process children to handle icons properly
+  const processedChildren = Children.map(children, (child, index) => {
+    // If it's an icon element (svg or icon component), add flex-shrink-0
+    if (
+      isValidElement(child) &&
+      (child.type === "svg" ||
+        child.props?.className?.includes("icon") ||
+        // Common icon libraries detection
+        ["Fi", "Hi", "Bs", "Ri", "Md", "Fa"].some(
+          (prefix) =>
+            child.type?.name?.startsWith(prefix) ||
+            child.type?.displayName?.startsWith(prefix),
+        ))
+    ) {
+      return cloneElement(child, {
+        className: `flex-shrink-0 ${child.props.className || ""}`,
+        "aria-hidden": true,
+      });
+    }
+    return child;
+  });
 
   return (
     <button
       type={type}
       disabled={disabled || loading}
-      className={clsx(baseStyles, variants[variant], sizes[size], className)}
+      className={buttonClasses}
       {...props}
     >
-      {loading && (
-        <span className="animate-spin h-3.5 w-3.5 sm:h-4 sm:w-4 border-2 border-white border-t-transparent rounded-full" />
+      {loading ? (
+        <>
+          <span className="animate-spin h-4 w-4 border-2 border-current border-t-transparent rounded-full flex-shrink-0" />
+          <span>{children}</span>
+        </>
+      ) : (
+        processedChildren
       )}
-      {icon && !loading && (
-        <span className="w-4 h-4 sm:w-5 sm:h-5 flex items-center justify-center">
-          {icon}
-        </span>
-      )}
-      <span>{children}</span>
     </button>
   );
 }

@@ -4,10 +4,6 @@ import { apiRequest } from "../client";
 
 const ENDPOINT = "/course/index.php";
 
-/* -------------------------
-   Fetch Streams by Course
--------------------------- */
-
 export function fetchStreams(courseId) {
   if (!courseId) {
     throw new Error("Course ID is required");
@@ -16,12 +12,17 @@ export function fetchStreams(courseId) {
   return apiRequest(`${ENDPOINT}?type=stream&course_id=${courseId}`);
 }
 
+export function fetchStreamsById(streamId) {
+  if (!streamId) {
+    throw new Error("Stream ID is required");
+  }
+  return apiRequest(`${ENDPOINT}?type=stream&id=${streamId}`);
+}
+
 export function fetchAllStreams() {
   return apiRequest(`${ENDPOINT}?type=stream`);
 }
-/* -------------------------
-   Create Stream
--------------------------- */
+
 export function createStream(courseId, name) {
   const trimmed = name?.trim();
 
@@ -39,7 +40,6 @@ export function createStream(courseId, name) {
   });
 }
 
-// UPDATE Stream
 export async function updateStream(id, name, courseId) {
   if (!id) throw new Error("Stream ID required");
   if (!name?.trim()) throw new Error("Stream name required");
@@ -55,9 +55,6 @@ export async function updateStream(id, name, courseId) {
   });
 }
 
-/* -------------------------
-   Delete Stream
--------------------------- */
 export function deleteStream(id) {
   if (!id) throw new Error("Stream ID is required");
 

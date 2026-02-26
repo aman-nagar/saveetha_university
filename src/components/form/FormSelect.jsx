@@ -6,6 +6,7 @@ export default function FormSelect({
   label,
   name,
   register,
+  watch,
   options = [],
   required,
   error,
@@ -15,7 +16,7 @@ export default function FormSelect({
   const [isOpen, setIsOpen] = useState(false);
   const [selectedLabel, setSelectedLabel] = useState("");
   const dropdownRef = useRef(null);
-  
+  const currentFormValue = watch ? watch(name) : null;
   const { onChange, ref, ...rest } = register(name, { required });
 
   // Close dropdown when clicking outside
@@ -28,6 +29,18 @@ export default function FormSelect({
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
+
+  useEffect(() => {
+    // If the value changes externally, find the matching label
+    const match = options.find(
+      (opt) => String(opt.value) === String(rest.value || currentFormValue),
+    );
+    if (match) {
+      setSelectedLabel(match.label);
+    } else if (!rest.value && !currentFormValue) {
+      setSelectedLabel("");
+    }
+  }, [options, rest.value, currentFormValue]);
 
   const handleSelect = (option) => {
     onChange({ target: { name, value: option.value } });
@@ -60,8 +73,8 @@ export default function FormSelect({
           <span className={selectedLabel ? "text-text" : "text-muted/60"}>
             {selectedLabel || placeholder}
           </span>
-          <FiChevronDown 
-            className={`w-4 h-4 sm:w-5 sm:h-5 text-muted transition-transform duration-200 ${isOpen ? "rotate-180" : ""}`} 
+          <FiChevronDown
+            className={`w-4 h-4 sm:w-5 sm:h-5 text-muted transition-transform duration-200 ${isOpen ? "rotate-180" : ""}`}
           />
         </button>
 
@@ -70,12 +83,14 @@ export default function FormSelect({
 
         {/* Dropdown Menu - Portal-like positioning */}
         {isOpen && (
-          <div className="
+          <div
+            className="
             absolute z-50 w-full mt-1 
             bg-surface border border-border rounded-lg shadow-lg
             max-h-60 overflow-auto
             animate-in fade-in slide-in-from-top-2 duration-200
-          ">
+          "
+          >
             <div className="py-1">
               <button
                 type="button"
@@ -100,7 +115,9 @@ export default function FormSelect({
                   `}
                 >
                   {opt.label}
-                  {selectedLabel === opt.label && <FiCheck className="w-4 h-4" />}
+                  {selectedLabel === opt.label && (
+                    <FiCheck className="w-4 h-4" />
+                  )}
                 </button>
               ))}
             </div>

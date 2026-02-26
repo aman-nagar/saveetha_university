@@ -10,53 +10,46 @@ import { fetchStreamsById } from "../../../api/courses/streamApi";
 import { fetchCoursesById } from "../../../api/courses/courseApi";
 
 export default function SubjectForm({
-  streamList = [],
-  selectedStream,
-  onStreamChange,
-  onSubmit,
-  initialData = null,
-  mode = "create",
-  onCancel,
+streamList = [],
+selectedStream,
+onStreamChange,
+onSubmit,
+initialData = null,
+mode = "create",
+onCancel,
 }) {
-  // 1. Initialize Form Hooks
-  const {
-    register,
-    handleSubmit,
-    reset,
-    setValue,
-    watch,
-    formState: { errors },
-  } = useForm();
+// 1. Initialize Form Hooks
+const { register, handleSubmit, reset, setValue, watch, formState: { errors } } = useForm();
 
-  // 2. Local State for Dynamic Logic
-  const [durationOptions, setDurationOptions] = useState([]);
-  const [fetchingRules, setFetchingRules] = useState(false); // ✅ Fix: Added the missing state
+// 2. Local State for Dynamic Logic
+const [durationOptions, setDurationOptions] = useState([]);
+const [fetchingRules, setFetchingRules] = useState(false); // ✅ Fix: Added the missing state
 
-  // 3. Hydrate form when editing
-  useEffect(() => {
-    if (initialData) {
-      reset({
-        subject_name: initialData.subject_name,
-        subject_code: initialData.subject_code,
-        short_name: initialData.short_name,
-        max_theory_marks: initialData.max_theory_marks,
-        max_practical_marks: initialData.max_practical_marks,
-        duration: initialData.duration,
-        duration_type: initialData.duration_type,
-        status: initialData.status ?? 1,
-      });
-      onStreamChange(initialData.stream_id);
-    } else {
-      reset();
-    }
-  }, [initialData, reset, onStreamChange]);
+// 3. Hydrate form when editing
+useEffect(() => {
+if (initialData) {
+reset({
+subject_name: initialData.subject_name,
+subject_code: initialData.subject_code,
+short_name: initialData.short_name,
+max_theory_marks: initialData.max_theory_marks,
+max_practical_marks: initialData.max_practical_marks,
+duration: initialData.duration,
+duration_type: initialData.duration_type,
+status: initialData.status ?? 1,
+});
+onStreamChange(initialData.stream_id);
+} else {
+reset();
+}
+}, [initialData, reset, onStreamChange]);
 
-  // 4. Dynamic Logic: Fetch Course rules based on Stream
-  const loadStreamData = async (id) => {
-    if (!id) {
-      setDurationOptions([]);
-      return;
-    }
+// 4. Dynamic Logic: Fetch Course rules based on Stream
+const loadStreamData = async (id) => {
+if (!id) {
+setDurationOptions([]);
+return;
+}
 
     setFetchingRules(true); // Start loading
     try {
@@ -83,20 +76,22 @@ export default function SubjectForm({
 
       // Auto-set duration_type to keep hidden fields in sync
       setValue("duration_type", type.toLowerCase());
+
     } catch (err) {
       console.error("Failed to sync course rules:", err.message);
     } finally {
       setFetchingRules(false); // Stop loading
     }
-  };
 
-  useEffect(() => {
-    loadStreamData(selectedStream);
-  }, [selectedStream]);
+};
 
-  // 5. Submit Handler
-  const submitForm = async (data) => {
-    if (!selectedStream) return;
+useEffect(() => {
+loadStreamData(selectedStream);
+}, [selectedStream]);
+
+// 5. Submit Handler
+const submitForm = async (data) => {
+if (!selectedStream) return;
 
     await onSubmit({
       id: initialData?.id,
@@ -112,11 +107,14 @@ export default function SubjectForm({
     });
 
     if (mode === "create") reset();
-  };
 
-  return (
-    <form onSubmit={handleSubmit(submitForm)} className="space-y-6">
-      <FormSection title={mode === "edit" ? "Edit Subject" : "Add Subject"}>
+};
+
+return (
+
+<form onSubmit={handleSubmit(submitForm)} className="space-y-6">
+<FormSection title={mode === "edit" ? "Edit Subject" : "Add Subject"}>
+
         {/* Stream Select */}
         <div className="space-y-1">
           <label className="text-sm font-medium text-text">
@@ -150,7 +148,11 @@ export default function SubjectForm({
             name="subject_code"
             register={register}
           />
-          <FormInput label="Short Name" name="short_name" register={register} />
+          <FormInput
+            label="Short Name"
+            name="short_name"
+            register={register}
+          />
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -214,5 +216,6 @@ export default function SubjectForm({
         )}
       </div>
     </form>
-  );
+
+);
 }

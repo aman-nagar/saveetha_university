@@ -1,18 +1,11 @@
 // src/api/courses/subjectApi.js
 import { apiRequest } from "../client";
-
 const ENDPOINT = "/course/subject.php";
 
-/* -------------------------
-   Fetch All Subjects
--------------------------- */
 export function fetchSubjects() {
   return apiRequest(ENDPOINT);
 }
 
-/* -------------------------
-   Create Subject
--------------------------- */
 export function createSubject(data) {
   return apiRequest(ENDPOINT, {
     method: "POST",
@@ -31,9 +24,6 @@ export function createSubject(data) {
   });
 }
 
-/* -------------------------
-   Update Subject
--------------------------- */
 export function updateSubject(data) {
   return apiRequest(ENDPOINT, {
     method: "PUT",
@@ -61,9 +51,6 @@ export function toggleUpdateStatus(data) {
   });
 }
 
-/* -------------------------
-   Delete Subject
--------------------------- */
 export function deleteSubject(id) {
   return apiRequest(ENDPOINT, {
     method: "DELETE",

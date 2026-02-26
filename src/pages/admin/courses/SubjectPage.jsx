@@ -1,17 +1,17 @@
-// src/pages/admin/courses/SubjectPage.jsx
 import { useEffect, useState } from "react";
 import { FaPen, FaTrash } from "react-icons/fa";
 import { fetchAllStreams } from "../../../api/courses/streamApi";
 import {
   fetchSubjects,
-  fetchSubjectById,
   createSubject,
   updateSubject,
   deleteSubject,
 } from "../../../api/courses/subjectApi";
+
 import { useCrud } from "../../../hooks/useCrud";
 import { useConfirm } from "../../../hooks/useConfirm";
 import { useToast } from "../../../hooks/useToast";
+
 import SubjectForm from "../../../components/admin/courses/SubjectForm";
 import Toast from "../../../components/ui/Toast";
 import Modal from "../../../components/ui/Modal";
@@ -25,19 +25,14 @@ export default function SubjectPage() {
   const [selectedStream, setSelectedStream] = useState("");
   const [editData, setEditData] = useState(null);
 
-  const {
-    data: subjects,
-    setData,
-    loading,
-    load,
-    remove,
-  } = useCrud({
+  const { data: subjects, loading, load, remove } = useCrud({
     fetchFn: fetchSubjects,
     deleteFn: deleteSubject,
   });
 
   useEffect(() => {
     loadStreams();
+    load();
   }, []);
 
   const loadStreams = async () => {
@@ -49,53 +44,34 @@ export default function SubjectPage() {
     }
   };
 
-  const handleStreamChange = (value) => {
-    setSelectedStream(value);
-    if (value) {
-      load(value);
-    } else {
-      setData([]);
-    }
-    if (editData) setEditData(null);
-  };
-
-  const handleCreate = async (payload) => {
+  const handleCreate = async (data) => {
     try {
-      await createSubject(payload);
-      show("success", "Subject created successfully");
-      load(selectedStream);
+      await createSubject(data);
+      show("success", "Subject created");
+      load();
     } catch (err) {
       show("error", err.message);
     }
   };
 
-  const handleUpdate = async (payload) => {
-    if (!editData) return;
+  const handleUpdate = async (data) => {
     try {
-      await updateSubject(editData.id, payload);
-      show("success", "Subject updated successfully");
+      await updateSubject(data);
+      show("success", "Subject updated");
       setEditData(null);
-      load(selectedStream);
+      load();
     } catch (err) {
       show("error", err.message);
-    }
-  };
-
-  const handleEditClick = async (row) => {
-    try {
-      const freshData = await fetchSubjectById(row.id);
-      setEditData(freshData);
-      setSelectedStream(freshData.stream_id);
-    } catch (err) {
-      show("error", "Failed to fetch subject details: " + err.message);
     }
   };
 
   const confirmDelete = async () => {
     if (!target) return;
+
     try {
       await remove(target.id);
-      show("success", "Subject deleted successfully");
+      show("success", "Subject deleted");
+      load();
     } catch (err) {
       show("error", err.message);
     } finally {
@@ -103,59 +79,31 @@ export default function SubjectPage() {
     }
   };
 
-  const streamMap = {};
-  streamList.forEach((s) => {
-    streamMap[s.id] = s.name;
-  });
+  const filteredSubjects = selectedStream
+    ? subjects.filter((s) => String(s.stream_id) === String(selectedStream))
+    : [];
 
   const columns = [
     { key: "serial", label: "#", render: (_, i) => i + 1 },
-    {
-      key: "stream",
-      label: "Stream",
-      render: (row) => streamMap[row.stream_id] || "—",
-    },
     { key: "subject_name", label: "Subject Name" },
     { key: "subject_code", label: "Code" },
-    { key: "short_name", label: "Short" },
-    {
-      key: "marks",
-      label: "Marks",
-      render: (row) => `${row.max_theory_marks}/${row.max_practical_marks}`,
-    },
-    {
-      key: "duration",
-      label: "Duration",
-      render: (row) => `${row.duration} ${row.duration_type}`,
-    },
-    {
-      key: "status",
-      label: "Status",
-      render: (row) => (
-        <span
-          className={`px-2 py-1 rounded text-xs font-medium ${
-            row.status === 1
-              ? "bg-success/10 text-success"
-              : "bg-danger/10 text-danger"
-          }`}
-        >
-          {row.status === 1 ? "Active" : "Inactive"}
-        </span>
-      ),
-    },
+    { key: "stream_name", label: "Stream" },
   ];
 
   const actions = [
     {
       icon: <FaPen />,
       className:
-        "px-3 py-1 rounded bg-primary text-white hover:bg-primary/80 text-sm",
-      onClick: handleEditClick,
+        "px-3 py-1 rounded bg-blue-600 text-white hover:bg-blue-700 text-sm",
+      onClick: (row) => {
+        setEditData(row);
+        setSelectedStream(row.stream_id);
+      },
     },
     {
       icon: <FaTrash />,
       className:
-        "px-3 py-1 rounded bg-danger text-white hover:bg-danger/80 text-sm",
+        "px-3 py-1 rounded bg-red-600 text-white hover:bg-red-700 text-sm",
       onClick: open,
     },
   ];
@@ -167,7 +115,7 @@ export default function SubjectPage() {
       <SubjectForm
         streamList={streamList}
         selectedStream={selectedStream}
-        onStreamChange={handleStreamChange}
+        onStreamChange={setSelectedStream}
         onSubmit={handleCreate}
         mode="create"
       />
@@ -175,16 +123,12 @@ export default function SubjectPage() {
       <Table
         title="Subject List"
         columns={columns}
-        data={subjects}
+        data={filteredSubjects}
         actions={actions}
         loading={loading}
-        emptyMessage={
-          selectedStream
-            ? "No subjects found for selected stream."
-            : "Select a stream to view subjects."
-        }
       />
 
+      {/* EDIT MODAL */}
       <Modal
         isOpen={!!editData}
         title="Edit Subject"
@@ -193,7 +137,7 @@ export default function SubjectPage() {
         <SubjectForm
           streamList={streamList}
           selectedStream={selectedStream}
-          onStreamChange={handleStreamChange}
+          onStreamChange={setSelectedStream}
           onSubmit={handleUpdate}
           initialData={editData}
           mode="edit"
@@ -201,6 +145,7 @@ export default function SubjectPage() {
         />
       </Modal>
 
+      {/* DELETE MODAL */}
       <Modal
         isOpen={isOpen}
         title="Confirm Delete"
@@ -212,7 +157,7 @@ export default function SubjectPage() {
             </button>
             <button
               onClick={confirmDelete}
-              className="px-4 py-2 bg-danger text-white rounded"
+              className="px-4 py-2 bg-red-600 text-white rounded"
             >
               Delete
             </button>
@@ -221,7 +166,7 @@ export default function SubjectPage() {
       >
         {target && (
           <p>
-            Delete subject "<strong>{target.subject_name}</strong>"?
+            Delete "<strong>{target.subject_name}</strong>"?
           </p>
         )}
       </Modal>

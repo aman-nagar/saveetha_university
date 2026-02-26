@@ -3,93 +3,61 @@ import { apiRequest } from "../client";
 
 const ENDPOINT = "/course/subject.php";
 
-export function fetchSubjects(streamId) {
-  if (!streamId) {
-    throw new Error("Stream ID is required");
-  }
-  return apiRequest(`${ENDPOINT}?type=subject&stream_id=${streamId}`);
+/* -------------------------
+   Fetch All Subjects
+-------------------------- */
+export function fetchSubjects() {
+  return apiRequest(ENDPOINT);
 }
 
-export function fetchSubjectById(id) {
-  if (!id) throw new Error("Subject ID is required");
-  return apiRequest(`${ENDPOINT}?type=subject&id=${id}`);
-}
-
-// Create with all required fields
-export function createSubject(subjectData) {
-  const {
-    stream_id,
-    subject_name,
-    subject_code,
-    short_name,
-    max_theory_marks,
-    max_practical_marks,
-    duration,
-    duration_type,
-    status = 1,
-    is_deleted = 0,
-  } = subjectData;
-
-  if (!stream_id) throw new Error("Stream ID is required");
-  if (!subject_name?.trim()) throw new Error("Subject name is required");
-
+/* -------------------------
+   Create Subject
+-------------------------- */
+export function createSubject(data) {
   return apiRequest(ENDPOINT, {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
-      stream_id,
-      subject_name: subject_name.trim(),
-      subject_code: subject_code || "",
-      short_name: short_name || "",
-      max_theory_marks: Number(max_theory_marks) || 0,
-      max_practical_marks: Number(max_practical_marks) || 0,
-      duration: Number(duration) || 0,
-      duration_type: duration_type || "year",
-      status,
-      is_deleted,
+      stream_id: data.stream_id,
+      subject_name: data.subject_name,
+      subject_code: data.subject_code,
+      short_name: data.short_name,
+      max_theory_marks: data.max_theory_marks,
+      max_practical_marks: data.max_practical_marks,
+      duration: data.duration,
+      duration_type: data.duration_type,
+      status: data.status,
+      is_deleted: 0,
     }),
   });
 }
 
-// Update with all fields
-export function updateSubject(id, subjectData) {
-  if (!id) throw new Error("Subject ID is required");
-  if (!subjectData?.subject_name?.trim())
-    throw new Error("Subject name is required");
-
+/* -------------------------
+   Update Subject
+-------------------------- */
+export function updateSubject(data) {
   return apiRequest(ENDPOINT, {
     method: "PUT",
-    headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
-      id,
-      stream_id: subjectData.stream_id,
-      subject_name: subjectData.subject_name.trim(),
-      subject_code: subjectData.subject_code || "",
-      short_name: subjectData.short_name || "",
-      max_theory_marks: Number(subjectData.max_theory_marks) || 0,
-      max_practical_marks: Number(subjectData.max_practical_marks) || 0,
-      duration: Number(subjectData.duration) || 0,
-      duration_type: subjectData.duration_type || "year",
-      status: subjectData.status ?? 1,
+      id: data.id,
+      stream_id: data.stream_id,
+      subject_name: data.subject_name,
+      subject_code: data.subject_code,
+      short_name: data.short_name,
+      max_theory_marks: data.max_theory_marks,
+      max_practical_marks: data.max_practical_marks,
+      duration: data.duration,
+      duration_type: data.duration_type,
+      status: data.status,
     }),
   });
 }
 
-// Toggle status only
-export function updateSubjectStatus(id, status) {
-  if (!id) throw new Error("Subject ID is required");
-  return apiRequest(ENDPOINT, {
-    method: "PUT",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ id, status }),
-  });
-}
-
+/* -------------------------
+   Delete Subject
+-------------------------- */
 export function deleteSubject(id) {
-  if (!id) throw new Error("Subject ID is required");
   return apiRequest(ENDPOINT, {
     method: "DELETE",
-    headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ id }),
   });
 }

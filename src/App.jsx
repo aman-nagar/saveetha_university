@@ -27,6 +27,7 @@ import StudentLogin from "./pages/StudentLogin";
 import AdminLogin from "./pages/admin/AdminLogin";
 import SubjectPage from "./pages/admin/courses/SubjectPage";
 import UnauthorizedPage from "./pages/UnauthorizedPage";
+import GenerateAdmitCard from "./components/admin/students/GenerateAdmitCard";
 
 function App() {
   return (
@@ -63,6 +64,7 @@ function App() {
             <Route path="students" element={<StudentListPage />} />
             <Route path="students/add" element={<AddStudent />} />
             <Route path="students/edit/:id" element={<EditStudent />} />
+            <Route path="admit-card/generate" element={<GenerateAdmitCard />} />
             {/* centers menu */}
             <Route path="centers/add" element={<AddCenterPage />} />
             <Route path="centers" element={<CenterListPage />} />

@@ -8,7 +8,7 @@ import {
   createSubject,
   updateSubject,
   deleteSubject,
-} from "../../../api/courses/subjectApi"; // note: we removed updateSubjectStatus import
+} from "../../../api/courses/subjectApi";
 import { useCrud } from "../../../hooks/useCrud";
 import { useConfirm } from "../../../hooks/useConfirm";
 import { useToast } from "../../../hooks/useToast";
@@ -27,7 +27,7 @@ export default function SubjectPage() {
 
   const {
     data: subjects,
-    setData, // ← added
+    setData,
     loading,
     load,
     remove,
@@ -54,7 +54,7 @@ export default function SubjectPage() {
     if (value) {
       load(value);
     } else {
-      setData([]); // clear table
+      setData([]);
     }
     if (editData) setEditData(null);
   };
@@ -62,7 +62,7 @@ export default function SubjectPage() {
   const handleCreate = async (payload) => {
     try {
       await createSubject(payload);
-      show("success", "Subject created");
+      show("success", "Subject created successfully");
       load(selectedStream);
     } catch (err) {
       show("error", err.message);
@@ -73,27 +73,9 @@ export default function SubjectPage() {
     if (!editData) return;
     try {
       await updateSubject(editData.id, payload);
-      show("success", "Subject updated");
+      show("success", "Subject updated successfully");
       setEditData(null);
       load(selectedStream);
-    } catch (err) {
-      show("error", err.message);
-    }
-  };
-
-  const handleStatusToggle = async (id, currentStatus) => {
-    try {
-      // Fetch full subject data to get all required fields
-      const subject = await fetchSubjectById(id);
-      const newStatus = currentStatus === 1 ? 0 : 1;
-      const { id: _, ...payload } = subject; // remove id
-      payload.status = newStatus;
-      await updateSubject(id, payload);
-      show(
-        "success",
-        `Status updated to ${newStatus === 1 ? "Active" : "Inactive"}`,
-      );
-      load(selectedStream); // refresh list
     } catch (err) {
       show("error", err.message);
     }
@@ -113,7 +95,7 @@ export default function SubjectPage() {
     if (!target) return;
     try {
       await remove(target.id);
-      show("success", "Subject deleted");
+      show("success", "Subject deleted successfully");
     } catch (err) {
       show("error", err.message);
     } finally {
@@ -135,25 +117,30 @@ export default function SubjectPage() {
     },
     { key: "subject_name", label: "Subject Name" },
     { key: "subject_code", label: "Code" },
-    { key: "short_name", label: "Short Name" },
-    { key: "max_theory_marks", label: "Theory Max" },
-    { key: "max_practical_marks", label: "Practical Max" },
-    { key: "duration", label: "Duration" },
-    { key: "duration_type", label: "Type" },
+    { key: "short_name", label: "Short" },
+    {
+      key: "marks",
+      label: "Marks",
+      render: (row) => `${row.max_theory_marks}/${row.max_practical_marks}`,
+    },
+    {
+      key: "duration",
+      label: "Duration",
+      render: (row) => `${row.duration} ${row.duration_type}`,
+    },
     {
       key: "status",
       label: "Status",
       render: (row) => (
-        <button
-          onClick={() => handleStatusToggle(row.id, row.status)}
-          className={`px-3 py-1 rounded text-white text-sm font-medium transition ${
+        <span
+          className={`px-2 py-1 rounded text-xs font-medium ${
             row.status === 1
-              ? "bg-green-600 hover:bg-green-700"
-              : "bg-red-600 hover:bg-red-700"
+              ? "bg-success/10 text-success"
+              : "bg-danger/10 text-danger"
           }`}
         >
           {row.status === 1 ? "Active" : "Inactive"}
-        </button>
+        </span>
       ),
     },
   ];
@@ -162,13 +149,13 @@ export default function SubjectPage() {
     {
       icon: <FaPen />,
       className:
-        "px-3 py-1 rounded bg-blue-600 text-white hover:bg-blue-700 text-sm",
+        "px-3 py-1 rounded bg-primary text-white hover:bg-primary/80 text-sm",
       onClick: handleEditClick,
     },
     {
       icon: <FaTrash />,
       className:
-        "px-3 py-1 rounded bg-red-600 text-white hover:bg-red-700 text-sm",
+        "px-3 py-1 rounded bg-danger text-white hover:bg-danger/80 text-sm",
       onClick: open,
     },
   ];
@@ -225,7 +212,7 @@ export default function SubjectPage() {
             </button>
             <button
               onClick={confirmDelete}
-              className="px-4 py-2 bg-red-600 text-white rounded"
+              className="px-4 py-2 bg-danger text-white rounded"
             >
               Delete
             </button>

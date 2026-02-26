@@ -25,30 +25,25 @@ export async function fetchStudentById(id) {
 
 // get recycle list
 export async function getRecycleStudentsList({ page = 1, search = "" } = {}) {
-  const BASE_URL = "https://api.nsprowebtech.com/backend/api/v1";
+  // Construct the endpoint
   let endpoint = `/students/students-recycle.php?page=${page}`;
-
   if (search.trim()) {
     endpoint += `&search=${encodeURIComponent(search.trim())}`;
   }
 
-  const res = await fetch(`${BASE_URL}${endpoint}`);
+  // Use your apiRequest utility (it handles tokens and json.success checks)
+  const result = await apiRequest(endpoint);
 
-  if (!res.ok) throw new Error(`HTTP ${res.status}`);
-
-  const json = await res.json();
-
-  if (json.success === false) throw new Error(json.message || "Request failed");
+  // result is now the "data" object from your JSON:
+  // { page: 1, limit: 20, total: 3, students: [...] }
 
   return {
-    students: json.data || [],
-    current_page: json.errors?.page || page,
-    total_pages: json.errors?.total_pages || 1,
-    total: json.errors?.total || 0,
-    message: json.message,
+    students: result.students || [], // Access the array specifically
+    current_page: result.page || page,
+    total_pages: result.total_pages || 1,
+    total: result.total || 0,
   };
 }
-
 // create student
 export async function createStudent(payload, isMultipart = false) {
   if (isMultipart) {
@@ -116,7 +111,7 @@ export async function deleteStudent(id) {
 // Restore from recycle bin
 export async function restoreStudent(id) {
   return apiRequest("/students/restore_delete.php", {
-    method: "POST",
+    method: "PUT",
     headers: {
       "Content-Type": "application/json",
     },

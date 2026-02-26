@@ -51,6 +51,15 @@ export function updateSubject(data) {
     }),
   });
 }
+export function toggleUpdateStatus(data) {
+  return apiRequest(ENDPOINT, {
+    method: "PUT",
+    body: JSON.stringify({
+      id: data.id,
+      status: data.status,
+    }),
+  });
+}
 
 /* -------------------------
    Delete Subject

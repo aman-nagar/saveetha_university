@@ -4,10 +4,11 @@ import { FaPen, FaTrash } from "react-icons/fa";
 import { fetchAllStreams } from "../../../api/courses/streamApi";
 import {
   fetchSubjects,
+  fetchSubjectById,
   createSubject,
   updateSubject,
   deleteSubject,
-} from "../../../api/courses/subjectApi";
+} from "../../../api/courses/subjectApi"; // note: we removed updateSubjectStatus import
 import { useCrud } from "../../../hooks/useCrud";
 import { useConfirm } from "../../../hooks/useConfirm";
 import { useToast } from "../../../hooks/useToast";
@@ -26,6 +27,7 @@ export default function SubjectPage() {
 
   const {
     data: subjects,
+    setData, // ← added
     loading,
     load,
     remove,
@@ -38,12 +40,6 @@ export default function SubjectPage() {
     loadStreams();
   }, []);
 
-  useEffect(() => {
-    if (selectedStream) {
-      load(selectedStream);
-    }
-  }, [selectedStream, load]);
-
   const loadStreams = async () => {
     try {
       const data = await fetchAllStreams();
@@ -55,12 +51,17 @@ export default function SubjectPage() {
 
   const handleStreamChange = (value) => {
     setSelectedStream(value);
+    if (value) {
+      load(value);
+    } else {
+      setData([]); // clear table
+    }
     if (editData) setEditData(null);
   };
 
-  const handleCreate = async (subjectData) => {
+  const handleCreate = async (payload) => {
     try {
-      await createSubject(subjectData);
+      await createSubject(payload);
       show("success", "Subject created");
       load(selectedStream);
     } catch (err) {
@@ -68,10 +69,10 @@ export default function SubjectPage() {
     }
   };
 
-  const handleUpdate = async (subjectData) => {
+  const handleUpdate = async (payload) => {
     if (!editData) return;
     try {
-      await updateSubject(subjectData);
+      await updateSubject(editData.id, payload);
       show("success", "Subject updated");
       setEditData(null);
       load(selectedStream);
@@ -80,12 +81,39 @@ export default function SubjectPage() {
     }
   };
 
+  const handleStatusToggle = async (id, currentStatus) => {
+    try {
+      // Fetch full subject data to get all required fields
+      const subject = await fetchSubjectById(id);
+      const newStatus = currentStatus === 1 ? 0 : 1;
+      const { id: _, ...payload } = subject; // remove id
+      payload.status = newStatus;
+      await updateSubject(id, payload);
+      show(
+        "success",
+        `Status updated to ${newStatus === 1 ? "Active" : "Inactive"}`,
+      );
+      load(selectedStream); // refresh list
+    } catch (err) {
+      show("error", err.message);
+    }
+  };
+
+  const handleEditClick = async (row) => {
+    try {
+      const freshData = await fetchSubjectById(row.id);
+      setEditData(freshData);
+      setSelectedStream(freshData.stream_id);
+    } catch (err) {
+      show("error", "Failed to fetch subject details: " + err.message);
+    }
+  };
+
   const confirmDelete = async () => {
     if (!target) return;
     try {
       await remove(target.id);
       show("success", "Subject deleted");
-      load(selectedStream);
     } catch (err) {
       show("error", err.message);
     } finally {
@@ -93,8 +121,18 @@ export default function SubjectPage() {
     }
   };
 
+  const streamMap = {};
+  streamList.forEach((s) => {
+    streamMap[s.id] = s.name;
+  });
+
   const columns = [
     { key: "serial", label: "#", render: (_, i) => i + 1 },
+    {
+      key: "stream",
+      label: "Stream",
+      render: (row) => streamMap[row.stream_id] || "—",
+    },
     { key: "subject_name", label: "Subject Name" },
     { key: "subject_code", label: "Code" },
     { key: "short_name", label: "Short Name" },
@@ -105,7 +143,18 @@ export default function SubjectPage() {
     {
       key: "status",
       label: "Status",
-      render: (row) => (row.status === 1 ? "Active" : "Inactive"),
+      render: (row) => (
+        <button
+          onClick={() => handleStatusToggle(row.id, row.status)}
+          className={`px-3 py-1 rounded text-white text-sm font-medium transition ${
+            row.status === 1
+              ? "bg-green-600 hover:bg-green-700"
+              : "bg-red-600 hover:bg-red-700"
+          }`}
+        >
+          {row.status === 1 ? "Active" : "Inactive"}
+        </button>
+      ),
     },
   ];
 
@@ -114,10 +163,7 @@ export default function SubjectPage() {
       icon: <FaPen />,
       className:
         "px-3 py-1 rounded bg-blue-600 text-white hover:bg-blue-700 text-sm",
-      onClick: (row) => {
-        setEditData(row);
-        setSelectedStream(row.stream_id);
-      },
+      onClick: handleEditClick,
     },
     {
       icon: <FaTrash />,
@@ -145,10 +191,13 @@ export default function SubjectPage() {
         data={subjects}
         actions={actions}
         loading={loading}
-        emptyMessage="No subjects found for selected stream."
+        emptyMessage={
+          selectedStream
+            ? "No subjects found for selected stream."
+            : "Select a stream to view subjects."
+        }
       />
 
-      {/* EDIT MODAL */}
       <Modal
         isOpen={!!editData}
         title="Edit Subject"
@@ -165,7 +214,6 @@ export default function SubjectPage() {
         />
       </Modal>
 
-      {/* DELETE MODAL */}
       <Modal
         isOpen={isOpen}
         title="Confirm Delete"

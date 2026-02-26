@@ -26,6 +26,8 @@ import ProtectedRoute from "./context/ProtectedRoute";
 import StudentLogin from "./pages/StudentLogin";
 import AdminLogin from "./pages/admin/AdminLogin";
 import SubjectPage from "./pages/admin/courses/SubjectPage";
+import UnauthorizedPage from "./pages/UnauthorizedPage";
+import GenerateAdmitCard from "./components/admin/students/GenerateAdmitCard";
 
 function App() {
   return (
@@ -62,6 +64,7 @@ function App() {
             <Route path="students" element={<StudentListPage />} />
             <Route path="students/add" element={<AddStudent />} />
             <Route path="students/edit/:id" element={<EditStudent />} />
+            <Route path="admit-card/generate" element={<GenerateAdmitCard />} />
             {/* centers menu */}
             <Route path="centers/add" element={<AddCenterPage />} />
             <Route path="centers" element={<CenterListPage />} />
@@ -97,20 +100,3 @@ function App() {
 }
 
 export default App;
-
-// Quick unauthorized page (add this as src/pages/Unauthorized.jsx)
-function UnauthorizedPage() {
-  return (
-    <div className="min-h-screen flex items-center justify-center bg-bg">
-      <div className="text-center space-y-4">
-        <h1 className="text-3xl font-bold text-danger">Unauthorized Access</h1>
-        <p className="text-muted">
-          You don't have permission to view this page.
-        </p>
-        <a href="/login" className="text-primary underline">
-          Go to Login
-        </a>
-      </div>
-    </div>
-  );
-}

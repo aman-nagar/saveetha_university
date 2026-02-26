@@ -27,7 +27,6 @@ export default function CenterListPage() {
   } = useCrud({
     fetchFn: fetchCenters,
     deleteFn: async (id) => {
-      // Placeholder for delete API
       console.log(`[CenterListPage.jsx] Delete ID: ${id}`);
     },
   });
@@ -39,7 +38,6 @@ export default function CenterListPage() {
   const handleToggle = async (row, field) => {
     try {
       setTogglingId(row.id);
-      // Prepare form data with all required fields
       const formData = new FormData();
       formData.append("id", row.id);
       formData.append("institute_owner_name", row.institute_owner_name);
@@ -53,14 +51,10 @@ export default function CenterListPage() {
       formData.append("pincode", row.pincode);
       formData.append("contact_number", row.contact_number);
       formData.append("email", row.email);
-      // Add the toggled field with opposite value
       formData.append(field, row[field] ? 0 : 1);
-      // If there's an existing image, we could send it, but backend may keep it if not sent
-      // Optional: send owner_image if exists, but not required
 
       await updateCenter(formData);
 
-      // Update local state optimistically
       setData((prev) =>
         prev.map((item) =>
           item.id === row.id ? { ...item, [field]: !item[field] } : item,
@@ -90,96 +84,112 @@ export default function CenterListPage() {
     {
       key: "serial",
       label: "#",
-      render: (_, i) => <span className="text-muted">{i + 1}</span>,
+      render: (_, i) => (
+        <span className="text-muted text-xs sm:text-sm">{i + 1}</span>
+      ),
     },
     {
       key: "institute_name",
-      label: "Institute Name",
+      label: "Institute",
       render: (row) => (
-        <div className="flex flex-col">
-          <span className="font-medium text-text">{row.institute_name}</span>
-          <span className="text-xs text-muted">
+        <div className="flex flex-col min-w-0">
+          <span className="font-medium text-text text-sm sm:text-base truncate">
+            {row.institute_name}
+          </span>
+          <span className="text-xs text-muted truncate hidden sm:block">
             {row.institute_full_address}
+          </span>
+          <span className="text-xs text-muted sm:hidden">
+            {row.state}, {row.district}
           </span>
         </div>
       ),
     },
     {
       key: "institute_owner_name",
-      label: "Owner Detail",
+      label: "Owner",
       render: (row) => (
         <div className="flex flex-col">
-          <span>{row.institute_owner_name}</span>
-          <span className="text-xs text-muted">DOB: {row.date_of_birth}</span>
+          <span className="text-sm sm:text-base">
+            {row.institute_owner_name}
+          </span>
+          <span className="text-[10px] sm:text-xs text-muted">
+            DOB: {row.date_of_birth}
+          </span>
         </div>
       ),
     },
     {
       key: "contact_number",
-      label: "Contact & Email",
+      label: "Contact",
       render: (row) => (
-        <div className="flex flex-col text-sm">
-          <span>{row.contact_number}</span>
-          <span className="text-blue-500 hover:underline">{row.email}</span>
+        <div className="flex flex-col text-xs sm:text-sm">
+          <span className="truncate">{row.contact_number}</span>
+          <span className="text-primary hover:underline truncate hidden sm:block text-xs">
+            {row.email}
+          </span>
         </div>
       ),
     },
     {
-      key: "is_form_enabled",
-      label: "Form Enabled",
+      key: "status",
+      label: "Status",
       render: (row) => (
-        <button
-          onClick={() => handleToggle(row, "is_form_enabled")}
-          disabled={togglingId === row.id}
-          className="flex items-center gap-2 focus:outline-none"
-        >
-          {togglingId === row.id ? (
-            <FaSpinner className="animate-spin text-primary" />
-          ) : row.is_form_enabled ? (
-            <FaToggleOn className="w-6 h-6 text-green-600" />
-          ) : (
-            <FaToggleOff className="w-6 h-6 text-gray-400" />
-          )}
-          <span className="text-sm">{row.is_form_enabled ? "Yes" : "No"}</span>
-        </button>
-      ),
-    },
-    {
-      key: "is_active",
-      label: "Active Status",
-      render: (row) => (
-        <button
-          onClick={() => handleToggle(row, "is_active")}
-          disabled={togglingId === row.id}
-          className="flex items-center gap-2 focus:outline-none"
-        >
-          {togglingId === row.id ? (
-            <FaSpinner className="animate-spin text-primary" />
-          ) : row.is_active ? (
-            <FaToggleOn className="w-6 h-6 text-green-600" />
-          ) : (
-            <FaToggleOff className="w-6 h-6 text-gray-400" />
-          )}
-          <span className="text-sm">
-            {row.is_active ? "Active" : "Inactive"}
-          </span>
-        </button>
+        <div className="flex flex-col gap-1.5 sm:gap-2">
+          {/* Form Enabled Toggle */}
+          <button
+            onClick={() => handleToggle(row, "is_form_enabled")}
+            disabled={togglingId === row.id}
+            className="flex items-center gap-1.5 sm:gap-2 focus:outline-none group"
+          >
+            {togglingId === row.id ? (
+              <FaSpinner className="animate-spin text-primary w-4 h-4 sm:w-5 sm:h-5" />
+            ) : row.is_form_enabled ? (
+              <FaToggleOn className="w-5 h-5 sm:w-6 sm:h-6 text-success group-hover:text-success/80 transition-colors" />
+            ) : (
+              <FaToggleOff className="w-5 h-5 sm:w-6 sm:h-6 text-muted group-hover:text-muted/70 transition-colors" />
+            )}
+            <span className="text-xs sm:text-sm text-muted">
+              Form {row.is_form_enabled ? "On" : "Off"}
+            </span>
+          </button>
+
+          {/* Active Status Toggle */}
+          <button
+            onClick={() => handleToggle(row, "is_active")}
+            disabled={togglingId === row.id}
+            className="flex items-center gap-1.5 sm:gap-2 focus:outline-none group"
+          >
+            {togglingId === row.id ? (
+              <FaSpinner className="animate-spin text-primary w-4 h-4 sm:w-5 sm:h-5" />
+            ) : row.is_active ? (
+              <FaToggleOn className="w-5 h-5 sm:w-6 sm:h-6 text-success group-hover:text-success/80 transition-colors" />
+            ) : (
+              <FaToggleOff className="w-5 h-5 sm:w-6 sm:h-6 text-danger group-hover:text-danger/70 transition-colors" />
+            )}
+            <span
+              className={`text-xs sm:text-sm ${row.is_active ? "text-success" : "text-danger"}`}
+            >
+              {row.is_active ? "Active" : "Inactive"}
+            </span>
+          </button>
+        </div>
       ),
     },
   ];
 
   const actions = [
     {
-      icon: <HiPencil className="w-4 h-4" />,
+      icon: <HiPencil className="w-3.5 h-3.5 sm:w-4 sm:h-4" />,
       className:
-        "bg-blue-100 text-blue-600 hover:bg-blue-200 p-2 rounded-md transition",
+        "p-1.5 sm:p-2 rounded-md bg-primary/10 text-primary hover:bg-primary/20 transition-colors",
       title: "Edit Center",
       onClick: (row) => navigate(`/admin/centers/add?id=${row.id}`),
     },
     {
-      icon: <HiTrash className="w-4 h-4" />,
+      icon: <HiTrash className="w-3.5 h-3.5 sm:w-4 sm:h-4" />,
       className:
-        "bg-red-100 text-red-600 hover:bg-red-200 p-2 rounded-md transition",
+        "p-1.5 sm:p-2 rounded-md bg-danger/10 text-danger hover:bg-danger/20 transition-colors",
       title: "Delete Center",
       onClick: (row) => open(row),
     },
@@ -188,48 +198,93 @@ export default function CenterListPage() {
   const toolbar = (
     <Button
       onClick={() => navigate("/admin/centers/add")}
-      className="flex items-center gap-2"
+      className="flex items-center gap-1.5 sm:gap-2 text-xs sm:text-sm"
     >
-      <HiPlus className="w-4 h-4" />
-      Add New Center
+      <HiPlus className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+      <span className="hidden sm:inline">Add New Center</span>
+      <span className="sm:hidden">Add Center</span>
     </Button>
   );
 
   return (
-    <div className="w-full">
+    <div className="w-full space-y-4 sm:space-y-6">
       {toast && <Toast {...toast} onClose={clear} />}
-      <div className="bg-surface rounded-xl shadow-sm border border-border">
+
+      {/* Header Section - Mobile Optimized */}
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-4">
+        <div>
+          <h1 className="text-lg sm:text-xl lg:text-2xl font-heading font-bold text-text">
+            Center Management
+          </h1>
+          <p className="text-xs sm:text-sm text-muted mt-0.5">
+            Manage registered centers and their status
+          </p>
+        </div>
+        <div className="flex-shrink-0">{toolbar}</div>
+      </div>
+
+      {/* Table Container */}
+      <div className="bg-surface rounded-xl shadow-sm border border-border overflow-hidden">
         <Table
-          title="All Registered Centers"
+          title=""
           columns={columns}
           data={centers}
           actions={actions}
           loading={loading}
           emptyMessage="No centers found. Click 'Add New Center' to get started."
-          toolbar={toolbar}
+          toolbar={null}
         />
       </div>
+
       <Modal
         isOpen={isOpen}
         title="Confirm Delete"
         onClose={close}
+        size="sm"
         footer={
           <>
-            <Button variant="secondary" onClick={close}>
+            <Button
+              variant="secondary"
+              onClick={close}
+              className="w-full sm:w-auto justify-center"
+            >
               Cancel
             </Button>
-            <Button variant="danger" onClick={confirmDelete}>
-              Delete Center
+            <Button
+              variant="danger"
+              onClick={confirmDelete}
+              loading={loading} // Add loading state if you have it
+              className="w-full sm:w-auto justify-center gap-2"
+            >
+              <HiTrash className="w-4 h-4" />
+              Delete
             </Button>
           </>
         }
       >
         {target && (
-          <p className="text-text">
-            Are you sure you want to delete{" "}
-            <strong>{target.institute_name}</strong>? This action cannot be
-            undone.
-          </p>
+          <div className="flex flex-col items-center sm:items-start text-center sm:text-left">
+            {/* Icon */}
+            <div className="w-14 h-14 sm:w-16 sm:h-16 bg-danger/10 rounded-full flex items-center justify-center mb-4 shrink-0">
+              <HiTrash className="w-7 h-7 sm:w-8 sm:h-8 text-danger" />
+            </div>
+
+            {/* Content */}
+            <div className="space-y-2">
+              <p className="text-text text-sm sm:text-base">
+                Are you sure you want to delete{" "}
+                <strong className="text-primary font-semibold">
+                  {target.institute_name}
+                </strong>
+                ?
+              </p>
+              <p className="text-muted text-xs sm:text-sm leading-relaxed">
+                This action cannot be undone. All associated data including
+                student records and course assignments will be permanently
+                removed.
+              </p>
+            </div>
+          </div>
         )}
       </Modal>
     </div>

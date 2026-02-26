@@ -3,7 +3,6 @@ import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import FormSection from "../../form/FormSection";
 import FormInput from "../../form/FormInput";
-import FormSelect from "../../form/FormSelect";
 
 export default function SubjectForm({
   streamList = [],
@@ -14,74 +13,26 @@ export default function SubjectForm({
   mode = "create",
   onCancel,
 }) {
-  const { register, handleSubmit, reset } = useForm({
-    defaultValues: {
-      subject_name: "",
-      subject_code: "",
-      short_name: "",
-      max_theory_marks: "",
-      max_practical_marks: "",
-      duration: "",
-      duration_type: "",
-      status: true,
-    },
-  });
+  const { register, handleSubmit, reset } = useForm();
 
   useEffect(() => {
     if (initialData) {
       reset({
-        subject_name: initialData.subject_name || "",
-        subject_code: initialData.subject_code || "",
-        short_name: initialData.short_name || "",
-        max_theory_marks: initialData.max_theory_marks || "",
-        max_practical_marks: initialData.max_practical_marks || "",
-        duration: initialData.duration || "",
-        duration_type: initialData.duration_type || "",
-        status: initialData.status === 1,
+        subject: initialData.subject_name || initialData.name || "",
       });
       onStreamChange(initialData.stream_id);
     } else {
-      reset({
-        subject_name: "",
-        subject_code: "",
-        short_name: "",
-        max_theory_marks: "",
-        max_practical_marks: "",
-        duration: "",
-        duration_type: "",
-        status: true,
-      });
+      reset({ subject: "" });
     }
   }, [initialData, reset, onStreamChange]);
 
   const submitForm = async (data) => {
-    const payload = {
-      stream_id: selectedStream,
-      subject_name: data.subject_name,
-      subject_code: data.subject_code,
-      short_name: data.short_name,
-      max_theory_marks: data.max_theory_marks
-        ? Number(data.max_theory_marks)
-        : 0,
-      max_practical_marks: data.max_practical_marks
-        ? Number(data.max_practical_marks)
-        : 0,
-      duration: data.duration ? Number(data.duration) : 0,
-      duration_type: data.duration_type,
-      status: data.status ? 1 : 0,
-    };
-    if (mode === "edit" && initialData) {
-      payload.id = initialData.id;
-    }
-    await onSubmit(payload);
+    await onSubmit({
+      streamId: selectedStream,
+      name: data.subject,
+    });
     if (mode === "create") reset();
   };
-
-  const durationOptions = [
-    { label: "Year", value: "Year" },
-    { label: "Month", value: "Month" },
-    { label: "Semester", value: "Semester" },
-  ];
 
   return (
     <form onSubmit={handleSubmit(submitForm)} className="space-y-6">
@@ -91,7 +42,7 @@ export default function SubjectForm({
             Select Stream *
           </label>
           <select
-            value={selectedStream || ""}
+            value={selectedStream}
             onChange={(e) => onStreamChange(e.target.value)}
             className="w-full border border-border rounded-md px-3 py-2 bg-surface text-text focus:outline-none focus:ring-2 focus:ring-accent"
             required
@@ -107,58 +58,10 @@ export default function SubjectForm({
 
         <FormInput
           label="Subject Name"
-          name="subject_name"
+          name="subject"
           register={register}
           required="Subject name is required"
         />
-
-        <FormInput
-          label="Subject Code"
-          name="subject_code"
-          register={register}
-        />
-
-        <FormInput label="Short Name" name="short_name" register={register} />
-
-        <FormInput
-          label="Max Theory Marks"
-          name="max_theory_marks"
-          type="number"
-          register={register}
-        />
-
-        <FormInput
-          label="Max Practical Marks"
-          name="max_practical_marks"
-          type="number"
-          register={register}
-        />
-
-        <FormInput
-          label="Duration"
-          name="duration"
-          type="number"
-          register={register}
-        />
-
-        <FormSelect
-          label="Duration Type"
-          name="duration_type"
-          register={register}
-          options={durationOptions}
-        />
-
-        <div className="flex items-center gap-2">
-          <input
-            type="checkbox"
-            id="status"
-            {...register("status")}
-            className="w-4 h-4 text-primary border-border rounded focus:ring-accent"
-          />
-          <label htmlFor="status" className="text-sm font-medium text-text">
-            Active
-          </label>
-        </div>
       </FormSection>
 
       <div className="flex gap-3">

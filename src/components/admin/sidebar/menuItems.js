@@ -24,7 +24,10 @@ export const menuItems = [
     children: [
       { label: "All Students", path: "/admin/students" },
       { label: "Add New", path: "/admin/students/add" },
-      { label: "Admissions", path: "/admin/admissions" },
+      {
+        label: "Generate AdmitCard",
+        path: "admit-card/generate",
+      },
       { label: "Attendance", path: "/admin/attendance" },
     ],
   },

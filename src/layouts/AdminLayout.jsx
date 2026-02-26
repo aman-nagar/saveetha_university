@@ -9,12 +9,10 @@ export default function AdminLayout() {
     localStorage.getItem("adminTheme") || "light",
   );
 
-  // Save theme to localStorage when it changes
   useEffect(() => {
     localStorage.setItem("adminTheme", theme);
   }, [theme]);
 
-  // Toggle function
   const toggleTheme = () => {
     setTheme((prev) => (prev === "dark" ? "light" : "dark"));
   };
@@ -25,9 +23,10 @@ export default function AdminLayout() {
     >
       <div className="flex flex-1 bg-bg text-text">
         <AdminSidebar theme={theme} toggleTheme={toggleTheme} />
-        <div className="flex-1 flex flex-col min-w-0 ">
+        <div className="flex-1 flex flex-col min-w-0">
           <AdminHeader />
-          <main className="flex flex-1 justify-center p-2 overflow-x-hidden">
+          {/* Added pt-14 for mobile to account for hamburger button space */}
+          <main className="flex flex-1 justify-center p-2 md:p-4 overflow-x-hidden pt-14 md:pt-2">
             <Outlet />
           </main>
         </div>

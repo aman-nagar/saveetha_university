@@ -15,6 +15,17 @@ import { fetchFaculty } from "../../../../api/courses/facultyApi";
 import { fetchCourses } from "../../../../api/courses/courseApi";
 import { fetchStreams } from "../../../../api/courses/streamApi";
 
+import {
+  FiChevronLeft,
+  FiChevronRight,
+  FiCheck,
+  FiLoader,
+  FiUser,
+  FiMapPin,
+  FiBook,
+  FiLayers,
+} from "react-icons/fi";
+
 const QUAL_KEYS = [
   "secondary",
   "sr_secondary",
@@ -110,7 +121,7 @@ export default function StudentFormStepper({
   const [qualificationFiles, setQualificationFiles] = useState({});
   const [step, setStep] = useState(1);
   const [loading, setLoading] = useState(false);
-  const [cascadeReady, setCascadeReady] = useState(!isEdit); // edit waits for cascade
+  const [cascadeReady, setCascadeReady] = useState(!isEdit);
 
   // Separate ID state for cascade API calls (form values store names)
   const [selectedIds, setSelectedIds] = useState({
@@ -190,18 +201,17 @@ export default function StudentFormStepper({
         setCascadeReady(true);
       } catch (err) {
         show("error", "Failed to load programme data: " + err.message);
-        setCascadeReady(true); // unblock form so admin can still use other steps
+        setCascadeReady(true);
       }
     };
 
     init();
-  }, []); // run once on mount
+  }, []);
 
   // ── User-triggered: Course Type changed → reload Faculty list ──
   useEffect(() => {
     if (!cascadeReady) return;
     if (!watchedCourseType) {
-      // Clear dependent fields
       setFaculties([]);
       setCourses([]);
       setStreams([]);
@@ -212,13 +222,10 @@ export default function StudentFormStepper({
       return;
     }
 
-    // Find the ID of the selected course type
     const ctMatch = courseTypes.find((ct) => ct.name === watchedCourseType);
     const ctId = ctMatch?.id ?? null;
 
     if (!ctId) return;
-
-    // Only trigger if this is a user change (not initial load)
     if (selectedIds.courseTypeId === ctId) return;
 
     const load = async () => {
@@ -242,7 +249,6 @@ export default function StudentFormStepper({
   useEffect(() => {
     if (!cascadeReady) return;
     if (!watchedFaculty) {
-      // Clear dependent fields
       setCourses([]);
       setStreams([]);
       setValue("course", "");
@@ -251,13 +257,10 @@ export default function StudentFormStepper({
       return;
     }
 
-    // Find the ID of the selected faculty
     const fMatch = faculties.find((f) => f.name === watchedFaculty);
     const fId = fMatch?.id ?? null;
 
     if (!fId) return;
-
-    // Only trigger if this is a user change (not initial load)
     if (selectedIds.facultyId === fId) return;
 
     const load = async () => {
@@ -279,20 +282,16 @@ export default function StudentFormStepper({
   useEffect(() => {
     if (!cascadeReady) return;
     if (!watchedCourse) {
-      // Clear dependent fields
       setStreams([]);
       setValue("stream", "");
       setSelectedIds((prev) => ({ ...prev, courseId: null }));
       return;
     }
 
-    // Find the ID of the selected course
     const cMatch = courses.find((c) => c.name === watchedCourse);
     const cId = cMatch?.id ?? null;
 
     if (!cId) return;
-
-    // Only trigger if this is a user change (not initial load)
     if (selectedIds.courseId === cId) return;
 
     const load = async () => {
@@ -334,12 +333,10 @@ export default function StudentFormStepper({
 
       const formData = new FormData();
 
-      // In edit mode, include student ID
       if (isEdit && student?.id) {
         formData.append("id", student.id);
       }
 
-      // Qualification keys to skip from main loop
       const qualKeys = new Set(
         QUAL_KEYS.flatMap((k) => [
           `${k}_year`,
@@ -348,7 +345,6 @@ export default function StudentFormStepper({
         ]),
       );
 
-      // Append normal fields
       Object.entries(data).forEach(([key, value]) => {
         if (qualKeys.has(key)) return;
         if (value instanceof FileList) {
@@ -358,7 +354,6 @@ export default function StudentFormStepper({
         }
       });
 
-      // Append structured qualifications
       let qi = 0;
       QUAL_KEYS.forEach((key) => {
         const year = data[`${key}_year`];
@@ -401,18 +396,46 @@ export default function StudentFormStepper({
     }
   };
 
-  // ── Render ──
+  // ── Loading Skeleton ──
   if (isEdit && !cascadeReady) {
     return (
-      <div className="py-20 flex flex-col items-center gap-3 text-text-muted">
-        <div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin" />
-        <p className="text-sm">Loading student data...</p>
+      <div className="w-full max-w-7xl space-y-6">
+        {/* Stepper Skeleton */}
+        <div className="flex items-center justify-between px-2 animate-pulse">
+          {Array.from({ length: 4 }).map((_, i) => (
+            <div key={i} className="flex items-center flex-1">
+              <div className="flex flex-col items-center">
+                <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-muted/20" />
+                <div className="mt-2 h-3 bg-muted/20 rounded w-12 sm:w-16" />
+              </div>
+              {i < 3 && (
+                <div className="flex-1 h-0.5 bg-muted/20 mx-2 sm:mx-4" />
+              )}
+            </div>
+          ))}
+        </div>
+
+        {/* Form Section Skeleton */}
+        <div className="bg-surface border border-border rounded-xl p-4 sm:p-6 animate-pulse">
+          <div className="flex items-center gap-2 mb-4 sm:mb-6 pb-3 sm:pb-4 border-b border-border">
+            <div className="w-4 h-4 sm:w-5 sm:h-5 bg-muted/20 rounded" />
+            <div className="h-5 sm:h-6 bg-muted/20 rounded w-40" />
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
+            {Array.from({ length: 6 }).map((_, i) => (
+              <div key={i} className="space-y-2">
+                <div className="h-4 bg-muted/20 rounded w-24" />
+                <div className="h-9 sm:h-10 bg-muted/20 rounded-lg" />
+              </div>
+            ))}
+          </div>
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="w-full max-w-7xl">
+    <div className="w-full max-w-7xl px-2 sm:px-0">
       {toast && <Toast {...toast} onClose={clear} />}
 
       <AdmissionStepper step={step} />
@@ -455,16 +478,20 @@ export default function StudentFormStepper({
           />
         )}
 
-        <div className="flex justify-between mt-6">
-          {step > 1 && (
+        {/* Navigation Buttons */}
+        <div className="flex flex-col-reverse sm:flex-row justify-between mt-6 sm:mt-8 gap-3">
+          {step > 1 ? (
             <button
               type="button"
               onClick={prev}
               disabled={loading}
-              className="px-4 py-2 border border-border rounded-md disabled:opacity-50"
+              className="w-full sm:w-auto px-4 py-2.5 border border-border rounded-lg text-text hover:bg-bg disabled:opacity-50 transition-colors flex items-center justify-center gap-2 text-sm sm:text-base"
             >
+              <FiChevronLeft className="w-4 h-4" />
               Back
             </button>
+          ) : (
+            <div className="hidden sm:block" />
           )}
 
           {step < 4 ? (
@@ -472,18 +499,29 @@ export default function StudentFormStepper({
               type="button"
               onClick={next}
               disabled={loading}
-              className="ml-auto bg-primary text-white px-6 py-2 rounded-md disabled:opacity-50"
+              className="w-full sm:w-auto px-6 py-2.5 bg-primary text-white rounded-lg hover:bg-primary/90 disabled:opacity-50 transition-colors flex items-center justify-center gap-2 text-sm sm:text-base"
             >
               Next
+              <FiChevronRight className="w-4 h-4" />
             </button>
           ) : (
             <button
               type="button"
               onClick={handleSubmit(handleFormSubmit)}
               disabled={loading}
-              className="ml-auto bg-accent text-primary px-6 py-2 rounded-md font-semibold disabled:opacity-50"
+              className="w-full sm:w-auto px-6 py-2.5 bg-accent text-primary rounded-lg font-semibold hover:bg-accent/90 disabled:opacity-50 transition-colors flex items-center justify-center gap-2 text-sm sm:text-base"
             >
-              {loading ? "Saving..." : submitLabel}
+              {loading ? (
+                <>
+                  <FiLoader className="w-4 h-4 animate-spin" />
+                  Saving...
+                </>
+              ) : (
+                <>
+                  <FiCheck className="w-4 h-4" />
+                  {submitLabel}
+                </>
+              )}
             </button>
           )}
         </div>

@@ -25,7 +25,12 @@ export default function SubjectPage() {
   const [selectedStream, setSelectedStream] = useState("");
   const [editData, setEditData] = useState(null);
 
-  const { data: subjects, loading, load, remove } = useCrud({
+  const {
+    data: subjects,
+    loading,
+    load,
+    remove,
+  } = useCrud({
     fetchFn: fetchSubjects,
     deleteFn: deleteSubject,
   });
@@ -85,9 +90,45 @@ export default function SubjectPage() {
 
   const columns = [
     { key: "serial", label: "#", render: (_, i) => i + 1 },
+
     { key: "subject_name", label: "Subject Name" },
     { key: "subject_code", label: "Code" },
-    { key: "stream_name", label: "Stream" },
+    { key: "short_name", label: "Short Name" },
+
+    {
+      key: "stream_name",
+      label: "Stream",
+      render: (row) => (
+        <span className="text-text font-medium">{row.stream_name || "—"}</span>
+      ),
+    },
+
+    { key: "max_theory_marks", label: "Theory" },
+    { key: "max_practical_marks", label: "Practical" },
+
+    {
+      key: "duration",
+      label: "Duration",
+      render: (row) =>
+        row.duration ? `${row.duration} ${row.duration_type}` : "—",
+    },
+
+    {
+      key: "status",
+      label: "Status",
+      render: (row) => (
+        <div
+          className="flex items-center justify-center cursor-pointer"
+          title={row.status == 1 ? "Active" : "Inactive"}
+        >
+          <span
+            className={`w-3 h-3 rounded-full transition-all duration-200 ${
+              row.status == 1 ? "bg-success" : "bg-muted"
+            }`}
+          />
+        </div>
+      ),
+    },
   ];
 
   const actions = [
@@ -109,7 +150,7 @@ export default function SubjectPage() {
   ];
 
   return (
-    <div className="space-y-8 p-6">
+    <div className="w-full space-y-8 p-2">
       {toast && <Toast {...toast} onClose={clear} />}
 
       <SubjectForm

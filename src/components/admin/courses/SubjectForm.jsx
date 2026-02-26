@@ -54,7 +54,6 @@ export default function SubjectForm({
   return (
     <form onSubmit={handleSubmit(submitForm)} className="space-y-6">
       <FormSection title={mode === "edit" ? "Edit Subject" : "Add Subject"}>
-        
         {/* Stream Select */}
         <div className="space-y-1">
           <label className="text-sm font-medium text-text">
@@ -74,12 +73,36 @@ export default function SubjectForm({
           </select>
         </div>
 
-        <FormInput label="Subject Name" name="subject_name" register={register} required="Required" />
-        <FormInput label="Subject Code" name="subject_code" register={register} />
+        <FormInput
+          label="Subject Name"
+          name="subject_name"
+          register={register}
+          required="Required"
+        />
+        <FormInput
+          label="Subject Code"
+          name="subject_code"
+          register={register}
+        />
         <FormInput label="Short Name" name="short_name" register={register} />
-        <FormInput label="Max Theory Marks" name="max_theory_marks" type="number" register={register} />
-        <FormInput label="Max Practical Marks" name="max_practical_marks" type="number" register={register} />
-        <FormInput label="Duration" name="duration" type="number" register={register} />
+        <FormInput
+          label="Max Theory Marks"
+          name="max_theory_marks"
+          type="number"
+          register={register}
+        />
+        <FormInput
+          label="Max Practical Marks"
+          name="max_practical_marks"
+          type="number"
+          register={register}
+        />
+        <FormInput
+          label="Duration"
+          name="duration"
+          type="number"
+          register={register}
+        />
 
         {/* Duration Type */}
         <div className="space-y-1">
@@ -107,11 +130,13 @@ export default function SubjectForm({
             <option value={0}>Inactive</option>
           </select>
         </div>
-
       </FormSection>
 
       <div className="flex gap-3">
-        <button type="submit" className="px-6 py-2.5 rounded-md text-white bg-primary">
+        <button
+          type="submit"
+          className="px-6 py-2.5 rounded-md text-white bg-primary"
+        >
           {mode === "edit" ? "Update Subject" : "Create Subject"}
         </button>
 

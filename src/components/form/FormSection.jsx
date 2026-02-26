@@ -10,7 +10,7 @@ export default function FormSection({ title, children, icon: Icon = FiLayers }) 
           {title}
         </h2>
       </div>
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
+      <div className="">
         {children}
       </div>
     </div>

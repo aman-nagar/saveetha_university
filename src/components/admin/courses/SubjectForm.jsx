@@ -3,9 +3,6 @@ import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import FormSection from "../../form/FormSection";
 import FormInput from "../../form/FormInput";
-import FormSelect from "../../form/FormSelect";
-
-// API Imports
 import { fetchStreamsById } from "../../../api/courses/streamApi";
 import { fetchCoursesById } from "../../../api/courses/courseApi";
 
@@ -18,19 +15,17 @@ export default function SubjectForm({
   mode = "create",
   onCancel,
 }) {
-  // 1. Initialize Form Hooks
   const {
     register,
     handleSubmit,
     reset,
     setValue,
-    watch,
     formState: { errors },
   } = useForm();
 
   // 2. Local State for Dynamic Logic
   const [durationOptions, setDurationOptions] = useState([]);
-  const [fetchingRules, setFetchingRules] = useState(false); // ✅ Fix: Added the missing state
+  const [fetchingRules, setFetchingRules] = useState(false);
 
   // 3. Hydrate form when editing
   useEffect(() => {
@@ -135,7 +130,6 @@ export default function SubjectForm({
             ))}
           </select>
         </div>
-
         <FormInput
           label="Subject Name"
           name="subject_name"
@@ -143,7 +137,6 @@ export default function SubjectForm({
           required="Required"
           error={errors.subject_name}
         />
-
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <FormInput
             label="Subject Code"
@@ -152,7 +145,6 @@ export default function SubjectForm({
           />
           <FormInput label="Short Name" name="short_name" register={register} />
         </div>
-
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <FormInput
             label="Max Theory Marks"
@@ -168,17 +160,30 @@ export default function SubjectForm({
           />
         </div>
 
-        <FormSelect
-          label={fetchingRules ? "Syncing Duration..." : "Select Duration"}
-          name="duration"
-          register={register}
-          watch={watch}
-          options={durationOptions}
-          placeholder={fetchingRules ? "Please wait..." : "Select Duration"}
-          error={errors.duration}
-          required="Please select duration"
-        />
-
+        <div className="space-y-1">
+          <label className="text-sm font-medium text-text">
+            {fetchingRules ? "Syncing Duration..." : "Duration *"}
+          </label>
+          <select
+            {...register("duration", { required: "Please select duration" })}
+            className={`w-full border rounded-md px-3 py-2 bg-surface text-text focus:ring-2 focus:ring-accent outline-none transition
+      ${errors.duration ? "border-danger" : "border-border"}`}
+          >
+            <option value="">
+              {fetchingRules ? "Loading..." : "Select Duration"}
+            </option>
+            {durationOptions.map((opt) => (
+              <option key={opt.value} value={opt.value}>
+                {opt.label}
+              </option>
+            ))}
+          </select>
+          {errors.duration && (
+            <p className="text-xs text-danger mt-1">
+              {errors.duration.message}
+            </p>
+          )}
+        </div>
         {/* Status */}
         <div className="space-y-1">
           <label className="text-sm font-medium text-text">Status</label>
@@ -190,7 +195,6 @@ export default function SubjectForm({
             <option value={0}>Inactive</option>
           </select>
         </div>
-
         {/* Hidden field for duration_type to send to API */}
         <input type="hidden" {...register("duration_type")} />
       </FormSection>

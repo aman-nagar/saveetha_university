@@ -27,7 +27,7 @@ export default function StepQualification({
   return (
     <FormSection title="Previous Qualification Details" icon={FiAward}>
       {/* Desktop Table View */}
-      <div className="hidden md:block overflow-x-auto">
+      <div className="w-full md:block overflow-x-auto">
         <table className="w-full text-sm border border-border rounded-lg overflow-hidden">
           <thead className="bg-bg text-text">
             <tr className="border-b border-border">

@@ -4,7 +4,12 @@ import FormSelect from "../../../../form/FormSelect";
 import FormSection from "../../../../form/FormSection";
 import FormFileInput from "../../../../form/FormFileInput";
 
-export default function StepPersonal({ register, errors, watch, existingUrls = {} }) {
+export default function StepPersonal({
+  register,
+  errors,
+  watch,
+  existingUrls = {},
+}) {
   const selectedIdProof = watch("id_proof_type");
   const isEmployed = watch("employed");
 
@@ -42,7 +47,7 @@ export default function StepPersonal({ register, errors, watch, existingUrls = {
         label="Gender"
         name="gender"
         register={register}
-        // required="Gender is required"
+        required="Gender is required"
         options={[
           { label: "Male", value: "Male" },
           { label: "Female", value: "Female" },

@@ -169,7 +169,10 @@ export default function FacultyPage() {
         onClose={close}
         footer={
           <>
-            <button onClick={close} className="px-4 py-2 border border-border rounded-lg text-sm text-text hover:bg-bg transition">
+            <button
+              onClick={close}
+              className="px-4 py-2 border border-border rounded-lg text-sm text-text hover:bg-bg transition"
+            >
               Cancel
             </button>
             <button

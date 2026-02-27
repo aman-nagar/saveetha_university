@@ -3,7 +3,6 @@ import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import FormSection from "../../form/FormSection";
 import FormInput from "../../form/FormInput";
-import { FiAlertCircle } from "react-icons/fi";
 
 export default function CourseForm({
   facultyList = [],
@@ -46,7 +45,10 @@ export default function CourseForm({
 
   return (
     <form onSubmit={handleSubmit(submitForm)} className="space-y-5">
-      <FormSection title={mode === "edit" ? "Edit Course" : "Add Course"} columns={2}>
+      <FormSection
+        title={mode === "edit" ? "Edit Course" : "Add Course"}
+        columns={2}
+      >
         {/* Faculty select */}
         <div className="space-y-1.5 sm:space-y-2">
           <label className="text-xs sm:text-sm font-medium text-text">
@@ -93,9 +95,9 @@ export default function CourseForm({
             className="w-full border border-border rounded-lg px-3 py-2 sm:py-2.5 bg-surface text-text text-sm sm:text-base focus:outline-none focus:ring-2 focus:ring-accent/40 focus:border-accent transition-all duration-200 hover:border-muted/50"
           >
             <option value="">Select Duration Type</option>
-            <option value="Year">Year</option>
-            <option value="Month">Month</option>
-            <option value="Semester">Semester</option>
+            <option value="year">Year</option>
+            <option value="months">Months</option>
+            <option value="semester">Semester</option>
           </select>
         </div>
       </FormSection>

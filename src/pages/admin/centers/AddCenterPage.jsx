@@ -20,6 +20,7 @@ import { FaSpinner } from "react-icons/fa";
 export default function AddCenterPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [centerData, setCenterData] = useState(null);
   const { toast, show, clear } = useToast();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
@@ -27,7 +28,6 @@ export default function AddCenterPage() {
   const isEditMode = !!centerId;
 
   const initialLoadDone = useRef(false);
-  const [hasFile, setHasFile] = useState(false);
 
   const {
     register,
@@ -43,28 +43,27 @@ export default function AddCenterPage() {
       const loadCenter = async () => {
         try {
           setLoading(true);
-          const centerData = await fetchCenterById(centerId);
+          const data = await fetchCenterById(centerId);
 
-          // Reset form with fetched data
+          // 2. STORE THE DATA IN STATE FOR THE PREVIEW
+          setCenterData(data);
+
           reset({
-            institute_owner_name: centerData.institute_owner_name || "",
-            institute_name: centerData.institute_name || "",
-            date_of_birth: centerData.date_of_birth || "",
-            pan_number: centerData.pan_number || "",
-            aadhar_number: centerData.aadhar_number || "",
-            institute_full_address: centerData.institute_full_address || "",
-            state: centerData.state || "",
-            district: centerData.district || "",
-            pincode: centerData.pincode || "",
-            contact_number: centerData.contact_number || "",
-            email: centerData.email || "",
-            username: "", // Don't populate password fields
-            password: "",
+            institute_owner_name: data.institute_owner_name || "",
+            institute_name: data.institute_name || "",
+            date_of_birth: data.date_of_birth || "",
+            pan_number: data.pan_number || "",
+            aadhar_number: data.aadhar_number || "",
+            institute_full_address: data.institute_full_address || "",
+            state: data.state || "",
+            district: data.district || "",
+            pincode: data.pincode || "",
+            contact_number: data.contact_number || "",
+            email: data.email || "",
           });
 
           initialLoadDone.current = true;
         } catch (err) {
-          console.error("[AddCenterPage.jsx] Error loading center:", err);
           show("error", "Failed to load center data");
         } finally {
           setLoading(false);
@@ -91,63 +90,46 @@ export default function AddCenterPage() {
       });
       initialLoadDone.current = true;
     }
-  }, [centerId, isEditMode, reset, show]); // Added all dependencies
+  }, [centerId, isEditMode, reset, show]);
 
   const onSubmit = async (data) => {
-    console.log(
-      `[AddCenterPage.jsx] ${isEditMode ? "Updating" : "Creating"} center:`,
-      data,
-    );
     setIsSubmitting(true);
-
     try {
       const formData = new FormData();
 
-      // Add ID if in edit mode
+      // 1. Mandatory ID for Edit
       if (isEditMode) {
         formData.append("id", centerId);
       }
 
-      // Add all other fields
+      // 2. Append all form fields
       Object.keys(data).forEach((key) => {
-        if (key === "owner_image" && data[key]?.[0]) {
-          formData.append("owner_image", data[key][0]);
-        } else if (
-          data[key] !== undefined &&
-          data[key] !== null &&
-          data[key] !== ""
-        ) {
+        if (key === "owner_image") {
+          if (data[key]?.[0]) {
+            formData.append("owner_image", data[key][0]);
+          }
+        } else if (data[key] !== undefined && data[key] !== null) {
           formData.append(key, data[key]);
         }
       });
 
-      // Only include password in create mode, or if provided in edit mode
-      if (!isEditMode || (isEditMode && data.password)) {
-        formData.append("password", data.password);
+      // 3. Conditional Password Handling
+      if (!isEditMode && !data.password) {
+        throw new Error("Password is required for new centers");
       }
 
-      let response;
+      // 4. Submit using the corrected API functions
       if (isEditMode) {
-        response = await updateCenter(formData);
+        await updateCenter(formData);
         show("success", "Center updated successfully!");
       } else {
-        response = await createCenter(formData);
+        await createCenter(formData);
         show("success", "Center created successfully!");
       }
 
-      console.log(`[AddCenterPage.jsx] Success Response:`, response);
-
-      // Redirect back to centers list after short delay
       setTimeout(() => navigate("/admin/centers"), 1500);
     } catch (err) {
-      console.error(
-        `[AddCenterPage.jsx] Error ${isEditMode ? "updating" : "creating"} center:`,
-        err,
-      );
-      show(
-        "error",
-        err.message || `Failed to ${isEditMode ? "update" : "create"} center`,
-      );
+      show("error", err.message || "Action failed");
     } finally {
       setIsSubmitting(false);
     }
@@ -182,10 +164,7 @@ export default function AddCenterPage() {
         </button>
       </div>
 
-      <form
-        onSubmit={handleSubmit(onSubmit)}
-        className="space-y-6"
-      >
+      <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
         {/* SECTION 1: PERSONAL & INSTITUTE BASIC DETAILS */}
         <FormSection title="Franchisee Basic Information" columns={2}>
           <FormInput
@@ -235,7 +214,7 @@ export default function AddCenterPage() {
             label="Owner Profile Image"
             name="owner_image"
             register={register}
-            existingUrl={isEditMode ? null : undefined}
+            existingUrl={centerData?.owner_image_url}
           />
         </FormSection>
 
@@ -292,17 +271,6 @@ export default function AddCenterPage() {
             required="Contact number is required"
             error={errors.contact_number}
           />
-
-          <div className="sm:col-span-2">
-            <FormInput
-              label="E-Mail ID"
-              name="email"
-              type="email"
-              register={register}
-              required="Email is required"
-              error={errors.email}
-            />
-          </div>
         </FormSection>
 
         {/* SECTION 3: ACCOUNT ACCESS */}
@@ -315,14 +283,12 @@ export default function AddCenterPage() {
           columns={2}
         >
           <FormInput
-            label="Username"
-            name="username"
+            label="E-Mail ID"
+            name="email"
+            type="email"
             register={register}
-            placeholder={
-              isEditMode ? "Leave blank to keep current" : "Username"
-            }
-            required={!isEditMode && "Username is required"}
-            error={errors.username}
+            required="Email is required"
+            error={errors.email}
           />
           <FormInput
             label="Password"

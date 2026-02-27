@@ -1,221 +1,89 @@
-// src/components/admin/courses/SubjectForm.jsx
-import { useEffect, useState } from "react";
-import { useForm } from "react-hook-form";
-import FormSection from "../../form/FormSection";
-import FormInput from "../../form/FormInput";
-import FormSelect from "../../form/FormSelect";
-
-// API Imports
-import { fetchStreamsById } from "../../../api/courses/streamApi";
-import { fetchCoursesById } from "../../../api/courses/courseApi";
-
-export default function SubjectForm({
-streamList = [],
-selectedStream,
-onStreamChange,
-onSubmit,
-initialData = null,
-mode = "create",
-onCancel,
-}) {
-// 1. Initialize Form Hooks
-const { register, handleSubmit, reset, setValue, watch, formState: { errors } } = useForm();
-
-// 2. Local State for Dynamic Logic
-const [durationOptions, setDurationOptions] = useState([]);
-const [fetchingRules, setFetchingRules] = useState(false); // ✅ Fix: Added the missing state
-
-// 3. Hydrate form when editing
-useEffect(() => {
-if (initialData) {
-reset({
-subject_name: initialData.subject_name,
-subject_code: initialData.subject_code,
-short_name: initialData.short_name,
-max_theory_marks: initialData.max_theory_marks,
-max_practical_marks: initialData.max_practical_marks,
-duration: initialData.duration,
-duration_type: initialData.duration_type,
-status: initialData.status ?? 1,
-});
-onStreamChange(initialData.stream_id);
-} else {
-reset();
-}
-}, [initialData, reset, onStreamChange]);
-
-// 4. Dynamic Logic: Fetch Course rules based on Stream
-const loadStreamData = async (id) => {
-if (!id) {
-setDurationOptions([]);
-return;
-}
-
-    setFetchingRules(true); // Start loading
-    try {
-      const streamData = await fetchStreamsById(id);
-      const course = await fetchCoursesById(streamData.course_id);
-
-      const durationCount = Number(course.duration);
-      const type = course.duration_type; // "Year", "Semester", or "Month"
-
-      let options = [];
-
-      if (type === "Year" || type === "Semester") {
-        for (let i = 1; i <= durationCount; i++) {
-          options.push({ label: `${type} ${i}`, value: String(i) });
+{
+    "id": 6,
+    "enrollment_no": "ABC/000006",
+    "candidate_name": "Kim Cherry",
+    "father_name": "Ahmed Stanley",
+    "mother_name": "Zeph Oliver",
+    "dob": "2011-08-26",
+    "photo": "69a1f7705cbfe_1772222320.jpeg",
+    "gender": "Female",
+    "category": "general",
+    "id_proof_type": "pan_card",
+    "id_proof_no": "",
+    "id_proof_front": null,
+    "id_proof_back": null,
+    "employed": 0,
+    "employer_name": "",
+    "designation": "",
+    "contact_number": "641",
+    "email": "wudo@mailinator.com",
+    "password": "$2y$10$VHGyBB1QT5gG6PIRw8pbLuOlJF0fJe7UBOQl99RFqqBqEwDJMKiZ.",
+    "center_id": null,
+    "father_contact_number": "948",
+    "mother_contact_number": "885",
+    "country": "Other",
+    "nationality": "Exercitationem possi",
+    "state": "Molestiae similique ",
+    "city": "Ut ipsa natus ut do",
+    "address": "Quo deleniti eligend",
+    "pincode": "26",
+    "course_type": "Graduate",
+    "faculty": "CS",
+    "course": "ccv",
+    "stream": "d tech",
+    "year": "2015",
+    "month_session": "10",
+    "session": "Reprehenderit ullam ",
+    "mode_of_study": "Regular",
+    "hostel_facility": 0,
+    "application_fee": "65.00",
+    "duration": "Atque nulla eius iur",
+    "status": 0,
+    "status_updated_at": null,
+    "is_deleted": 0,
+    "created_at": "2026-02-28 01:28:40",
+    "updated_at": "2026-02-28 01:29:41",
+    "photo_url": "https://api.nsprowebtech.com/backend/uploads/students/photos/69a1f7705cbfe_1772222320.jpeg",
+    "qualifications": [
+        {
+            "examination": "secondary",
+            "year_of_passing": "Non est dolorum fuga",
+            "board_university": "Non est dolorum fuga",
+            "percentage_cgpa": "Non est dolorum fuga",
+            "document": "69a1f7705d670_1772222320.jpeg",
+            "document_url": "https://api.nsprowebtech.com/backend/uploads/students/qualifications/69a1f7705d670_1772222320.jpeg"
+        },
+        {
+            "examination": "sr_secondary",
+            "year_of_passing": "Non est dolorum fuga",
+            "board_university": "Non est dolorum fuga",
+            "percentage_cgpa": "Non est dolorum fuga",
+            "document": "69a1f7705dd9c_1772222320.jpeg",
+            "document_url": "https://api.nsprowebtech.com/backend/uploads/students/qualifications/69a1f7705dd9c_1772222320.jpeg"
+        },
+        {
+            "examination": "graduation",
+            "year_of_passing": "2005",
+            "board_university": "Dicta quos sunt pari",
+            "percentage_cgpa": "Rerum deserunt non e",
+            "document": "69a1f7705e14d_1772222320.jpeg",
+            "document_url": "https://api.nsprowebtech.com/backend/uploads/students/qualifications/69a1f7705e14d_1772222320.jpeg"
+        },
+        {
+            "examination": "post_graduation",
+            "year_of_passing": "1970",
+            "board_university": "Voluptates qui vitae",
+            "percentage_cgpa": "Voluptatibus quaerat",
+            "document": "69a1f7705e456_1772222320.jpeg",
+            "document_url": "https://api.nsprowebtech.com/backend/uploads/students/qualifications/69a1f7705e456_1772222320.jpeg"
+        },
+        {
+            "examination": "other",
+            "year_of_passing": "1993",
+            "board_university": "Tempore laborum Qu",
+            "percentage_cgpa": "Maxime aut animi do",
+            "document": "69a1f7705e887_1772222320.jpeg",
+            "document_url": "https://api.nsprowebtech.com/backend/uploads/students/qualifications/69a1f7705e887_1772222320.jpeg"
         }
-      } else {
-        options.push({
-          label: `${durationCount} Months`,
-          value: String(durationCount),
-        });
-      }
-
-      setDurationOptions(options);
-
-      // Auto-set duration_type to keep hidden fields in sync
-      setValue("duration_type", type.toLowerCase());
-
-    } catch (err) {
-      console.error("Failed to sync course rules:", err.message);
-    } finally {
-      setFetchingRules(false); // Stop loading
-    }
-
-};
-
-useEffect(() => {
-loadStreamData(selectedStream);
-}, [selectedStream]);
-
-// 5. Submit Handler
-const submitForm = async (data) => {
-if (!selectedStream) return;
-
-    await onSubmit({
-      id: initialData?.id,
-      stream_id: selectedStream,
-      subject_name: data.subject_name,
-      subject_code: data.subject_code,
-      short_name: data.short_name,
-      max_theory_marks: Number(data.max_theory_marks),
-      max_practical_marks: Number(data.max_practical_marks),
-      duration: Number(data.duration),
-      duration_type: data.duration_type,
-      status: Number(data.status),
-    });
-
-    if (mode === "create") reset();
-
-};
-
-return (
-
-<form onSubmit={handleSubmit(submitForm)} className="space-y-6">
-<FormSection title={mode === "edit" ? "Edit Subject" : "Add Subject"}>
-
-        {/* Stream Select */}
-        <div className="space-y-1">
-          <label className="text-sm font-medium text-text">
-            Select Stream *
-          </label>
-          <select
-            value={selectedStream}
-            onChange={(e) => onStreamChange(e.target.value)}
-            className="w-full border border-border rounded-md px-3 py-2 bg-surface text-text focus:ring-2 focus:ring-accent"
-          >
-            <option value="">Select Stream</option>
-            {streamList.map((s) => (
-              <option key={s.id} value={s.id}>
-                {s.name}
-              </option>
-            ))}
-          </select>
-        </div>
-
-        <FormInput
-          label="Subject Name"
-          name="subject_name"
-          register={register}
-          required="Required"
-          error={errors.subject_name}
-        />
-
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <FormInput
-            label="Subject Code"
-            name="subject_code"
-            register={register}
-          />
-          <FormInput
-            label="Short Name"
-            name="short_name"
-            register={register}
-          />
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <FormInput
-            label="Max Theory Marks"
-            name="max_theory_marks"
-            type="number"
-            register={register}
-          />
-          <FormInput
-            label="Max Practical Marks"
-            name="max_practical_marks"
-            type="number"
-            register={register}
-          />
-        </div>
-
-        <FormSelect
-          label={fetchingRules ? "Syncing Duration..." : "Select Duration"}
-          name="duration"
-          register={register}
-          watch={watch}
-          options={durationOptions}
-          placeholder={fetchingRules ? "Please wait..." : "Select Duration"}
-          error={errors.duration}
-          required="Please select duration"
-        />
-
-        {/* Status */}
-        <div className="space-y-1">
-          <label className="text-sm font-medium text-text">Status</label>
-          <select
-            {...register("status")}
-            className="w-full border border-border rounded-md px-3 py-2 bg-surface text-text"
-          >
-            <option value={1}>Active</option>
-            <option value={0}>Inactive</option>
-          </select>
-        </div>
-
-        {/* Hidden field for duration_type to send to API */}
-        <input type="hidden" {...register("duration_type")} />
-      </FormSection>
-
-      <div className="flex gap-3">
-        <button
-          type="submit"
-          className="px-6 py-2.5 rounded-md text-white bg-primary hover:bg-primary/90 transition shadow-sm"
-        >
-          {mode === "edit" ? "Update Subject" : "Create Subject"}
-        </button>
-
-        {mode === "edit" && (
-          <button
-            type="button"
-            onClick={onCancel}
-            className="px-6 py-2.5 rounded-md border border-border hover:bg-bg transition"
-          >
-            Cancel
-          </button>
-        )}
-      </div>
-    </form>
-
-);
+    ]
 }

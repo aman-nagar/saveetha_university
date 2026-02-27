@@ -73,7 +73,7 @@ export default function GenerateAdmitCard() {
         setValue("course", details.course || "");
         setValue("session", details.session || "");
         setValue("duration", details.duration || "");
-        setValue("examCenter", details.center_id || ""); // Adjust if center name is available
+        setValue("stream", details.stream || ""); // Adjust if center name is available
       }
     } catch (err) {
       console.error("Details Fetch Error:", err);
@@ -169,6 +169,12 @@ export default function GenerateAdmitCard() {
             />
 
             <FormInput
+              label="Duration"
+              name="duration"
+              register={register}
+              placeholder="Enter/Auto-filled"
+            />
+            <FormInput
               label="Course"
               name="course"
               register={register}
@@ -177,17 +183,10 @@ export default function GenerateAdmitCard() {
             />
 
             <FormInput
-              label="Duration"
-              name="duration"
+              label="Stream"
+              name="stream"
               register={register}
-              placeholder="Enter/Auto-filled"
-            />
-
-            <FormInput
-              label="Exam Center"
-              name="examCenter"
-              register={register}
-              placeholder="Center Name"
+              placeholder="Stream"
             />
 
             <FormInput

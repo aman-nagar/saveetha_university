@@ -1,4 +1,3 @@
-// src/api/center/centerApi.jsx
 import { apiRequest } from "../client";
 
 const CENTER_ENDPOINT = "/centers/index.php";
@@ -19,9 +18,16 @@ export function createCenter(formData) {
   });
 }
 
-export function updateCenter(data) {
-  // data is a plain object (not FormData)
+export function updateCenter(formData) {
   return apiRequest(`${UPDATE_ENDPOINT}`, {
+    method: "POST",
+    body: formData,
+  });
+}
+
+// NEW: For Status Toggle (JSON via PUT)
+export function toggleCenterStatus(data) {
+  return apiRequest(`${CENTER_ENDPOINT}`, {
     method: "PUT",
     headers: {
       "Content-Type": "application/json",

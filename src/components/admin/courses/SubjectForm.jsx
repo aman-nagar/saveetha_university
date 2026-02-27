@@ -67,7 +67,7 @@ export default function SubjectForm({
         }
       } else {
         options.push({
-          label: `${durationCount} Months`,
+          label: `${durationCount} months`,
           value: String(durationCount),
         });
       }
@@ -128,7 +128,6 @@ export default function SubjectForm({
             ))}
           </select>
         </div>
-
         {/* Subject Name */}
         <FormInput
           label="Subject Name"
@@ -137,33 +136,24 @@ export default function SubjectForm({
           required="Required"
           error={errors.subject_name}
         />
-
         <FormInput
           label="Subject Code"
           name="subject_code"
           register={register}
         />
-
-        <FormInput
-          label="Short Name"
-          name="short_name"
-          register={register}
-        />
-
+        <FormInput label="Short Name" name="short_name" register={register} />
         <FormInput
           label="Max Theory Marks"
           name="max_theory_marks"
           type="number"
           register={register}
         />
-
         <FormInput
           label="Max Practical Marks"
           name="max_practical_marks"
           type="number"
           register={register}
         />
-
         {/* Duration select */}
         <div className="space-y-1.5 sm:space-y-2">
           <label className="text-xs sm:text-sm font-medium text-text">
@@ -184,13 +174,16 @@ export default function SubjectForm({
             ))}
           </select>
           {errors.duration && (
-            <p className="text-xs text-danger mt-1">{errors.duration.message}</p>
+            <p className="text-xs text-danger mt-1">
+              {errors.duration.message}
+            </p>
           )}
         </div>
-
         {/* Status select */}
         <div className="space-y-1.5 sm:space-y-2">
-          <label className="text-xs sm:text-sm font-medium text-text">Status</label>
+          <label className="text-xs sm:text-sm font-medium text-text">
+            Status
+          </label>
           <select
             {...register("status")}
             className="w-full border border-border rounded-lg px-3 py-2 sm:py-2.5 bg-surface text-text text-sm sm:text-base focus:outline-none focus:ring-2 focus:ring-accent/40 focus:border-accent transition-all duration-200 hover:border-muted/50"
@@ -199,8 +192,7 @@ export default function SubjectForm({
             <option value={0}>Inactive</option>
           </select>
         </div>
-
-        {/* Hidden field for duration_type */}
+        z{/* Hidden field for duration_type */}
         <input type="hidden" {...register("duration_type")} />
       </FormSection>
 

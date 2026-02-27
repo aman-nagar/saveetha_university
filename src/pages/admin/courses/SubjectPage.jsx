@@ -1,3 +1,4 @@
+// src/pages/admin/courses/SubjectPage.jsx
 import { useEffect, useState } from "react";
 import { FaPen, FaTrash } from "react-icons/fa";
 import { fetchAllStreams } from "../../../api/courses/streamApi";
@@ -193,7 +194,10 @@ export default function SubjectPage() {
         onClose={close}
         footer={
           <>
-            <button onClick={close} className="px-4 py-2 border border-border rounded-lg text-sm text-text hover:bg-bg transition">
+            <button
+              onClick={close}
+              className="px-4 py-2 border border-border rounded-lg text-sm text-text hover:bg-bg transition"
+            >
               Cancel
             </button>
             <button

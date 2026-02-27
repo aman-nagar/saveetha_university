@@ -1,7 +1,11 @@
 // src/pages/admin/centers/CenterListPage.jsx
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { fetchCenters, updateCenter } from "../../../api/center/centerApi";
+import {
+  fetchCenters,
+  updateCenter,
+  toggleCenterStatus,
+} from "../../../api/center/centerApi";
 import { useCrud } from "../../../hooks/useCrud";
 import { useToast } from "../../../hooks/useToast";
 import Table from "../../../components/table/Table";
@@ -38,36 +42,31 @@ export default function CenterListPage() {
   const handleToggle = async (row, field) => {
     try {
       setTogglingId(row.id);
-      const formData = new FormData();
-      formData.append("id", row.id);
-      formData.append("institute_owner_name", row.institute_owner_name);
-      formData.append("institute_name", row.institute_name);
-      formData.append("date_of_birth", row.date_of_birth);
-      formData.append("pan_number", row.pan_number || "");
-      formData.append("aadhar_number", row.aadhar_number || "");
-      formData.append("institute_full_address", row.institute_full_address);
-      formData.append("state", row.state);
-      formData.append("district", row.district);
-      formData.append("pincode", row.pincode);
-      formData.append("contact_number", row.contact_number);
-      formData.append("email", row.email);
-      formData.append(field, row[field] ? 0 : 1);
 
-      await updateCenter(formData);
+      // Convert boolean to numeric for PHP backend
+      const currentVal = row[field];
+      const numericValue = currentVal ? 0 : 1;
 
+      // Use JSON for PUT request as required by index.php
+      await toggleCenterStatus({
+        id: row.id,
+        [field]: numericValue,
+      });
+
+      // Update local state with boolean for React UI
       setData((prev) =>
         prev.map((item) =>
-          item.id === row.id ? { ...item, [field]: !item[field] } : item,
+          item.id === row.id ? { ...item, [field]: !currentVal } : item,
         ),
       );
-      show("success", `${field} updated successfully`);
+
+      show("success", "Status updated successfully");
     } catch (err) {
       show("error", err.message || "Failed to update");
     } finally {
       setTogglingId(null);
     }
   };
-
   const confirmDelete = async () => {
     if (!target) return;
     try {
@@ -86,6 +85,34 @@ export default function CenterListPage() {
       label: "#",
       render: (_, i) => (
         <span className="text-muted text-xs sm:text-sm">{i + 1}</span>
+      ),
+    },
+    {
+      key: "photo",
+      label: "Photo",
+      render: (row) => (
+        <div className="flex items-center justify-center">
+          {row.owner_image_url ? (
+            <img
+              src={row.owner_image_url}
+              alt={row.institute_owner_name}
+              className="h-10 w-10 sm:h-12 sm:w-12 object-cover rounded-lg border border-border shadow-sm"
+              onError={(e) => {
+                e.target.src =
+                  "https://ui-avatars.com/api/?name=" +
+                  encodeURIComponent(row.institute_owner_name);
+              }}
+            />
+          ) : (
+            <div className="h-10 w-10 sm:h-12 sm:w-12 rounded-lg bg-muted/10 flex items-center justify-center border border-dashed border-border">
+              <span className="text-[10px] text-muted text-center leading-tight">
+                No
+                <br />
+                Img
+              </span>
+            </div>
+          )}
+        </div>
       ),
     },
     {
@@ -154,7 +181,7 @@ export default function CenterListPage() {
             </span>
           </button>
 
-          {/* Active Status Toggle */}
+          {/* Active Status Toggle using Boolean logic */}
           <button
             onClick={() => handleToggle(row, "is_active")}
             disabled={togglingId === row.id}

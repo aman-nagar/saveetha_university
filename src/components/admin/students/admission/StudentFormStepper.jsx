@@ -34,10 +34,6 @@ const QUAL_KEYS = [
   "other",
 ];
 
-/* ─────────────────────────────────────────────────────────────
-  Build react-hook-form defaultValues from a fetched student object.
-  Flattens qualifications[] array into per-row fields.
-───────────────────────────────────────────────────────────── */
 function buildDefaultValues(student) {
   if (!student) return {};
 
@@ -96,14 +92,6 @@ function buildDefaultValues(student) {
   };
 }
 
-/* ─────────────────────────────────────────────────────────────
-  Main shared component
-  Props:
-    mode         – "create" | "edit"
-    student      – full student object (edit mode only)
-    onSubmit     – async (formData: FormData) => void
-    submitLabel  – button text
-───────────────────────────────────────────────────────────── */
 export default function StudentFormStepper({
   mode = "create",
   student = null,

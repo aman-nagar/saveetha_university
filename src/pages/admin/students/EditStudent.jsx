@@ -58,17 +58,17 @@ export default function EditStudent() {
   return (
     <div>
       {/* Page header */}
-      <div className="flex items-center justify-between mb-6">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-5 sm:mb-6">
         <div>
-          <h1 className="text-2xl font-bold text-text">Edit Student</h1>
-          <p className="text-sm text-text-muted mt-1">
+          <h1 className="text-xl sm:text-2xl font-bold text-text">Edit Student</h1>
+          <p className="text-xs sm:text-sm text-text-muted mt-1">
             Enrollment:{" "}
             <span className="font-mono text-text">{student.enrollment_no}</span>
           </p>
         </div>
         <button
           onClick={() => navigate("/admin/students")}
-          className="text-sm text-text-muted hover:text-primary border border-border px-4 py-2 rounded-md transition-colors"
+          className="w-full sm:w-auto text-center text-sm text-text-muted hover:text-primary border border-border px-4 py-2 rounded-md transition-colors"
         >
           ← Back to List
         </button>

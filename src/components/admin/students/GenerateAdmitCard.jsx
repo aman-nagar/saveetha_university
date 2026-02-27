@@ -75,7 +75,7 @@ export default function GenerateAdmitCard() {
   ];
 
   return (
-    <div className="p-6 space-y-8">
+    <div className="w-full p-2 space-y-2">
       <h1 className="text-2xl font-semibold text-text">Generate Admit Card</h1>
 
       {/* Filter Form */}

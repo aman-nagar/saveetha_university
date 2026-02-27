@@ -6,7 +6,7 @@ import FormTextarea from "../../../../form/FormTextarea";
 
 export default function StepCommunication({ register, errors }) {
   return (
-    <FormSection title="Communication Details">
+    <FormSection title="Communication Details" columns={2}>
       <FormInput
         label="Contact Number"
         name="contact_number"
@@ -68,12 +68,15 @@ export default function StepCommunication({ register, errors }) {
         error={errors.city}
       />
 
-      <FormTextarea
-        label="Address"
-        name="address"
-        register={register}
-        error={errors.address}
-      />
+      {/* Address spans full width */}
+      <div className="sm:col-span-2">
+        <FormTextarea
+          label="Address"
+          name="address"
+          register={register}
+          error={errors.address}
+        />
+      </div>
 
       <FormInput
         type="number"

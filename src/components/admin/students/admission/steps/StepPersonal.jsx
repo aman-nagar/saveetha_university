@@ -4,19 +4,27 @@ import FormSelect from "../../../../form/FormSelect";
 import FormSection from "../../../../form/FormSection";
 import FormFileInput from "../../../../form/FormFileInput";
 
-export default function StepPersonal({ register, errors, watch, existingUrls = {} }) {
+export default function StepPersonal({
+  register,
+  errors,
+  watch,
+  existingUrls = {},
+}) {
   const selectedIdProof = watch("id_proof_type");
   const isEmployed = watch("employed");
 
   return (
-    <FormSection title="Personal Details">
-      <FormInput
-        label="Candidate Name"
-        name="candidate_name"
-        register={register}
-        // required="Candidate name is required"
-        error={errors.candidate_name}
-      />
+    <FormSection title="Personal Details" columns={2}>
+      {/* Full-width: Candidate Name */}
+      <div className="sm:col-span-2">
+        <FormInput
+          label="Candidate Name"
+          name="candidate_name"
+          register={register}
+          required="Candidate name is required"
+          error={errors.candidate_name}
+        />
+      </div>
 
       <FormInput label="Father's Name" name="father_name" register={register} />
 
@@ -27,22 +35,14 @@ export default function StepPersonal({ register, errors, watch, existingUrls = {
         name="dob"
         type="date"
         register={register}
-        // required="Date of birth is required"
         error={errors.dob}
-      />
-
-      <FormFileInput
-        label="Photo"
-        name="photo"
-        register={register}
-        existingUrl={existingUrls.photo_url || null}
       />
 
       <FormSelect
         label="Gender"
         name="gender"
         register={register}
-        // required="Gender is required"
+        required="Gender is required"
         options={[
           { label: "Male", value: "Male" },
           { label: "Female", value: "Female" },
@@ -84,14 +84,24 @@ export default function StepPersonal({ register, errors, watch, existingUrls = {
       />
 
       {/* Show ID Proof Number only if selected */}
-      {selectedIdProof && (
+      {selectedIdProof ? (
         <FormInput
           label="ID Proof Number"
           name="id_proof_no"
           register={register}
           error={errors.id_proof_no}
         />
+      ) : (
+        <div /> // keeps grid symmetry
       )}
+
+      {/* Photo — always shown */}
+      <FormFileInput
+        label="Photo"
+        name="photo"
+        register={register}
+        existingUrl={existingUrls.photo_url || null}
+      />
 
       {/* If Aadhar selected → show front + back upload */}
       {selectedIdProof === "aadhar_card" && (
@@ -114,12 +124,14 @@ export default function StepPersonal({ register, errors, watch, existingUrls = {
 
       {/* For other ID types → single document upload */}
       {selectedIdProof && selectedIdProof !== "aadhar_card" && (
-        <FormFileInput
-          label="Upload ID Proof"
-          name="id_proof_document"
-          register={register}
-          existingUrl={existingUrls.id_proof_document_url || null}
-        />
+        <div className="sm:col-span-2">
+          <FormFileInput
+            label="Upload ID Proof"
+            name="id_proof_document"
+            register={register}
+            existingUrl={existingUrls.id_proof_document_url || null}
+          />
+        </div>
       )}
 
       <FormSelect

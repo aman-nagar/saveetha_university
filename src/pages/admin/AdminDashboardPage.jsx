@@ -51,20 +51,20 @@ export default function AdminDashboard() {
   ];
 
   return (
-    <div className="hi h-full overflow-y-auto bg-bg p-6">
-      <div className="space-y-6">
+    <div className="w-full h-full overflow-y-auto bg-bg p-3 sm:p-6">
+      <div className="space-y-4 sm:space-y-6">
         {/* Page Heading */}
-        <div className="flex justify-between items-center">
+        <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3">
           <div>
-            <h1 className="text-3xl font-bold text-[#0b1f4b]">
+            <h1 className="text-xl sm:text-3xl font-bold text-[#0b1f4b]">
               Dashboard Overview
             </h1>
-            <p className="text-[#6b7280] mt-1">
+            <p className="text-[#6b7280] text-sm mt-1">
               Complete Statistics and Analytics
             </p>
           </div>
-          <div className="flex gap-2">
-            <span className="px-3 py-1 bg-[#0b1f4b]/10 text-[#0b1f4b] rounded-full text-sm font-medium">
+          <div className="flex gap-2 flex-wrap">
+            <span className="px-3 py-1 bg-[#0b1f4b]/10 text-[#0b1f4b] rounded-full text-xs sm:text-sm font-medium">
               Last updated: Today
             </span>
           </div>

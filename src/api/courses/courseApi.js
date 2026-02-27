@@ -3,9 +3,6 @@ import { apiRequest } from "../client";
 
 const ENDPOINT = "/course/index.php";
 
-/* -------------------------
-   Fetch Courses by Faculty
--------------------------- */
 export function fetchCourses(facultyId) {
   if (!facultyId) {
     throw new Error("Faculty ID is required");
@@ -14,16 +11,17 @@ export function fetchCourses(facultyId) {
   return apiRequest(`${ENDPOINT}?type=course&faculty_id=${facultyId}`);
 }
 
-/* -------------------------
-   Fetch ALL Courses
--------------------------- */
 export function fetchAllCourses() {
   return apiRequest(`${ENDPOINT}?type=course`);
 }
 
-/* -------------------------
-   Create Course
--------------------------- */
+export function fetchCoursesById(courseId) {
+  if (!courseId) {
+    throw new Error("Course id required");
+  }
+  return apiRequest(`${ENDPOINT}?type=course&id=${courseId}`);
+}
+
 export function createCourse({ facultyId, name, duration, durationType }) {
   if (!facultyId) throw new Error("Faculty ID is required");
   if (!name?.trim()) throw new Error("Course name is required");
@@ -43,7 +41,6 @@ export function createCourse({ facultyId, name, duration, durationType }) {
   });
 }
 
-// UPDATE Course
 export async function updateCourse({
   id,
   facultyId,
@@ -67,9 +64,6 @@ export async function updateCourse({
   });
 }
 
-/* -------------------------
-   Delete Course
--------------------------- */
 export function deleteCourse(id) {
   if (!id) {
     throw new Error("Course ID is required");

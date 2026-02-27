@@ -34,7 +34,7 @@ export default function StepProgram({
   );
 
   return (
-    <FormSection title="Programme Details">
+    <FormSection title="Programme Details" columns={2}>
       <FormSelect
         label="Course Type"
         name="course_type"
@@ -118,14 +118,16 @@ export default function StepProgram({
         error={errors.application_fee}
       />
 
-      <FormInput
-        label="Duration"
-        name="duration"
-        register={register}
-        type="text"
-        placeholder="e.g. 3 Years"
-        error={errors.duration}
-      />
+      <div className="sm:col-span-2">
+        <FormInput
+          label="Duration"
+          name="duration"
+          register={register}
+          type="text"
+          placeholder="e.g. 3 Years"
+          error={errors.duration}
+        />
+      </div>
     </FormSection>
   );
 }

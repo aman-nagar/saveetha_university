@@ -65,7 +65,11 @@ export async function apiRequest(endpoint, options = {}) {
   const json = await response.json();
 
   if (json.success === false) {
-    throw new Error(json.message || "Request failed");
+    // Support both message and errors keys for flexible backend responses
+    const errorMsg =
+      json.message ||
+      (Array.isArray(json.errors) ? json.errors[0] : "Request failed");
+    throw new Error(errorMsg);
   }
 
   return json.data ?? json.errors ?? json;

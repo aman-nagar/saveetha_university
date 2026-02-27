@@ -37,7 +37,7 @@ export default function SubjectForm({
         max_practical_marks: initialData.max_practical_marks,
         duration: initialData.duration,
         duration_type: initialData.duration_type,
-        status: initialData.status ?? 1,
+        // status: initialData.status ?? 1,
       });
       onStreamChange(initialData.stream_id);
     } else {
@@ -61,19 +61,19 @@ export default function SubjectForm({
       const type = course.duration_type;
 
       let options = [];
-      if (type === "Year" || type === "Semester") {
+      if (type === "year" || type === "semester") {
         for (let i = 1; i <= durationCount; i++) {
           options.push({ label: `${type} ${i}`, value: String(i) });
         }
       } else {
         options.push({
-          label: `${durationCount} months`,
+          label: `${durationCount} month`,
           value: String(durationCount),
         });
       }
 
       setDurationOptions(options);
-      setValue("duration_type", type.toLowerCase());
+      setValue("duration_type", type);
     } catch (err) {
       console.error("Failed to sync course rules:", err.message);
     } finally {
@@ -98,9 +98,9 @@ export default function SubjectForm({
       max_practical_marks: Number(data.max_practical_marks),
       duration: Number(data.duration),
       duration_type: data.duration_type,
-      status: Number(data.status),
+      // status: Number(data.status),
     });
-
+    console.log(data);
     if (mode === "create") reset();
   };
 
@@ -179,20 +179,8 @@ export default function SubjectForm({
             </p>
           )}
         </div>
-        {/* Status select */}
-        <div className="space-y-1.5 sm:space-y-2">
-          <label className="text-xs sm:text-sm font-medium text-text">
-            Status
-          </label>
-          <select
-            {...register("status")}
-            className="w-full border border-border rounded-lg px-3 py-2 sm:py-2.5 bg-surface text-text text-sm sm:text-base focus:outline-none focus:ring-2 focus:ring-accent/40 focus:border-accent transition-all duration-200 hover:border-muted/50"
-          >
-            <option value={1}>Active</option>
-            <option value={0}>Inactive</option>
-          </select>
-        </div>
-        z{/* Hidden field for duration_type */}
+
+        {/* Hidden field for duration_type */}
         <input type="hidden" {...register("duration_type")} />
       </FormSection>
 

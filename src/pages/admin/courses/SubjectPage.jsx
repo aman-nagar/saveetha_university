@@ -7,6 +7,7 @@ import {
   createSubject,
   updateSubject,
   deleteSubject,
+  toggleUpdateStatus,
 } from "../../../api/courses/subjectApi";
 
 import { useCrud } from "../../../hooks/useCrud";
@@ -17,6 +18,8 @@ import SubjectForm from "../../../components/admin/courses/SubjectForm";
 import Toast from "../../../components/ui/Toast";
 import Modal from "../../../components/ui/Modal";
 import Table from "../../../components/table/Table";
+import StatusToggle from "../../../components/ui/StatusToggle";
+import { updateListState } from "../../../utils/formHelpers";
 
 export default function SubjectPage() {
   const { toast, show, clear } = useToast();
@@ -31,6 +34,7 @@ export default function SubjectPage() {
     loading,
     load,
     remove,
+    setData,
   } = useCrud({
     fetchFn: fetchSubjects,
     deleteFn: deleteSubject,
@@ -84,6 +88,18 @@ export default function SubjectPage() {
       close();
     }
   };
+  const handleStatusToggle = async (id, currentStatus) => {
+    const originalData = [...subjects];
+    const newStatus = currentStatus == 1 ? 0 : 1;
+    setData(updateListState(id, { status: newStatus }));
+    try {
+      await toggleUpdateStatus({ id, status: newStatus });
+      show("success", "Status updated instantly");
+    } catch (error) {
+      setData(originalData);
+      show("error", error.message || "Failed to update status");
+    }
+  };
 
   const filteredSubjects = selectedStream
     ? subjects.filter((s) => String(s.stream_id) === String(selectedStream))
@@ -118,16 +134,10 @@ export default function SubjectPage() {
       key: "status",
       label: "Status",
       render: (row) => (
-        <div
-          className="flex items-center justify-center cursor-pointer"
-          title={row.status == 1 ? "Active" : "Inactive"}
-        >
-          <span
-            className={`w-3 h-3 rounded-full transition-all duration-200 ${
-              row.status == 1 ? "bg-success" : "bg-muted"
-            }`}
-          />
-        </div>
+        <StatusToggle
+          status={row.status}
+          onToggle={() => handleStatusToggle(row.id, row.status)}
+        />
       ),
     },
   ];

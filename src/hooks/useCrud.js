@@ -35,6 +35,7 @@ export function useCrud({ fetchFn, deleteFn }) {
       } catch (error) {
         // rollback
         setData(original);
+        console.log(error);
         throw error;
       }
     },

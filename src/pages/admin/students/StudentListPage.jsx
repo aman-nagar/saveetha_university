@@ -314,36 +314,35 @@ export default function StudentListPage() {
           },
         ];
 
-  // ── Toolbar (only search + mode switch now) ──
   const toolbar = (
-    <div className="flex items-center gap-4 flex-wrap">
+    <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 flex-wrap w-full">
       {/* Search */}
-      <div className="relative">
+      <div className="relative flex-1 sm:flex-none">
         <FaSearch className="absolute left-3 top-1/2 -translate-y-1/2 text-text-muted text-xs" />
         <input
           type="text"
           placeholder="Search student..."
           value={search}
           onChange={handleSearch}
-          className="pl-9 pr-4 py-2 text-sm border border-border rounded-lg bg-surface text-text w-64 focus:outline-none focus:ring-2 focus:ring-primary/40"
+          className="pl-9 pr-4 py-2 text-sm border border-border rounded-lg bg-surface text-text w-full sm:w-56 md:w-64 focus:outline-none focus:ring-2 focus:ring-primary/40"
         />
       </div>
 
       {/* Mode switch */}
-      <div className="flex border border-border rounded-lg overflow-hidden shadow-sm">
+      <div className="flex border border-border rounded-lg overflow-hidden shadow-sm self-start sm:self-auto">
         <button
           onClick={() => setMode("active")}
-          className={`px-4 py-2 text-sm font-medium transition ${
+          className={`flex-1 sm:flex-none px-3 sm:px-4 py-2 text-xs sm:text-sm font-medium transition ${
             mode === "active"
               ? "bg-primary text-white"
               : "bg-surface text-text hover:bg-bg"
           }`}
         >
-          Active Students
+          Active
         </button>
         <button
           onClick={() => setMode("recycle")}
-          className={`px-4 py-2 text-sm font-medium border-l border-border transition ${
+          className={`flex-1 sm:flex-none px-3 sm:px-4 py-2 text-xs sm:text-sm font-medium border-l border-border transition ${
             mode === "recycle"
               ? "bg-primary text-white"
               : "bg-surface text-text hover:bg-bg"
@@ -375,12 +374,12 @@ export default function StudentListPage() {
 
       {/* Pagination */}
       {totalPages > 1 && (
-        <div className="flex justify-center gap-2 mt-6">
+        <div className="flex flex-wrap justify-center gap-1.5 sm:gap-2 mt-4 sm:mt-6">
           {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
             <button
               key={page}
               onClick={() => handlePageChange(page)}
-              className={`min-w-[38px] px-3 py-2 rounded-md text-sm font-medium transition ${
+              className={`min-w-[34px] sm:min-w-[38px] px-2.5 sm:px-3 py-1.5 sm:py-2 rounded-md text-xs sm:text-sm font-medium transition ${
                 page === currentPage
                   ? "bg-primary text-white shadow-sm"
                   : "border border-border hover:bg-surface/80"

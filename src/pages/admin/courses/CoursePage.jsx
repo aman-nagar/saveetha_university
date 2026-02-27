@@ -137,7 +137,7 @@ export default function CoursePage() {
   ];
 
   return (
-    <div className="space-y-8 p-6">
+    <div className="w-full space-y-6">
       {toast && <Toast {...toast} onClose={clear} />}
 
       <CourseForm
@@ -180,12 +180,12 @@ export default function CoursePage() {
         onClose={close}
         footer={
           <>
-            <button onClick={close} className="px-4 py-2 border rounded">
+            <button onClick={close} className="px-4 py-2 border border-border rounded-lg text-sm text-text hover:bg-bg transition">
               Cancel
             </button>
             <button
               onClick={confirmDelete}
-              className="px-4 py-2 bg-red-600 text-white rounded"
+              className="px-4 py-2 bg-danger text-white rounded-lg text-sm hover:bg-danger/90 transition"
             >
               Delete
             </button>

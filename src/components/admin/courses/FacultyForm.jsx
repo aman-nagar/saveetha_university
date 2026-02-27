@@ -32,17 +32,17 @@ export default function FacultyForm({
   };
 
   return (
-    <form onSubmit={handleSubmit(submitForm)} className="space-y-6">
-      <FormSection title={mode === "edit" ? "Edit Faculty" : "Add Faculty"}>
-        {/* Wrapped select in space-y-1 with label for alignment consistency */}
-        <div className="space-y-1">
-          <label className="text-sm font-medium text-text">
-            Select Course Type *
+    <form onSubmit={handleSubmit(submitForm)} className="space-y-5">
+      <FormSection title={mode === "edit" ? "Edit Faculty" : "Add Faculty"} columns={2}>
+        {/* Course Type select */}
+        <div className="space-y-1.5 sm:space-y-2">
+          <label className="text-xs sm:text-sm font-medium text-text">
+            Select Course Type <span className="text-danger">*</span>
           </label>
           <select
             value={selectedCourseType}
             onChange={(e) => onCourseChange(e.target.value)}
-            className="w-full border border-border rounded-md px-3 py-2 bg-surface text-text focus:outline-none focus:ring-2 focus:ring-accent"
+            className="w-full border border-border rounded-lg px-3 py-2 sm:py-2.5 bg-surface text-text text-sm sm:text-base focus:outline-none focus:ring-2 focus:ring-accent/40 focus:border-accent transition-all duration-200 hover:border-muted/50"
           >
             <option value="">Select Course Type</option>
             {courseTypes.map((c) => (
@@ -61,10 +61,10 @@ export default function FacultyForm({
         />
       </FormSection>
 
-      <div className="flex gap-3">
+      <div className="flex flex-col sm:flex-row gap-3">
         <button
           type="submit"
-          className="px-6 py-2.5 rounded-md text-white bg-primary"
+          className="w-full sm:w-auto px-6 py-2.5 rounded-lg text-white bg-primary hover:bg-primary/90 transition text-sm sm:text-base font-medium"
         >
           {mode === "edit" ? "Update Faculty" : "Create Faculty"}
         </button>
@@ -73,7 +73,7 @@ export default function FacultyForm({
           <button
             type="button"
             onClick={onCancel}
-            className="px-6 py-2.5 rounded-md border border-border"
+            className="w-full sm:w-auto px-6 py-2.5 rounded-lg border border-border text-text hover:bg-bg transition text-sm sm:text-base"
           >
             Cancel
           </button>

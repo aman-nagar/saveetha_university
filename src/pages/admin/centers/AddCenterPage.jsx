@@ -155,7 +155,7 @@ export default function AddCenterPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
+      <div className="min-h-[40vh] flex items-center justify-center">
         <div className="flex items-center gap-2 text-primary">
           <FaSpinner className="animate-spin" />
           <span>Loading center data...</span>
@@ -165,18 +165,29 @@ export default function AddCenterPage() {
   }
 
   return (
-    <div className="p-6 space-y-6">
+    <div className="w-full space-y-5 sm:space-y-6">
       {toast && <Toast {...toast} onClose={clear} />}
-      <h1 className="text-2xl font-semibold text-text">
-        {isEditMode ? "Edit Center" : "Create New Center"}
-      </h1>
+
+      {/* Page heading */}
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+        <h1 className="text-xl sm:text-2xl font-semibold text-text">
+          {isEditMode ? "Edit Center" : "Create New Center"}
+        </h1>
+        <button
+          type="button"
+          onClick={() => navigate("/admin/centers")}
+          className="self-start sm:self-auto text-sm text-muted hover:text-primary border border-border px-3 py-1.5 rounded-md transition-colors"
+        >
+          ← Back to Centers
+        </button>
+      </div>
 
       <form
         onSubmit={handleSubmit(onSubmit)}
-        className="space-y-8 max-w-5xl mx-auto"
+        className="space-y-6"
       >
         {/* SECTION 1: PERSONAL & INSTITUTE BASIC DETAILS */}
-        <FormSection title="Franchisee Basic Information">
+        <FormSection title="Franchisee Basic Information" columns={2}>
           <FormInput
             label="Institute Owner Name"
             name="institute_owner_name"
@@ -229,8 +240,9 @@ export default function AddCenterPage() {
         </FormSection>
 
         {/* SECTION 2: LOCATION & CONTACT */}
-        <FormSection title="Contact & Location Details">
-          <div className="md:col-span-2">
+        <FormSection title="Contact & Location Details" columns={2}>
+          {/* Address spans full width */}
+          <div className="sm:col-span-2">
             <FormTextarea
               label="Institute Full Address"
               name="institute_full_address"
@@ -247,7 +259,6 @@ export default function AddCenterPage() {
             required="State is required"
             error={errors.state}
             options={[
-              { label: "Select State", value: "" },
               { label: "Uttar Pradesh", value: "Uttar Pradesh" },
               { label: "Madhya Pradesh", value: "Madhya Pradesh" },
             ]}
@@ -260,7 +271,6 @@ export default function AddCenterPage() {
             required="District is required"
             error={errors.district}
             options={[
-              { label: "Select District", value: "" },
               { label: "Lucknow", value: "Lucknow" },
               { label: "Kanpur", value: "Kanpur" },
             ]}
@@ -283,14 +293,16 @@ export default function AddCenterPage() {
             error={errors.contact_number}
           />
 
-          <FormInput
-            label="E-Mail ID"
-            name="email"
-            type="email"
-            register={register}
-            required="Email is required"
-            error={errors.email}
-          />
+          <div className="sm:col-span-2">
+            <FormInput
+              label="E-Mail ID"
+              name="email"
+              type="email"
+              register={register}
+              required="Email is required"
+              error={errors.email}
+            />
+          </div>
         </FormSection>
 
         {/* SECTION 3: ACCOUNT ACCESS */}
@@ -300,6 +312,7 @@ export default function AddCenterPage() {
               ? "Account Credentials (Optional)"
               : "Account Credentials"
           }
+          columns={2}
         >
           <FormInput
             label="Username"
@@ -324,7 +337,8 @@ export default function AddCenterPage() {
           />
         </FormSection>
 
-        <div className="flex justify-end gap-4">
+        {/* Action buttons */}
+        <div className="flex flex-col-reverse sm:flex-row justify-end gap-3">
           <Button
             variant="danger"
             onClick={() => navigate("/admin/centers")}

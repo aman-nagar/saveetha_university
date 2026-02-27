@@ -26,7 +26,7 @@ export default function AdminLayout() {
         <div className="flex-1 flex flex-col min-w-0">
           <AdminHeader />
           {/* Added pt-14 for mobile to account for hamburger button space */}
-          <main className="flex flex-1 justify-center p-2 md:p-4 overflow-x-hidden pt-14 md:pt-2">
+          <main className="w-full flex flex-1 justify-center p-2 md:p-4 overflow-x-hidden">
             <Outlet />
           </main>
         </div>

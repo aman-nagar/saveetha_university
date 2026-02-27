@@ -40,7 +40,7 @@ export default function CourseCategoryForm({
   };
 
   return (
-    <form onSubmit={handleSubmit(onFormSubmit)} className="space-y-6">
+    <form onSubmit={handleSubmit(onFormSubmit)} className="space-y-5">
       <FormSection
         title={
           mode === "edit" ? "Edit Course Category" : "Add New Course Category"
@@ -51,15 +51,15 @@ export default function CourseCategoryForm({
           name="category"
           register={register}
           required="Please enter a category name"
-          error={errors.category?.message}
+          error={errors.category}
         />
       </FormSection>
 
-      <div className="flex gap-3">
+      <div className="flex flex-col sm:flex-row gap-3">
         <button
           type="submit"
           disabled={loading || isSubmitting}
-          className="px-6 py-2.5 rounded-md text-white bg-primary hover:bg-primary/90 transition"
+          className="w-full sm:w-auto px-6 py-2.5 rounded-lg text-white bg-primary hover:bg-primary/90 transition text-sm sm:text-base font-medium"
         >
           {mode === "edit" ? "Update Category" : "Create Category"}
         </button>
@@ -68,7 +68,7 @@ export default function CourseCategoryForm({
           <button
             type="button"
             onClick={onCancel}
-            className="px-6 py-2.5 rounded-md border border-border"
+            className="w-full sm:w-auto px-6 py-2.5 rounded-lg border border-border text-text hover:bg-bg transition text-sm sm:text-base"
           >
             Cancel
           </button>

@@ -28,9 +28,9 @@ export default function SettingsForm({ onSubmit, loading }) {
   return (
     <form
       onSubmit={handleSubmit(submitHandler)}
-      className="bg-surface border border-border rounded-xl p-6 space-y-8"
+      className="space-y-6"
     >
-      <FormSection title="Basic Information">
+      <FormSection title="Basic Information" columns={2}>
         <FormInput
           label="College Name"
           name="college_name"
@@ -68,7 +68,8 @@ export default function SettingsForm({ onSubmit, loading }) {
           placeholder="Alternate Phone"
         />
 
-        <div className="md:col-span-2">
+        {/* Address spans full width */}
+        <div className="sm:col-span-2">
           <FormTextarea
             label="Address"
             name="address"
@@ -78,7 +79,7 @@ export default function SettingsForm({ onSubmit, loading }) {
         </div>
       </FormSection>
 
-      <FormSection title="Branding">
+      <FormSection title="Branding" columns={2}>
         <FormFileInput label="Logo" name="logo" register={register} />
 
         <FormFileInput
@@ -93,7 +94,7 @@ export default function SettingsForm({ onSubmit, loading }) {
       <button
         type="submit"
         disabled={loading}
-        className="bg-primary text-white px-6 py-2 rounded-md hover:opacity-90 transition"
+        className="w-full sm:w-auto px-6 py-2.5 bg-primary text-white rounded-lg text-sm sm:text-base font-medium hover:bg-primary/90 transition disabled:opacity-60"
       >
         {loading ? "Saving..." : "Save Settings"}
       </button>

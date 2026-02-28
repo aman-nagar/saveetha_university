@@ -1,6 +1,8 @@
-import { FaBell, FaCog } from "react-icons/fa";
+import { FaBell, FaCog, FaSignOutAlt } from "react-icons/fa";
+import { useAuth } from "../../../context/AuthContext";
 
 export default function SidebarFooter({ isCollapsed }) {
+  const { user, logout } = useAuth();
   return (
     <div className="p-2 border-t border-white/10">
       <div className="flex items-center justify-center">
@@ -32,6 +34,13 @@ export default function SidebarFooter({ isCollapsed }) {
                 <FaCog className="w-3.5 h-3.5 text-white/60 hover:text-accent" />
               </button>
             </div> */}
+            <button
+              onClick={logout}
+              className="group p-2 rounded-xl bg-white/5 hover:bg-red-500/10 border border-white/5 hover:border-red-500/30 transition-all duration-300"
+              title="Sign Out"
+            >
+              <FaSignOutAlt className="w-3.5 h-3.5 text-white/40 group-hover:text-red-500 transition-colors" />
+            </button>
           </div>
         )}
       </div>

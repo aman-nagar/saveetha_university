@@ -1,162 +1,182 @@
-import { useForm } from "react-hook-form";
-import { useState, useEffect, useRef } from "react";
-import { searchEnrollment, fetchStudentById } from "../../../api/students/studentApi";
-import { fetchAllCourses } from "../../../api/courses/courseApi";
-import { fetchAllStreams } from "../../../api/courses/streamApi"; // Added
-import { fetchSubjectsByStream } from "../../../api/courses/subjectApi"; // Added
-import { useCourseRules } from "../../../hooks/useCourseRules";
-import FormInput from "../../../components/form/FormInput";
-import Table from "../../../components/table/Table";
-import Button from "../../../components/ui/Button";
+// src/components/admin/sidebar/role/AdminSidebar.jsx
+import { useState, useRef, useEffect } from "react";
+import { useLocation } from "react-router-dom";
+import { useAuth } from "../../../../context/AuthContext";
+import { menuItems } from "../menuItems";
+import { SidebarMenuItem } from "../SidebarMenuItem";
+import SidebarHeader from "../SidebarHeader";
+import SidebarSearch from "../SidebarSearch";
+import SidebarFooter from "../SidebarFooter";
+import MobileNavDrawer from "../MobileNavDrawer";
 
-export default function GenerateAdmitCard() {
-  const { register, setValue, handleSubmit, watch } = useForm();
-  
-  // Watch the dropdown to trigger subject fetching
-  const selectedPart = watch("selectedDuration");
+export const AdminSidebar = ({ theme, toggleTheme }) => {
+  const { user } = useAuth();
+  const location = useLocation();
+  const sidebarRef = useRef(null);
 
-  const [streamId, setStreamId] = useState(null);
-  const [subjects, setSubjects] = useState([]);
-  const [loadingSubjects, setLoadingSubjects] = useState(false);
+  const [isCollapsed, setIsCollapsed] = useState(() => {
+    const stored = localStorage.getItem("adminSidebarCollapsed");
+    return stored ? JSON.parse(stored) : false;
+  });
 
-  const { durationOptions, courseType, loading: fetchingRules, getRulesByCourseName } = useCourseRules();
-  
+  const [isPinned, setIsPinned] = useState(() => {
+    const stored = localStorage.getItem("adminSidebarPinned");
+    return stored ? JSON.parse(stored) : true;
+  });
+
+  const [isMobileOpen, setIsMobileOpen] = useState(false);
+  const [expandedMenus, setExpandedMenus] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
-  const [searchResults, setSearchResults] = useState([]);
-  const [showResults, setShowResults] = useState(false);
-  const [isTyping, setIsTyping] = useState(false);
-  const [admitCards, setAdmitCards] = useState([]);
-  const searchContainerRef = useRef(null);
 
-  // --- 1. Find Stream & Course IDs on Selection ---
-  const selectStudent = async (student) => {
-    setIsTyping(false);
-    setSearchTerm(student.enrollment_no);
-    setValue("enrollmentNo", student.enrollment_no);
-    setShowResults(false);
-    setSubjects([]); // Reset subjects
+  // Sync localStorage
+  useEffect(() => {
+    localStorage.setItem("adminSidebarCollapsed", JSON.stringify(isCollapsed));
+  }, [isCollapsed]);
 
-    try {
-      const response = await fetchStudentById(student.id);
-      const details = response.data || response;
+  useEffect(() => {
+    localStorage.setItem("adminSidebarPinned", JSON.stringify(isPinned));
+  }, [isPinned]);
 
-      if (details) {
-        setValue("course", details.course || "");
-        setValue("stream", details.stream || "");
-        setValue("duration", details.duration || "");
-        setValue("session", details.session || "");
+  // Collapse clears expanded menus
+  useEffect(() => {
+    if (isCollapsed) {
+      setExpandedMenus([]);
+    }
+  }, [isCollapsed]);
 
-        // Find Stream ID and Course Rules
-        const [streams, courses] = await Promise.all([fetchAllStreams(), fetchAllCourses()]);
-        
-        const sMatch = streams.find(s => s.name.toLowerCase() === details.stream?.toLowerCase());
-        if (sMatch) setStreamId(sMatch.id);
+  const toggleMenu = (menuId) => {
+    setExpandedMenus((prev) =>
+      prev.includes(menuId) ? prev.filter((id) => id !== menuId) : [menuId],
+    );
+  };
 
-        getRulesByCourseName(details.course);
-      }
-    } catch (err) {
-      console.error("Selection Error:", err);
+  const isActive = (path) => location.pathname === path;
+
+  /*
+    STEP 1: Filter by role (parent + children)
+  */
+  const roleFilteredMenus = menuItems
+    .filter((menu) => menu.roles?.includes(user?.role))
+    .map((menu) => ({
+      ...menu,
+      children: menu.children?.filter(
+        (child) => !child.roles || child.roles.includes(user?.role),
+      ),
+    }))
+    .filter((menu) => menu.children && menu.children.length > 0);
+
+  /*
+    STEP 2: Apply search on role-filtered items
+  */
+  const filteredMenuItems = roleFilteredMenus.filter((menu) => {
+    const search = searchTerm.toLowerCase();
+
+    const parentMatch = menu.label.toLowerCase().includes(search);
+
+    const childMatch = menu.children.some((child) =>
+      child.label.toLowerCase().includes(search),
+    );
+
+    return parentMatch || childMatch;
+  });
+
+  // Hover behavior
+  const handleMouseEnter = () => {
+    if (!isPinned) setIsCollapsed(false);
+  };
+
+  const handleMouseLeave = () => {
+    if (!isPinned) setIsCollapsed(true);
+  };
+
+  // Pin logic
+  const togglePin = () => {
+    const newPinned = !isPinned;
+    setIsPinned(newPinned);
+    setIsCollapsed(!newPinned);
+  };
+
+  const toggleCollapse = () => {
+    if (isPinned) {
+      setIsCollapsed((prev) => !prev);
     }
   };
 
-  // --- 2. Fetch Subjects when Stream + Part are ready ---
-  useEffect(() => {
-    if (!streamId || !selectedPart) {
-      setSubjects([]);
-      return;
-    }
-
-    const loadSubjects = async () => {
-      setLoadingSubjects(true);
-      try {
-        const allSubjects = await fetchSubjectsByStream(streamId);
-        // Filter subjects that match the selected Year/Semester number
-        const filtered = allSubjects.filter(
-          (sub) => String(sub.duration) === String(selectedPart)
-        );
-        setSubjects(filtered);
-      } catch (err) {
-        console.error("Subject Fetch Error:", err);
-      } finally {
-        setLoadingSubjects(false);
-      }
-    };
-
-    loadSubjects();
-  }, [streamId, selectedPart]);
-
-  // ... (Search logic and Click Handler remain the same) ...
-
   return (
-    <div className="w-full p-4 space-y-6">
-      <h1 className="text-2xl font-semibold text-text">Generate Admit Card</h1>
+    <>
+      {/* Desktop Sidebar */}
+      <div
+        ref={sidebarRef}
+        className={`h-screen bg-primary flex-col hidden md:flex ${
+          isCollapsed ? "w-14" : "w-64"
+        } transition-[width] duration-200 ease-in-out sticky top-0`}
+        onMouseEnter={handleMouseEnter}
+        onMouseLeave={handleMouseLeave}
+        style={{ overflow: "hidden" }}
+      >
+        <SidebarHeader
+          isCollapsed={isCollapsed}
+          isPinned={isPinned}
+          togglePin={togglePin}
+          toggleCollapse={toggleCollapse}
+          theme={theme}
+          toggleTheme={toggleTheme}
+        />
 
-      <div className="bg-surface border border-border rounded-xl p-6 shadow-sm">
-        <form onSubmit={handleSubmit((data) => console.log(data))}>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {/* Enrollment Search */}
-            <div className="relative" ref={searchContainerRef}>
-               {/* ... same as before ... */}
-            </div>
+        <SidebarSearch
+          isCollapsed={isCollapsed}
+          searchTerm={searchTerm}
+          setSearchTerm={setSearchTerm}
+        />
 
-            <FormInput label="Roll No." name="rollNo" register={register} />
-            <FormInput label="Total Duration" name="duration" register={register} readOnly />
-
-            {/* Selection Dropdown */}
-            <div className="space-y-1.5">
-              <label className="text-sm font-medium text-text">Select {courseType || "Part"} *</label>
-              <select
-                {...register("selectedDuration", { required: true })}
-                className="w-full border border-border rounded-lg px-3 py-2 bg-surface text-sm focus:ring-2 focus:ring-accent outline-none"
-              >
-                <option value="">{fetchingRules ? "Syncing..." : `Select ${courseType}`}</option>
-                {durationOptions.map((opt) => (
-                  <option key={opt.value} value={opt.value}>{opt.label}</option>
-                ))}
-              </select>
-            </div>
-
-            <FormInput label="Course" name="course" register={register} readOnly />
-            <FormInput label="Stream" name="stream" register={register} readOnly />
-            <FormInput label="Session" name="session" register={register} />
+        <nav className="flex-1 overflow-hidden py-2 px-2">
+          <div className="h-full overflow-y-auto scrollbar-none">
+            {filteredMenuItems.map((menu) => (
+              <SidebarMenuItem
+                key={menu.id}
+                menu={menu}
+                isActive={isActive}
+                isExpanded={expandedMenus.includes(menu.id)}
+                onToggle={toggleMenu}
+                isCollapsed={isCollapsed}
+              />
+            ))}
           </div>
+        </nav>
 
-          {/* SUBJECT LIST DISPLAY */}
-          {selectedPart && (
-            <div className="mt-8 space-y-4">
-              <h3 className="text-lg font-medium text-text flex items-center gap-2">
-                Subjects for {courseType} {selectedPart}
-                {loadingSubjects && <span className="text-xs text-muted animate-pulse">(Loading...)</span>}
-              </h3>
-              
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-                {subjects.length > 0 ? (
-                  subjects.map((sub) => (
-                    <div key={sub.id} className="p-3 bg-bg border border-border rounded-lg flex justify-between items-center shadow-sm">
-                      <div className="flex flex-col">
-                        <span className="text-sm font-semibold text-text">{sub.subject_name}</span>
-                        <span className="text-[10px] text-muted uppercase tracking-wider">{sub.subject_code}</span>
-                      </div>
-                      <div className="text-right">
-                        <span className="text-[10px] block text-muted">Max Marks</span>
-                        <span className="text-xs font-bold text-primary">{sub.max_theory_marks + sub.max_practical_marks}</span>
-                      </div>
-                    </div>
-                  ))
-                ) : (
-                  !loadingSubjects && <p className="text-sm text-danger col-span-full italic">No subjects found for this {courseType}.</p>
-                )}
-              </div>
-            </div>
-          )}
-
-          <div className="flex justify-end mt-6">
-            <Button type="submit" disabled={subjects.length === 0}>Generate Admit Card</Button>
-          </div>
-        </form>
+        <SidebarFooter isCollapsed={isCollapsed} />
       </div>
 
-      {/* History Table below ... */}
-    </div>
+      {/* Mobile Drawer */}
+      <MobileNavDrawer
+        isOpen={isMobileOpen}
+        onClose={() => setIsMobileOpen(false)}
+        menuItems={filteredMenuItems}
+        isActive={isActive}
+        theme={theme}
+        toggleTheme={toggleTheme}
+      />
+
+      {/* Mobile Hamburger */}
+      <button
+        onClick={() => setIsMobileOpen(true)}
+        className="md:hidden fixed top-2 left-2 z-40 p-2 rounded-lg bg-transparent text-primary shadow-lg border border-white/20"
+        aria-label="Open menu"
+      >
+        <svg
+          className="w-5 h-5"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={2}
+            d="M4 6h16M4 12h16M4 18h16"
+          />
+        </svg>
+      </button>
+    </>
   );
-}
+};

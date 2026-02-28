@@ -20,14 +20,19 @@ export function AuthProvider({ children }) {
   }, []);
 
   const login = (userData) => {
-    Cookies.set("authToken", userData.token, {
-      expires: 7,
-      secure: true,
-      sameSite: "Strict",
-    });
+    return new Promise((resolve) => {
+      Cookies.set("authToken", userData.token, {
+        expires: 7,
+        secure: true,
+        sameSite: "Strict",
+      });
 
-    localStorage.setItem("authUser", JSON.stringify(userData));
-    setUser(userData);
+      localStorage.setItem("authUser", JSON.stringify(userData));
+      setUser(userData); // React will schedule this update
+
+      // Resolve immediately so the component can proceed
+      resolve(userData);
+    });
   };
 
   const logout = () => {

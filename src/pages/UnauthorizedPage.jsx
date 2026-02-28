@@ -7,7 +7,7 @@ export default function UnauthorizedPage() {
         <p className="text-muted">
           You don't have permission to view this page.
         </p>
-        <a href="/login" className="text-primary underline">
+        <a href="/portal" className="text-primary underline">
           Go to Login
         </a>
       </div>

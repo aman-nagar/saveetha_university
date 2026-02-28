@@ -1,5 +1,4 @@
-import { FaBell, FaCog, FaSignOutAlt } from "react-icons/fa";
-import { useAuth } from "../../../context/AuthContext";
+import { FaBell, FaCog } from "react-icons/fa";
 
 export default function SidebarFooter({ isCollapsed }) {
   const { user, logout } = useAuth();

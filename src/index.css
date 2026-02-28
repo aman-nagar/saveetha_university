@@ -89,3 +89,20 @@
   background: linear-gradient(45deg, #1dd1a1, #0b6068);
 }
 /* scroll bar */
+
+/* print */
+@media print {
+  body {
+    background: white;
+  }
+
+  .shadow-lg {
+    box-shadow: none;
+  }
+
+  /* Ensure background colors print */
+  * {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+}

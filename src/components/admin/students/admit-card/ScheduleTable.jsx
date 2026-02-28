@@ -1,4 +1,3 @@
-// src/components/admin/students/ScheduleTable.jsx
 import Table from "../../../table/Table";
 
 export default function ScheduleTable({
@@ -13,14 +12,14 @@ export default function ScheduleTable({
       key: "subject_code",
       label: "Code",
       render: (r) => (
-        <span className="text-muted font-mono text-sm">{r.subject_code}</span>
+        <span className="font-mono text-xs">{r.subject_code}</span>
       ),
     },
     {
       key: "subject_name",
       label: "Subject Name",
       render: (r) => (
-        <span className="font-medium text-text text-sm uppercase">
+        <span className="uppercase text-xs font-semibold">
           {r.subject_name}
         </span>
       ),
@@ -28,35 +27,35 @@ export default function ScheduleTable({
     {
       key: "exam_date",
       label: "Date",
-      render: (r) => (
+      render: (row) => (
         <input
           type="date"
-          {...register(`schedule.${r.id}.date`)}
-          className="border border-border rounded-md px-3 py-1.5 text-sm bg-surface outline-none"
+          {...register(`schedule.${row.id}.date`, { required: true })}
+          className="border border-border rounded px-2 py-1 text-xs bg-surface outline-none focus:border-accent"
         />
       ),
     },
     {
       key: "start_time",
       label: "Start Time",
-      render: (r) => (
+      render: (row) => (
         <input
           type="time"
           defaultValue="10:00"
-          {...register(`schedule.${r.id}.start_time`)}
-          className="border border-border rounded-md px-3 py-1.5 text-sm bg-surface outline-none"
+          {...register(`schedule.${row.id}.start_time`)}
+          className="border border-border rounded px-2 py-1 text-xs bg-surface outline-none"
         />
       ),
     },
     {
       key: "end_time",
       label: "End Time",
-      render: (r) => (
+      render: (row) => (
         <input
           type="time"
           defaultValue="12:00"
-          {...register(`schedule.${r.id}.end_time`)}
-          className="border border-border rounded-md px-3 py-1.5 text-sm bg-surface outline-none"
+          {...register(`schedule.${row.id}.end_time`)}
+          className="border border-border rounded px-2 py-1 text-xs bg-surface outline-none"
         />
       ),
     },
@@ -67,12 +66,14 @@ export default function ScheduleTable({
       <h3 className="text-lg font-semibold text-text">
         Exam Schedule: {courseType} {selectedPart}
       </h3>
-      <Table
-        columns={subjectColumns}
-        data={subjects}
-        loading={loading}
-        emptyMessage={`No subjects found for ${courseType} ${selectedPart}.`}
-      />
+      <div className="border border-border rounded-xl overflow-hidden">
+        <Table
+          columns={subjectColumns}
+          data={subjects}
+          loading={loading}
+          emptyMessage={`No subjects found for ${courseType} ${selectedPart}.`}
+        />
+      </div>
     </div>
   );
 }

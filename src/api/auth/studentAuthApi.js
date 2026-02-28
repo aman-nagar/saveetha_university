@@ -9,3 +9,7 @@ export async function loginStudent(email, password) {
     body: JSON.stringify({ email, password }),
   });
 }
+
+export async function logoutStudent() {
+  return await apiRequest("/students/logout.php", { method: "POST" });
+}

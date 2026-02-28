@@ -1,8 +1,12 @@
 // src/pages/admin/students/EditStudent.jsx
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { fetchStudentById, updateStudent } from "../../../api/students/studentApi";
+import {
+  fetchStudentById,
+  updateStudent,
+} from "../../../api/students/studentApi";
 import StudentFormStepper from "../../../components/admin/students/admission/StudentFormStepper";
+import { useAuth } from "../../../context/AuthContext";
 
 export default function EditStudent() {
   const { id } = useParams();
@@ -11,6 +15,14 @@ export default function EditStudent() {
   const [student, setStudent] = useState(null);
   const [fetchLoading, setFetchLoading] = useState(true);
   const [fetchError, setFetchError] = useState(null);
+  const { user } = useAuth();
+  const isAdmin = user?.role === "admin";
+  const basePath = isAdmin
+    ? "/admin"
+    : user?.role === "center"
+      ? "/center"
+      : "/sub-center";
+  const listPath = `${basePath}/students`;
 
   useEffect(() => {
     const load = async () => {
@@ -28,8 +40,7 @@ export default function EditStudent() {
 
   const handleSubmit = async (formData) => {
     await updateStudent(id, formData, true);
-    // Success toast is shown by the stepper; navigate after short delay
-    setTimeout(() => navigate("/admin/students"), 1500);
+    setTimeout(() => navigate(listPath), 1500);
   };
 
   if (fetchLoading) {
@@ -60,14 +71,16 @@ export default function EditStudent() {
       {/* Page header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-5 sm:mb-6">
         <div>
-          <h1 className="text-xl sm:text-2xl font-bold text-text">Edit Student</h1>
+          <h1 className="text-xl sm:text-2xl font-bold text-text">
+            Edit Student
+          </h1>
           <p className="text-xs sm:text-sm text-text-muted mt-1">
             Enrollment:{" "}
             <span className="font-mono text-text">{student.enrollment_no}</span>
           </p>
         </div>
         <button
-          onClick={() => navigate("/admin/students")}
+          onClick={() => navigate(listPath)}
           className="w-full sm:w-auto text-center text-sm text-text-muted hover:text-primary border border-border px-4 py-2 rounded-md transition-colors"
         >
           ← Back to List

@@ -9,3 +9,7 @@ export async function loginCenter(email, password) {
     body: JSON.stringify({ email, password }),
   });
 }
+
+export async function logoutCenter() {
+  return await apiRequest("/centers/logout.php", { method: "POST" });
+}

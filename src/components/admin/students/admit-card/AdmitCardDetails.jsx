@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { FiUser, FiPrinter, FiDownload } from "react-icons/fi";
+import { FiUser, FiPrinter } from "react-icons/fi";
 
 export default function AdmitCardDetails({ data, onClose }) {
   if (!data) return null;
@@ -57,11 +57,22 @@ export default function AdmitCardDetails({ data, onClose }) {
               <InfoRow label="Roll No." value={data.roll_number} vertical />
             </div>
 
+            {/* 🔥 PHOTO ATTACHED HERE */}
             <div className="border-2 border-black w-32 h-40 bg-gray-50 flex items-center justify-center relative shadow-inner overflow-hidden">
-              <FiUser className="w-16 h-16 text-gray-200" />
-              <span className="absolute bottom-2 text-[8px] uppercase text-gray-400 font-bold">
-                Paste Photo Here
-              </span>
+              {data.photo ? (
+                <img 
+                  src={data.photo} 
+                  alt="Student" 
+                  className="w-full h-full object-cover" 
+                />
+              ) : (
+                <>
+                  <FiUser className="w-16 h-16 text-gray-200" />
+                  <span className="absolute bottom-2 text-[8px] uppercase text-gray-400 font-bold">
+                    No Photo Found
+                  </span>
+                </>
+              )}
             </div>
           </div>
         </div>

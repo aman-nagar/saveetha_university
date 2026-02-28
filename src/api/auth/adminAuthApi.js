@@ -1,25 +1,11 @@
 // src/api/auth/adminAuthApi.js
-const BASE_URL = "https://api.nsprowebtech.com/backend/api/v1";
+import { apiRequest } from "../client";
 
 export async function loginAdmin(email, password) {
-  const res = await fetch(`${BASE_URL}/admin_login.php`, {
+  const endpoint = "/admin_login.php";
+
+  return await apiRequest(endpoint, {
     method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
     body: JSON.stringify({ email, password }),
   });
-
-  if (!res.ok) {
-    throw new Error("Invalid admin credentials");
-  }
-
-  const json = await res.json();
-
-  if (!json.success) {
-    throw new Error(json.message || "Login failed");
-  }
-
-  // Admin user data is inside "errors" (weird but that's the API)
-  return json.data;
 }

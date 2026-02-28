@@ -32,8 +32,10 @@ export function AuthProvider({ children }) {
 
   const logout = () => {
     Cookies.remove("authToken");
-    localStorage.removeItem("authUser");
+    localStorage.clear(); // Wipes all user data completely
     setUser(null);
+    // Optional: Redirect to portal immediately
+    window.location.href = "/portal";
   };
 
   return (

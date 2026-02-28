@@ -1,10 +1,9 @@
 // src/components/admin/courses/SubjectForm.jsx
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import FormSection from "../../form/FormSection";
 import FormInput from "../../form/FormInput";
-import { fetchStreamsById } from "../../../api/courses/streamApi";
-import { fetchCoursesById } from "../../../api/courses/courseApi";
+import { useCourseRules } from "../../../hooks/useCourseRules";
 
 export default function SubjectForm({
   streamList = [],
@@ -23,84 +22,43 @@ export default function SubjectForm({
     formState: { errors },
   } = useForm();
 
-  const [durationOptions, setDurationOptions] = useState([]);
-  const [fetchingRules, setFetchingRules] = useState(false);
+  // Use the new hook
+  const {
+    durationOptions,
+    courseType,
+    loading: fetchingRules,
+    getRulesByStreamId,
+  } = useCourseRules();
 
-  // Hydrate form when editing
+  // 1. Hydrate Form
   useEffect(() => {
     if (initialData) {
-      reset({
-        subject_name: initialData.subject_name,
-        subject_code: initialData.subject_code,
-        short_name: initialData.short_name,
-        max_theory_marks: initialData.max_theory_marks,
-        max_practical_marks: initialData.max_practical_marks,
-        duration: initialData.duration,
-        duration_type: initialData.duration_type,
-        // status: initialData.status ?? 1,
-      });
+      reset({ ...initialData });
       onStreamChange(initialData.stream_id);
     } else {
       reset();
     }
   }, [initialData, reset, onStreamChange]);
 
-  // Fetch course duration rules based on selected stream
-  const loadStreamData = async (id) => {
-    if (!id) {
-      setDurationOptions([]);
-      return;
-    }
-
-    setFetchingRules(true);
-    try {
-      const streamData = await fetchStreamsById(id);
-      const course = await fetchCoursesById(streamData.course_id);
-
-      const durationCount = Number(course.duration);
-      const type = course.duration_type;
-
-      let options = [];
-      if (type === "year" || type === "semester") {
-        for (let i = 1; i <= durationCount; i++) {
-          options.push({ label: `${type} ${i}`, value: String(i) });
-        }
-      } else {
-        options.push({
-          label: `${durationCount} month`,
-          value: String(durationCount),
-        });
-      }
-
-      setDurationOptions(options);
-      setValue("duration_type", type);
-    } catch (err) {
-      console.error("Failed to sync course rules:", err.message);
-    } finally {
-      setFetchingRules(false);
-    }
-  };
-
+  // 2. Sync Duration Options when selectedStream changes
   useEffect(() => {
-    loadStreamData(selectedStream);
-  }, [selectedStream]);
+    const sync = async () => {
+      const type = await getRulesByStreamId(selectedStream);
+      if (type) setValue("duration_type", type);
+    };
+    sync();
+  }, [selectedStream, getRulesByStreamId, setValue]);
 
-  const submitForm = async (data) => {
+  const submitForm = (data) => {
     if (!selectedStream) return;
-
-    await onSubmit({
+    onSubmit({
+      ...data,
       id: initialData?.id,
       stream_id: selectedStream,
-      subject_name: data.subject_name,
-      subject_code: data.subject_code,
-      short_name: data.short_name,
       max_theory_marks: Number(data.max_theory_marks),
       max_practical_marks: Number(data.max_practical_marks),
       duration: Number(data.duration),
-      duration_type: data.duration_type,
-      // status: Number(data.status),
     });
-    console.log(data);
     if (mode === "create") reset();
   };
 
@@ -111,14 +69,14 @@ export default function SubjectForm({
         columns={2}
       >
         {/* Stream select */}
-        <div className="space-y-1.5 sm:space-y-2">
-          <label className="text-xs sm:text-sm font-medium text-text">
-            Select Stream <span className="text-danger">*</span>
+        <div className="space-y-2">
+          <label className="text-sm font-medium text-text">
+            Select Stream *
           </label>
           <select
             value={selectedStream}
             onChange={(e) => onStreamChange(e.target.value)}
-            className="w-full border border-border rounded-lg px-3 py-2 sm:py-2.5 bg-surface text-text text-sm sm:text-base focus:outline-none focus:ring-2 focus:ring-accent/40 focus:border-accent transition-all duration-200 hover:border-muted/50"
+            className="w-full border border-border rounded-lg px-3 py-2 bg-surface text-sm focus:ring-2 focus:ring-accent outline-none"
           >
             <option value="">Select Stream</option>
             {streamList.map((s) => (
@@ -128,7 +86,7 @@ export default function SubjectForm({
             ))}
           </select>
         </div>
-        {/* Subject Name */}
+
         <FormInput
           label="Subject Name"
           name="subject_name"
@@ -143,44 +101,35 @@ export default function SubjectForm({
         />
         <FormInput label="Short Name" name="short_name" register={register} />
         <FormInput
-          label="Max Theory Marks"
+          label="Max Theory"
           name="max_theory_marks"
           type="number"
           register={register}
         />
         <FormInput
-          label="Max Practical Marks"
+          label="Max Practical"
           name="max_practical_marks"
           type="number"
           register={register}
         />
-        {/* Duration select */}
-        <div className="space-y-1.5 sm:space-y-2">
-          <label className="text-xs sm:text-sm font-medium text-text">
-            {fetchingRules ? "Syncing Duration..." : "Duration *"}
+
+        {/* Dynamic Duration Select */}
+        <div className="space-y-2">
+          <label className="text-sm font-medium text-text">
+            {fetchingRules ? "Syncing..." : `${courseType || "Duration"} *`}
           </label>
           <select
             {...register("duration", { required: "Please select duration" })}
-            className={`w-full border rounded-lg px-3 py-2 sm:py-2.5 bg-surface text-text text-sm sm:text-base focus:outline-none focus:ring-2 focus:ring-accent/40 focus:border-accent transition-all duration-200
-              ${errors.duration ? "border-danger ring-1 ring-danger/30" : "border-border hover:border-muted/50"}`}
+            className={`w-full border rounded-lg px-3 py-2 bg-surface text-sm focus:ring-2 focus:ring-accent outline-none ${errors.duration ? "border-danger" : "border-border"}`}
           >
-            <option value="">
-              {fetchingRules ? "Loading..." : "Select Duration"}
-            </option>
+            <option value="">Select Part</option>
             {durationOptions.map((opt) => (
               <option key={opt.value} value={opt.value}>
                 {opt.label}
               </option>
             ))}
           </select>
-          {errors.duration && (
-            <p className="text-xs text-danger mt-1">
-              {errors.duration.message}
-            </p>
-          )}
         </div>
-
-        {/* Hidden field for duration_type */}
         <input type="hidden" {...register("duration_type")} />
       </FormSection>
 

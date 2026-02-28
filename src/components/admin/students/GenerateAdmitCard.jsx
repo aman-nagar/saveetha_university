@@ -8,9 +8,13 @@ import {
   fetchStudentById,
 } from "../../../api/students/studentApi";
 import { useCourseRules } from "../../../hooks/useCourseRules"; // Single source of truth
+import { fetchAllStreams } from "../../../api/courses/streamApi";
+import { fetchAllCourses } from "../../../api/courses/courseApi";
+import { fetchSubjectsByStream } from "../../../api/courses/subjectApi";
 
 export default function GenerateAdmitCard() {
-  const { register, setValue, handleSubmit } = useForm();
+  const { register, setValue, handleSubmit, watch } = useForm();
+  const selectedPart = watch("selectedDuration");
 
   // 1. Search & UI State
   const [searchTerm, setSearchTerm] = useState("");
@@ -20,6 +24,10 @@ export default function GenerateAdmitCard() {
   const [isTyping, setIsTyping] = useState(false);
 
   // 2. Custom Hook for Course Rules (Replaces local states)
+  const [streamId, setStreamId] = useState(null);
+  const [subjects, setSubjects] = useState([]);
+  const [loadingSubjects, setLoadingSubjects] = useState(false);
+
   const {
     durationOptions,
     courseType, // This replaces your local durationType
@@ -65,6 +73,7 @@ export default function GenerateAdmitCard() {
     setSearchTerm(student.enrollment_no);
     setValue("enrollmentNo", student.enrollment_no);
     setShowResults(false);
+    setSubjects([]);
 
     try {
       const response = await fetchStudentById(student.id);
@@ -76,6 +85,16 @@ export default function GenerateAdmitCard() {
         setValue("duration", details.duration || "");
         setValue("stream", details.stream || "");
 
+        // Find Stream ID and Course Rules
+        const [streams, courses] = await Promise.all([
+          fetchAllStreams(),
+          fetchAllCourses(),
+        ]);
+
+        const sMatch = streams.find(
+          (s) => s.name.toLowerCase() === details.stream?.toLowerCase(),
+        );
+        if (sMatch) setStreamId(sMatch.id);
         // ✅ Call hook logic to fetch and generate options
         getRulesByCourseName(details.course);
       }
@@ -85,6 +104,30 @@ export default function GenerateAdmitCard() {
   };
 
   // --- Close Results on Outside Click ---
+  useEffect(() => {
+    if (!streamId || !selectedPart) {
+      setSubjects([]);
+      return;
+    }
+
+    const loadSubjects = async () => {
+      setLoadingSubjects(true);
+      try {
+        const allSubjects = await fetchSubjectsByStream(streamId);
+        // Filter subjects that match the selected Year/Semester number
+        const filtered = allSubjects.filter(
+          (sub) => String(sub.duration) === String(selectedPart),
+        );
+        setSubjects(filtered);
+      } catch (err) {
+        console.error("Subject Fetch Error:", err);
+      } finally {
+        setLoadingSubjects(false);
+      }
+    };
+
+    loadSubjects();
+  }, [streamId, selectedPart]);
   useEffect(() => {
     const handleClick = (e) => {
       if (
@@ -109,6 +152,66 @@ export default function GenerateAdmitCard() {
     setAdmitCards([newEntry, ...admitCards]);
   };
 
+  // --- 3. Table Column Definition ---
+  const subjectColumns = [
+    {
+      key: "subject_code",
+      label: "Code",
+      render: (row) => (
+        <span className="text-muted font-mono text-sm">{row.subject_code}</span>
+      ),
+    },
+    {
+      key: "subject_name",
+      label: "Subject Name",
+      render: (row) => (
+        <span className="font-medium text-text text-sm uppercase">
+          {row.subject_name}
+        </span>
+      ),
+    },
+    {
+      key: "exam_date",
+      label: "Date",
+      render: (row) => (
+        <div className="relative max-w-[180px]">
+          <input
+            type="date"
+            {...register(`schedule.${row.id}.date`)}
+            className="w-full border border-border rounded-md px-3 py-1.5 text-sm bg-surface focus:ring-2 focus:ring-accent/20 focus:border-accent outline-none transition-all cursor-pointer"
+          />
+        </div>
+      ),
+    },
+    {
+      key: "start_time",
+      label: "Start Time",
+      render: (row) => (
+        <div className="relative max-w-[140px]">
+          <input
+            type="time"
+            defaultValue="10:00"
+            {...register(`schedule.${row.id}.start_time`)}
+            className="w-full border border-border rounded-md px-3 py-1.5 text-sm bg-surface focus:ring-2 focus:ring-accent/20 focus:border-accent outline-none transition-all cursor-pointer"
+          />
+        </div>
+      ),
+    },
+    {
+      key: "end_time",
+      label: "End Time",
+      render: (row) => (
+        <div className="relative max-w-[140px]">
+          <input
+            type="time"
+            defaultValue="12:00"
+            {...register(`schedule.${row.id}.end_time`)}
+            className="w-full border border-border rounded-md px-3 py-1.5 text-sm bg-surface focus:ring-2 focus:ring-accent/20 focus:border-accent outline-none transition-all cursor-pointer"
+          />
+        </div>
+      ),
+    },
+  ];
   return (
     <div className="w-full p-4 space-y-6">
       <h1 className="text-2xl font-semibold text-text">Generate Admit Card</h1>
@@ -177,7 +280,7 @@ export default function GenerateAdmitCard() {
             {/* Dynamic Dropdown from Hook */}
             <div className="space-y-1.5">
               <label className="text-sm font-medium text-text">
-                Select {courseType || "Part"} *
+                Select course type semester *
               </label>
               <select
                 {...register("selectedDuration", { required: true })}
@@ -217,6 +320,34 @@ export default function GenerateAdmitCard() {
               placeholder="Enter Session"
             />
           </div>
+
+          {/* SUBJECT LIST DISPLAY (Screenshot Style) */}
+          {selectedPart && (
+            <div className="mt-8 space-y-4 animate-in fade-in slide-in-from-bottom-2 duration-500">
+              <div className="flex items-center justify-between mb-2">
+                <h3 className="text-lg font-semibold text-text">
+                  Exam Schedule: {courseType} {selectedPart}
+                </h3>
+                {loadingSubjects && (
+                  <span className="flex items-center gap-2 text-xs text-primary animate-pulse">
+                    <span className="w-2 h-2 bg-primary rounded-full" />
+                    Fetching Subjects...
+                  </span>
+                )}
+              </div>
+
+              <div className="bg-surface border border-border rounded-xl overflow-hidden shadow-sm">
+                <Table
+                  title=""
+                  columns={subjectColumns}
+                  data={subjects}
+                  loading={loadingSubjects}
+                  emptyMessage={`No subjects found for ${courseType} ${selectedPart}.`}
+                  toolbar={null} // Keep it clean as per screenshot
+                />
+              </div>
+            </div>
+          )}
 
           <div className="flex justify-end mt-6">
             <Button type="submit">Generate</Button>

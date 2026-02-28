@@ -26,24 +26,23 @@ export async function apiRequest(endpoint, options = {}) {
   });
 
   if (response.status === 401) {
-    // 1. Clear the invalid session data
-    Cookies.remove("authToken");
-    localStorage.removeItem("authUser");
-
-    // 2. 🔥 FIX: Only redirect if NOT on a login page
-    // This allows Login components to show their own Error Toasts.
-    const isLoginPage =
+    const isAuthPage =
       window.location.pathname.includes("login") ||
       window.location.pathname === "/portal";
+    if (token) {
+      throw new Error("You don't have permission to access this resource.");
+    }
 
-    if (!isLoginPage) {
+    // No token means actual session expiry
+    if (!isAuthPage) {
+      Cookies.remove("authToken");
+      localStorage.removeItem("authUser");
       window.location.href = "/portal";
       throw new Error("Session expired. Please login again.");
     }
 
-    // If we ARE on a login page, just throw the error so the UI can catch it
-    const errorData = await response.json().catch(() => ({}));
-    throw new Error(errorData.message || "Invalid credentials");
+    // If on a login page, just throw the error for the UI to catch
+    throw new Error("Invalid credentials or access denied.");
   }
 
   if (!response.ok) {

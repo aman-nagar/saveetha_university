@@ -48,37 +48,38 @@ function App() {
             <Route path="/news" element={<News />} />
           </Route>
 
-          {/* Admin – full access */}
+          {/* Admin – now updated to allow multiple roles for shared pages */}
           <Route
             path="/admin"
             element={
-              <ProtectedRoute allowedRoles={["admin"]}>
+              <ProtectedRoute allowedRoles={["admin", "center", "sub-center"]}>
                 <AdminLayout />
               </ProtectedRoute>
             }
           >
             <Route index element={<AdminDashboard />} />
-            {/* course menu*/}
-            <Route path="course-category" element={<CourseCategoryPage />} />
-            <Route path="faculty" element={<FacultyPage />} />
-            <Route path="course" element={<CoursePage />} />
-            <Route path="stream" element={<StreamPage />} />
-            <Route path="subject" element={<SubjectPage />} />
-            {/* students menu */}
             <Route path="students" element={<StudentListPage />} />
             <Route path="students/add" element={<AddStudent />} />
             <Route path="students/edit/:id" element={<EditStudent />} />
-            <Route
-              path="admit-card/generate"
-              element={<GenerateAdmitCardPage />}
-            />
-            {/* centers menu */}
             <Route path="centers/add" element={<AddCenterPage />} />
             <Route path="centers" element={<CenterListPage />} />
-            {/* settings menu */}
-            <Route path="site-settings" element={<SiteSettingsPage />} />
+            <Route
+              path="course-category"
+              element={
+                <ProtectedRoute allowedRoles={["admin"]}>
+                  <CourseCategoryPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="site-settings"
+              element={
+                <ProtectedRoute allowedRoles={["admin"]}>
+                  <SiteSettingsPage />
+                </ProtectedRoute>
+              }
+            />
           </Route>
-
           {/* Center role – limited access */}
           <Route
             path="/center"
@@ -95,7 +96,7 @@ function App() {
           <Route
             path="/sub-center"
             element={
-              <ProtectedRoute allowedRoles={["sub-center", "admin"]}>
+              <ProtectedRoute allowedRoles={["sub-center"]}>
                 <CenterLayout />
               </ProtectedRoute>
             }
@@ -112,7 +113,6 @@ function App() {
               </ProtectedRoute>
             }
           />
-
           {/* Optional: Fallback for unauthorized access */}
           <Route path="/unauthorized" element={<UnauthorizedPage />} />
         </Routes>

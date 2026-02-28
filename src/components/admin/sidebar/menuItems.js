@@ -14,13 +14,9 @@ export const menuItems = [
     icon: FaHome,
     roles: ["admin", "center", "sub-center"],
     children: [
-      { label: "Admin Overview", path: "/admin", roles: ["admin"] },
-      { label: "Center Overview", path: "/center", roles: ["center"] },
-      {
-        label: "Sub-Center Overview",
-        path: "/sub-center",
-        roles: ["sub-center"],
-      },
+      { label: "Overview", path: "/admin", roles: ["admin"] },
+      { label: "Overview", path: "/center", roles: ["center"] },
+      { label: "Overview", path: "/sub-center", roles: ["sub-center"] },
     ],
   },
   {
@@ -29,12 +25,14 @@ export const menuItems = [
     icon: FaUserGraduate,
     roles: ["admin", "center", "sub-center"],
     children: [
+      // Admin sees "All Students", Centers see "My Students" pointing to same path
       { label: "All Students", path: "/admin/students", roles: ["admin"] },
       {
         label: "My Students",
-        path: "/center/students",
+        path: "/admin/students",
         roles: ["center", "sub-center"],
       },
+      // Both Admin and Center can create students
       {
         label: "Add New",
         path: "/admin/students/add",
@@ -51,7 +49,7 @@ export const menuItems = [
     id: 3,
     label: "Courses",
     icon: FaBook,
-    roles: ["admin"], // Restricted to Admin only
+    roles: ["admin"], // Restricted to Admin
     children: [
       { label: "Course Category", path: "/admin/course-category" },
       { label: "Faculty", path: "/admin/faculty" },
@@ -62,19 +60,26 @@ export const menuItems = [
   },
   {
     id: 4,
-    label: "Centers",
+    label: "Management", // Generic label that feels right for both roles
     icon: FaClipboardList,
-    roles: ["admin"], // Restricted to Admin only
+    roles: ["admin", "center"],
     children: [
-      { label: "Add Center", path: "/admin/centers/add" },
-      { label: "Centers List", path: "/admin/centers" },
+      // Labels change based on role, but use the same functional paths
+      { label: "Add Center", path: "/admin/centers/add", roles: ["admin"] },
+      { label: "Centers List", path: "/admin/centers", roles: ["admin"] },
+      {
+        label: "Add Sub-center",
+        path: "/admin/centers/add",
+        roles: ["center"],
+      },
+      { label: "Sub-center List", path: "/admin/centers", roles: ["center"] },
     ],
   },
   {
     id: 8,
     label: "Settings",
     icon: FaCog,
-    roles: ["admin"], // Restricted to Admin only
+    roles: ["admin"],
     children: [{ label: "Site Setting", path: "/admin/site-settings" }],
   },
 ];

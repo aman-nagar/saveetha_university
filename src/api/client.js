@@ -26,29 +26,14 @@ export async function apiRequest(endpoint, options = {}) {
   });
 
   // 🔥 Global 401 handler – redirect based on role
+  // 🔥 Fixed Global 401 handler
   if (response.status === 401) {
     Cookies.remove("authToken");
-    let redirectUrl = "/login"; // default student login
-
-    try {
-      const storedUser = localStorage.getItem("authUser");
-      if (storedUser) {
-        const user = JSON.parse(storedUser);
-        if (user.role === "admin") {
-          redirectUrl = "/admin/login";
-        } else if (user.role === "center" || user.role === "sub-center") {
-          // For center/sub-center, you may have separate login pages later
-          redirectUrl = "/login"; // fallback to student for now, adjust as needed
-        }
-        // student remains "/login"
-      }
-    } catch (e) {
-      // If parsing fails, ignore and keep default
-    }
-
     localStorage.removeItem("authUser");
-    window.location.href = redirectUrl;
-    throw new Error("Session expired");
+
+    // Force a clean redirect to the portal for everyone
+    window.location.href = "/portal";
+    throw new Error("Session expired. Please login again.");
   }
 
   if (!response.ok) {

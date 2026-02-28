@@ -23,19 +23,23 @@ import CenterListPage from "./pages/admin/centers/CenterListPage";
 import SubCenterDashboardPage from "./pages/sub-center/SubCenterDashboardPage";
 import { AuthProvider } from "./context/AuthContext";
 import ProtectedRoute from "./context/ProtectedRoute";
-import StudentLogin from "./pages/StudentLogin";
-import AdminLogin from "./pages/admin/AdminLogin";
 import SubjectPage from "./pages/admin/courses/SubjectPage";
 import UnauthorizedPage from "./pages/UnauthorizedPage";
 import GenerateAdmitCardPage from "./pages/admin/students/GenerateAdmitCardPage";
+import LoginPortal from "./pages/auth/LoginPortal";
+import CenterLogin from "./pages/auth/CenterLogin";
+import AdminLogin from "./pages/auth/AdminLogin";
+import StudentLogin from "./pages/auth/StudentLogin";
 
 function App() {
   return (
     <AuthProvider>
       <BrowserRouter>
         <Routes>
+          <Route path="/portal" element={<LoginPortal />} />
           <Route path="/login" element={<StudentLogin />} />
           <Route path="/admin/login" element={<AdminLogin />} />
+          <Route path="/center/login" element={<CenterLogin />} />
           {/* Public + Login */}
           <Route element={<PublicLayout />}>
             <Route path="/" element={<Home />} />
@@ -76,15 +80,30 @@ function App() {
           </Route>
 
           {/* Center role – limited access */}
-          <Route path="/center" element={<CenterLayout />}>
+          <Route
+            path="/center"
+            element={
+              <ProtectedRoute allowedRoles={["center"]}>
+                <CenterLayout />
+              </ProtectedRoute>
+            }
+          >
             <Route index element={<CenterDashboardPage />} />
           </Route>
-          {/* Sub-center */}
-          <Route path="/sub-center" element={<CenterLayout />}>
+
+          {/* Sub-center - FIXED with role protection */}
+          <Route
+            path="/sub-center"
+            element={
+              <ProtectedRoute allowedRoles={["sub-center", "admin"]}>
+                <CenterLayout />
+              </ProtectedRoute>
+            }
+          >
             <Route index element={<SubCenterDashboardPage />} />
           </Route>
 
-          {/* Student (standalone for now) */}
+          {/* Student - FIXED with role protection */}
           <Route
             path="/student-dashboard"
             element={

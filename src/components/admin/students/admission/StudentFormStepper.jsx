@@ -319,6 +319,13 @@ export default function StudentFormStepper({
     try {
       setLoading(true);
 
+      // ===== DEBUG START =====
+      console.log("=== FORM SUBMIT DEBUG ===");
+      console.log("Mode:", isEdit ? "EDIT" : "CREATE");
+      console.log("qualificationFiles state:", qualificationFiles);
+      console.log("qualificationFiles keys:", Object.keys(qualificationFiles));
+      // ===== DEBUG END =====
+
       const formData = new FormData();
 
       if (isEdit && student?.id) {
@@ -349,6 +356,13 @@ export default function StudentFormStepper({
         const percentage = data[`${key}_percentage`];
         const file = qualificationFiles[key];
 
+        // ===== DEBUG START =====
+        console.log(`--- Qual [${key}] ---`);
+        console.log("  year:", year, "board:", board, "pct:", percentage);
+        console.log("  file from state:", file);
+        console.log("  has data?", !!(year || board || percentage));
+        // ===== DEBUG END =====
+
         if (!year && !board && !percentage) return;
 
         formData.append(`qualifications[${qi}][examination]`, key);
@@ -358,9 +372,41 @@ export default function StudentFormStepper({
           `qualifications[${qi}][percentage_cgpa]`,
           percentage || "",
         );
-        if (file) formData.append(`document[]`, file);
+
+        if (file) {
+          formData.append(`qualifications[${qi}][document]`, file);
+        } else if (isEdit) {
+          const existingDoc = (student?.qualifications || []).find(
+            (q) => q.examination === key,
+          )?.document;
+          if (existingDoc) {
+            formData.append(
+              `qualifications[${qi}][existing_document]`,
+              existingDoc,
+            );
+          }
+        }
+
+        // ===== DEBUG START =====
+        console.log(
+          `  → Appended as qualifications[${qi}], file appended:`,
+          !!file,
+        );
+        // ===== DEBUG END =====
+
         qi++;
       });
+
+      // ===== DEBUG: Log full FormData contents =====
+      console.log("=== FULL FORMDATA ===");
+      for (let [key, value] of formData.entries()) {
+        if (value instanceof File) {
+          console.log(`  ${key}: [File] ${value.name} (${value.size} bytes)`);
+        } else {
+          console.log(`  ${key}: ${value}`);
+        }
+      }
+      console.log("=== END FORMDATA ===");
 
       await onSubmitProp(formData);
 

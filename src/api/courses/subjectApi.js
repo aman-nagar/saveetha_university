@@ -57,3 +57,7 @@ export function deleteSubject(id) {
     body: JSON.stringify({ id }),
   });
 }
+
+export function fetchSubjectsByStream(streamId) {
+  return apiRequest(`/course/subject.php?stream_id=${streamId}`);
+}

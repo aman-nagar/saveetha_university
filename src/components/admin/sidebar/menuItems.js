@@ -25,21 +25,17 @@ export const menuItems = [
     icon: FaUserGraduate,
     roles: ["admin", "center", "sub-center"],
     children: [
-      // Admin sees "All Students", Centers see "My Students" pointing to same path
       { label: "All Students", path: "/admin/students", roles: ["admin"] },
+      { label: "My Students", path: "/center/students", roles: ["center"] },
       {
         label: "My Students",
-        path: "/admin/students",
-        roles: ["center", "sub-center"],
+        path: "/sub-center/students",
+        roles: ["sub-center"],
       },
-      // Both Admin and Center can create students
+      { label: "Add New", path: "/admin/students/add", roles: ["admin"] },
+      { label: "Add New", path: "/center/students/add", roles: ["center"] },
       {
-        label: "Add New",
-        path: "/admin/students/add",
-        roles: ["admin", "center"],
-      },
-      {
-        label: "Generate AdmitCard",
+        label: "Admit Cards",
         path: "/admin/admit-card/generate",
         roles: ["admin"],
       },
@@ -49,7 +45,7 @@ export const menuItems = [
     id: 3,
     label: "Courses",
     icon: FaBook,
-    roles: ["admin"], // Restricted to Admin
+    roles: ["admin"],
     children: [
       { label: "Course Category", path: "/admin/course-category" },
       { label: "Faculty", path: "/admin/faculty" },
@@ -60,19 +56,18 @@ export const menuItems = [
   },
   {
     id: 4,
-    label: "Management", // Generic label that feels right for both roles
+    label: "Management",
     icon: FaClipboardList,
     roles: ["admin", "center"],
     children: [
-      // Labels change based on role, but use the same functional paths
-      { label: "Add Center", path: "/admin/centers/add", roles: ["admin"] },
       { label: "Centers List", path: "/admin/centers", roles: ["admin"] },
+      { label: "Add Center", path: "/admin/centers/add", roles: ["admin"] },
+      { label: "Sub-centers", path: "/center/sub-centers", roles: ["center"] },
       {
         label: "Add Sub-center",
-        path: "/admin/centers/add",
+        path: "/center/sub-centers/add",
         roles: ["center"],
       },
-      { label: "Sub-center List", path: "/admin/centers", roles: ["center"] },
     ],
   },
   {

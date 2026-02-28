@@ -36,11 +36,13 @@ function App() {
     <AuthProvider>
       <BrowserRouter>
         <Routes>
+          {/* Auth Routes */}
           <Route path="/portal" element={<LoginPortal />} />
           <Route path="/login" element={<StudentLogin />} />
           <Route path="/admin/login" element={<AdminLogin />} />
           <Route path="/center/login" element={<CenterLogin />} />
-          {/* Public + Login */}
+
+          {/* Public Routes */}
           <Route element={<PublicLayout />}>
             <Route path="/" element={<Home />} />
             <Route path="/about" element={<About />} />
@@ -48,11 +50,11 @@ function App() {
             <Route path="/news" element={<News />} />
           </Route>
 
-          {/* Admin – now updated to allow multiple roles for shared pages */}
+          {/* Admin Section */}
           <Route
             path="/admin"
             element={
-              <ProtectedRoute allowedRoles={["admin", "center", "sub-center"]}>
+              <ProtectedRoute allowedRoles={["admin"]}>
                 <AdminLayout />
               </ProtectedRoute>
             }
@@ -64,23 +66,18 @@ function App() {
             <Route path="centers/add" element={<AddCenterPage />} />
             <Route path="centers" element={<CenterListPage />} />
             <Route
-              path="course-category"
-              element={
-                <ProtectedRoute allowedRoles={["admin"]}>
-                  <CourseCategoryPage />
-                </ProtectedRoute>
-              }
+              path="admit-card/generate"
+              element={<GenerateAdmitCardPage />}
             />
-            <Route
-              path="site-settings"
-              element={
-                <ProtectedRoute allowedRoles={["admin"]}>
-                  <SiteSettingsPage />
-                </ProtectedRoute>
-              }
-            />
+            <Route path="course-category" element={<CourseCategoryPage />} />
+            <Route path="faculty" element={<FacultyPage />} />
+            <Route path="course" element={<CoursePage />} />
+            <Route path="stream" element={<StreamPage />} />
+            <Route path="subject" element={<SubjectPage />} />
+            <Route path="site-settings" element={<SiteSettingsPage />} />
           </Route>
-          {/* Center role – limited access */}
+
+          {/* Center Section - FIXED: Added child routes for role silo */}
           <Route
             path="/center"
             element={
@@ -90,9 +87,14 @@ function App() {
             }
           >
             <Route index element={<CenterDashboardPage />} />
+            <Route path="students" element={<StudentListPage />} />
+            <Route path="students/add" element={<AddStudent />} />
+            <Route path="students/edit/:id" element={<EditStudent />} />
+            <Route path="sub-centers" element={<CenterListPage />} />
+            <Route path="sub-centers/add" element={<AddCenterPage />} />
           </Route>
 
-          {/* Sub-center - FIXED with role protection */}
+          {/* Sub-center Section */}
           <Route
             path="/sub-center"
             element={
@@ -102,9 +104,10 @@ function App() {
             }
           >
             <Route index element={<SubCenterDashboardPage />} />
+            <Route path="students" element={<StudentListPage />} />
           </Route>
 
-          {/* Student - FIXED with role protection */}
+          {/* Student Portal */}
           <Route
             path="/student-dashboard"
             element={
@@ -113,7 +116,7 @@ function App() {
               </ProtectedRoute>
             }
           />
-          {/* Optional: Fallback for unauthorized access */}
+
           <Route path="/unauthorized" element={<UnauthorizedPage />} />
         </Routes>
       </BrowserRouter>

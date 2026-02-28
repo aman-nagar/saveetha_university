@@ -1,4 +1,6 @@
 // src/components/table/Table.jsx
+import TableSkeleton from "../ui/skeleton/TableSkeleton";
+
 export default function Table({
   title = "List",
   columns = [],
@@ -7,7 +9,21 @@ export default function Table({
   loading = false,
   emptyMessage = "No data found",
   toolbar = null,
+  skeletonRows = 5,
 }) {
+  if (loading) {
+    return (
+      <TableSkeleton
+        title={title}
+        columns={columns.length}
+        rows={skeletonRows}
+        showActions={actions.length > 0}
+        toolbar={!!toolbar}
+        actionCount={actions.length}
+      />
+    );
+  }
+
   const colSpan = columns.length + (actions.length > 0 ? 1 : 0);
 
   return (
@@ -28,14 +44,9 @@ export default function Table({
         </div>
       )}
 
-      {/* ── Mobile Card View (visible only on small screens) ── */}
+      {/* ── Mobile Card View ── */}
       <div className="block sm:hidden">
-        {loading ? (
-          <div className="flex flex-col items-center justify-center gap-2 py-10 text-muted">
-            <div className="w-6 h-6 border-2 border-primary border-t-transparent rounded-full animate-spin" />
-            <span className="text-sm">Loading...</span>
-          </div>
-        ) : data.length === 0 ? (
+        {data.length === 0 ? (
           <div className="text-center py-10 text-muted italic text-sm">
             {emptyMessage}
           </div>
@@ -46,7 +57,6 @@ export default function Table({
                 key={row.id ?? index}
                 className="p-3 hover:bg-bg/50 transition-colors"
               >
-                {/* Primary column as card header */}
                 <div className="flex items-start justify-between gap-2 mb-2">
                   <div className="font-medium text-text text-sm">
                     {columns[0]?.render
@@ -59,11 +69,8 @@ export default function Table({
                         <button
                           key={idx}
                           onClick={() => action.onClick(row)}
-                          className={`p-1.5 rounded-md transition-colors ${
-                            action.className ||
-                            "hover:bg-bg text-muted hover:text-primary"
-                          }`}
-                          title={action.title || "Action"}
+                          className={`p-1.5 rounded-md transition-colors ${action.className || "hover:bg-bg text-muted"}`}
+                          title={action.title}
                         >
                           <span className="w-4 h-4 block">{action.icon}</span>
                         </button>
@@ -71,8 +78,6 @@ export default function Table({
                     </div>
                   )}
                 </div>
-
-                {/* Remaining columns as key-value pairs */}
                 <div className="space-y-1.5">
                   {columns.slice(1).map((col) => (
                     <div
@@ -94,7 +99,7 @@ export default function Table({
         )}
       </div>
 
-      {/* ── Desktop Table View (hidden on small screens) ── */}
+      {/* ── Desktop Table View ── */}
       <div className="hidden sm:block overflow-x-auto">
         <table className="w-full text-sm text-left">
           <thead className="bg-bg text-muted">
@@ -108,24 +113,14 @@ export default function Table({
                 </th>
               ))}
               {actions.length > 0 && (
-                <th className="px-3 lg:px-6 py-2.5 lg:py-3 font-medium border-b border-border whitespace-nowrap text-xs lg:text-sm">
+                <th className="px-3 lg:px-6 py-2.5 lg:py-3 font-medium border-b border-border text-xs lg:text-sm text-center">
                   Actions
                 </th>
               )}
             </tr>
           </thead>
-
           <tbody>
-            {loading ? (
-              <tr>
-                <td colSpan={colSpan} className="text-center py-10 text-muted">
-                  <div className="flex flex-col items-center gap-2">
-                    <div className="w-6 h-6 border-2 border-primary border-t-transparent rounded-full animate-spin" />
-                    <span>Loading...</span>
-                  </div>
-                </td>
-              </tr>
-            ) : data.length === 0 ? (
+            {data.length === 0 ? (
               <tr>
                 <td
                   colSpan={colSpan}
@@ -150,16 +145,15 @@ export default function Table({
                         : (row[col.key] ?? "—")}
                     </td>
                   ))}
-
                   {actions.length > 0 && (
                     <td className="px-3 lg:px-6 py-3 lg:py-4">
-                      <div className="flex items-center gap-1.5 lg:gap-2">
+                      <div className="flex items-center justify-center gap-1.5 lg:gap-2">
                         {actions.map((action, idx) => (
                           <button
                             key={idx}
                             onClick={() => action.onClick(row)}
                             className={action.className}
-                            title={action.title || "Action"}
+                            title={action.title}
                           >
                             {action.icon}
                           </button>

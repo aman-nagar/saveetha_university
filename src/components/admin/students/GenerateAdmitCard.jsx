@@ -1,31 +1,38 @@
 import { useForm } from "react-hook-form";
 import { useState, useEffect, useRef } from "react";
 import FormInput from "../../../components/form/FormInput";
-import FormSelect from "../../../components/form/FormSelect";
 import Table from "../../../components/table/Table";
 import Button from "../../../components/ui/Button";
 import {
   searchEnrollment,
   fetchStudentById,
 } from "../../../api/students/studentApi";
+import { useCourseRules } from "../../../hooks/useCourseRules"; // Single source of truth
 
 export default function GenerateAdmitCard() {
-  const { register, setValue, handleSubmit, watch } = useForm();
+  const { register, setValue, handleSubmit } = useForm();
 
-  // Search & UI State
+  // 1. Search & UI State
   const [searchTerm, setSearchTerm] = useState("");
   const [searchResults, setSearchResults] = useState([]);
   const [isSearching, setIsSearching] = useState(false);
   const [showResults, setShowResults] = useState(false);
-  const [isTyping, setIsTyping] = useState(false); // Guard for selection
+  const [isTyping, setIsTyping] = useState(false);
 
-  // Table State
+  // 2. Custom Hook for Course Rules (Replaces local states)
+  const {
+    durationOptions,
+    courseType, // This replaces your local durationType
+    loading: fetchingRules, // This replaces your local fetchingRules
+    getRulesByCourseName,
+  } = useCourseRules();
+
+  // 3. Table State
   const [admitCards, setAdmitCards] = useState([]);
   const searchContainerRef = useRef(null);
 
-  // --- 1. Debounced Search Logic ---
+  // --- Search Logic ---
   useEffect(() => {
-    // Prevent API calls if not typing or query too short
     if (!isTyping || searchTerm.length < 2) {
       if (searchTerm.length < 2) {
         setSearchResults([]);
@@ -39,48 +46,45 @@ export default function GenerateAdmitCard() {
       setShowResults(true);
       try {
         const response = await searchEnrollment(searchTerm);
-        // Map to student array based on your logged client.js behavior
         const data = response.students || response;
         setSearchResults(Array.isArray(data) ? data : []);
       } catch (err) {
         console.error("Search API Error:", err);
       } finally {
         setIsSearching(false);
-        setIsTyping(false); // Reset typing state after API call
+        setIsTyping(false);
       }
     }, 300);
 
     return () => clearTimeout(delayDebounceFn);
   }, [searchTerm, isTyping]);
 
-  // --- 2. Selection & Auto-Fill Logic ---
+  // --- Student Selection ---
   const selectStudent = async (student) => {
-    console.log("🚀 Selecting Student ID:", student.id);
-
-    // Stop the search effect from firing again
     setIsTyping(false);
     setSearchTerm(student.enrollment_no);
     setValue("enrollmentNo", student.enrollment_no);
     setShowResults(false);
 
     try {
-      const details = await fetchStudentById(student.id);
-      console.log("📥 Mapping Details:", details);
+      const response = await fetchStudentById(student.id);
+      const details = response.data || response;
 
-      // Map the specific JSON keys from your backend logs
-      if (details && details.id) {
-        // setValue("rollNo", details.id);
+      if (details) {
         setValue("course", details.course || "");
         setValue("session", details.session || "");
         setValue("duration", details.duration || "");
-        setValue("stream", details.stream || ""); // Adjust if center name is available
+        setValue("stream", details.stream || "");
+
+        // ✅ Call hook logic to fetch and generate options
+        getRulesByCourseName(details.course);
       }
     } catch (err) {
       console.error("Details Fetch Error:", err);
     }
   };
 
-  // --- 3. Close Results on Outside Click ---
+  // --- Close Results on Outside Click ---
   useEffect(() => {
     const handleClick = (e) => {
       if (
@@ -95,13 +99,12 @@ export default function GenerateAdmitCard() {
   }, []);
 
   const onGenerate = (data) => {
-    console.log("Generate Data:", data);
-    // Add to dummy table for now
     const newEntry = {
       id: Date.now(),
       enrollmentNo: data.enrollmentNo,
       rollNo: data.rollNo,
       courseName: data.course,
+      selectedPart: `${courseType} ${data.selectedDuration}`,
     };
     setAdmitCards([newEntry, ...admitCards]);
   };
@@ -113,7 +116,7 @@ export default function GenerateAdmitCard() {
       <div className="bg-surface border border-border rounded-xl p-6 shadow-sm">
         <form onSubmit={handleSubmit(onGenerate)}>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {/* Enrollment Search Input */}
+            {/* Enrollment Search */}
             <div className="relative" ref={searchContainerRef}>
               <label className="text-sm font-medium text-text mb-2 block">
                 Enrollment No.
@@ -124,13 +127,11 @@ export default function GenerateAdmitCard() {
                 autoComplete="off"
                 onChange={(e) => {
                   setSearchTerm(e.target.value);
-                  setIsTyping(true); // Enable debounce search
+                  setIsTyping(true);
                   setShowResults(true);
                 }}
-                placeholder="Type to search (e.g. ABC/000013)"
                 className="w-full border border-border rounded-lg px-3 py-2 bg-surface focus:ring-2 focus:ring-accent outline-none"
               />
-
               {showResults && (
                 <div className="absolute z-[100] w-full bg-surface border border-border rounded-lg mt-1 shadow-2xl max-h-60 overflow-y-auto">
                   {isSearching ? (
@@ -142,7 +143,7 @@ export default function GenerateAdmitCard() {
                       <div
                         key={s.id}
                         onClick={() => selectStudent(s)}
-                        className="p-3 hover:bg-accent/10 cursor-pointer border-b border-border last:border-0"
+                        className="p-3 hover:bg-accent/10 cursor-pointer border-b border-border"
                       >
                         <div className="font-bold text-sm text-text">
                           {s.enrollment_no}
@@ -152,11 +153,7 @@ export default function GenerateAdmitCard() {
                         </div>
                       </div>
                     ))
-                  ) : (
-                    <div className="p-3 text-sm text-muted text-center">
-                      No students found
-                    </div>
-                  )}
+                  ) : null}
                 </div>
               )}
             </div>
@@ -168,12 +165,37 @@ export default function GenerateAdmitCard() {
               placeholder="Enter roll number"
             />
 
+            {/* Read Only Total Duration */}
             <FormInput
-              label="Duration"
+              label="Total Duration"
               name="duration"
               register={register}
-              placeholder="Enter/Auto-filled"
+              readOnly
+              placeholder="Auto-filled"
             />
+
+            {/* Dynamic Dropdown from Hook */}
+            <div className="space-y-1.5">
+              <label className="text-sm font-medium text-text">
+                Select {courseType || "Part"} *
+              </label>
+              <select
+                {...register("selectedDuration", { required: true })}
+                className="w-full border border-border rounded-lg px-3 py-2 bg-surface text-sm focus:ring-2 focus:ring-accent outline-none"
+              >
+                <option value="">
+                  {fetchingRules
+                    ? "Syncing..."
+                    : `Select ${courseType || "Part"}`}
+                </option>
+                {durationOptions.map((opt) => (
+                  <option key={opt.value} value={opt.value}>
+                    {opt.label}
+                  </option>
+                ))}
+              </select>
+            </div>
+
             <FormInput
               label="Course"
               name="course"
@@ -181,14 +203,13 @@ export default function GenerateAdmitCard() {
               readOnly
               placeholder="Auto-filled"
             />
-
             <FormInput
               label="Stream"
               name="stream"
               register={register}
-              placeholder="Stream"
+              readOnly
+              placeholder="Auto-filled"
             />
-
             <FormInput
               label="Session"
               name="session"
@@ -209,9 +230,9 @@ export default function GenerateAdmitCard() {
           { key: "enrollmentNo", label: "Enrollment No." },
           { key: "rollNo", label: "Roll No." },
           { key: "courseName", label: "Course" },
+          { key: "selectedPart", label: "Exam For" },
         ]}
         data={admitCards}
-        emptyMessage="Generate a card to see history here"
       />
     </div>
   );

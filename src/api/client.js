@@ -25,15 +25,25 @@ export async function apiRequest(endpoint, options = {}) {
     headers,
   });
 
-  // 🔥 Global 401 handler – redirect based on role
-  // 🔥 Fixed Global 401 handler
   if (response.status === 401) {
+    // 1. Clear the invalid session data
     Cookies.remove("authToken");
     localStorage.removeItem("authUser");
 
-    // Force a clean redirect to the portal for everyone
-    window.location.href = "/portal";
-    throw new Error("Session expired. Please login again.");
+    // 2. 🔥 FIX: Only redirect if NOT on a login page
+    // This allows Login components to show their own Error Toasts.
+    const isLoginPage =
+      window.location.pathname.includes("login") ||
+      window.location.pathname === "/portal";
+
+    if (!isLoginPage) {
+      window.location.href = "/portal";
+      throw new Error("Session expired. Please login again.");
+    }
+
+    // If we ARE on a login page, just throw the error so the UI can catch it
+    const errorData = await response.json().catch(() => ({}));
+    throw new Error(errorData.message || "Invalid credentials");
   }
 
   if (!response.ok) {

@@ -17,8 +17,6 @@ export default function ProtectedRoute({ children, allowedRoles }) {
 
   // 2. 🔥 FIX: Strict Authentication Check
   if (!isAuthenticated) {
-    // Redirect to portal if not logged in.
-    // We don't use window.location.pathname here to avoid logic bugs.
     return <Navigate to="/portal" state={{ from: location }} replace />;
   }
 

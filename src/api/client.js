@@ -7,71 +7,62 @@ export async function apiRequest(endpoint, options = {}) {
   const headers = { ...options.headers };
 
   if (token) headers["Authorization"] = `Bearer ${token}`;
-  if (!(options.body instanceof FormData))
+  if (!(options.body instanceof FormData)) {
     headers["Content-Type"] = "application/json";
+  }
 
   const response = await fetch(`${BASE_URL}${endpoint}`, {
     ...options,
     headers,
   });
 
+  // 1. Parse JSON safely
+  const contentType = response.headers.get("content-type");
+  let json = null;
+  if (contentType && contentType.includes("application/json")) {
+    json = await response.json();
+  }
+
+  // 2. Handle 401 Unauthorized / Forbidden
   if (response.status === 401) {
     const isAuthPage =
       window.location.pathname.includes("login") ||
       window.location.pathname === "/portal";
+    const backendError = json?.message || json?.errors || "Unauthorized access";
 
-    // ✅ NEW: Extract the actual backend error message
-    let backendError = "";
-    try {
-      const errorJson = await response.json();
-      backendError = errorJson.message || errorJson.error || "Unauthorized";
-    } catch (e) {
-      backendError = "Could not parse backend error.";
-    }
-
-    // Scenario A: Logged in but forbidden
     if (token && !isAuthPage) {
-      // 🕵️‍♂️ Debugging: This will show in your console
-      console.error("❌ BACKEND PERMISSION ERROR:", {
-        endpoint,
-        backendMessage: backendError,
-        status: 401,
-      });
-
-      throw new Error(
-        backendError || "You don't have permission to perform this action.",
-      );
+      console.error("❌ PERMISSION ERROR:", backendError);
+      throw new Error(backendError);
     }
 
-    // Scenario B: Actual session expiry (no token)
     if (!isAuthPage) {
       Cookies.remove("authToken");
       localStorage.removeItem("authUser");
       window.location.href = "/portal";
       throw new Error("Session expired. Please login again.");
     }
-
-    throw new Error(backendError || "Invalid credentials.");
+    throw new Error(backendError);
   }
 
-  // ... rest of your code
+  // 3. Handle 422 and other HTTP Errors (CRITICAL FIX HERE)
   if (!response.ok) {
-    const text = await response.text();
-    throw new Error(text || `HTTP ${response.status}`);
+    // If backend provides a specific message or error array, use it
+    const errorMessage =
+      json?.message ||
+      (Array.isArray(json?.errors) ? json.errors[0] : null) ||
+      `Error ${response.status}: ${response.statusText}`;
+
+    throw new Error(errorMessage);
   }
 
-  const json = await (response.headers
-    .get("content-type")
-    ?.includes("application/json")
-    ? response.json()
-    : Promise.resolve(null));
-
-  if (json?.success === false) {
-    throw new Error(
+  // 4. Handle Logical Errors (Status 200 but success: false)
+  if (json && json.success === false) {
+    const logicalError =
       json.message ||
-        (Array.isArray(json.errors) ? json.errors[0] : "Request failed"),
-    );
+      (Array.isArray(json.errors) ? json.errors[0] : "Request failed");
+    throw new Error(logicalError);
   }
 
-  return json?.data ?? json?.errors ?? json;
+  // 5. Return Clean Data
+  return json?.data ?? json;
 }

@@ -9,27 +9,31 @@ import {
 const variants = {
   success: {
     icon: HiCheckCircle,
-    bg: "bg-success/10",
-    text: "text-success",
+    bg: "bg-success/10", // Uses --color-success
+    text: "text-success", // Uses --color-success
     border: "border-success/20",
+    bar: "bg-success", // Solid color for the progress bar
   },
   error: {
     icon: HiXCircle,
-    bg: "bg-danger/10",
-    text: "text-danger",
+    bg: "bg-danger/10", // Uses --color-danger
+    text: "text-danger", // Uses --color-danger
     border: "border-danger/20",
+    bar: "bg-danger",
   },
   warning: {
     icon: HiExclamation,
-    bg: "bg-warning/10",
-    text: "text-warning",
+    bg: "bg-warning/10", // Uses --color-warning
+    text: "text-warning", // Uses --color-warning
     border: "border-warning/20",
+    bar: "bg-warning",
   },
   info: {
     icon: HiInformationCircle,
-    bg: "bg-primary/10",
-    text: "text-primary",
+    bg: "bg-primary/10", // Uses --color-primary
+    text: "text-primary", // Uses --color-primary
     border: "border-primary/20",
+    bar: "bg-primary",
   },
 };
 
@@ -48,21 +52,16 @@ export default function Toast({
 
   useEffect(() => {
     let interval;
-
-    // If we aren't paused and there is time left, start the countdown
     if (!isPaused && timeRemaining > 0) {
       interval = setInterval(() => {
         setTimeRemaining((prev) => Math.max(0, prev - 10));
       }, 10);
     } else if (timeRemaining <= 0) {
-      // Once time hits zero, trigger the close logic
       onClose && onClose();
     }
-
     return () => clearInterval(interval);
   }, [isPaused, timeRemaining, onClose]);
 
-  // Calculate progress percentage based on remaining time
   const progress = (timeRemaining / duration) * 100;
 
   if (timeRemaining <= 0) return null;
@@ -77,9 +76,9 @@ export default function Toast({
         <div
           className={`bg-surface border ${config.border} shadow-lg rounded-lg p-3 sm:p-4 flex items-start gap-3 relative overflow-hidden cursor-default`}
         >
-          {/* Progress bar */}
+          {/* ✅ Fixed Progress Bar Color */}
           <div
-            className={`absolute bottom-0 left-0 h-0.5 ${config.bg.replace("/10", "")} transition-all duration-10 ease-linear`}
+            className={`absolute bottom-0 left-0 h-0.5 ${config.bar} transition-all duration-10 ease-linear`}
             style={{ width: `${progress}%` }}
           />
 
@@ -105,7 +104,7 @@ export default function Toast({
               setTimeRemaining(0);
               onClose && onClose();
             }}
-            className="text-muted hover:text-text p-1 rounded-lg hover:bg-bg transition-colors shrink-0"
+            className="text-muted hover:text-text p-1 rounded-lg hover:bg-bg transition-colors shrink-0 cursor-pointer"
             aria-label="Close"
           >
             <svg

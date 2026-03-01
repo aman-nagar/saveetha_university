@@ -1,7 +1,6 @@
-// src/pages/admin/students/GenerateAdmitCardPage.jsx
 import { useForm } from "react-hook-form";
 import { useRef, useEffect, useState } from "react";
-import { useAcademicFlow } from "../../../hooks/useAcademicFlow"; // ✅ New Shared Hook
+import { useAcademicFlow } from "../../../hooks/useAcademicFlow";
 import { useToast } from "../../../hooks/useToast";
 import Toast from "../../../components/ui/Toast";
 import Button from "../../../components/ui/Button";
@@ -10,27 +9,36 @@ import ScheduleTable from "../../../components/admin/students/admit-card/Schedul
 import Table from "../../../components/table/Table";
 import Modal from "../../../components/ui/Modal";
 import {
+  FaRegEye,
+  FaTrashAlt,
+  FaEdit,
+  FaTimes,
+  FaExclamationTriangle,
+} from "react-icons/fa";
+import {
   fetchAdmitCardById,
   createAdmitCard,
+  updateAdmitCard,
   fetchAdmitCards,
+  hardDeleteAdmitCard,
 } from "../../../api/students/admitCardApi";
 import AdmitCardDetails from "../../../components/admin/students/admit-card/AdmitCardDetails";
 
 export default function GenerateAdmitCardPage() {
   const [viewData, setViewData] = useState(null);
+  const [deleteId, setDeleteId] = useState(null); // ✅ State for Delete Confirmation Modal
   const [loadingDetails, setLoadingDetails] = useState(false);
-  const [admitCards, setAdmitCards] = useState([]); // Moved from old logic hook
-  const [isSubmitting, setIsSubmitting] = useState(false); // Moved from old logic hook
+  const [admitCards, setAdmitCards] = useState([]);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [editingId, setEditingId] = useState(null);
 
   const { toast, show, clear } = useToast();
   const { register, setValue, handleSubmit, watch, reset } = useForm();
   const selectedPart = watch("selectedDuration");
   const searchContainerRef = useRef(null);
 
-  // ✅ Instantiate the shared academic flow
   const academicFlow = useAcademicFlow(setValue);
 
-  // ✅ 1. Load history locally
   const loadHistory = async () => {
     try {
       const records = await fetchAdmitCards();
@@ -50,28 +58,81 @@ export default function GenerateAdmitCardPage() {
     }
   }, [selectedPart, academicFlow.loadSubjectsForPart]);
 
-  const handleViewCard = async (id) => {
+  // ✅ 1. Improved Edit Logic: Fetches full details to get the missing Student ID
+  const handleEdit = async (record) => {
     setLoadingDetails(true);
     try {
-      const data = await fetchAdmitCardById(id);
-      setViewData(data);
+      const fullDetailRes = await fetchAdmitCardById(record.id);
+      const details = fullDetailRes.data || fullDetailRes;
+
+      if (!details.student_id) {
+        throw new Error("Student ID not found in record details.");
+      }
+
+      setEditingId(details.id);
+      academicFlow.setSearchTerm(details.enrollment_no);
+
+      // Select student using the ID from full details to avoid 'undefined' errors
+      await academicFlow.selectStudent({
+        id: details.student_id,
+        enrollment_no: details.enrollment_no,
+      });
+
+      // Populate form fields
+      setValue("rollNo", details.roll_number);
+      setValue("session", details.session);
+      setValue("selectedDuration", String(details.duration));
+
+      // Load subjects and set schedule
+      await academicFlow.loadSubjectsForPart(details.duration);
+
+      details.subjects?.forEach((sub) => {
+        setValue(`schedule.${sub.subject_id}.date`, sub.exam_date);
+        setValue(
+          `schedule.${sub.subject_id}.start_time`,
+          sub.start_time?.substring(0, 5),
+        );
+        setValue(
+          `schedule.${sub.subject_id}.end_time`,
+          sub.end_time?.substring(0, 5),
+        );
+      });
+
+      window.scrollTo({ top: 0, behavior: "smooth" });
     } catch (err) {
-      show("error", "Failed to load admit card details.");
+      show("error", err.message);
     } finally {
       setLoadingDetails(false);
     }
   };
 
-  // ✅ 3. Re-implemented Submission Logic inside the page
-  const onGenerate = async (formData) => {
-    if (academicFlow.subjects.length === 0) {
-      show("error", "No subjects found to generate schedule.");
-      return;
-    }
+  const cancelEdit = () => {
+    setEditingId(null);
+    reset();
+    academicFlow.setSearchTerm("");
+  };
 
+  // ✅ 2. Modal-based Delete Logic
+  const confirmDelete = async () => {
+    if (!deleteId) return;
+    setIsSubmitting(true);
+    try {
+      await hardDeleteAdmitCard(deleteId);
+      show("success", "Admit card permanently deleted.");
+      setDeleteId(null);
+      loadHistory();
+    } catch (err) {
+      show("error", err.message || "Failed to delete admit card.");
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const onFormSubmit = async (formData) => {
     setIsSubmitting(true);
     try {
       const payload = {
+        id: editingId,
         student_id: Number(academicFlow.studentId),
         roll_number: String(formData.rollNo),
         session: String(formData.session),
@@ -83,72 +144,100 @@ export default function GenerateAdmitCardPage() {
           return {
             subject_id: Number(sub.id),
             exam_date: schedule?.date || "",
-            start_time: schedule?.start_time
-              ? `${schedule.start_time}:00`
-              : "10:00:00",
-            end_time: schedule?.end_time
-              ? `${schedule.end_time}:00`
-              : "12:00:00",
+            start_time: `${schedule?.start_time || "10:00"}:00`,
+            end_time: `${schedule?.end_time || "12:00"}:00`,
           };
         }),
       };
 
-      await createAdmitCard(payload);
-      show("success", "Admit Card generated and saved successfully!");
-      reset();
-      academicFlow.setSearchTerm("");
+      if (editingId) {
+        await updateAdmitCard(payload);
+        show("success", "Admit Card updated successfully!");
+      } else {
+        await createAdmitCard(payload);
+        show("success", "Admit Card generated successfully!");
+      }
+
+      cancelEdit();
       loadHistory();
     } catch (err) {
-      show("error", err.message || "Failed to generate admit card.");
+      show("error", err.message || "Action failed.");
     } finally {
       setIsSubmitting(false);
     }
   };
 
-  // ── Logic Object Wrapper (To keep AdmitCardForm.jsx working without changes) ──
-  const logic = {
-    ...academicFlow,
-    admitCards,
-    isSubmitting,
+  const handleViewCard = async (id) => {
+    setLoadingDetails(true);
+    try {
+      const data = await fetchAdmitCardById(id);
+      setViewData(data);
+    } catch (err) {
+      show("error", "Failed to load details.");
+    } finally {
+      setLoadingDetails(false);
+    }
   };
 
+  const logic = { ...academicFlow, admitCards, isSubmitting };
+
   const columns = [
-    {
-      key: "enrollment_no",
-      label: "Enrollment",
-      render: (r) => r.enrollment_no || "—",
-    },
-    {
-      key: "candidate_name",
-      label: "Student Name",
-      render: (r) => r.candidate_name || "N/A",
-    },
+    { key: "enrollment_no", label: "Enrollment" },
+    { key: "candidate_name", label: "Student" },
     { key: "roll_number", label: "Roll No." },
     {
       key: "exam",
-      label: "Exam For",
+      label: "Exam",
       render: (r) => `${r.duration_type} ${r.duration}`,
     },
-    { key: "session", label: "Session" },
     {
       key: "actions",
-      label: "View",
+      label: "Actions",
       render: (row) => (
-        <button
-          onClick={() => handleViewCard(row.id)}
-          className="text-primary hover:underline font-medium text-xs"
-        >
-          View Details
-        </button>
+        <div className="flex items-center gap-3">
+          <button
+            onClick={() => handleViewCard(row.id)}
+            className="text-primary cursor-pointer hover:opacity-80 transition"
+          >
+            <FaRegEye size="18" />
+          </button>
+          <button
+            onClick={() => handleEdit(row)}
+            className="text-accent cursor-pointer hover:opacity-80 transition"
+          >
+            <FaEdit size="18" />
+          </button>
+          <button
+            onClick={() => setDeleteId(row.id)}
+            className="text-danger cursor-pointer hover:opacity-80 transition"
+          >
+            <FaTrashAlt size="16" />
+          </button>
+        </div>
       ),
     },
   ];
 
   return (
     <div className="w-full p-4 space-y-6">
-      <h1 className="text-2xl font-semibold text-text">Generate Admit Card</h1>
-      <div className="bg-surface border border-border rounded-xl p-6 shadow-sm">
-        <form onSubmit={handleSubmit(onGenerate)}>
+      <div className="flex justify-between items-center">
+        <h1 className="text-2xl font-semibold text-text">
+          {editingId ? "Update Admit Card" : "Generate Admit Card"}
+        </h1>
+        {editingId && (
+          <button
+            onClick={cancelEdit}
+            className="flex items-center gap-2 text-danger text-sm font-bold border border-danger/20 px-3 py-1 rounded-lg bg-danger/5 hover:bg-danger/10 cursor-pointer transition-colors"
+          >
+            <FaTimes /> Cancel Edit
+          </button>
+        )}
+      </div>
+
+      <div
+        className={`bg-surface border rounded-xl p-6 shadow-sm transition-all ${editingId ? "border-accent ring-1 ring-accent/20" : "border-border"}`}
+      >
+        <form onSubmit={handleSubmit(onFormSubmit)}>
           <AdmitCardForm
             register={register}
             logic={logic}
@@ -165,12 +254,54 @@ export default function GenerateAdmitCardPage() {
           )}
           <div className="flex justify-end mt-6">
             <Button type="submit" disabled={isSubmitting}>
-              {isSubmitting ? "Generating..." : "Generate Admit Card"}
+              {isSubmitting
+                ? "Processing..."
+                : editingId
+                  ? "Update Admit Card"
+                  : "Generate Admit Card"}
             </Button>
           </div>
         </form>
       </div>
-      <Table title="Admit Card History" columns={columns} data={admitCards} />
+
+      <Table title="History" columns={columns} data={admitCards} />
+
+      {/* ✅ 3. RESTORED: Custom Deletion Confirmation Modal */}
+      <Modal
+        isOpen={!!deleteId}
+        onClose={() => setDeleteId(null)}
+        title="Confirm Deletion"
+        size="sm"
+      >
+        <div className="p-6 text-center space-y-4">
+          <div className="w-16 h-16 bg-danger/10 text-danger rounded-full flex items-center justify-center mx-auto">
+            <FaExclamationTriangle size="32" />
+          </div>
+          <div>
+            <h3 className="text-lg font-bold text-text">Are you sure?</h3>
+            <p className="text-sm text-muted">
+              This will permanently delete the admit card from the database.
+              This action cannot be undone.
+            </p>
+          </div>
+          <div className="flex gap-3 pt-4">
+            <button
+              onClick={() => setDeleteId(null)}
+              className="flex-1 px-4 py-2 border border-border rounded-lg hover:bg-bg transition cursor-pointer"
+            >
+              Cancel
+            </button>
+            <button
+              onClick={confirmDelete}
+              disabled={isSubmitting}
+              className="flex-1 px-4 py-2 bg-danger text-white rounded-lg hover:opacity-90 transition cursor-pointer disabled:opacity-50"
+            >
+              {isSubmitting ? "Deleting..." : "Delete Permanently"}
+            </button>
+          </div>
+        </div>
+      </Modal>
+
       <Modal
         isOpen={!!viewData}
         onClose={() => setViewData(null)}
@@ -178,14 +309,16 @@ export default function GenerateAdmitCardPage() {
         size="full"
       >
         {loadingDetails ? (
-          <div className="py-20 text-center animate-pulse text-muted">
+          <div className="py-20 text-center animate-pulse">
             Loading Details...
           </div>
         ) : (
           <AdmitCardDetails data={viewData} />
         )}
       </Modal>
-      {toast && <Toast toast={toast} onClose={clear} />}
+
+      {/* ✅ 4. Fixed Toast Props spread to ensure type="error" renders correctly */}
+      {toast && <Toast {...toast} onClose={clear} />}
     </div>
   );
 }

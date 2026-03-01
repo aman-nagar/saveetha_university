@@ -1,4 +1,3 @@
-// src/components/ui/Toast.jsx
 import { useEffect, useState } from "react";
 import {
   HiCheckCircle,
@@ -41,42 +40,46 @@ export default function Toast({
   duration = 3000,
   onClose,
 }) {
-  const [visible, setVisible] = useState(true);
-  const [progress, setProgress] = useState(100);
+  const [isPaused, setIsPaused] = useState(false);
+  const [timeRemaining, setTimeRemaining] = useState(duration);
+
   const config = variants[type] || variants.info;
   const Icon = config.icon;
 
   useEffect(() => {
-    const startTime = Date.now();
+    let interval;
 
-    const progressInterval = setInterval(() => {
-      const elapsed = Date.now() - startTime;
-      const remaining = Math.max(0, 100 - (elapsed / duration) * 100);
-      setProgress(remaining);
-    }, 16);
-
-    const timer = setTimeout(() => {
-      setVisible(false);
+    // If we aren't paused and there is time left, start the countdown
+    if (!isPaused && timeRemaining > 0) {
+      interval = setInterval(() => {
+        setTimeRemaining((prev) => Math.max(0, prev - 10));
+      }, 10);
+    } else if (timeRemaining <= 0) {
+      // Once time hits zero, trigger the close logic
       onClose && onClose();
-    }, duration);
+    }
 
-    return () => {
-      clearTimeout(timer);
-      clearInterval(progressInterval);
-    };
-  }, [duration, onClose]);
+    return () => clearInterval(interval);
+  }, [isPaused, timeRemaining, onClose]);
 
-  if (!visible) return null;
+  // Calculate progress percentage based on remaining time
+  const progress = (timeRemaining / duration) * 100;
+
+  if (timeRemaining <= 0) return null;
 
   return (
-    <div className="fixed top-4 left-4 right-4 sm:top-5 sm:right-5 sm:left-auto z-50 flex flex-col gap-2 sm:gap-3 items-stretch sm:items-end">
+    <div
+      className="fixed top-4 left-4 right-4 sm:top-5 sm:right-5 sm:left-auto z-50 flex flex-col gap-2 sm:gap-3 items-stretch sm:items-end"
+      onMouseEnter={() => setIsPaused(true)}
+      onMouseLeave={() => setIsPaused(false)}
+    >
       <div className="w-full max-w-[calc(100vw-2rem)] sm:max-w-sm animate-in slide-in-from-right-5 duration-200">
         <div
-          className={`bg-surface border ${config.border} shadow-lg rounded-lg p-3 sm:p-4 flex items-start gap-3 relative overflow-hidden`}
+          className={`bg-surface border ${config.border} shadow-lg rounded-lg p-3 sm:p-4 flex items-start gap-3 relative overflow-hidden cursor-default`}
         >
           {/* Progress bar */}
           <div
-            className={`absolute bottom-0 left-0 h-0.5 ${config.bg.replace("/10", "")} transition-all duration-100 ease-linear`}
+            className={`absolute bottom-0 left-0 h-0.5 ${config.bg.replace("/10", "")} transition-all duration-10 ease-linear`}
             style={{ width: `${progress}%` }}
           />
 
@@ -99,7 +102,7 @@ export default function Toast({
 
           <button
             onClick={() => {
-              setVisible(false);
+              setTimeRemaining(0);
               onClose && onClose();
             }}
             className="text-muted hover:text-text p-1 rounded-lg hover:bg-bg transition-colors shrink-0"

@@ -30,17 +30,20 @@ import LoginPortal from "./pages/auth/LoginPortal";
 import CenterLogin from "./pages/auth/CenterLogin";
 import AdminLogin from "./pages/auth/AdminLogin";
 import StudentLogin from "./pages/auth/StudentLogin";
+import FormEnabledRoute from "./context/FormEnabledRoute";
 
 function App() {
   return (
     <AuthProvider>
       <BrowserRouter>
         <Routes>
+          {/* Auth Routes */}
           <Route path="/portal" element={<LoginPortal />} />
           <Route path="/login" element={<StudentLogin />} />
           <Route path="/admin/login" element={<AdminLogin />} />
           <Route path="/center/login" element={<CenterLogin />} />
-          {/* Public + Login */}
+
+          {/* Public Routes */}
           <Route element={<PublicLayout />}>
             <Route path="/" element={<Home />} />
             <Route path="/about" element={<About />} />
@@ -48,7 +51,7 @@ function App() {
             <Route path="/news" element={<News />} />
           </Route>
 
-          {/* Admin – full access */}
+          {/* Admin Section */}
           <Route
             path="/admin"
             element={
@@ -58,28 +61,24 @@ function App() {
             }
           >
             <Route index element={<AdminDashboard />} />
-            {/* course menu*/}
+            <Route path="students" element={<StudentListPage />} />
+            <Route path="students/add" element={<AddStudent />} />
+            <Route path="students/edit/:id" element={<EditStudent />} />
+            <Route path="centers/add" element={<AddCenterPage />} />
+            <Route path="centers" element={<CenterListPage />} />
+            <Route
+              path="admit-card/generate"
+              element={<GenerateAdmitCardPage />}
+            />
             <Route path="course-category" element={<CourseCategoryPage />} />
             <Route path="faculty" element={<FacultyPage />} />
             <Route path="course" element={<CoursePage />} />
             <Route path="stream" element={<StreamPage />} />
             <Route path="subject" element={<SubjectPage />} />
-            {/* students menu */}
-            <Route path="students" element={<StudentListPage />} />
-            <Route path="students/add" element={<AddStudent />} />
-            <Route path="students/edit/:id" element={<EditStudent />} />
-            <Route
-              path="admit-card/generate"
-              element={<GenerateAdmitCardPage />}
-            />
-            {/* centers menu */}
-            <Route path="centers/add" element={<AddCenterPage />} />
-            <Route path="centers" element={<CenterListPage />} />
-            {/* settings menu */}
             <Route path="site-settings" element={<SiteSettingsPage />} />
           </Route>
 
-          {/* Center role – limited access */}
+          {/* Center Section - FIXED: Added child routes for role silo */}
           <Route
             path="/center"
             element={
@@ -89,21 +88,32 @@ function App() {
             }
           >
             <Route index element={<CenterDashboardPage />} />
+            <Route path="students" element={<StudentListPage />} />
+
+            <Route
+              path="sub-centers/add"
+              element={
+                <FormEnabledRoute>
+                  <AddCenterPage />
+                </FormEnabledRoute>
+              }
+            />
           </Route>
 
-          {/* Sub-center - FIXED with role protection */}
+          {/* Sub-center Section */}
           <Route
             path="/sub-center"
             element={
-              <ProtectedRoute allowedRoles={["sub-center", "admin"]}>
+              <ProtectedRoute allowedRoles={["sub-center"]}>
                 <CenterLayout />
               </ProtectedRoute>
             }
           >
             <Route index element={<SubCenterDashboardPage />} />
+            <Route path="students" element={<StudentListPage />} />
           </Route>
 
-          {/* Student - FIXED with role protection */}
+          {/* Student Portal */}
           <Route
             path="/student-dashboard"
             element={
@@ -113,7 +123,6 @@ function App() {
             }
           />
 
-          {/* Optional: Fallback for unauthorized access */}
           <Route path="/unauthorized" element={<UnauthorizedPage />} />
         </Routes>
       </BrowserRouter>

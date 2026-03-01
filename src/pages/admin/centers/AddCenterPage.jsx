@@ -5,7 +5,7 @@ import FormInput from "../../../components/form/FormInput";
 import FormTextarea from "../../../components/form/FormTextarea";
 import FormSelect from "../../../components/form/FormSelect";
 import FormFileInput from "../../../components/form/FormFileInput";
-import { useNavigate, useSearchParams } from "react-router-dom";
+import { redirect, useNavigate, useSearchParams } from "react-router-dom";
 import { useEffect, useState, useRef } from "react";
 import Button from "../../../components/ui/Button";
 import Toast from "../../../components/ui/Toast";
@@ -16,8 +16,12 @@ import {
   fetchCenterById,
 } from "../../../api/center/centerApi";
 import { FaSpinner } from "react-icons/fa";
+import { useAuth } from "../../../context/AuthContext";
+import { allStates } from "../../../utils/staticData";
 
 export default function AddCenterPage() {
+  const { user } = useAuth();
+  const isAdmin = user?.role === "admin";
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [loading, setLoading] = useState(false);
   const [centerData, setCenterData] = useState(null);
@@ -26,7 +30,8 @@ export default function AddCenterPage() {
   const [searchParams] = useSearchParams();
   const centerId = searchParams.get("id");
   const isEditMode = !!centerId;
-
+  const listPath = isAdmin ? "/admin/centers" : "/center/sub-centers";
+  const labelPrefix = isAdmin ? "Center" : "Sub-center";
   const initialLoadDone = useRef(false);
 
   const {
@@ -121,13 +126,15 @@ export default function AddCenterPage() {
       // 4. Submit using the corrected API functions
       if (isEditMode) {
         await updateCenter(formData);
-        show("success", "Center updated successfully!");
+        show("success", `${labelPrefix} updated successfully!`);
       } else {
         await createCenter(formData);
-        show("success", "Center created successfully!");
+        show("success", `${labelPrefix} created successfully!`);
       }
 
-      setTimeout(() => navigate("/admin/centers"), 1500);
+      // ✅ 4. Use dynamic path for redirect
+      const redirectPath = isAdmin ? "/admin/centers" : "/center";
+      setTimeout(() => navigate(redirectPath), 1500);
     } catch (err) {
       show("error", err.message || "Action failed");
     } finally {
@@ -153,20 +160,20 @@ export default function AddCenterPage() {
       {/* Page heading */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
         <h1 className="text-xl sm:text-2xl font-semibold text-text">
-          {isEditMode ? "Edit Center" : "Create New Center"}
+          {isEditMode ? `Edit ${labelPrefix}` : `Create New ${labelPrefix}`}
         </h1>
         <button
           type="button"
-          onClick={() => navigate("/admin/centers")}
+          onClick={() => navigate(listPath)}
           className="self-start sm:self-auto text-sm text-muted hover:text-primary border border-border px-3 py-1.5 rounded-md transition-colors"
         >
-          ← Back to Centers
+          ← Back to {isAdmin ? "Centers" : "centers"}
         </button>
       </div>
 
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
         {/* SECTION 1: PERSONAL & INSTITUTE BASIC DETAILS */}
-        <FormSection title="Franchisee Basic Information" columns={2}>
+        <FormSection title={`${labelPrefix} Basic Information`} columns={2}>
           <FormInput
             label="Institute Owner Name"
             name="institute_owner_name"
@@ -237,22 +244,15 @@ export default function AddCenterPage() {
             register={register}
             required="State is required"
             error={errors.state}
-            options={[
-              { label: "Uttar Pradesh", value: "Uttar Pradesh" },
-              { label: "Madhya Pradesh", value: "Madhya Pradesh" },
-            ]}
+            options={allStates}
           />
 
-          <FormSelect
+          <FormInput
             label="District"
             name="district"
             register={register}
             required="District is required"
             error={errors.district}
-            options={[
-              { label: "Lucknow", value: "Lucknow" },
-              { label: "Kanpur", value: "Kanpur" },
-            ]}
           />
 
           <FormInput
@@ -307,13 +307,13 @@ export default function AddCenterPage() {
         <div className="flex flex-col-reverse sm:flex-row justify-end gap-3">
           <Button
             variant="danger"
-            onClick={() => navigate("/admin/centers")}
+            onClick={() => navigate(listPath)}
             disabled={isSubmitting}
           >
             Cancel
           </Button>
           <Button type="submit" loading={isSubmitting}>
-            {isEditMode ? "Update Center" : "Create Center"}
+            {isEditMode ? `Update ${labelPrefix}` : `Create ${labelPrefix}`}
           </Button>
         </div>
       </form>

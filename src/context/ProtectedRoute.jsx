@@ -4,7 +4,6 @@ import { useAuth } from "./AuthContext";
 
 export default function ProtectedRoute({ children, allowedRoles }) {
   const { isAuthenticated, user, loading } = useAuth();
-  const location = useLocation();
 
   // 1. Wait for AuthContext to finish loading from localStorage
   if (loading) {
@@ -15,9 +14,8 @@ export default function ProtectedRoute({ children, allowedRoles }) {
     );
   }
 
-  // 2. 🔥 FIX: Strict Authentication Check
   if (!isAuthenticated) {
-    return <Navigate to="/portal" state={{ from: location }} replace />;
+    return <Navigate to="/portal" replace />;
   }
 
   // 3. Strict Role Check

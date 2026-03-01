@@ -35,12 +35,26 @@ export function AuthProvider({ children }) {
     });
   };
 
-  const logout = () => {
-    Cookies.remove("authToken");
-    localStorage.clear(); // Wipes all user data completely
-    setUser(null);
-    // Optional: Redirect to portal immediately
-    window.location.href = "/portal";
+  const logout = async () => {
+    try {
+      // 1. Call the backend based on current user role
+      if (user?.role === "admin") await logoutAdmin();
+      else if (user?.role === "center") await logoutCenter();
+      else if (user?.role === "student") await logoutStudent();
+    } catch (error) {
+      console.error(
+        "Backend logout failed, clearing local session anyway",
+        error,
+      );
+    } finally {
+      // 2. Always clear local data even if API fails
+      Cookies.remove("authToken");
+      localStorage.clear();
+      setUser(null);
+
+      // 3. Redirect to the central portal
+      window.location.href = "/portal";
+    }
   };
 
   return (

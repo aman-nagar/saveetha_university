@@ -22,6 +22,7 @@ import {
   deleteStudent,
   restoreStudent,
 } from "../../../api/students/studentApi";
+import { useAuth } from "../../../context/AuthContext";
 
 /* ─── Small PDF download helper ─── */
 function downloadStudentPdf(student) {
@@ -81,20 +82,17 @@ function downloadStudentPdf(student) {
 }
 
 /* ─── Clickable status toggle badge ─── */
-function StatusToggle({ row, onToggle }) {
+function StatusToggle({ row, onToggle, disabled }) {
   const isActive = row.status === 1;
   return (
     <button
-      onClick={() => onToggle(row)}
-      title="Click to toggle status"
+      onClick={() => !disabled && onToggle(row)}
+      disabled={disabled}
+      title={disabled ? "Access Denied" : "Click to toggle status"}
       className={`
         inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold
-        transition-colors cursor-pointer
-        ${
-          isActive
-            ? "bg-green-100 text-green-700 hover:bg-green-200"
-            : "bg-yellow-100 text-yellow-700 hover:bg-yellow-200"
-        }
+        transition-colors ${disabled ? "cursor-not-allowed opacity-70" : "cursor-pointer"}
+        ${isActive ? "bg-green-100 text-green-700 hover:bg-green-200" : "bg-yellow-100 text-yellow-700 hover:bg-yellow-200"}
       `}
     >
       <span
@@ -106,9 +104,15 @@ function StatusToggle({ row, onToggle }) {
 }
 
 export default function StudentListPage() {
+  const { user } = useAuth();
+  const isAdmin = user?.role === "admin";
   const { toast, show, clear } = useToast();
   const navigate = useNavigate();
-
+  const basePath = isAdmin
+    ? "/admin"
+    : user?.role === "center"
+      ? "/center"
+      : "/sub-center";
   const [students, setStudents] = useState([]);
   const [search, setSearch] = useState("");
   const [loading, setLoading] = useState(false);
@@ -167,7 +171,7 @@ export default function StudentListPage() {
     }
   };
 
-  const handleEdit = (row) => navigate(`/admin/students/edit/${row.id}`);
+  const handleEdit = (row) => navigate(`${basePath}/students/edit/${row.id}`);
 
   const handleToggleStatus = async (row) => {
     const newStatus = row.status === 1 ? 0 : 1;
@@ -257,46 +261,55 @@ export default function StudentListPage() {
       label: "Status",
       render: (row) =>
         mode === "active" ? (
-          <StatusToggle row={row} onToggle={handleToggleStatus} />
+          <StatusToggle
+            row={row}
+            onToggle={handleToggleStatus}
+            disabled={!isAdmin}
+          />
         ) : (
           <span className="text-xs text-text-muted">—</span>
         ),
     },
   ];
 
-  // ── Actions ──
+  const activeActions = [
+    {
+      icon: <FaEye />,
+      title: "View",
+      className:
+        "p-2 bg-primary text-white rounded hover:opacity-80 transition",
+      onClick: handleView,
+    },
+    {
+      icon: <FaPen />,
+      title: "Edit",
+      className:
+        "p-2 bg-blue-600 text-white rounded hover:opacity-80 transition",
+      onClick: handleEdit,
+    },
+    {
+      icon: <FaFilePdf />,
+      title: "Download PDF",
+      className:
+        "p-2 bg-orange-500 text-white rounded hover:opacity-80 transition",
+      onClick: handleDownloadPdf,
+    },
+  ];
+
+  // Only add Delete to Admin
+  if (isAdmin) {
+    activeActions.push({
+      icon: <FaTrash />,
+      title: "Delete",
+      className:
+        "p-2 bg-red-600 text-white rounded hover:opacity-80 transition",
+      onClick: handleDelete,
+    });
+  }
+
   const actions =
     mode === "active"
-      ? [
-          {
-            icon: <FaEye />,
-            title: "View",
-            className:
-              "p-2 bg-primary text-white rounded hover:opacity-80 transition",
-            onClick: handleView,
-          },
-          {
-            icon: <FaPen />,
-            title: "Edit",
-            className:
-              "p-2 bg-blue-600 text-white rounded hover:opacity-80 transition",
-            onClick: handleEdit,
-          },
-          {
-            icon: <FaFilePdf />,
-            title: "Download PDF",
-            className:
-              "p-2 bg-orange-500 text-white rounded hover:opacity-80 transition",
-            onClick: handleDownloadPdf,
-          },
-          {
-            icon: <FaTrash />,
-            title: "Delete",
-            className:
-              "p-2 bg-red-600 text-white rounded hover:opacity-80 transition",
-            onClick: handleDelete,
-          },
-        ]
+      ? activeActions
       : [
           {
             icon: <FaRecycle />,

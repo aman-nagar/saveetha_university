@@ -7,8 +7,10 @@ import SidebarHeader from "../SidebarHeader";
 import SidebarSearch from "../SidebarSearch";
 import SidebarFooter from "../SidebarFooter";
 import MobileNavDrawer from "../MobileNavDrawer";
+import { useAuth } from "../../../../context/AuthContext";
 
 export const AdminSidebar = ({ theme, toggleTheme }) => {
+  const { user } = useAuth();
   const location = useLocation();
   const sidebarRef = useRef(null);
 
@@ -26,7 +28,6 @@ export const AdminSidebar = ({ theme, toggleTheme }) => {
 
   // Mobile drawer state
   const [isMobileOpen, setIsMobileOpen] = useState(false);
-
   const [expandedMenus, setExpandedMenus] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
 
@@ -52,15 +53,19 @@ export const AdminSidebar = ({ theme, toggleTheme }) => {
     );
   };
 
-  const isActive = (path) => location.pathname === path;
+  const filteredMenuItems = menuItems
+    .filter((menu) => menu.roles.includes(user?.role))
+    .map((menu) => ({
+      ...menu,
+      children: menu.children.filter((child) => {
+        const roleMatch = !child.roles || child.roles.includes(user?.role);
+        // ✅ NEW: Check the condition if it exists
+        const conditionMatch = !child.condition || child.condition(user);
 
-  const filteredMenuItems = menuItems.filter(
-    (menu) =>
-      menu.label.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      menu.children.some((child) =>
-        child.label.toLowerCase().includes(searchTerm.toLowerCase()),
-      ),
-  );
+        return roleMatch && conditionMatch;
+      }),
+    }))
+    .filter((menu) => menu.children.length > 0);
 
   // Hover logic
   const handleMouseEnter = () => {
@@ -68,6 +73,8 @@ export const AdminSidebar = ({ theme, toggleTheme }) => {
       setIsCollapsed(false);
     }
   };
+
+  const isActive = (path) => location.pathname === path;
 
   const handleMouseLeave = () => {
     if (!isPinned) {

@@ -3,11 +3,11 @@ import { useAuth } from "../../../context/AuthContext";
 
 export default function SidebarFooter({ isCollapsed }) {
   // Use a safety check to avoid the "null" destructuring error
-  const auth = useAuth();
+  const { user, logout, loading } = useAuth();
 
-  if (!auth) return null; // Guard against null context
-
-  const { user, logout } = auth;
+  if (loading)
+    return <div className="p-4 text-white/20 text-xs">Loading...</div>;
+  if (!user) return null;
 
   return (
     <div className="p-2 border-t border-white/10">

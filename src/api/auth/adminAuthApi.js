@@ -9,3 +9,6 @@ export async function loginAdmin(email, password) {
     body: JSON.stringify({ email, password }),
   });
 }
+export async function logoutAdmin() {
+  return await apiRequest("/admin_logout.php", { method: "POST" });
+}

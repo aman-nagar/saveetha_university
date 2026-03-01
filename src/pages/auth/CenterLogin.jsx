@@ -15,11 +15,7 @@ export default function CenterLogin() {
   const handleCenterSubmit = async (data) => {
     setLoading(true);
     try {
-      // 1. Call the specific Center API
       const centerData = await loginCenter(data.email, data.password);
-
-      // 2. Normalize the user object and set role to 'center'
-      // This ensures ProtectedRoute allows access to /center
       await login({
         ...centerData,
         role: "center",
@@ -27,8 +23,7 @@ export default function CenterLogin() {
 
       show("success", "Center Partner login successful!");
 
-      // 3. Redirect to the Center Dashboard
-      setTimeout(() => navigate("/center"), 1000);
+      navigate("/center", { replace: true });
     } catch (err) {
       show("error", err.message || "Invalid center credentials");
     } finally {

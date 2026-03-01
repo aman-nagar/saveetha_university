@@ -31,6 +31,7 @@ import CenterLogin from "./pages/auth/CenterLogin";
 import AdminLogin from "./pages/auth/AdminLogin";
 import StudentLogin from "./pages/auth/StudentLogin";
 import FormEnabledRoute from "./context/FormEnabledRoute";
+import CreateResultPage from "./pages/admin/result/CreateResultPage";
 
 function App() {
   return (
@@ -70,6 +71,7 @@ function App() {
               path="admit-card/generate"
               element={<GenerateAdmitCardPage />}
             />
+            <Route path="results/create" element={<CreateResultPage />} />
             <Route path="course-category" element={<CourseCategoryPage />} />
             <Route path="faculty" element={<FacultyPage />} />
             <Route path="course" element={<CoursePage />} />

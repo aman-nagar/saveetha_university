@@ -44,7 +44,23 @@
   --color-warning: #fbbf24;
   --color-danger: #ef4444;
 }
+/* cursor pointer */
+@layer base {
+  button,
+  [type="button"],
+  [type="reset"],
+  [type="submit"],
+  select,
+  label[for],
+  .cursor-clickable {
+    @apply cursor-pointer;
+  }
 
+  /* Ensures links also show pointer even if they don't have an href yet */
+  a {
+    @apply cursor-pointer;
+  }
+}
 /* admin settings preferences */
 :root[data-density="compact"] table td,
 :root[data-density="compact"] table th {

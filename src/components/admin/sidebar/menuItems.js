@@ -6,7 +6,7 @@ import {
   FaClipboardList,
   FaCog,
 } from "react-icons/fa";
-
+import { TbReport } from "react-icons/tb";
 export const menuItems = [
   {
     id: 1,
@@ -72,7 +72,14 @@ export const menuItems = [
     ],
   },
   {
-    id: 8,
+    id: 5,
+    label: "Result",
+    icon: TbReport,
+    roles: ["admin"],
+    children: [{ label: "Create Result", path: "/admin/results/create" }],
+  },
+  {
+    id: 6,
     label: "Settings",
     icon: FaCog,
     roles: ["admin"],

@@ -68,12 +68,17 @@ export default function StepPersonal({
         ]}
         error={errors.category}
       />
-
       <FormSelect
         label="ID Proof Type"
         name="id_proof_type"
         register={register}
-        options={[{ label: "Aadhar Card", value: "aadhar_card" }]}
+        options={[
+          { label: "Aadhar Card", value: "aadhar_card" },
+          { label: "Pan Card", value: "pan_card" },
+          { label: "Voter ID Card", value: "voter_id_card" },
+          { label: "Passport", value: "passport" },
+          { label: "Other", value: "other" },
+        ]}
         error={errors.id_proof_type}
       />
 

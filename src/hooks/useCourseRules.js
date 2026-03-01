@@ -2,6 +2,7 @@
 import { useState, useCallback } from "react";
 import { fetchCoursesById, fetchAllCourses } from "../api/courses/courseApi";
 import { fetchStreamsById } from "../api/courses/streamApi";
+import { generateDurationOptions } from "../utils/formatters";
 
 export function useCourseRules() {
   const [durationOptions, setDurationOptions] = useState([]);
@@ -14,19 +15,21 @@ export function useCourseRules() {
     const type = course.duration_type;
     setCourseType(type);
 
-    let options = [];
-    if (["year", "semester"].includes(type?.toLowerCase())) {
-      for (let i = 1; i <= count; i++) {
-        options.push({ 
-          label: `${type.charAt(0).toUpperCase() + type.slice(1)} ${i}`, 
-          value: String(i) 
-        });
-      }
-    } else {
-      options.push({ label: `${count} ${type}`, value: String(count) });
-    }
+    // let options = [];
+    // if (["year", "semester"].includes(type?.toLowerCase())) {
+    //   for (let i = 1; i <= count; i++) {
+    //     options.push({
+    //       label: `${type.charAt(0).toUpperCase() + type.slice(1)} ${i}`,
+    //       value: String(i)
+    //     });
+    //   }
+    // } else {
+    //   options.push({ label: `${count} ${type}`, value: String(count) });
+    // }
+    // setDurationOptions(options);
+    // return type;
+    const options = generateDurationOptions(course.duration, type);
     setDurationOptions(options);
-    return type;
   };
 
   // NEW: Used by GenerateAdmitCard (finds ID by name first)
@@ -36,7 +39,9 @@ export function useCourseRules() {
     try {
       const allRes = await fetchAllCourses();
       const all = allRes.data || allRes;
-      const match = all.find(c => c.name.toLowerCase() === courseName.toLowerCase());
+      const match = all.find(
+        (c) => c.name.toLowerCase() === courseName.toLowerCase(),
+      );
 
       if (match) {
         const response = await fetchCoursesById(match.id);
@@ -67,11 +72,11 @@ export function useCourseRules() {
     }
   }, []);
 
-  return { 
-    durationOptions, 
-    courseType, 
-    loading, 
-    getRulesByCourseName, 
-    getRulesByStreamId 
+  return {
+    durationOptions,
+    courseType,
+    loading,
+    getRulesByCourseName,
+    getRulesByStreamId,
   };
 }

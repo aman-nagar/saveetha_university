@@ -1,5 +1,6 @@
 // src/components/admin/courses/AdmitCardDetails.jsx
 import { FiUser } from "react-icons/fi";
+import { formatTimeAMPM, formatExamDate } from "../../../../utils/formatters";
 
 export default function AdmitCardDetails({ data }) {
   if (!data) return null;
@@ -7,50 +8,31 @@ export default function AdmitCardDetails({ data }) {
   return (
     <div className="admit-card-print-root w-full max-w-[210mm] mx-auto bg-white p-3 sm:p-10 print:p-0">
       <style>{`
-  @media print {
-
-    /* ── Page setup ───────────────────────────── */
-    @page {
-      size: A4 portrait;
-      margin: 8mm;
-    }
-
-    /* ── Reset browser scaling issues ─────────── */
-    html, body {
-      margin: 0 !important;
-      padding: 0 !important;
-      height: auto !important;
-      -webkit-print-color-adjust: exact;
-      print-color-adjust: exact;
-    }
-
-    /* ❌ REMOVE zoom completely (it causes bottom shift) */
-
-    /* ── Hide everything ───────────────────────── */
-    body * {
-      visibility: hidden !important;
-    }
-
-    /* ── Show only admit card ─────────────────── */
-    .admit-card-print-root,
-    .admit-card-print-root * {
-      visibility: visible !important;
-    }
-
-    /* ── Anchor card properly to top-left ─────── */
-    .admit-card-print-root {
-      position: fixed !important;
-      top: 0 !important;
-      left: 0 !important;
-      width: 100% !important;
-      max-width: 100% !important;
-      margin: 0 !important;
-      padding: 0 !important;
-      border: none !important;
-      box-shadow: none !important;
-    }
-  }
-`}</style>
+        @media print {
+          @page { size: A4 portrait; margin: 8mm; }
+          html, body {
+            margin: 0 !important;
+            padding: 0 !important;
+            height: auto !important;
+            -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
+          }
+          body * { visibility: hidden !important; }
+          .admit-card-print-root,
+          .admit-card-print-root * { visibility: visible !important; }
+          .admit-card-print-root {
+            position: fixed !important;
+            top: 0 !important;
+            left: 0 !important;
+            width: 100% !important;
+            max-width: 100% !important;
+            margin: 0 !important;
+            padding: 0 !important;
+            border: none !important;
+            box-shadow: none !important;
+          }
+        }
+      `}</style>
 
       {/* Outer Frame */}
       <div className="border-4 border-double border-black p-3 sm:p-4 print:p-3">
@@ -110,7 +92,6 @@ export default function AdmitCardDetails({ data }) {
           </div>
 
           <table className="w-full border-collapse border-2 border-black table-fixed">
-            {/* ✅ No comments, no whitespace inside <colgroup> */}
             <colgroup>
               <col style={{ width: "8%" }} />
               <col style={{ width: "42%" }} />
@@ -147,13 +128,19 @@ export default function AdmitCardDetails({ data }) {
                     </span>
                     <span className="font-black">{sub.subject_name}</span>
                   </td>
+                  {/* ✅ FORMATTED DATE */}
                   <td className="border-2 border-black py-2 print:py-1 px-1 text-center font-bold text-[9px] sm:text-[11px] print:text-[9px] text-black">
-                    {sub.exam_date}
+                    {formatExamDate(sub.exam_date)}
                   </td>
+                  {/* ✅ FORMATTED TIME (AM/PM) */}
                   <td className="border-2 border-black py-2 print:py-1 px-1 text-center font-black text-[9px] sm:text-[11px] print:text-[9px] text-black">
-                    <span className="block">{sub.start_time}</span>
+                    <span className="block">
+                      {formatTimeAMPM(sub.start_time)}
+                    </span>
                     <span className="block text-gray-400">—</span>
-                    <span className="block">{sub.end_time}</span>
+                    <span className="block">
+                      {formatTimeAMPM(sub.end_time)}
+                    </span>
                   </td>
                 </tr>
               ))}
@@ -183,7 +170,18 @@ export default function AdmitCardDetails({ data }) {
 
         {/* ── System Footer ────────────────────────────────────── */}
         <div className="mt-4 sm:mt-6 print:mt-3 pt-3 print:pt-2 border-t border-gray-200 flex flex-col sm:flex-row print:flex-row justify-between gap-1 text-[7px] sm:text-[8px] print:text-[7px] font-bold text-gray-500 uppercase tracking-widest">
-          <span>Generated On: {new Date().toLocaleString()}</span>
+          {/* ✅ FORMATTED GENERATED DATE */}
+          <span>
+            Generated On:{" "}
+            {new Date().toLocaleString("en-GB", {
+              day: "2-digit",
+              month: "short",
+              year: "numeric",
+              hour: "2-digit",
+              minute: "2-digit",
+              hour12: true,
+            })}
+          </span>
           <span>Verification URL: www.aryavartuniversity.ac.in</span>
         </div>
       </div>
@@ -198,12 +196,7 @@ function InfoRow({ label, value, highlight = false }) {
         {label}
       </span>
       <span
-        className={`text-black uppercase break-words border-b border-gray-100
-        ${
-          highlight
-            ? "text-sm sm:text-base print:text-sm font-black"
-            : "text-[10px] sm:text-xs print:text-[10px] font-black"
-        }`}
+        className={`text-black uppercase break-words border-b border-gray-100 ${highlight ? "text-sm sm:text-base print:text-sm font-black" : "text-[10px] sm:text-xs print:text-[10px] font-black"}`}
       >
         {value || "—"}
       </span>

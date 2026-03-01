@@ -22,3 +22,42 @@ export const generateDurationOptions = (count, type) => {
     value: String(i + 1),
   }));
 };
+
+export const formatTimeAMPM = (input) => {
+  if (!input) return "—";
+
+  let date;
+
+  // If input is just time (e.g., "14:30:00"), attach dummy date
+  if (
+    typeof input === "string" &&
+    input.includes(":") &&
+    !input.includes("T")
+  ) {
+    date = new Date(`1970-01-01T${input}`);
+  } else {
+    date = new Date(input);
+  }
+
+  if (isNaN(date.getTime())) return "—";
+
+  return date.toLocaleTimeString("en-US", {
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: true,
+  });
+};
+
+export const formatExamDate = (input) => {
+  if (!input) return "—";
+
+  const date = new Date(input);
+
+  if (isNaN(date.getTime())) return "—";
+
+  return date.toLocaleDateString("en-GB", {
+    day: "2-digit",
+    month: "short",
+    year: "numeric",
+  });
+};

@@ -26,7 +26,7 @@ import AdmitCardDetails from "../../../components/admin/students/admit-card/Admi
 
 export default function GenerateAdmitCardPage() {
   const [viewData, setViewData] = useState(null);
-  const [deleteId, setDeleteId] = useState(null); // ✅ State for Delete Confirmation Modal
+  const [deleteId, setDeleteId] = useState(null);
   const [loadingDetails, setLoadingDetails] = useState(false);
   const [admitCards, setAdmitCards] = useState([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -36,21 +36,40 @@ export default function GenerateAdmitCardPage() {
   const { register, setValue, handleSubmit, watch, reset } = useForm();
   const selectedPart = watch("selectedDuration");
   const searchContainerRef = useRef(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [loadingHistory, setLoadingHistory] = useState(false);
 
   const academicFlow = useAcademicFlow(setValue);
-
-  const loadHistory = async () => {
+  const loadHistory = async (page = 1) => {
+    setLoadingHistory(true);
     try {
-      const records = await fetchAdmitCards();
-      setAdmitCards(records || []);
+      const response = await fetchAdmitCards(page);
+
+      console.log("History API Structured Response:", response);
+
+      setAdmitCards(response.records || []);
+      setCurrentPage(response.page || 1);
+
+      const total = Number(response.total || 0);
+      const limit = Number(response.limit || 10);
+
+      setTotalPages(Math.ceil(total / limit));
     } catch (err) {
       console.error("History Load Error:", err);
+    } finally {
+      setLoadingHistory(false);
     }
   };
 
   useEffect(() => {
-    loadHistory();
-  }, []);
+    loadHistory(currentPage);
+  }, [currentPage]);
+
+  const handlePageChange = (page) => {
+    setCurrentPage(page);
+    // Smooth scroll to table top if needed
+  };
 
   useEffect(() => {
     if (selectedPart) {
@@ -246,6 +265,7 @@ export default function GenerateAdmitCardPage() {
           {selectedPart && (
             <ScheduleTable
               register={register}
+              watch={watch}
               subjects={academicFlow.subjects}
               loading={academicFlow.loadingSubjects}
               courseType={academicFlow.courseType}
@@ -264,7 +284,31 @@ export default function GenerateAdmitCardPage() {
         </form>
       </div>
 
-      <Table title="History" columns={columns} data={admitCards} />
+      <Table
+        title="History"
+        columns={columns}
+        data={admitCards}
+        loading={loadingHistory}
+      />
+
+      {/* Pagination UI */}
+      {totalPages > 1 && (
+        <div className="flex flex-wrap justify-center gap-1.5 sm:gap-2 mt-4 sm:mt-6 pb-6">
+          {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+            <button
+              key={page}
+              onClick={() => handlePageChange(page)}
+              className={`min-w-[34px] sm:min-w-[38px] px-2.5 sm:px-3 py-1.5 sm:py-2 rounded-md text-xs sm:text-sm font-medium transition ${
+                page === currentPage
+                  ? "bg-primary text-white shadow-sm"
+                  : "border border-border bg-surface hover:bg-bg/50"
+              }`}
+            >
+              {page}
+            </button>
+          ))}
+        </div>
+      )}
 
       {/* ✅ 3. RESTORED: Custom Deletion Confirmation Modal */}
       <Modal

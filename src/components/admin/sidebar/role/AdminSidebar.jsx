@@ -54,25 +54,18 @@ export const AdminSidebar = ({ theme, toggleTheme }) => {
   };
 
   const filteredMenuItems = menuItems
-    // 1. Filter parent categories the role is allowed to see
     .filter((menu) => menu.roles.includes(user?.role))
     .map((menu) => ({
       ...menu,
-      // 2. Filter specific child links the role is allowed to see
-      children: menu.children.filter(
-        (child) => !child.roles || child.roles.includes(user?.role),
-      ),
+      children: menu.children.filter((child) => {
+        const roleMatch = !child.roles || child.roles.includes(user?.role);
+        // ✅ NEW: Check the condition if it exists
+        const conditionMatch = !child.condition || child.condition(user);
+
+        return roleMatch && conditionMatch;
+      }),
     }))
-    // 3. Hide any parent categories that ended up with zero children for this role
-    .filter((menu) => menu.children.length > 0)
-    // 4. Finally, apply your existing search filter
-    .filter(
-      (menu) =>
-        menu.label.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        menu.children.some((child) =>
-          child.label.toLowerCase().includes(searchTerm.toLowerCase()),
-        ),
-    );
+    .filter((menu) => menu.children.length > 0);
 
   // Hover logic
   const handleMouseEnter = () => {

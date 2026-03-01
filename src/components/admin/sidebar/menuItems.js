@@ -62,11 +62,12 @@ export const menuItems = [
     children: [
       { label: "Centers List", path: "/admin/centers", roles: ["admin"] },
       { label: "Add Center", path: "/admin/centers/add", roles: ["admin"] },
-      { label: "Sub-centers", path: "/center/sub-centers", roles: ["center"] },
+      // { label: "Sub-centers", path: "/center/sub-centers", roles: ["center"] },
       {
         label: "Add Sub-center",
         path: "/center/sub-centers/add",
         roles: ["center"],
+        condition: (user) => user?.is_form_enabled === true,
       },
     ],
   },

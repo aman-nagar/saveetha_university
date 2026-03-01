@@ -30,6 +30,7 @@ import LoginPortal from "./pages/auth/LoginPortal";
 import CenterLogin from "./pages/auth/CenterLogin";
 import AdminLogin from "./pages/auth/AdminLogin";
 import StudentLogin from "./pages/auth/StudentLogin";
+import FormEnabledRoute from "./context/FormEnabledRoute";
 
 function App() {
   return (
@@ -88,10 +89,15 @@ function App() {
           >
             <Route index element={<CenterDashboardPage />} />
             <Route path="students" element={<StudentListPage />} />
-            <Route path="students/add" element={<AddStudent />} />
-            <Route path="students/edit/:id" element={<EditStudent />} />
-            <Route path="sub-centers" element={<CenterListPage />} />
-            <Route path="sub-centers/add" element={<AddCenterPage />} />
+
+            <Route
+              path="sub-centers/add"
+              element={
+                <FormEnabledRoute>
+                  <AddCenterPage />
+                </FormEnabledRoute>
+              }
+            />
           </Route>
 
           {/* Sub-center Section */}

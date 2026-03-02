@@ -54,6 +54,9 @@ export function useAcademicFlow(setValue) {
   // 2. Select Student & Auto-fill Logic
   const selectStudent = useCallback(
     async (student) => {
+      console.log("=== SELECT STUDENT DEBUG ===");
+      console.log("Selected student from search:", student);
+      console.log("Student ID:", student.id);
       setIsTyping(false);
       setSearchTerm(student.enrollment_no);
       setValue("enrollmentNo", student.enrollment_no);
@@ -64,6 +67,14 @@ export function useAcademicFlow(setValue) {
       try {
         const response = await fetchStudentById(student.id);
         const details = response.data || response;
+        console.log("Full student details:", details);
+        console.log(
+          "Roll number in student data:",
+          details.roll_number,
+          "| roll_no:",
+          details.roll_no,
+        );
+        console.log("Course:", details.course, "| Stream:", details.stream);
         if (details) {
           // Shared form filling
           setValue("course", details.course || "");
@@ -76,6 +87,7 @@ export function useAcademicFlow(setValue) {
           const sMatch = streams.find(
             (s) => s.name.toLowerCase() === details.stream?.toLowerCase(),
           );
+          console.log("Stream match:", sMatch);
           if (sMatch) setStreamId(sMatch.id);
 
           // Sync Course Rules (Semesters/Years)

@@ -1,19 +1,25 @@
 import { useForm } from "react-hook-form";
 import { useState, useEffect } from "react";
-import { useAcademicFlow } from "../../../hooks/useAcademicFlow"; 
+import { useAcademicFlow } from "../../../hooks/useAcademicFlow";
 import { useToast } from "../../../hooks/useToast";
 import FormInput from "../../../components/form/FormInput";
 import Button from "../../../components/ui/Button";
 import Table from "../../../components/table/Table";
 import Toast from "../../../components/ui/Toast";
-import { FaTrash, FaEye, FaCheckCircle, FaSpinner, FaExclamationTriangle } from "react-icons/fa";
+import {
+  FaTrash,
+  FaEye,
+  FaCheckCircle,
+  FaSpinner,
+  FaExclamationTriangle,
+} from "react-icons/fa";
 
 export default function CreateResult() {
   const { toast, show, clear } = useToast();
   const { register, handleSubmit, setValue, watch, reset } = useForm();
 
   const flow = useAcademicFlow(setValue);
-  const [history, setHistory] = useState([]); 
+  const [history, setHistory] = useState([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const selectedDuration = watch("selectedDuration");
@@ -27,13 +33,25 @@ export default function CreateResult() {
   }, [selectedDuration, flow.loadSubjectsForPart]);
 
   const isDuplicate = history.some(
-    (h) => h.enrollment_no === enrollmentNo && String(h.duration) === String(selectedDuration)
+    (h) =>
+      h.enrollment_no === enrollmentNo &&
+      String(h.duration) === String(selectedDuration),
   );
 
   const onSubmit = async (formData) => {
+    console.log("=== RESULT SUBMIT DEBUG ===");
+    console.log("enrollmentNo:", enrollmentNo);
+    console.log("studentId:", flow.studentId);
+    console.log("selectedDuration:", selectedDuration);
+    console.log("rollNo from form:", formData.rollNo);
+    console.log("session:", formData.session);
+    console.log("subjects:", flow.subjects);
+    console.log("formData.marks:", formData.marks);
     if (!enrollmentNo) return show("error", "Please select a student first.");
-    if (!selectedDuration) return show("error", "Please select a Year/Semester.");
-    if (isDuplicate) return show("error", "Result already exists for this selection.");
+    if (!selectedDuration)
+      return show("error", "Please select a Year/Semester.");
+    if (isDuplicate)
+      return show("error", "Result already exists for this selection.");
 
     setIsSubmitting(true);
     try {
@@ -64,16 +82,17 @@ export default function CreateResult() {
   return (
     <div className="w-full p-6 space-y-6 bg-bg text-text transition-colors duration-300">
       {toast && <Toast {...toast} onClose={clear} />}
-      
+
       <h1 className="text-2xl font-bold">Create Result</h1>
 
       <div className="bg-surface border border-border rounded-xl p-8 shadow-sm">
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-8">
-          
           {/* Section 1: Student Identification */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             <div className="relative">
-              <label className="text-sm font-semibold mb-2 block text-text-muted">Enrollment No.</label>
+              <label className="text-sm font-semibold mb-2 block text-text-muted">
+                Enrollment No.
+              </label>
               <input
                 value={flow.searchTerm}
                 onChange={(e) => {
@@ -92,7 +111,9 @@ export default function CreateResult() {
                       className="p-3 hover:bg-accent/10 cursor-pointer text-sm border-b border-border last:border-none flex justify-between"
                     >
                       <span className="font-bold">{s.enrollment_no}</span>
-                      <span className="text-text-muted">{s.candidate_name}</span>
+                      <span className="text-text-muted">
+                        {s.candidate_name}
+                      </span>
                     </div>
                   ))}
                 </div>
@@ -110,7 +131,12 @@ export default function CreateResult() {
               />
             </div>
 
-            <FormInput label="Course" name="course" register={register} readOnly />
+            <FormInput
+              label="Course"
+              name="course"
+              register={register}
+              readOnly
+            />
           </div>
 
           <hr className="border-border" />
@@ -118,39 +144,49 @@ export default function CreateResult() {
           {/* Section 2: Result Metadata (Moved above Subject Table) */}
           <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
             <div className="space-y-1">
-              <label className="text-sm font-semibold text-text-muted block">Duration ({flow.courseType || "Part"})</label>
+              <label className="text-sm font-semibold text-text-muted block">
+                Duration ({flow.courseType || "Part"})
+              </label>
               <select
                 {...register("selectedDuration")}
                 className="w-full border border-border rounded-lg px-3 py-2 bg-bg text-sm outline-none focus:ring-2 focus:ring-accent"
               >
                 <option value="">-- Select --</option>
                 {flow.durationOptions.map((opt) => (
-                  <option key={opt.value} value={opt.value}>{opt.label}</option>
+                  <option key={opt.value} value={opt.value}>
+                    {opt.label}
+                  </option>
                 ))}
               </select>
             </div>
 
-            <FormInput label="Serial No." name="serial_no" register={register} placeholder="Enter Serial No" />
-            
-            <FormInput 
-              label="Issue Date" 
-              name="issue_date" 
-              type="date" 
-              register={register} 
+            <FormInput
+              label="Serial No."
+              name="serial_no"
+              register={register}
+              placeholder="Enter Serial No"
             />
-            
-            <FormInput 
-              label="Session" 
-              name="session" 
-              register={register} 
-              placeholder="e.g., 2025-26" 
+
+            <FormInput
+              label="Issue Date"
+              name="issue_date"
+              type="date"
+              register={register}
+            />
+
+            <FormInput
+              label="Session"
+              name="session"
+              register={register}
+              placeholder="e.g., 2025-26"
             />
           </div>
 
           {isDuplicate && (
             <div className="bg-red-500/10 border border-red-500/20 text-red-500 px-6 py-4 rounded-lg font-medium flex items-center gap-3 animate-in fade-in">
               <FaExclamationTriangle />
-              Result already exists for this student in {selectedDuration} {flow.courseType}.
+              Result already exists for this student in {selectedDuration}{" "}
+              {flow.courseType}.
             </div>
           )}
 
@@ -161,13 +197,17 @@ export default function CreateResult() {
                 <thead className="bg-bg text-text-muted font-bold uppercase text-[10px]">
                   <tr>
                     <th className="px-6 py-4">Subject Name</th>
-                    <th className="px-6 py-4 w-48 text-center">Marks Obtained</th>
+                    <th className="px-6 py-4 w-48 text-center">
+                      Marks Obtained
+                    </th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-border">
                   {flow.subjects.map((sub) => (
                     <tr key={sub.id} className="bg-surface hover:bg-bg/40">
-                      <td className="px-6 py-4 font-semibold uppercase">{sub.subject_name}</td>
+                      <td className="px-6 py-4 font-semibold uppercase">
+                        {sub.subject_name}
+                      </td>
                       <td className="px-6 py-4">
                         <input
                           type="number"
@@ -185,8 +225,16 @@ export default function CreateResult() {
 
           {/* Action Button */}
           <div className="flex justify-end pt-4">
-            <Button type="submit" disabled={isSubmitting || isDuplicate} className="px-10 py-3 text-lg font-bold">
-              {isSubmitting ? <FaSpinner className="animate-spin" /> : "Save Result"}
+            <Button
+              type="submit"
+              disabled={isSubmitting || isDuplicate}
+              className="px-10 py-3 text-lg font-bold"
+            >
+              {isSubmitting ? (
+                <FaSpinner className="animate-spin" />
+              ) : (
+                "Save Result"
+              )}
             </Button>
           </div>
         </form>
@@ -204,8 +252,12 @@ export default function CreateResult() {
             label: "Action",
             render: (r) => (
               <div className="flex gap-2">
-                <button className="p-2 bg-green-600/10 text-green-600 rounded hover:bg-green-600 hover:text-white transition-all"><FaEye size={12} /></button>
-                <button className="p-2 bg-red-600/10 text-red-600 rounded hover:bg-red-600 hover:text-white transition-all"><FaTrash size={12} /></button>
+                <button className="p-2 bg-green-600/10 text-green-600 rounded hover:bg-green-600 hover:text-white transition-all">
+                  <FaEye size={12} />
+                </button>
+                <button className="p-2 bg-red-600/10 text-red-600 rounded hover:bg-red-600 hover:text-white transition-all">
+                  <FaTrash size={12} />
+                </button>
               </div>
             ),
           },

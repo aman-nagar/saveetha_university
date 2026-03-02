@@ -1,5 +1,5 @@
 // src/components/ui/SearchInput.jsx
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef, useCallback } from "react";
 import { FaSearch } from "react-icons/fa";
 
 /**
@@ -24,6 +24,7 @@ export default function SearchInput({
   inputClassName = "",
 }) {
   const [internalValue, setInternalValue] = useState(value || "");
+  const isInitialMount = useRef(true);
 
   // Keep internal state synced if controlled externally
   useEffect(() => {
@@ -32,9 +33,15 @@ export default function SearchInput({
     }
   }, [value]);
 
-  // Debounce logic
+  // Debounce logic - skip on initial mount
   useEffect(() => {
     if (!onDebounce) return;
+
+    // Skip debounce on initial mount
+    if (isInitialMount.current) {
+      isInitialMount.current = false;
+      return;
+    }
 
     const timer = setTimeout(() => {
       onDebounce(internalValue);
@@ -43,19 +50,22 @@ export default function SearchInput({
     return () => clearTimeout(timer);
   }, [internalValue, delay, onDebounce]);
 
-  const handleChange = (e) => {
-    const val = e.target.value;
+  const handleChange = useCallback(
+    (e) => {
+      const val = e.target.value;
 
-    if (value === undefined) {
-      setInternalValue(val);
-    } else {
-      setInternalValue(val);
-    }
+      if (value === undefined) {
+        setInternalValue(val);
+      } else {
+        setInternalValue(val);
+      }
 
-    if (onChange) {
-      onChange(val);
-    }
-  };
+      if (onChange) {
+        onChange(val);
+      }
+    },
+    [value, onChange],
+  );
 
   return (
     <div className={`relative ${className}`}>

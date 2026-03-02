@@ -1,5 +1,5 @@
 // src/pages/admin/centers/CenterListPage.jsx
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   fetchCenters,
@@ -12,10 +12,11 @@ import { useConfirm } from "../../../hooks/useConfirm";
 import Table from "../../../components/table/Table";
 import DataTableLayout from "../../../components/table/DataTableLayout";
 import Pagination from "../../../components/ui/Pagination";
+import SearchInput from "../../../components/ui/SearchInput";
 import Button from "../../../components/ui/Button";
 import Modal from "../../../components/ui/Modal";
 import { HiPlus, HiPencil, HiTrash } from "react-icons/hi";
-import { FaToggleOn, FaToggleOff, FaSpinner, FaSearch } from "react-icons/fa";
+import { FaToggleOn, FaToggleOff, FaSpinner } from "react-icons/fa";
 
 export default function CenterListPage() {
   const navigate = useNavigate();
@@ -38,31 +39,32 @@ export default function CenterListPage() {
     setLoading(true);
     try {
       const response = await fetchCenters({ page, search: searchTerm });
-      console.log("Full response:", response);
 
       // response is the pagination object directly
       setCenters(response.data || []);
       setCurrentPage(response.current_page || 1);
       setTotalPages(response.total_pages || 1);
-
-      console.log("Centers set:", response.data?.length);
     } catch (err) {
-      console.log("Centers set:", response.data?.length);
+      console.error("Error loading centers:", err);
+      show("error", err.message || "Failed to load centers");
     } finally {
       setLoading(false);
     }
   };
 
-  const handleSearch = (e) => {
-    const value = e.target.value;
-    setSearch(value);
-    loadCenters(1, value);
-  };
+  const handleSearch = useCallback((searchTerm) => {
+    setSearch(searchTerm);
+    loadCenters(1, searchTerm);
+  }, []);
 
   const handlePageChange = (page) => {
     setCurrentPage(page);
     loadCenters(page, search);
   };
+
+  const handleSearchChange = useCallback((value) => {
+    setSearch(value);
+  }, []);
 
   const handleToggle = async (row, field) => {
     try {
@@ -257,18 +259,16 @@ export default function CenterListPage() {
 
   const toolbar = (
     <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 flex-wrap w-full">
-      {/* Search */}
-      <div className="relative flex-1 sm:flex-none">
-        <FaSearch className="absolute left-3 top-1/2 -translate-y-1/2 text-text-muted text-xs" />
-        <input
-          type="text"
-          placeholder="Search center..."
-          value={search}
-          onChange={handleSearch}
-          className="pl-9 pr-4 py-2 text-sm border border-border rounded-lg bg-surface text-text w-full sm:w-56 md:w-64 focus:outline-none focus:ring-2 focus:ring-primary/40"
-        />
-        
-      </div>
+      {/* Search Input */}
+      <SearchInput
+        value={search}
+        onChange={handleSearchChange}
+        onDebounce={handleSearch}
+        placeholder="Search center by name, email..."
+        delay={500}
+        className="flex-1 sm:flex-none"
+        inputClassName="sm:w-56 md:w-64"
+      />
 
       {/* Add Button */}
       <Button
@@ -284,18 +284,8 @@ export default function CenterListPage() {
 
   return (
     <div className="w-full">
-      {/* Header Section */}
-      <div className="mb-6">
-        <h1 className="text-lg sm:text-xl lg:text-2xl font-heading font-bold text-text">
-          Center Management
-        </h1>
-        <p className="text-xs sm:text-sm text-muted mt-0.5">
-          Manage registered centers and their status
-        </p>
-      </div>
-
       <DataTableLayout
-        title=""
+        title="Center Management"
         toolbar={toolbar}
         pagination={
           <Pagination
@@ -313,7 +303,6 @@ export default function CenterListPage() {
           emptyMessage="No centers found. Click 'Add New Center' to get started."
         />
       </DataTableLayout>
-
       {/* Delete Confirmation Modal */}
       <Modal
         isOpen={isOpen}

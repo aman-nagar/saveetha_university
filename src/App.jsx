@@ -98,28 +98,23 @@ function App() {
               >
                 <Route index element={<CenterDashboardPage />} />
                 <Route path="students" element={<StudentListPage />} />
+                <Route
+                  path="students/add"
+                  element={
+                    <FormEnabledRoute>
+                      <AddStudent />
+                    </FormEnabledRoute>
+                  }
+                />
 
                 <Route
-                  path="sub-centers/add"
+                  path="center/add"
                   element={
                     <FormEnabledRoute>
                       <AddCenterPage />
                     </FormEnabledRoute>
                   }
                 />
-              </Route>
-
-              {/* Sub-center Section */}
-              <Route
-                path="/sub-center"
-                element={
-                  <ProtectedRoute allowedRoles={["sub-center"]}>
-                    <CenterLayout />
-                  </ProtectedRoute>
-                }
-              >
-                <Route index element={<SubCenterDashboardPage />} />
-                <Route path="students" element={<StudentListPage />} />
               </Route>
 
               {/* Student Portal */}

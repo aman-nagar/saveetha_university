@@ -1,6 +1,5 @@
 // src/pages/admin/students/StudentListPage.jsx
 import { useEffect, useState } from "react";
-
 import { useNavigate } from "react-router-dom";
 import {
   FaPen,
@@ -27,85 +26,8 @@ import { useAuth } from "../../../context/AuthContext";
 import { useConfirm } from "../../../hooks/useConfirm";
 import Pagination from "../../../components/ui/Pagination";
 import DataTableLayout from "../../../components/table/DataTableLayout";
-
-/* ─── Small PDF download helper ─── */
-function downloadStudentPdf(student) {
-  const rows = [
-    ["Enrollment No", student.enrollment_no],
-    ["Name", student.candidate_name],
-    ["Father", student.father_name],
-    ["Mother", student.mother_name],
-    ["DOB", student.dob],
-    ["Gender", student.gender],
-    ["Category", student.category],
-    ["Contact", student.contact_number],
-    ["Email", student.email],
-    ["Address", student.address],
-    ["Course", student.course],
-    ["Faculty", student.faculty],
-    ["Course Type", student.course_type],
-    ["Stream", student.stream],
-    ["Year", student.year],
-    ["Session", student.session],
-    ["Mode", student.mode_of_study],
-    ["Status", student.status === 1 ? "Active" : "Inactive"],
-  ];
-
-  const html = `
-  <html>
-    <head>
-      <title>Student - ${student.candidate_name}</title>
-      <style>
-        body { font-family: Arial, sans-serif; padding: 32px; color: #111; }
-        h1 { font-size: 20px; margin-bottom: 4px; }
-        p.enroll { color: #555; font-size: 13px; margin-bottom: 24px; }
-        table { width: 100%; border-collapse: collapse; font-size: 14px; }
-        th, td { border: 1px solid #ddd; padding: 8px 12px; text-align: left; }
-        th { background: #f4f4f4; font-weight: 600; width: 35%; }
-      </style>
-    </head>
-    <body>
-      <h1>${student.candidate_name}</h1>
-      <p class="enroll">Enrollment: ${student.enrollment_no}</p>
-      <table>
-        ${rows
-          .filter(([, v]) => v)
-          .map(([l, v]) => `<tr><th>${l}</th><td>${v}</td></tr>`)
-          .join("")}
-      </table>
-    </body>
-  </html>`;
-
-  const win = window.open("", "_blank");
-  win.document.write(html);
-  win.document.close();
-  win.focus();
-  setTimeout(() => {
-    win.print();
-  }, 500);
-}
-
-/* ─── Clickable status toggle badge ─── */
-function StatusToggle({ row, onToggle, disabled }) {
-  const isActive = row.status === 1;
-  return (
-    <button
-      onClick={() => !disabled && onToggle(row)}
-      disabled={disabled}
-      title={disabled ? "Access Denied" : "Click to toggle status"}
-      className={`
-        inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold
-        transition-colors ${disabled ? "cursor-not-allowed opacity-70" : "cursor-pointer"}
-        ${isActive ? "bg-green-100 text-green-700 hover:bg-green-200" : "bg-yellow-100 text-yellow-700 hover:bg-yellow-200"}
-      `}
-    >
-      <span
-        className={`w-1.5 h-1.5 rounded-full ${isActive ? "bg-green-500" : "bg-yellow-500"}`}
-      />
-      {isActive ? "Active" : "Inactive"}
-    </button>
-  );
-}
+import { getStudentActions, getStudentColumns } from "./studentTableConfig.js";
+import { downloadStudentPdf } from "../../../utils/studentPdf.js";
 
 export default function StudentListPage() {
   const { user } = useAuth();
@@ -207,6 +129,7 @@ export default function StudentListPage() {
   const handleRestore = async (row) => {
     open({ ...row, actionType: "restore" });
   };
+
   const [isProcessing, setIsProcessing] = useState(false);
 
   const processConfirmAction = async () => {
@@ -235,6 +158,7 @@ export default function StudentListPage() {
       setIsProcessing(false);
     }
   };
+
   const handleDownloadPdf = async (row) => {
     try {
       const fullData = await fetchStudentById(row.id);
@@ -244,100 +168,21 @@ export default function StudentListPage() {
     }
   };
 
-  // ── Columns ──
-  const columns = [
-    { key: "serial", label: "#", render: (_, i) => i + 1 },
-    {
-      key: "photo",
-      label: "Photo",
-      render: (row) =>
-        row.photo_url ? (
-          <img
-            src={row.photo_url}
-            alt="student"
-            className="h-10 w-10 rounded-full object-cover ring-2 ring-border"
-          />
-        ) : (
-          <div className="h-10 w-10 rounded-full bg-primary/20 flex items-center justify-center text-primary font-bold text-sm">
-            {row.candidate_name?.[0]?.toUpperCase() || "?"}
-          </div>
-        ),
-    },
-    { key: "enrollment_no", label: "Enrollment" },
-    { key: "candidate_name", label: "Name" },
-    { key: "course", label: "Course" },
-    { key: "contact_number", label: "Contact" },
-    { key: "email", label: "Email" },
-    {
-      key: "status",
-      label: "Status",
-      render: (row) =>
-        mode === "active" ? (
-          <StatusToggle
-            row={row}
-            onToggle={handleToggleStatus}
-            disabled={!isAdmin}
-          />
-        ) : (
-          <span className="text-xs text-text-muted">—</span>
-        ),
-    },
-  ];
+  const columns = getStudentColumns({
+    mode,
+    isAdmin,
+    handleToggleStatus,
+  });
 
-  const activeActions = [
-    {
-      icon: <FaEye />,
-      title: "View",
-      className:
-        "p-2 bg-primary text-white rounded hover:opacity-80 transition",
-      onClick: handleView,
-    },
-    {
-      icon: <FaPen />,
-      title: "Edit",
-      className:
-        "p-2 bg-blue-600 text-white rounded hover:opacity-80 transition",
-      onClick: handleEdit,
-    },
-    {
-      icon: <FaFilePdf />,
-      title: "Download PDF",
-      className:
-        "p-2 bg-orange-500 text-white rounded hover:opacity-80 transition",
-      onClick: handleDownloadPdf,
-    },
-  ];
-
-  // Only add Delete to Admin
-  if (isAdmin) {
-    activeActions.push({
-      icon: <FaTrash />,
-      title: "Delete",
-      className:
-        "p-2 bg-red-600 text-white rounded hover:opacity-80 transition",
-      onClick: handleDelete,
-    });
-  }
-
-  const actions =
-    mode === "active"
-      ? activeActions
-      : [
-          {
-            icon: <FaRecycle />,
-            title: "Restore",
-            className:
-              "p-2 bg-green-600 text-white rounded hover:opacity-80 transition",
-            onClick: handleRestore,
-          },
-          {
-            icon: <FaTrash />,
-            title: "Permanent Delete",
-            className:
-              "p-2 bg-red-800 text-white rounded hover:opacity-80 transition",
-            onClick: handleDelete,
-          },
-        ];
+  const actions = getStudentActions({
+    mode,
+    isAdmin,
+    handleView,
+    handleEdit,
+    handleDownloadPdf,
+    handleDelete,
+    handleRestore,
+  });
 
   const toolbar = (
     <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 flex-wrap w-full">

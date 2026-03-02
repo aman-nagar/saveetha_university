@@ -8,7 +8,7 @@ export default function About() {
       <section className="bg-primary text-white py-16">
         <div className="max-w-5xl mx-auto px-6 text-center">
           <h1 className="text-3xl md:text-4xl font-heading font-bold">
-            About Saveetha Amaravati University
+            About aryavrat Amaravati University
           </h1>
           <p className="mt-4 text-white/90">
             A transformative educational experience built on academic
@@ -23,7 +23,7 @@ export default function About() {
           {/* Intro */}
           <div>
             <p className="text-lg leading-relaxed text-muted">
-              Saveetha Amaravati University is located on an 80-acre green
+              aryavrat Amaravati University is located on an 80-acre green
               campus in Vijayawada, Andhra Pradesh, and is committed to
               delivering a transformative educational experience that blends
               academic excellence, innovation, and holistic development.
@@ -36,14 +36,14 @@ export default function About() {
               Our Legacy & Identity
             </h2>
             <p className="text-muted leading-relaxed">
-              Established as part of the renowned Saveetha Group of Educational
+              Established as part of the renowned aryavrat Group of Educational
               Institutions, the university inherits a tradition of quality
               education and institutional excellence. It is recognised under the
               Andhra Pradesh Amendment Act No. 8 of 2005 and under Section 2(f)
               of the University Grants Commission (UGC) Act, 1956.
             </p>
             <p className="text-muted leading-relaxed mt-4">
-              Saveetha Amaravati University was founded with the vision of
+              aryavrat Amaravati University was founded with the vision of
               advancing world-class education in the emerging capital region of
               Amaravati. It offers a dynamic and interdisciplinary learning
               environment, with a strong focus on Allied Health Sciences,
@@ -99,7 +99,7 @@ export default function About() {
               Academic & Career Focus
             </h2>
             <p className="text-muted leading-relaxed">
-              Saveetha Amaravati University emphasizes outcome-based education,
+              aryavrat Amaravati University emphasizes outcome-based education,
               student-centric learning, and strong industry partnerships. A
               robust Career Development and Placement Cell connects students
               with top recruiters through training, internships, and campus

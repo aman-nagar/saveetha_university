@@ -9,6 +9,8 @@ import CTA from "../../components/public/CTA";
 import HighlightNews from "../../components/public/HighlightNews";
 import AcademicPhotoGallery from "./sections/AcademicPhotoGallery";
 import StudentReviews from "./sections/StudentReviews";
+import StepIntoaryavrat from "./sections/StepIntoAryavart";
+import AcademicStreams from "./sections/AcademicStreams";
 
 export default function Home() {
   return (
@@ -21,6 +23,8 @@ export default function Home() {
       <Programs />
       <AcademicPhotoGallery />
       <StudentReviews />
+      <StepIntoaryavrat />
+      <AcademicStreams />
       <CTA />
     </div>
   );

@@ -63,7 +63,7 @@ export default function PublicFooter() {
           <div>
             <FooterTitle title="Contact" className="text-accent" />
             <p className="text-white/80 text-sm">
-              Aryavart International University
+              aryavrat International University
               <br />
               Uttar Pradesh, India
               <br />
@@ -76,7 +76,7 @@ export default function PublicFooter() {
         <div className="w-full border-t border-white/20 px-6 py-4 sm:flex sm:items-center sm:justify-between">
           <FooterCopyright
             href="#"
-            by="Copyright 2018–2026 Aryavart International University"
+            by="Copyright 2018–2026 aryavrat International University"
             className="text-white/70"
           />
 

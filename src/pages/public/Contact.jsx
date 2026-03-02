@@ -43,7 +43,7 @@ export default function Contact() {
             <h3 className="text-xl font-heading font-semibold text-primary mb-3">
               Mail
             </h3>
-            <p className="text-muted">info@saveethaamaravatiuniversity.ac.in</p>
+            <p className="text-muted">info@aryavratamaravatiuniversity.ac.in</p>
           </div>
         </div>
       </section>
@@ -55,7 +55,7 @@ export default function Contact() {
           <div className="bg-surface border border-border rounded-xl overflow-hidden shadow-sm">
             <iframe
               title="University Location"
-              src="https://www.google.com/maps?q=Saveetha%20Amaravati%20University&output=embed"
+              src="https://www.google.com/maps?q=aryavrat%20Amaravati%20University&output=embed"
               className="w-full h-[400px] border-0"
               loading="lazy"
             />

@@ -1,6 +1,11 @@
 import React, { useEffect, useState, useRef } from "react";
 import { motion, useInView, useMotionValue, useSpring } from "framer-motion";
-import { FaGraduationCap, FaIndustry, FaMicroscope, FaChalkboardTeacher } from "react-icons/fa";
+import {
+  FaGraduationCap,
+  FaIndustry,
+  FaMicroscope,
+  FaChalkboardTeacher,
+} from "react-icons/fa";
 import canvasConfetti from "canvas-confetti";
 
 /**
@@ -10,15 +15,15 @@ import canvasConfetti from "canvas-confetti";
 function Counter({ value, triggerConfetti = false }) {
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, margin: "-100px" });
-  
+
   // Parse numeric value and keep suffix (e.g., "5000+" -> 5000, "+")
   const numericValue = parseInt(value.replace(/[^0-9]/g, ""), 10);
   const suffix = value.replace(/[0-9]/g, "");
 
   const motionValue = useMotionValue(0);
-  const springValue = useSpring(motionValue, { 
-    damping: 40, 
-    stiffness: 90 
+  const springValue = useSpring(motionValue, {
+    damping: 40,
+    stiffness: 90,
   });
   const [displayValue, setDisplayValue] = useState(0);
 
@@ -30,7 +35,7 @@ function Counter({ value, triggerConfetti = false }) {
     return springValue.on("change", (latest) => {
       const rounded = Math.floor(latest);
       setDisplayValue(rounded);
-      
+
       // Fire celebration when target reached
       if (triggerConfetti && rounded >= numericValue && isInView) {
         const end = Date.now() + 1000;
@@ -52,12 +57,17 @@ function Counter({ value, triggerConfetti = false }) {
             colors: colors,
           });
           if (Date.now() < end) requestAnimationFrame(frame);
-        }());
+        })();
       }
     });
   }, [springValue, triggerConfetti, numericValue, isInView]);
 
-  return <span ref={ref}>{displayValue.toLocaleString()}{suffix}</span>;
+  return (
+    <span ref={ref}>
+      {displayValue.toLocaleString()}
+      {suffix}
+    </span>
+  );
 }
 
 export default function WhyUs() {
@@ -66,26 +76,26 @@ export default function WhyUs() {
       title: "Academic Excellence",
       icon: <FaGraduationCap />,
       desc: "Comprehensive programs in Management, Law, and Tech, guided by experts who prioritize high-quality educational standards.",
-      delay: 0.1
+      delay: 0.1,
     },
     {
       title: "Industry-Oriented",
       icon: <FaIndustry />,
       desc: "Our curriculum bridges the gap between classroom theory and real-world industrial application for career readiness.",
-      delay: 0.2
+      delay: 0.2,
     },
     {
       title: "Modern Infrastructure",
       icon: <FaChalkboardTeacher />,
       desc: "State-of-the-art labs, expansive libraries, and sports complexes designed for a holistic student experience.",
-      delay: 0.3
+      delay: 0.3,
     },
     {
       title: "Research & Innovation",
       icon: <FaMicroscope />,
       desc: "Promoting a culture of discovery through dedicated research centers and collaborations with global leaders.",
-      delay: 0.4
-    }
+      delay: 0.4,
+    },
   ];
 
   const STATS = [
@@ -105,14 +115,15 @@ export default function WhyUs() {
 
       <div className="container mx-auto max-w-7xl relative z-10">
         {/* Header */}
-        <motion.div 
+        <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           className="text-center mb-16"
         >
           <h2 className="text-4xl md:text-5xl font-heading font-extrabold text-white mb-6">
-            Why <span className="text-accent italic">Aryavart</span> International?
+            Why <span className="text-accent italic">aryavrat</span>{" "}
+            International?
           </h2>
           <div className="w-24 h-1.5 bg-accent mx-auto rounded-full mb-6" />
         </motion.div>
@@ -148,21 +159,29 @@ export default function WhyUs() {
               {/* The Gold Shine Effect on Numbers */}
               <div className="relative inline-block overflow-hidden">
                 <div className="text-4xl md:text-6xl font-black text-accent mb-2 tracking-tighter">
-                  <Counter value={stat.number} triggerConfetti={stat.celebrate} />
+                  <Counter
+                    value={stat.number}
+                    triggerConfetti={stat.celebrate}
+                  />
                 </div>
                 {/* Shine Overlay */}
-                <motion.div 
+                <motion.div
                   animate={{ left: ["-100%", "200%"] }}
-                  transition={{ repeat: Infinity, duration: 4, ease: "linear", repeatDelay: 1 }}
+                  transition={{
+                    repeat: Infinity,
+                    duration: 4,
+                    ease: "linear",
+                    repeatDelay: 1,
+                  }}
                   className="absolute top-0 w-full h-full bg-gradient-to-r from-transparent via-white/30 to-transparent skew-x-[-25deg]"
                 />
               </div>
-              
+
               <div className="text-[10px] md:text-xs font-bold text-white uppercase tracking-[0.3em] opacity-50 group-hover:opacity-100 transition-opacity">
                 {stat.label}
               </div>
-              
-              <motion.div 
+
+              <motion.div
                 initial={{ width: 0 }}
                 whileInView={{ width: "50%" }}
                 className="h-1 bg-gradient-to-r from-transparent via-accent/40 to-transparent mx-auto mt-4"

@@ -2,52 +2,52 @@
 import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { FaTimes, FaExpandAlt } from "react-icons/fa"; // Require react-icons
-
+import demoImage from "../../../assets/images/demoImage.jpeg";
 // Assuming this data comes from an API or prop
 const GALLY_IMAGES = [
   {
     id: 1,
-    src: "https://www.aryawartcollege.com/images/gallery1.jpg",
+    src: demoImage,
     alt: "University Event Group",
   },
   {
     id: 2,
-    src: "https://www.aryawartcollege.com/images/gallery2.jpg",
+    src: demoImage.jpeg,
     alt: "Students Presentation",
   },
   {
     id: 3,
-    src: "https://www.aryawartcollege.com/images/gallery3.jpg",
+    src: demoImage.jpeg,
     alt: "Official Ceremony",
   },
   {
     id: 4,
-    src: "https://www.aryawartcollege.com/images/gallery4.jpg",
+    src: demoImage.jpeg,
     alt: "Bus Tour Group",
   },
   {
     id: 5,
-    src: "https://www.aryawartcollege.com/images/gallery5.jpg",
+    src: demoImage.jpeg,
     alt: "Classroom Activity",
   },
   {
     id: 6,
-    src: "https://www.aryawartcollege.com/images/gallery6.jpg",
+    src: demoImage.jpeg,
     alt: "Faculty Meeting",
   },
   {
     id: 7,
-    src: "https://www.aryawartcollege.com/images/gallery8.jpg",
+    src: demoImage.jpeg,
     alt: "Dean and Staff",
   },
   {
     id: 8,
-    src: "https://www.aryawartcollege.com/images/gallery8.jpg",
+    src: demoImage.jpeg,
     alt: "Award Reception",
   },
   {
     id: 9,
-    src: "https://www.aryawartcollege.com/images/gallery10.jpg",
+    src: demoImage.jpeg,
     alt: "Student Leadership Team",
   },
 ];
@@ -111,7 +111,7 @@ export default function AcademicPhotoGallery() {
             >
               {/* Image with subtle pan on hover */}
               <img
-                src={image.src}
+                src={demoImage}
                 alt={image.alt}
                 className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
               />
@@ -158,7 +158,7 @@ export default function AcademicPhotoGallery() {
               >
                 {/* Image */}
                 <img
-                  src={selectedImage.src}
+                  src={demoImage}
                   alt={selectedImage.alt}
                   className="w-full h-auto object-contain max-h-[80vh]"
                 />

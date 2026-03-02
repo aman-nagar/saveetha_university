@@ -12,7 +12,7 @@ import {
 
 import { useCrud } from "../../../hooks/useCrud";
 import { useConfirm } from "../../../hooks/useConfirm";
-import { useToast } from "../../../hooks/useToast";
+import { useToast } from "../../../context/ToastContext";
 
 import SubjectForm from "../../../components/admin/courses/SubjectForm";
 import Toast from "../../../components/ui/Toast";

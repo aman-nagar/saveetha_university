@@ -1,7 +1,10 @@
 import { useState, useEffect } from "react";
 import SettingsForm from "../../../components/admin/settings/SettingsForm";
-import { updateSiteSettings, fetchSiteSettings } from "../../../api/settingsApi";
-import { useToast } from "../../../hooks/useToast";
+import {
+  updateSiteSettings,
+  fetchSiteSettings,
+} from "../../../api/settingsApi";
+import { useToast } from "../../../context/ToastContext";
 import Toast from "../../../components/ui/Toast";
 
 export default function SiteSettingsPage() {
@@ -14,13 +17,15 @@ export default function SiteSettingsPage() {
       console.log("📡 FETCHING: Requesting site settings...");
       const res = await fetchSiteSettings();
       console.log("📦 RECEIVE: Raw API Response:", res);
-      
+
       // Check if data exists in the response structure
       if (res) {
         setInitialData(res);
         console.log("✅ SUCCESS: initialData state updated.");
       } else {
-        console.warn("⚠️ EMPTY: API returned successfully but data was null/undefined.");
+        console.warn(
+          "⚠️ EMPTY: API returned successfully but data was null/undefined.",
+        );
       }
     } catch (err) {
       console.error("❌ ERROR: Failed to load site settings:", err.message);
@@ -35,17 +40,20 @@ export default function SiteSettingsPage() {
   const handleSubmit = async (formData) => {
     setLoading(true);
     console.log("🚀 SUBMITTING: Sending FormData to backend...");
-    
+
     // Debug: Inspect FormData content
     for (let [key, value] of formData.entries()) {
-      console.log(`📤 PAYLOAD: ${key}:`, value instanceof File ? `File (${value.name})` : value);
+      console.log(
+        `📤 PAYLOAD: ${key}:`,
+        value instanceof File ? `File (${value.name})` : value,
+      );
     }
 
     try {
       const res = await updateSiteSettings(formData);
       console.log("✅ UPDATE SUCCESS:", res);
       show("success", "Settings updated successfully");
-      await loadSettings(); 
+      await loadSettings();
     } catch (err) {
       console.error("❌ UPDATE ERROR:", err.message);
       show("error", err.message || "Failed to update settings");
@@ -58,12 +66,12 @@ export default function SiteSettingsPage() {
     <div className="w-full p-4">
       {toast && <Toast {...toast} onClose={clear} />}
       <h1 className="text-2xl font-bold mb-6 text-text">Site Settings</h1>
-      
+
       {initialData ? (
-        <SettingsForm 
-          onSubmit={handleSubmit} 
-          loading={loading} 
-          initialData={initialData} 
+        <SettingsForm
+          onSubmit={handleSubmit}
+          loading={loading}
+          initialData={initialData}
         />
       ) : (
         <div className="py-20 text-center animate-pulse text-muted">

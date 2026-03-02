@@ -1,18 +1,11 @@
 // src/pages/admin/students/StudentListPage.jsx
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import {
-  FaPen,
-  FaTrash,
-  FaEye,
-  FaRecycle,
-  FaFilePdf,
-  FaSearch,
-} from "react-icons/fa";
+import { FaSearch } from "react-icons/fa";
 import Table from "../../../components/table/Table";
 import Modal from "../../../components/ui/Modal";
-import Toast from "../../../components/ui/Toast";
-import { useToast } from "../../../hooks/useToast";
+import { useToast } from "../../../context/ToastContext";
+import { useConfirm } from "../../../hooks/useConfirm";
 import StudentDetailView from "../../../components/admin/students/StudentDetailView";
 import {
   fetchStudentById,
@@ -23,7 +16,6 @@ import {
   restoreStudent,
 } from "../../../api/students/studentApi";
 import { useAuth } from "../../../context/AuthContext";
-import { useConfirm } from "../../../hooks/useConfirm";
 import Pagination from "../../../components/ui/Pagination";
 import DataTableLayout from "../../../components/table/DataTableLayout";
 import { getStudentActions, getStudentColumns } from "./studentTableConfig.js";

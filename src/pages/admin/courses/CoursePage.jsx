@@ -11,7 +11,7 @@ import {
 
 import { useCrud } from "../../../hooks/useCrud";
 import { useConfirm } from "../../../hooks/useConfirm";
-import { useToast } from "../../../hooks/useToast";
+import { useToast } from "../../../context/ToastContext";
 
 import CourseForm from "../../../components/admin/courses/CourseForm";
 import Toast from "../../../components/ui/Toast";
@@ -180,7 +180,10 @@ export default function CoursePage() {
         onClose={close}
         footer={
           <>
-            <button onClick={close} className="px-4 py-2 border border-border rounded-lg text-sm text-text hover:bg-bg transition">
+            <button
+              onClick={close}
+              className="px-4 py-2 border border-border rounded-lg text-sm text-text hover:bg-bg transition"
+            >
               Cancel
             </button>
             <button

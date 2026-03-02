@@ -1,7 +1,7 @@
 import { useForm } from "react-hook-form";
 import { useRef, useEffect, useState } from "react";
 import { useAcademicFlow } from "../../../hooks/useAcademicFlow";
-import { useToast } from "../../../hooks/useToast";
+import { useToast } from "../../../context/ToastContext";
 import Toast from "../../../components/ui/Toast";
 import Button from "../../../components/ui/Button";
 import AdmitCardForm from "../../../components/admin/students/admit-card/AdmitCardForm";
@@ -32,7 +32,7 @@ export default function GenerateAdmitCardPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [editingId, setEditingId] = useState(null);
 
-  const { toast, show, clear } = useToast();
+  const { show } = useToast();
   const { register, setValue, handleSubmit, watch, reset } = useForm();
   const selectedPart = watch("selectedDuration");
   const searchContainerRef = useRef(null);

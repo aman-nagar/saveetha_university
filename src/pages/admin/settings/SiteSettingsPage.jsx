@@ -5,7 +5,7 @@ import {
   updateSiteSettings,
   fetchSiteSettings,
 } from "../../../api/settings/settingAPI";
-import { useToast } from "../../../hooks/useToast";
+import { useToast } from "../../../context/ToastContext";
 import Toast from "../../../components/ui/Toast";
 import SettingsSkeleton from "../../../components/ui/skeleton/SettingsSkeleton";
 

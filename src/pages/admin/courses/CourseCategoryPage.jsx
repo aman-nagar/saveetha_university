@@ -10,7 +10,7 @@ import {
 } from "../../../api/courses/courseTypeApi";
 
 import { useCrud } from "../../../hooks/useCrud";
-import { useToast } from "../../../hooks/useToast";
+import { useToast } from "../../../context/ToastContext";
 import { useConfirm } from "../../../hooks/useConfirm";
 
 import CourseCategoryForm from "../../../components/admin/courses/CourseCategoryForm";
@@ -142,7 +142,10 @@ export default function CourseCategoryPage() {
         onClose={close}
         footer={
           <>
-            <button onClick={close} className="px-4 py-2 border border-border rounded-lg text-sm text-text hover:bg-bg transition">
+            <button
+              onClick={close}
+              className="px-4 py-2 border border-border rounded-lg text-sm text-text hover:bg-bg transition"
+            >
               Cancel
             </button>
             <button

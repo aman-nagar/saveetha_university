@@ -1,7 +1,7 @@
 // src/components/admin/students/admission/StudentFormStepper.jsx
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
-import { useToast } from "../../../../hooks/useToast";
+import { useToast } from "../../../../context/ToastContext";
 import Toast from "../../../ui/Toast";
 
 import StepPersonal from "./steps/StepPersonal";

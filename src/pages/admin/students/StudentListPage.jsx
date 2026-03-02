@@ -23,6 +23,7 @@ import {
   restoreStudent,
 } from "../../../api/students/studentApi";
 import { useAuth } from "../../../context/AuthContext";
+import { useConfirm } from "../../../hooks/useConfirm";
 
 /* ─── Small PDF download helper ─── */
 function downloadStudentPdf(student) {
@@ -107,6 +108,7 @@ export default function StudentListPage() {
   const { user } = useAuth();
   const isAdmin = user?.role === "admin";
   const { toast, show, clear } = useToast();
+  const { target, isOpen, open, close } = useConfirm();
   const navigate = useNavigate();
   const basePath = isAdmin
     ? "/admin"
@@ -191,38 +193,45 @@ export default function StudentListPage() {
     }
   };
 
-  const handleDelete = async (row) => {
-    const isPermanent = mode === "recycle";
-    const message = isPermanent
-      ? "Permanently delete this student? This action cannot be undone."
-      : "Move student to Recycle Bin?";
-
-    if (!window.confirm(message)) return;
-
-    try {
-      await deleteStudent(row.id);
-      setStudents((prev) => prev.filter((s) => s.id !== row.id));
-      show(
-        "success",
-        isPermanent ? "Permanently deleted" : "Moved to Recycle Bin",
-      );
-    } catch (err) {
-      show("error", err.message || "Delete failed");
-    }
+  const handleDelete = (row) => {
+    open({
+      ...row,
+      actionType: "delete",
+      isPermanent: mode === "recycle",
+    });
   };
 
   const handleRestore = async (row) => {
-    if (!window.confirm("Restore this student to Active list?")) return;
+    open({ ...row, actionType: "restore" });
+  };
+  const [isProcessing, setIsProcessing] = useState(false);
+
+  const processConfirmAction = async () => {
+    if (!target) return;
+
+    setIsProcessing(true);
 
     try {
-      await restoreStudent(row.id);
-      setStudents((prev) => prev.filter((s) => s.id !== row.id));
-      show("success", "Student restored to Active");
+      if (target.actionType === "delete") {
+        await deleteStudent(target.id);
+        show(
+          "success",
+          target.isPermanent ? "Permanently deleted" : "Moved to Recycle Bin",
+        );
+      } else {
+        await restoreStudent(target.id);
+        show("success", "Student restored to Active");
+      }
+
+      setStudents((prev) => prev.filter((s) => s.id !== target.id));
+
+      close();
     } catch (err) {
-      show("error", err.message || "Restore failed");
+      show("error", err.message || "Action failed");
+    } finally {
+      setIsProcessing(false);
     }
   };
-
   const handleDownloadPdf = async (row) => {
     try {
       const fullData = await fetchStudentById(row.id);
@@ -404,6 +413,31 @@ export default function StudentListPage() {
         </div>
       )}
 
+      <Modal isOpen={isOpen} onClose={close} size="sm" title="Confirm Action">
+        <div className="p-4 text-center space-y-4">
+          <p className="text-sm">
+            {target?.actionType === "delete"
+              ? target?.isPermanent
+                ? "Permanently delete this student?"
+                : "Move student to Recycle Bin?"
+              : "Restore this student to Active list?"}
+          </p>
+
+          <div className="flex gap-3">
+            <button onClick={close} className="flex-1 py-2 border rounded-lg">
+              Cancel
+            </button>
+
+            <button
+              onClick={processConfirmAction}
+              disabled={isProcessing}
+              className="flex-1 py-2 bg-red-600 text-white rounded-lg"
+            >
+              {isProcessing ? "Processing..." : "Confirm"}
+            </button>
+          </div>
+        </div>
+      </Modal>
       {/* View Modal */}
       <Modal
         isOpen={viewOpen}

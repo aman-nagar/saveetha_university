@@ -25,6 +25,7 @@ export default function CenterLogin() {
 
       navigate("/center", { replace: true });
     } catch (err) {
+      console.log(`clg err ${err.message}`);
       show("error", err.message || "Invalid center credentials");
     } finally {
       setLoading(false);

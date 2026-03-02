@@ -1,5 +1,6 @@
 // src/components/ui/Modal.jsx
 import { useEffect } from "react";
+import { useSmoothScroll } from "../../context/SmoothScroll";
 
 export default function Modal({
   isOpen,
@@ -9,23 +10,25 @@ export default function Modal({
   footer,
   size = "md",
 }) {
+  const { disableLenis, enableLenis } = useSmoothScroll();
+
   useEffect(() => {
     const handleKeyDown = (e) => {
       if (e.key === "Escape") onClose();
     };
 
     if (isOpen) {
-      document.body.style.overflow = "hidden";
+      disableLenis();
       window.addEventListener("keydown", handleKeyDown);
     } else {
-      document.body.style.overflow = "";
+      enableLenis();
     }
 
     return () => {
-      document.body.style.overflow = "";
+      enableLenis();
       window.removeEventListener("keydown", handleKeyDown);
     };
-  }, [isOpen, onClose]);
+  }, [isOpen, onClose, disableLenis, enableLenis]);
 
   if (!isOpen) return null;
 

@@ -2,7 +2,7 @@ import { useForm } from "react-hook-form";
 import { useRef, useEffect, useState } from "react";
 import { useAcademicFlow } from "../../../hooks/useAcademicFlow";
 import { useToast } from "../../../context/ToastContext";
-import Toast from "../../../components/ui/Toast";
+
 import Button from "../../../components/ui/Button";
 import AdmitCardForm from "../../../components/admin/students/admit-card/AdmitCardForm";
 import ScheduleTable from "../../../components/admin/students/admit-card/ScheduleTable";
@@ -360,9 +360,6 @@ export default function GenerateAdmitCardPage() {
           <AdmitCardDetails data={viewData} />
         )}
       </Modal>
-
-      {/* ✅ 4. Fixed Toast Props spread to ensure type="error" renders correctly */}
-      {toast && <Toast {...toast} onClose={clear} />}
     </div>
   );
 }

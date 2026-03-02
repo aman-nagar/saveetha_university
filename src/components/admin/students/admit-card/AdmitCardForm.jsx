@@ -26,9 +26,12 @@ export default function AdmitCardForm({ register, logic, searchRef }) {
 
         {/* Search Results Dropdown */}
         {logic.showResults && (
-          <div className="absolute z-[100] w-full bg-surface border border-border rounded-lg mt-1 shadow-2xl max-h-60 overflow-y-auto">
+          <div
+            className="absolute z-[100] w-full bg-surface border border-border rounded-lg mt-1 shadow-2xl max-h-60 overflow-y-auto"
+            data-lenis-prevent="true"
+          >
             {logic.isSearching ? (
-              <div className="p-3 text-sm text-muted animate-pulse">
+              <div className="p-3 text-sm text-muted animate-pulse data-lenis-prevent">
                 Searching...
               </div>
             ) : logic.searchResults?.length > 0 ? (

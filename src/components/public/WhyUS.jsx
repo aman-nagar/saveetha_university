@@ -1,96 +1,172 @@
-// src/components/public/WhyUS.jsx
-import React from "react";
+import React, { useEffect, useState, useRef } from "react";
+import { motion, useInView, useMotionValue, useSpring } from "framer-motion";
+import { FaGraduationCap, FaIndustry, FaMicroscope, FaChalkboardTeacher } from "react-icons/fa";
+import canvasConfetti from "canvas-confetti";
+
+/**
+ * Reusable Counter Component with Spring Physics
+ * and Achievement Trigger for Confetti
+ */
+function Counter({ value, triggerConfetti = false }) {
+  const ref = useRef(null);
+  const isInView = useInView(ref, { once: true, margin: "-100px" });
+  
+  // Parse numeric value and keep suffix (e.g., "5000+" -> 5000, "+")
+  const numericValue = parseInt(value.replace(/[^0-9]/g, ""), 10);
+  const suffix = value.replace(/[0-9]/g, "");
+
+  const motionValue = useMotionValue(0);
+  const springValue = useSpring(motionValue, { 
+    damping: 40, 
+    stiffness: 90 
+  });
+  const [displayValue, setDisplayValue] = useState(0);
+
+  useEffect(() => {
+    if (isInView) motionValue.set(numericValue);
+  }, [isInView, numericValue, motionValue]);
+
+  useEffect(() => {
+    return springValue.on("change", (latest) => {
+      const rounded = Math.floor(latest);
+      setDisplayValue(rounded);
+      
+      // Fire celebration when target reached
+      if (triggerConfetti && rounded >= numericValue && isInView) {
+        const end = Date.now() + 1000;
+        const colors = ["#c9a227", "#ffffff", "#0b1f4b"]; // Gold, White, Navy
+
+        (function frame() {
+          canvasConfetti({
+            particleCount: 3,
+            angle: 60,
+            spread: 55,
+            origin: { x: 0, y: 0.8 },
+            colors: colors,
+          });
+          canvasConfetti({
+            particleCount: 3,
+            angle: 120,
+            spread: 55,
+            origin: { x: 1, y: 0.8 },
+            colors: colors,
+          });
+          if (Date.now() < end) requestAnimationFrame(frame);
+        }());
+      }
+    });
+  }, [springValue, triggerConfetti, numericValue, isInView]);
+
+  return <span ref={ref}>{displayValue.toLocaleString()}{suffix}</span>;
+}
 
 export default function WhyUs() {
+  const REASONS = [
+    {
+      title: "Academic Excellence",
+      icon: <FaGraduationCap />,
+      desc: "Comprehensive programs in Management, Law, and Tech, guided by experts who prioritize high-quality educational standards.",
+      delay: 0.1
+    },
+    {
+      title: "Industry-Oriented",
+      icon: <FaIndustry />,
+      desc: "Our curriculum bridges the gap between classroom theory and real-world industrial application for career readiness.",
+      delay: 0.2
+    },
+    {
+      title: "Modern Infrastructure",
+      icon: <FaChalkboardTeacher />,
+      desc: "State-of-the-art labs, expansive libraries, and sports complexes designed for a holistic student experience.",
+      delay: 0.3
+    },
+    {
+      title: "Research & Innovation",
+      icon: <FaMicroscope />,
+      desc: "Promoting a culture of discovery through dedicated research centers and collaborations with global leaders.",
+      delay: 0.4
+    }
+  ];
+
+  const STATS = [
+    { number: "50+", label: "Programs" },
+    { number: "100+", label: "Expert Faculty" },
+    { number: "5000+", label: "Alumni", celebrate: true },
+    { number: "25+", label: "Research Centers" },
+  ];
+
   return (
-    <section className="py-16 px-4 bg-primary">
-      <div className="container mx-auto max-w-6xl">
-        <div className="text-center mb-12">
-          <h2 className="text-3xl md:text-4xl font-heading font-bold text-white mb-4">
-            Why <span className="text-accent">Aryavart</span> International
-            University?
+    <section className="relative py-24 px-4 bg-primary overflow-hidden">
+      {/* Premium Background Glows */}
+      <div className="absolute inset-0 pointer-events-none overflow-hidden">
+        <div className="absolute -top-24 -left-24 w-96 h-96 bg-accent/10 rounded-full blur-[120px]" />
+        <div className="absolute -bottom-24 -right-24 w-96 h-96 bg-secondary/10 rounded-full blur-[120px]" />
+      </div>
+
+      <div className="container mx-auto max-w-7xl relative z-10">
+        {/* Header */}
+        <motion.div 
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          className="text-center mb-16"
+        >
+          <h2 className="text-4xl md:text-5xl font-heading font-extrabold text-white mb-6">
+            Why <span className="text-accent italic">Aryavart</span> International?
           </h2>
-          <div className="w-24 h-1 bg-accent mx-auto rounded-full"></div>
-        </div>
+          <div className="w-24 h-1.5 bg-accent mx-auto rounded-full mb-6" />
+        </motion.div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-12">
-          {/* Left Column */}
-          <div className="space-y-6">
-            <div className="bg-surface/10 backdrop-blur-sm p-6 rounded-xl border border-white/2">
-              <h3 className="text-xl font-heading font-semibold text-accent mb-3 flex items-center gap-2">
-                <span className="w-2 h-2 bg-accent rounded-full"></span>
-                Academic Excellence
-              </h3>
-              <p className="text-white/90 leading-relaxed">
-                Aryavart International University offers a wide range of
-                academic programs in fields such as management, law, computer
-                science, education, humanities, pharmacy, social sciences, skill
-                and vocational education and many more. The University has a
-                diverse faculty with many experts in their respective fields who
-                provide students with a high-quality education.
-              </p>
-            </div>
-
-            <div className="bg-white/10 backdrop-blur-sm p-6 rounded-xl border border-white/20">
-              <h3 className="text-xl font-heading font-semibold text-accent mb-3 flex items-center gap-2">
-                <span className="w-2 h-2 bg-accent rounded-full"></span>
-                Industry-Oriented Learning
-              </h3>
-              <p className="text-white/90 leading-relaxed">
-                The curriculum is designed to ensure that students receive both
-                theoretical and industry oriented practical knowledge, which
-                prepares them for real-world challenges.
-              </p>
-            </div>
-          </div>
-
-          {/* Right Column */}
-          <div className="space-y-6">
-            <div className="bg-white/10 backdrop-blur-sm p-6 rounded-xl border border-white/20">
-              <h3 className="text-xl font-heading font-semibold text-accent mb-3 flex items-center gap-2">
-                <span className="w-2 h-2 bg-accent rounded-full"></span>
-                State-of-the-Art Campus
-              </h3>
-              <p className="text-white/90 leading-relaxed">
-                The University has a state-of-the-art campus with modern
-                facilities. The campus has a library, computer labs, science
-                labs, and sports facilities. The campus environment is conducive
-                to learning and provides students with an excellent experience.
-              </p>
-            </div>
-
-            <div className="bg-white/10 backdrop-blur-sm p-6 rounded-xl border border-white/20">
-              <h3 className="text-xl font-heading font-semibold text-accent mb-3 flex items-center gap-2">
-                <span className="w-2 h-2 bg-accent rounded-full"></span>
-                Research & Innovation
-              </h3>
-              <p className="text-white/90 leading-relaxed">
-                The University has a strong focus on research and innovation.
-                Research centers in various fields promote research and
-                development. Students participate in research projects and gain
-                practical experience through collaborations with leading
-                industries and research institutions.
-              </p>
-            </div>
-          </div>
-        </div>
-
-        {/* Stats/Highlights */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-12">
-          {[
-            { number: "50+", label: "Programs" },
-            { number: "100+", label: "Expert Faculty" },
-            { number: "5000+", label: "Students" },
-            { number: "25+", label: "Research Centers" },
-          ].map((stat, i) => (
-            <div
+        {/* Bento-style Feature Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-20">
+          {REASONS.map((reason, i) => (
+            <motion.div
               key={i}
-              className="text-center bg-surface/5 backdrop-blur-sm p-4 rounded-lg"
+              initial={{ opacity: 0, scale: 0.95 }}
+              whileInView={{ opacity: 1, scale: 1 }}
+              transition={{ delay: reason.delay }}
+              whileHover={{ y: -8 }}
+              className="bg-white/5 backdrop-blur-md p-8 rounded-3xl border border-white/10 hover:border-accent/40 transition-all group"
             >
-              <div className="text-2xl md:text-3xl font-heading font-bold text-accent">
-                {stat.number}
+              <div className="w-12 h-12 bg-accent text-primary rounded-xl flex items-center justify-center text-xl mb-6 shadow-[0_0_20px_rgba(201,162,39,0.3)] group-hover:rotate-12 transition-transform">
+                {reason.icon}
               </div>
-              <div className="text-sm text-white/80">{stat.label}</div>
+              <h3 className="text-xl font-bold text-white mb-3 group-hover:text-accent transition-colors">
+                {reason.title}
+              </h3>
+              <p className="text-white/60 text-sm leading-relaxed">
+                {reason.desc}
+              </p>
+            </motion.div>
+          ))}
+        </div>
+
+        {/* Animated Stats Section */}
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-12 border-t border-white/10 pt-16">
+          {STATS.map((stat, i) => (
+            <div key={i} className="text-center relative group">
+              {/* The Gold Shine Effect on Numbers */}
+              <div className="relative inline-block overflow-hidden">
+                <div className="text-4xl md:text-6xl font-black text-accent mb-2 tracking-tighter">
+                  <Counter value={stat.number} triggerConfetti={stat.celebrate} />
+                </div>
+                {/* Shine Overlay */}
+                <motion.div 
+                  animate={{ left: ["-100%", "200%"] }}
+                  transition={{ repeat: Infinity, duration: 4, ease: "linear", repeatDelay: 1 }}
+                  className="absolute top-0 w-full h-full bg-gradient-to-r from-transparent via-white/30 to-transparent skew-x-[-25deg]"
+                />
+              </div>
+              
+              <div className="text-[10px] md:text-xs font-bold text-white uppercase tracking-[0.3em] opacity-50 group-hover:opacity-100 transition-opacity">
+                {stat.label}
+              </div>
+              
+              <motion.div 
+                initial={{ width: 0 }}
+                whileInView={{ width: "50%" }}
+                className="h-1 bg-gradient-to-r from-transparent via-accent/40 to-transparent mx-auto mt-4"
+              />
             </div>
           ))}
         </div>

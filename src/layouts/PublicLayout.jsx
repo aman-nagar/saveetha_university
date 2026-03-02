@@ -7,12 +7,30 @@ import { Outlet } from "react-router-dom";
 export default function PublicLayout() {
   return (
     <div className="min-h-screen flex flex-col">
-      {/* <AnnouncementBar /> */}
       <PublicHeader />
       <main className="flex-1">
         <Outlet />
       </main>
       <PublicFooter />
+      <BackToTop /> {/* Add the button here */}
     </div>
+  );
+}
+
+export function BackToTop() {
+  const handleScrollToTop = () => {
+    // This works with Lenis and native scrolling
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
+  return (
+    <button
+      onClick={handleScrollToTop}
+      className="fixed bottom-8 right-8 bg-primary text-accent p-4 rounded-full shadow-2xl hover:scale-110 transition-transform z-50 group border border-accent/20"
+    >
+      <span className="group-hover:-translate-y-1 block transition-transform">
+        ↑
+      </span>
+    </button>
   );
 }

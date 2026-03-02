@@ -7,6 +7,8 @@ import Stats from "../../components/public/Stats";
 import Programs from "../../components/public/Programs";
 import CTA from "../../components/public/CTA";
 import HighlightNews from "../../components/public/HighlightNews";
+import AcademicPhotoGallery from "./sections/AcademicPhotoGallery";
+import StudentReviews from "./sections/StudentReviews";
 
 export default function Home() {
   return (
@@ -17,6 +19,8 @@ export default function Home() {
       <Stats />
       <WhyUS />
       <Programs />
+      <AcademicPhotoGallery />
+      <StudentReviews />
       <CTA />
     </div>
   );

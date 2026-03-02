@@ -3,8 +3,14 @@ import { apiRequest } from "../client";
 const CENTER_ENDPOINT = "/centers/index.php";
 const UPDATE_ENDPOINT = "/centers/update.php";
 
-export function fetchCenters() {
-  return apiRequest(`${CENTER_ENDPOINT}`);
+export function fetchCenters({ page = 1, search = "" } = {}) {
+  const params = new URLSearchParams();
+  if (page) params.append("page", page);
+  if (search) params.append("search", search);
+  const queryString = params.toString();
+  return apiRequest(
+    `${CENTER_ENDPOINT}${queryString ? "?" + queryString : ""}`,
+  );
 }
 
 export function fetchCenterById(id) {
@@ -33,5 +39,15 @@ export function toggleCenterStatus(data) {
       "Content-Type": "application/json",
     },
     body: JSON.stringify(data),
+  });
+}
+
+export function deleteCenter(id) {
+  return apiRequest(`${CENTER_ENDPOINT}`, {
+    method: "DELETE",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ id }),
   });
 }

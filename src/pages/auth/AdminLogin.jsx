@@ -3,7 +3,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { FaUserTie } from "react-icons/fa";
 import { useAuth } from "../../context/AuthContext";
-import { useToast } from "../../hooks/useToast";
+import { useToast } from "../../context/ToastContext";
 import { loginAdmin } from "../../api/auth/adminAuthApi";
 import LoginForm from "./LoginForm";
 

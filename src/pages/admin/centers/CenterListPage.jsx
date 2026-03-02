@@ -5,39 +5,64 @@ import {
   fetchCenters,
   updateCenter,
   toggleCenterStatus,
+  deleteCenter,
 } from "../../../api/center/centerApi";
-import { useCrud } from "../../../hooks/useCrud";
-import { useToast } from "../../../hooks/useToast";
-import Table from "../../../components/table/Table";
-import Button from "../../../components/ui/Button";
-import Toast from "../../../components/ui/Toast";
-import { HiPlus, HiPencil, HiTrash } from "react-icons/hi";
-import { FaToggleOn, FaToggleOff, FaSpinner } from "react-icons/fa";
+import { useToast } from "../../../context/ToastContext";
 import { useConfirm } from "../../../hooks/useConfirm";
+import Table from "../../../components/table/Table";
+import DataTableLayout from "../../../components/table/DataTableLayout";
+import Pagination from "../../../components/ui/Pagination";
+import Button from "../../../components/ui/Button";
 import Modal from "../../../components/ui/Modal";
+import { HiPlus, HiPencil, HiTrash } from "react-icons/hi";
+import { FaToggleOn, FaToggleOff, FaSpinner, FaSearch } from "react-icons/fa";
 
 export default function CenterListPage() {
   const navigate = useNavigate();
-  const { toast, show, clear } = useToast();
+  const { show } = useToast();
   const { target, isOpen, open, close } = useConfirm();
-  const [togglingId, setTogglingId] = useState(null);
 
-  const {
-    data: centers,
-    loading,
-    load,
-    setData,
-    remove,
-  } = useCrud({
-    fetchFn: fetchCenters,
-    deleteFn: async (id) => {
-      console.log(`[CenterListPage.jsx] Delete ID: ${id}`);
-    },
-  });
+  const [centers, setCenters] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [search, setSearch] = useState("");
+  const [togglingId, setTogglingId] = useState(null);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   useEffect(() => {
-    load();
-  }, [load]);
+    loadCenters(1, search);
+  }, []);
+
+  const loadCenters = async (page = 1, searchTerm = "") => {
+    setLoading(true);
+    try {
+      const response = await fetchCenters({ page, search: searchTerm });
+      console.log("Full response:", response);
+
+      // response is the pagination object directly
+      setCenters(response.data || []);
+      setCurrentPage(response.current_page || 1);
+      setTotalPages(response.total_pages || 1);
+
+      console.log("Centers set:", response.data?.length);
+    } catch (err) {
+      console.log("Centers set:", response.data?.length);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleSearch = (e) => {
+    const value = e.target.value;
+    setSearch(value);
+    loadCenters(1, value);
+  };
+
+  const handlePageChange = (page) => {
+    setCurrentPage(page);
+    loadCenters(page, search);
+  };
 
   const handleToggle = async (row, field) => {
     try {
@@ -54,7 +79,7 @@ export default function CenterListPage() {
       });
 
       // Update local state with boolean for React UI
-      setData((prev) =>
+      setCenters((prev) =>
         prev.map((item) =>
           item.id === row.id ? { ...item, [field]: !currentVal } : item,
         ),
@@ -67,15 +92,23 @@ export default function CenterListPage() {
       setTogglingId(null);
     }
   };
+
+  const handleDelete = (row) => {
+    open(row);
+  };
+
   const confirmDelete = async () => {
     if (!target) return;
+    setIsDeleting(true);
     try {
-      await remove(target.id);
+      await deleteCenter(target.id);
+      setCenters((prev) => prev.filter((c) => c.id !== target.id));
       show("success", `Center "${target.institute_name}" deleted`);
-    } catch (err) {
-      show("error", "Failed to delete center");
-    } finally {
       close();
+    } catch (err) {
+      show("error", err.message || "Failed to delete center");
+    } finally {
+      setIsDeleting(false);
     }
   };
 
@@ -218,99 +251,103 @@ export default function CenterListPage() {
       className:
         "p-1.5 sm:p-2 rounded-md bg-danger/10 text-danger hover:bg-danger/20 transition-colors",
       title: "Delete Center",
-      onClick: (row) => open(row),
+      onClick: handleDelete,
     },
   ];
 
   const toolbar = (
-    <Button
-      onClick={() => navigate("/admin/centers/add")}
-      className="flex items-center gap-1.5 sm:gap-2 text-xs sm:text-sm"
-    >
-      <HiPlus className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
-      <span className="hidden sm:inline">Add New Center</span>
-      <span className="sm:hidden">Add Center</span>
-    </Button>
+    <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 flex-wrap w-full">
+      {/* Search */}
+      <div className="relative flex-1 sm:flex-none">
+        <FaSearch className="absolute left-3 top-1/2 -translate-y-1/2 text-text-muted text-xs" />
+        <input
+          type="text"
+          placeholder="Search center..."
+          value={search}
+          onChange={handleSearch}
+          className="pl-9 pr-4 py-2 text-sm border border-border rounded-lg bg-surface text-text w-full sm:w-56 md:w-64 focus:outline-none focus:ring-2 focus:ring-primary/40"
+        />
+        
+      </div>
+
+      {/* Add Button */}
+      <Button
+        onClick={() => navigate("/admin/centers/add")}
+        className="flex items-center gap-1.5 sm:gap-2 text-xs sm:text-sm justify-center sm:justify-start"
+      >
+        <HiPlus className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+        <span className="hidden sm:inline">Add New Center</span>
+        <span className="sm:hidden">Add Center</span>
+      </Button>
+    </div>
   );
 
   return (
-    <div className="w-full space-y-4 sm:space-y-6">
-      {toast && <Toast {...toast} onClose={clear} />}
-
-      {/* Header Section - Mobile Optimized */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-4">
-        <div>
-          <h1 className="text-lg sm:text-xl lg:text-2xl font-heading font-bold text-text">
-            Center Management
-          </h1>
-          <p className="text-xs sm:text-sm text-muted mt-0.5">
-            Manage registered centers and their status
-          </p>
-        </div>
-        <div className="flex-shrink-0">{toolbar}</div>
+    <div className="w-full">
+      {/* Header Section */}
+      <div className="mb-6">
+        <h1 className="text-lg sm:text-xl lg:text-2xl font-heading font-bold text-text">
+          Center Management
+        </h1>
+        <p className="text-xs sm:text-sm text-muted mt-0.5">
+          Manage registered centers and their status
+        </p>
       </div>
 
-      {/* Table Container */}
-      <div className="bg-surface rounded-xl shadow-sm border border-border overflow-hidden">
+      <DataTableLayout
+        title=""
+        toolbar={toolbar}
+        pagination={
+          <Pagination
+            currentPage={currentPage}
+            totalPages={totalPages}
+            onPageChange={handlePageChange}
+          />
+        }
+      >
         <Table
-          title=""
           columns={columns}
           data={centers}
           actions={actions}
           loading={loading}
           emptyMessage="No centers found. Click 'Add New Center' to get started."
-          toolbar={null}
         />
-      </div>
+      </DataTableLayout>
 
+      {/* Delete Confirmation Modal */}
       <Modal
         isOpen={isOpen}
         title="Confirm Delete"
         onClose={close}
         size="sm"
         footer={
-          <>
-            <Button
-              variant="secondary"
+          <div className="flex gap-3 w-full">
+            <button
               onClick={close}
-              className="w-full sm:w-auto justify-center"
+              className="flex-1 px-4 py-2 text-sm font-medium border border-border rounded-lg hover:bg-surface/80 transition"
             >
               Cancel
-            </Button>
-            <Button
-              variant="danger"
+            </button>
+            <button
               onClick={confirmDelete}
-              loading={loading} // Add loading state if you have it
-              className="w-full sm:w-auto justify-center gap-2"
+              disabled={isDeleting}
+              className="flex-1 px-4 py-2 text-sm font-medium text-white bg-red-600 hover:bg-red-700 rounded-lg transition disabled:opacity-50"
             >
-              <HiTrash className="w-4 h-4" />
-              Delete
-            </Button>
-          </>
+              {isDeleting ? "Deleting..." : "Delete"}
+            </button>
+          </div>
         }
       >
         {target && (
-          <div className="flex flex-col items-center sm:items-start text-center sm:text-left">
-            {/* Icon */}
-            <div className="w-14 h-14 sm:w-16 sm:h-16 bg-danger/10 rounded-full flex items-center justify-center mb-4 shrink-0">
-              <HiTrash className="w-7 h-7 sm:w-8 sm:h-8 text-danger" />
-            </div>
-
-            {/* Content */}
-            <div className="space-y-2">
-              <p className="text-text text-sm sm:text-base">
-                Are you sure you want to delete{" "}
-                <strong className="text-primary font-semibold">
-                  {target.institute_name}
-                </strong>
-                ?
-              </p>
-              <p className="text-muted text-xs sm:text-sm leading-relaxed">
-                This action cannot be undone. All associated data including
-                student records and course assignments will be permanently
-                removed.
-              </p>
-            </div>
+          <div className="space-y-4">
+            <p className="text-text">
+              This action cannot be undone. All associated data including
+              student records and course assignments will be permanently
+              removed.
+            </p>
+            <p className="text-sm text-muted">
+              <strong>Center:</strong> {target.institute_name}
+            </p>
           </div>
         )}
       </Modal>

@@ -3,7 +3,6 @@ import React, { useEffect, useState, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   fetchCenters,
-  updateCenter,
   toggleCenterStatus,
   deleteCenter,
 } from "../../../api/center/centerApi";
@@ -22,7 +21,6 @@ export default function CenterListPage() {
   const navigate = useNavigate();
   const { show } = useToast();
   const { target, isOpen, open, close } = useConfirm();
-
   const [centers, setCenters] = useState([]);
   const [loading, setLoading] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
@@ -32,7 +30,7 @@ export default function CenterListPage() {
   const [isDeleting, setIsDeleting] = useState(false);
 
   useEffect(() => {
-    loadCenters(1, search);
+    loadCenters(1, "");
   }, []);
 
   const loadCenters = async (page = 1, searchTerm = "") => {

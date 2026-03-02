@@ -425,6 +425,7 @@ export default function StudentFormStepper({
       }
     } catch (err) {
       show("error", err.message);
+      console.error("Student Creation Failed:", err.message);
     } finally {
       setLoading(false);
     }

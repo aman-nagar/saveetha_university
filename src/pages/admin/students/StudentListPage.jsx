@@ -1,5 +1,6 @@
 // src/pages/admin/students/StudentListPage.jsx
 import { useEffect, useState } from "react";
+
 import { useNavigate } from "react-router-dom";
 import {
   FaPen,
@@ -24,6 +25,8 @@ import {
 } from "../../../api/students/studentApi";
 import { useAuth } from "../../../context/AuthContext";
 import { useConfirm } from "../../../hooks/useConfirm";
+import Pagination from "../../../components/ui/Pagination";
+import DataTableLayout from "../../../components/table/DataTableLayout";
 
 /* ─── Small PDF download helper ─── */
 function downloadStudentPdf(student) {
@@ -380,39 +383,29 @@ export default function StudentListPage() {
     <div className="w-full">
       {toast && <Toast {...toast} onClose={clear} />}
 
-      <Table
+      <DataTableLayout
         title={mode === "active" ? "All Students" : "Recycle Bin"}
         toolbar={toolbar}
-        columns={columns}
-        data={students}
-        actions={actions}
-        loading={loading}
-        emptyMessage={
-          mode === "active"
-            ? "No active students found"
-            : "Recycle bin is empty"
+        pagination={
+          <Pagination
+            currentPage={currentPage}
+            totalPages={totalPages}
+            onPageChange={handlePageChange}
+          />
         }
-      />
-
-      {/* Pagination */}
-      {totalPages > 1 && (
-        <div className="flex flex-wrap justify-center gap-1.5 sm:gap-2 mt-4 sm:mt-6">
-          {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
-            <button
-              key={page}
-              onClick={() => handlePageChange(page)}
-              className={`min-w-[34px] sm:min-w-[38px] px-2.5 sm:px-3 py-1.5 sm:py-2 rounded-md text-xs sm:text-sm font-medium transition ${
-                page === currentPage
-                  ? "bg-primary text-white shadow-sm"
-                  : "border border-border hover:bg-surface/80"
-              }`}
-            >
-              {page}
-            </button>
-          ))}
-        </div>
-      )}
-
+      >
+        <Table
+          columns={columns}
+          data={students}
+          actions={actions}
+          loading={loading}
+          emptyMessage={
+            mode === "active"
+              ? "No active students found"
+              : "Recycle bin is empty"
+          }
+        />
+      </DataTableLayout>
       <Modal isOpen={isOpen} onClose={close} size="sm" title="Confirm Action">
         <div className="p-4 text-center space-y-4">
           <p className="text-sm">

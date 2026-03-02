@@ -118,6 +118,8 @@ export default function StudentFormStepper({
     courseId: null,
   });
 
+  const currentYear = new Date().getFullYear();
+
   const {
     register,
     handleSubmit,
@@ -127,7 +129,7 @@ export default function StudentFormStepper({
     setValue,
     formState: { errors },
   } = useForm({
-    defaultValues: isEdit ? buildDefaultValues(student) : {},
+    defaultValues: isEdit ? buildDefaultValues(student) : { year: currentYear },
   });
 
   // Watch the dropdown fields to detect user changes

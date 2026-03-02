@@ -11,6 +11,7 @@ export default function StepProgram({
   faculties = [],
   courses = [],
   streams = [],
+  isAdmin = false,
 }) {
   const courseTypeOptions = useMemo(
     () =>
@@ -32,7 +33,6 @@ export default function StepProgram({
     () => streams.map((s) => ({ label: s.name, value: s.name, id: s.id })),
     [streams],
   );
-
   return (
     <FormSection title="Programme Details" columns={2}>
       <FormSelect
@@ -71,6 +71,7 @@ export default function StepProgram({
         label="Year"
         name="year"
         register={register}
+        disabled={!isAdmin}
         error={errors.year}
       />
 

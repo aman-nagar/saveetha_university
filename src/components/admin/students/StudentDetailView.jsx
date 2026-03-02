@@ -1,7 +1,12 @@
 // src/components/admin/students/StudentDetailView.jsx
-import { FaUser, FaIdCard, FaBriefcase, FaPhone, FaGraduationCap, FaBook } from "react-icons/fa";
-
-/* ── Helpers ─────────────────────────────── */
+import {
+  FaUser,
+  FaIdCard,
+  FaBriefcase,
+  FaPhone,
+  FaGraduationCap,
+  FaBook,
+} from "react-icons/fa";
 
 function Section({ icon: Icon, title, children }) {
   return (
@@ -59,14 +64,24 @@ const STATUS_MAP = {
 };
 
 const CATEGORY_LABELS = {
-  general: "General", obc: "OBC", sc: "SC", st: "ST",
-  bc: "BC", sbc: "SBC", ebc: "EBC", ph: "PH",
-  "ex-servicemen": "EX-Servicemen", other: "Other",
+  general: "General",
+  obc: "OBC",
+  sc: "SC",
+  st: "ST",
+  bc: "BC",
+  sbc: "SBC",
+  ebc: "EBC",
+  ph: "PH",
+  "ex-servicemen": "EX-Servicemen",
+  other: "Other",
 };
 
 const ID_PROOF_LABELS = {
-  aadhar_card: "Aadhar Card", pan_card: "Pan Card",
-  voter_id_card: "Voter ID Card", passport: "Passport", other: "Other",
+  aadhar_card: "Aadhar Card",
+  pan_card: "Pan Card",
+  voter_id_card: "Voter ID Card",
+  passport: "Passport",
+  other: "Other",
 };
 
 const QUAL_ROWS = [
@@ -87,11 +102,13 @@ function findQual(qualifications, key) {
 export default function StudentDetailView({ student }) {
   if (!student) return null;
 
-  const status = STATUS_MAP[student.status] || { label: "Unknown", cls: "bg-gray-100 text-gray-600" };
+  const status = STATUS_MAP[student.status] || {
+    label: "Unknown",
+    cls: "bg-gray-100 text-gray-600",
+  };
 
   return (
     <div className="space-y-1">
-
       {/* ── Profile Header ── */}
       <div className="flex items-center gap-4 p-4 bg-primary/5 rounded-xl mb-6 border border-primary/10">
         {student.photo_url ? (
@@ -99,7 +116,9 @@ export default function StudentDetailView({ student }) {
             src={student.photo_url}
             alt="Student"
             className="h-16 w-16 rounded-full object-cover border-2 border-primary/30 shadow"
-            onError={(e) => { e.target.style.display = "none"; }}
+            onError={(e) => {
+              e.target.style.display = "none";
+            }}
           />
         ) : (
           <div className="h-16 w-16 rounded-full bg-primary/20 flex items-center justify-center text-primary text-2xl font-bold flex-shrink-0">
@@ -110,9 +129,13 @@ export default function StudentDetailView({ student }) {
           <h2 className="text-lg font-bold text-text truncate">
             {student.candidate_name}
           </h2>
-          <p className="text-sm text-text-muted font-mono">{student.enrollment_no}</p>
+          <p className="text-sm text-text-muted font-mono">
+            {student.enrollment_no}
+          </p>
           <div className="flex items-center gap-2 mt-1 flex-wrap">
-            <span className={`text-xs font-semibold px-2 py-0.5 rounded-full ${status.cls}`}>
+            <span
+              className={`text-xs font-semibold px-2 py-0.5 rounded-full ${status.cls}`}
+            >
               {status.label}
             </span>
             {student.gender && (
@@ -136,7 +159,9 @@ export default function StudentDetailView({ student }) {
         <Field label="Date of Birth" value={student.dob} />
         <Field
           label="Employed"
-          value={student.employed === 1 || student.employed === "yes" ? "Yes" : "No"}
+          value={
+            student.employed === 1 || student.employed === "yes" ? "Yes" : "No"
+          }
         />
         {(student.employed === 1 || student.employed === "yes") && (
           <>
@@ -151,7 +176,9 @@ export default function StudentDetailView({ student }) {
         <Section icon={FaIdCard} title="ID Proof">
           <Field
             label="ID Type"
-            value={ID_PROOF_LABELS[student.id_proof_type] || student.id_proof_type}
+            value={
+              ID_PROOF_LABELS[student.id_proof_type] || student.id_proof_type
+            }
           />
           <Field label="ID Number" value={student.id_proof_no} />
           <div className="col-span-2 md:col-span-3 flex gap-4 flex-wrap mt-2">
@@ -177,64 +204,77 @@ export default function StudentDetailView({ student }) {
       </Section>
 
       {/* ── Qualifications ── */}
-      {Array.isArray(student.qualifications) && student.qualifications.length > 0 && (
-        <Section icon={FaGraduationCap} title="Qualifications">
-          <div className="col-span-2 md:col-span-3 overflow-x-auto">
-            <table className="w-full text-sm border border-border rounded-lg overflow-hidden">
-              <thead className="bg-bg">
-                <tr className="border-b border-border text-text-muted text-xs uppercase">
-                  <th className="text-left p-2 pl-3">Examination</th>
-                  <th className="text-left p-2">Year</th>
-                  <th className="text-left p-2">Board / University</th>
-                  <th className="text-left p-2">% / CGPA</th>
-                  <th className="text-left p-2">Document</th>
-                </tr>
-              </thead>
-              <tbody>
-                {QUAL_ROWS.map(({ label, key }) => {
-                  const q = findQual(student.qualifications, key);
-                  if (!q) return null;
-                  return (
-                    <tr key={key} className="border-b border-border last:border-0">
-                      <td className="p-2 pl-3 font-medium text-text">{label}</td>
-                      <td className="p-2 text-text-muted">{q.year_of_passing || "—"}</td>
-                      <td className="p-2 text-text-muted">{q.board_university || "—"}</td>
-                      <td className="p-2 text-text-muted">{q.percentage_cgpa || "—"}</td>
-                      <td className="p-2">
-                        {q.document_url ? (
-                          <a
-                            href={q.document_url}
-                            target="_blank"
-                            rel="noreferrer"
-                          >
-                            <img
-                              src={q.document_url}
-                              alt="doc"
-                              className="h-8 w-8 object-cover rounded border border-border"
-                              onError={(e) => {
-                                e.target.replaceWith(
-                                  Object.assign(document.createElement("a"), {
-                                    href: q.document_url,
-                                    target: "_blank",
-                                    textContent: "View",
-                                    className: "text-xs text-primary underline",
-                                  })
-                                );
-                              }}
-                            />
-                          </a>
-                        ) : (
-                          <span className="text-text-muted text-xs">—</span>
-                        )}
-                      </td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
-          </div>
-        </Section>
-      )}
+      {Array.isArray(student.qualifications) &&
+        student.qualifications.length > 0 && (
+          <Section icon={FaGraduationCap} title="Qualifications">
+            <div className="col-span-2 md:col-span-3 overflow-x-auto">
+              <table className="w-full text-sm border border-border rounded-lg overflow-hidden">
+                <thead className="bg-bg">
+                  <tr className="border-b border-border text-text-muted text-xs uppercase">
+                    <th className="text-left p-2 pl-3">Examination</th>
+                    <th className="text-left p-2">Year</th>
+                    <th className="text-left p-2">Board / University</th>
+                    <th className="text-left p-2">% / CGPA</th>
+                    <th className="text-left p-2">Document</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {QUAL_ROWS.map(({ label, key }) => {
+                    const q = findQual(student.qualifications, key);
+                    if (!q) return null;
+                    return (
+                      <tr
+                        key={key}
+                        className="border-b border-border last:border-0"
+                      >
+                        <td className="p-2 pl-3 font-medium text-text">
+                          {label}
+                        </td>
+                        <td className="p-2 text-text-muted">
+                          {q.year_of_passing || "—"}
+                        </td>
+                        <td className="p-2 text-text-muted">
+                          {q.board_university || "—"}
+                        </td>
+                        <td className="p-2 text-text-muted">
+                          {q.percentage_cgpa || "—"}
+                        </td>
+                        <td className="p-2">
+                          {q.document_url ? (
+                            <a
+                              href={q.document_url}
+                              target="_blank"
+                              rel="noreferrer"
+                            >
+                              <img
+                                src={q.document_url}
+                                alt="doc"
+                                className="h-8 w-8 object-cover rounded border border-border"
+                                onError={(e) => {
+                                  e.target.replaceWith(
+                                    Object.assign(document.createElement("a"), {
+                                      href: q.document_url,
+                                      target: "_blank",
+                                      textContent: "View",
+                                      className:
+                                        "text-xs text-primary underline",
+                                    }),
+                                  );
+                                }}
+                              />
+                            </a>
+                          ) : (
+                            <span className="text-text-muted text-xs">—</span>
+                          )}
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
+          </Section>
+        )}
 
       {/* ── Programme ── */}
       <Section icon={FaBook} title="Programme Details">
@@ -246,8 +286,14 @@ export default function StudentDetailView({ student }) {
         <Field label="Session" value={student.session} />
         <Field label="Month Session" value={student.month_session} />
         <Field label="Mode of Study" value={student.mode_of_study} />
-        <Field label="Hostel Facility" value={student.hostel_facility == 1 ? "Yes" : "No"} />
-        <Field label="Application Fee" value={student.application_fee ? `₹${student.application_fee}` : null} />
+        <Field
+          label="Hostel Facility"
+          value={student.hostel_facility == 1 ? "Yes" : "No"}
+        />
+        <Field
+          label="Application Fee"
+          value={student.application_fee ? `₹${student.application_fee}` : null}
+        />
         <Field label="Duration" value={student.duration} />
       </Section>
 

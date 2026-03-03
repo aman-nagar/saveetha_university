@@ -33,105 +33,99 @@ import StudentLogin from "./pages/auth/StudentLogin";
 import FormEnabledRoute from "./context/FormEnabledRoute";
 import CreateResultPage from "./pages/admin/result/CreateResultPage";
 import { ToastProvider } from "./context/ToastContext";
-import SmoothScroll from "./context/SmoothScroll";
 
 function App() {
   return (
     <AuthProvider>
-      <SmoothScroll>
-        <ToastProvider>
-          <BrowserRouter>
-            <Routes>
-              {/* Auth Routes */}
-              <Route path="/portal" element={<LoginPortal />} />
-              <Route path="/login" element={<StudentLogin />} />
-              <Route path="/admin/login" element={<AdminLogin />} />
-              <Route path="/center/login" element={<CenterLogin />} />
+      <ToastProvider>
+        <BrowserRouter>
+          <Routes>
+            {/* Auth Routes */}
+            <Route path="/portal" element={<LoginPortal />} />
+            <Route path="/login" element={<StudentLogin />} />
+            <Route path="/admin/login" element={<AdminLogin />} />
+            <Route path="/center/login" element={<CenterLogin />} />
 
-              {/* Public Routes */}
-              <Route element={<PublicLayout />}>
-                <Route path="/" element={<Home />} />
-                <Route path="/about" element={<About />} />
-                <Route path="/contact" element={<Contact />} />
-                <Route path="/news" element={<News />} />
-              </Route>
+            {/* Public Routes */}
+            <Route element={<PublicLayout />}>
+              <Route path="/" element={<Home />} />
+              <Route path="/about" element={<About />} />
+              <Route path="/contact" element={<Contact />} />
+              <Route path="/news" element={<News />} />
+            </Route>
 
-              {/* Admin Section */}
+            {/* Admin Section */}
+            <Route
+              path="/admin"
+              element={
+                <ProtectedRoute allowedRoles={["admin"]}>
+                  <AdminLayout />
+                </ProtectedRoute>
+              }
+            >
+              <Route index element={<AdminDashboard />} />
+              <Route path="students" element={<StudentListPage />} />
+              <Route path="students/add" element={<AddStudent />} />
+              <Route path="students/edit/:id" element={<EditStudent />} />
+              <Route path="centers/add" element={<AddCenterPage />} />
+              <Route path="centers" element={<CenterListPage />} />
               <Route
-                path="/admin"
-                element={
-                  <ProtectedRoute allowedRoles={["admin"]}>
-                    <AdminLayout />
-                  </ProtectedRoute>
-                }
-              >
-                <Route index element={<AdminDashboard />} />
-                <Route path="students" element={<StudentListPage />} />
-                <Route path="students/add" element={<AddStudent />} />
-                <Route path="students/edit/:id" element={<EditStudent />} />
-                <Route path="centers/add" element={<AddCenterPage />} />
-                <Route path="centers" element={<CenterListPage />} />
-                <Route
-                  path="admit-card/generate"
-                  element={<GenerateAdmitCardPage />}
-                />
-                <Route path="results/create" element={<CreateResultPage />} />
-                <Route
-                  path="course-category"
-                  element={<CourseCategoryPage />}
-                />
-                <Route path="faculty" element={<FacultyPage />} />
-                <Route path="course" element={<CoursePage />} />
-                <Route path="stream" element={<StreamPage />} />
-                <Route path="subject" element={<SubjectPage />} />
-                <Route path="site-settings" element={<SiteSettingsPage />} />
-              </Route>
+                path="admit-card/generate"
+                element={<GenerateAdmitCardPage />}
+              />
+              <Route path="results/create" element={<CreateResultPage />} />
+              <Route path="course-category" element={<CourseCategoryPage />} />
+              <Route path="faculty" element={<FacultyPage />} />
+              <Route path="course" element={<CoursePage />} />
+              <Route path="stream" element={<StreamPage />} />
+              <Route path="subject" element={<SubjectPage />} />
+              <Route path="site-settings" element={<SiteSettingsPage />} />
+            </Route>
 
-              {/* Center Section - FIXED: Added child routes for role silo */}
+            {/* Center Section - FIXED: Added child routes for role silo */}
+            <Route
+              path="/center"
+              element={
+                <ProtectedRoute allowedRoles={["center"]}>
+                  <CenterLayout />
+                </ProtectedRoute>
+              }
+            >
+              <Route index element={<CenterDashboardPage />} />
+              <Route path="students" element={<StudentListPage />} />
               <Route
-                path="/center"
+                path="students/add"
                 element={
-                  <ProtectedRoute allowedRoles={["center"]}>
-                    <CenterLayout />
-                  </ProtectedRoute>
-                }
-              >
-                <Route index element={<CenterDashboardPage />} />
-                <Route path="students" element={<StudentListPage />} />
-                <Route
-                  path="students/add"
-                  element={
-                    <FormEnabledRoute>
-                      <AddStudent />
-                    </FormEnabledRoute>
-                  }
-                />
-
-                <Route
-                  path="center/add"
-                  element={
-                    <FormEnabledRoute>
-                      <AddCenterPage />
-                    </FormEnabledRoute>
-                  }
-                />
-              </Route>
-
-              {/* Student Portal */}
-              <Route
-                path="/student-dashboard"
-                element={
-                  <ProtectedRoute allowedRoles={["student"]}>
-                    <StudentDashboard />
-                  </ProtectedRoute>
+                  <FormEnabledRoute>
+                    <AddStudent />
+                  </FormEnabledRoute>
                 }
               />
 
-              <Route path="/unauthorized" element={<UnauthorizedPage />} />
-            </Routes>
-          </BrowserRouter>
-        </ToastProvider>
-      </SmoothScroll>
+              <Route
+                path="center/add"
+                element={
+                  <FormEnabledRoute>
+                    <AddCenterPage />
+                  </FormEnabledRoute>
+                }
+              />
+            </Route>
+
+            {/* Student Portal */}
+            <Route
+              path="/student-dashboard"
+              element={
+                <ProtectedRoute allowedRoles={["student"]}>
+                  <StudentDashboard />
+                </ProtectedRoute>
+              }
+            />
+
+            <Route path="/unauthorized" element={<UnauthorizedPage />} />
+          </Routes>
+        </BrowserRouter>
+      </ToastProvider>
     </AuthProvider>
   );
 }

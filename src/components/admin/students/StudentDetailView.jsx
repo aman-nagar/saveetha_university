@@ -213,10 +213,7 @@ export default function StudentDetailView({ student }) {
   };
 
   return (
-    <div
-      data-lenis-prevent
-      className="h-[100dvh] md:max-h-[85vh] overflow-y-auto px-4 md:px-8 pb-20 scrollbar-hide bg-surface text-text"
-    >
+    <div className="h-[100dvh] md:max-h-[85vh] overflow-y-auto px-4 md:px-8 pb-20 scrollbar-hide bg-surface text-text">
       <div className="relative w-full max-w-6xl mx-auto p-1 sm:p-4">
         <AnimatePresence>
           {preview && (

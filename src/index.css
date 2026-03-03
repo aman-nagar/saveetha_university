@@ -30,7 +30,7 @@
 .dark {
   /* Brand colors slightly brighter for visibility */
   --color-primary: #1e3a8a; /* brighter academic navy */
-  --color-secondary: #c24141; /* brighter maroon */
+  --color-secondary: #/* lenis */ c24141; /* brighter maroon */
   --color-accent: #e0b93b; /* brighter gold */
 
   /* Neutrals */
@@ -86,13 +86,16 @@
 }
 
 /* scrollbar */
+html {
+  scroll-behavior: smooth;
+}
 ::-webkit-scrollbar {
   width: 3px;
   height: 3px;
 }
 
 ::-webkit-scrollbar-track {
-  background: #1e1e1e; /* Dark background */
+  background: #1e1e1e;
   border-radius: 10px;
 }
 
@@ -104,6 +107,7 @@
 ::-webkit-scrollbar-thumb:hover {
   background: linear-gradient(45deg, #1dd1a1, #0b6068);
 }
+
 /* scroll bar */
 
 /* print */
@@ -122,5 +126,31 @@
     print-color-adjust: exact !important;
   }
 }
+/* Custom Placeholder Styling */
+input::placeholder,
+textarea::placeholder {
+  /* Text Size */
+  font-size: 0.85rem;
 
-/* lenis */
+  /* Tilt Effect */
+  display: inline-block;
+  transform: skewX(-5deg); /* Subtle tilt to the left */
+
+  /* Visual adjustments for tilt */
+  transform-origin: left center;
+  padding-left: 2px;
+
+  /* Colors (Using your theme variables) */
+  color: var(--color-muted);
+  opacity: 0.6;
+
+  /* Transitions for smooth interaction */
+  transition: all 0.3s ease;
+}
+
+/* Subtle effect when user clicks into the field */
+input:focus::placeholder,
+textarea:focus::placeholder {
+  transform: skewX(0deg) translateX(10px); /* Straightens and moves right */
+  opacity: 0.3;
+}

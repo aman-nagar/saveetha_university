@@ -1,6 +1,5 @@
-// src/components/admin/AdminHeader.jsx
 import { useLocation, Link } from "react-router-dom";
-import { motion } from "framer-motion"; // Make sure to install framer-motion!
+import { motion } from "framer-motion"; 
 
 const routeTitles = {
   "/admin": "Overview",
@@ -13,6 +12,7 @@ export default function AdminHeader() {
   const location = useLocation();
   const path = location.pathname;
 
+  // Breadcrumb Logic
   const parts = path.split("/").filter(Boolean);
   let breadcrumb = [];
   let accumulatedPath = "";
@@ -33,23 +33,24 @@ export default function AdminHeader() {
     "Admin Panel";
 
   return (
-    <header className="sticky top-0 z-30 w-full bg-surface/80 backdrop-blur-md border-b border-border transition-all duration-300">
-      <div className="px-4 sm:px-6 lg:px-8 py-3 lg:py-4">
-        <div className="flex items-center justify-between">
-          {/* Left Side: Dynamic Spacing for Hamburger + Content */}
+    <header className="sticky top-0 z-30 w-full h-[60px] flex items-center bg-surface/80 backdrop-blur-md border-b border-border transition-all duration-300">
+      <div className="w-full px-4 sm:px-6 lg:px-8">
+        <div className="flex items-center justify-between gap-4">
+          
+          {/* Left Side: Breadcrumbs & Title */}
           <div className="flex items-center gap-4 min-w-0">
-            {/* Mobile Spacer: Adjust 'pl-12' based on your hamburger button width 
-               This ensures your title doesn't crash into the menu button.
+            {/* Note: If your Hamburger button is absolutely positioned, 
+               keep the pl-12 on mobile. If it's inline, remove it.
             */}
-            <div className="pl-12 lg:pl-0 flex flex-col min-w-0">
-              {/* Breadcrumbs - Hidden on very small screens for cleanliness */}
-              <nav className="hidden sm:flex items-center space-x-2 text-xs font-medium text-muted mb-1">
+            <div className="pl-10 lg:pl-0 flex flex-col min-w-0">
+              {/* Breadcrumbs */}
+              <nav className="hidden sm:flex items-center space-x-2 text-[10px] font-black uppercase tracking-widest text-muted mb-0.5">
                 {breadcrumb.map((item, index) => (
                   <div key={item.path} className="flex items-center">
-                    {index !== 0 && <span className="mx-2 opacity-40">/</span>}
+                    {index !== 0 && <span className="mx-1.5 opacity-30">/</span>}
                     <Link
                       to={item.path}
-                      className="hover:text-accent transition-colors duration-200"
+                      className="hover:text-accent transition-colors duration-200 whitespace-nowrap"
                     >
                       {item.label}
                     </Link>
@@ -57,32 +58,35 @@ export default function AdminHeader() {
                 ))}
               </nav>
 
-              {/* Page Title with Entrance Animation */}
+              {/* Page Title */}
               <motion.h1
                 key={path}
-                initial={{ opacity: 0, y: -5 }}
-                animate={{ opacity: 1, y: 0 }}
-                className="text-lg sm:text-2xl font-heading font-bold text-primary tracking-tight truncate"
+                initial={{ opacity: 0, x: -10 }}
+                animate={{ opacity: 1, x: 0 }}
+                className="text-base sm:text-xl font-heading font-black text-primary dark:text-text tracking-tight truncate"
               >
                 {pageTitle}
               </motion.h1>
             </div>
           </div>
 
-          {/* Right Side: User Profile / Status */}
+          {/* Right Side: Status & Profile */}
           <div className="flex items-center gap-3 shrink-0">
-            <div className="hidden md:flex flex-col items-end mr-2">
-              <span className="text-xs font-semibold text-primary leading-none">
+            <div className="hidden md:flex flex-col items-end">
+              <span className="text-[10px] font-black uppercase tracking-widest text-primary dark:text-text leading-none">
                 Administrator
               </span>
-              <span className="text-[10px] text-success flex items-center gap-1">
-                <span className="w-1.5 h-1.5 rounded-full bg-success animate-pulse"></span>
+              <span className="text-[9px] font-bold text-success flex items-center gap-1.5 mt-1">
+                <span className="relative flex h-2 w-2">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-success opacity-75"></span>
+                  <span className="relative inline-flex rounded-full h-2 w-2 bg-success"></span>
+                </span>
                 System Online
               </span>
             </div>
 
-            {/* Circular Avatar Placeholder */}
-            <div className="h-9 w-9 sm:h-10 sm:w-10 rounded-full bg-gradient-to-tr from-primary to-primary/80 border-2 border-accent/20 flex items-center justify-center text-white font-bold shadow-sm">
+            {/* Avatar - Using your Theme primary and accent colors */}
+            <div className="h-9 w-9 rounded-xl bg-primary/10 border-2 border-primary/20 flex items-center justify-center text-primary dark:text-accent font-black shadow-inner">
               A
             </div>
           </div>

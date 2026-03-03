@@ -55,18 +55,29 @@ export const AdminSidebar = ({ theme, toggleTheme }) => {
 
   const filteredMenuItems = menuItems
     .filter((menu) => menu.roles.includes(user?.role))
-    .map((menu) => ({
-      ...menu,
-      children: menu.children.filter((child) => {
+    .map((menu) => {
+      // Filter children based on roles, conditions, AND search term
+      const filteredChildren = menu.children.filter((child) => {
         const roleMatch = !child.roles || child.roles.includes(user?.role);
-        // ✅ NEW: Check the condition if it exists
         const conditionMatch = !child.condition || child.condition(user);
+        const searchMatch = child.label
+          .toLowerCase()
+          .includes(searchTerm.toLowerCase());
 
-        return roleMatch && conditionMatch;
-      }),
-    }))
-    .filter((menu) => menu.children.length > 0);
+        return roleMatch && conditionMatch && searchMatch;
+      });
 
+      return {
+        ...menu,
+        children: filteredChildren,
+      };
+    })
+    // Only show the parent menu if it matches the search OR has matching children
+    .filter(
+      (menu) =>
+        menu.label.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        menu.children.length > 0,
+    );
   // Hover logic
   const handleMouseEnter = () => {
     if (!isPinned) {

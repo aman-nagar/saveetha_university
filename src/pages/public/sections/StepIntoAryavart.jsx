@@ -19,7 +19,7 @@ import {
 
 const GOLD = "#d4a843";
 const CARD_SPACING = 260;
-
+``
 const STEPS = [
   {
     title: "Seamless Admission",

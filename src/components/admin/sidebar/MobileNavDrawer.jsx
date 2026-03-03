@@ -2,8 +2,15 @@
 import { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import { FaChevronDown, FaSun, FaMoon, FaTimes } from "react-icons/fa";
+import {
+  FaChevronDown,
+  FaSun,
+  FaMoon,
+  FaTimes,
+  FaSignOutAlt,
+} from "react-icons/fa";
 import logo2 from "../../../assets/images/logo2.png";
+import { useAuth } from "../../../context/AuthContext";
 
 export default function MobileNavDrawer({
   isOpen,
@@ -13,6 +20,7 @@ export default function MobileNavDrawer({
   theme,
   toggleTheme,
 }) {
+  const { user, logout } = useAuth();
   const [expandedMenus, setExpandedMenus] = useState([]);
   const location = useLocation();
 
@@ -167,18 +175,31 @@ export default function MobileNavDrawer({
 
             {/* Footer */}
             <div className="p-4 border-t border-white/10">
-              <div className="flex items-center space-x-3">
-                <div className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center border border-white/20">
-                  <span className="text-sm">👤</span>
+              <div className="flex items-center justify-between">
+                <div className="flex items-center space-x-3">
+                  <div className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center border border-white/20 shadow-inner">
+                    <span className="text-sm font-bold text-white">
+                      {user?.name?.charAt(0) || "A"}
+                    </span>
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-medium text-white truncate">
+                      {user?.name || "Admin User"}
+                    </p>
+                    <p className="text-xs text-white/60 truncate">
+                      {user?.email || "admin@univ.edu"}
+                    </p>
+                  </div>
                 </div>
-                <div className="flex-1 min-w-0">
-                  <p className="text-sm font-medium text-white truncate">
-                    Admin User
-                  </p>
-                  <p className="text-xs text-white/60 truncate">
-                    admin@univ.edu
-                  </p>
-                </div>
+
+                {/* Logout Button */}
+                <button
+                  onClick={logout}
+                  className="p-3 rounded-xl bg-danger/5 hover:bg-red-500/10 border border-red-600 hover:border-red-500/30 transition-all duration-300"
+                  aria-label="Logout"
+                >
+                  <FaSignOutAlt className="w-4 h-4 text-white/40 hover:text-red-500 " />
+                </button>
               </div>
             </div>
           </motion.div>

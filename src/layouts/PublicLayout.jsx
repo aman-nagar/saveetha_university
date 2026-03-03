@@ -19,7 +19,6 @@ export default function PublicLayout() {
 
 export function BackToTop() {
   const handleScrollToTop = () => {
-    // This works with Lenis and native scrolling
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 

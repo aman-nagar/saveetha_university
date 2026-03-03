@@ -1,6 +1,6 @@
-// src/components/admin/students/admission/steps/StepQualification.jsx
 import { useState } from "react";
 import FormSection from "../../../../form/FormSection";
+import { FaGraduationCap, FaFileUpload, FaHistory } from "react-icons/fa";
 
 const ROWS = [
   { label: "Secondary", key: "secondary" },
@@ -19,109 +19,215 @@ export default function StepQualification({
   register,
   errors,
   setQualificationFiles,
-  existingQualifications = [], // filled only in edit mode
+  existingQualifications = [],
 }) {
-  // Track locally which rows have a new file selected (to hide existing preview)
   const [newFiles, setNewFiles] = useState({});
+  // NEW: State to store local preview URLs for the icons
+  const [previews, setPreviews] = useState({});
+
+  const handleFileChange = (e, key) => {
+    const file = e.target.files[0];
+    if (file) {
+      setQualificationFiles((prev) => ({ ...prev, [key]: file }));
+      setNewFiles((prev) => ({ ...prev, [key]: true }));
+
+      // Generate preview URL if it's an image
+      if (file.type.startsWith("image/")) {
+        setPreviews((prev) => ({ ...prev, [key]: URL.createObjectURL(file) }));
+      } else {
+        setPreviews((prev) => ({ ...prev, [key]: "pdf" })); // Placeholder for PDFs
+      }
+    }
+  };
 
   return (
     <FormSection title="Previous Qualification Details">
-      <div className="w-full md:col-span-2 overflow-x-auto">
-        <table className="w-full text-sm border border-border rounded-lg overflow-hidden">
-          <thead className="bg-bg text-text">
-            <tr className="border-b border-border">
-              <th className="text-left p-3">Examination</th>
-              <th className="text-left p-3">Year of Passing</th>
-              <th className="text-left p-3">Board/University</th>
-              <th className="text-left p-3">Percentage/CGPA</th>
-              <th className="text-left p-3">Upload Document</th>
-            </tr>
-          </thead>
+      <div className="w-full md:col-span-2">
+        {/* Desktop View: Traditional Table */}
+        <div className="hidden lg:block overflow-hidden rounded-2xl border border-border bg-surface">
+          <table className="w-full text-sm text-left">
+            <thead className="bg-bg text-text uppercase text-[10px] font-black tracking-widest">
+              <tr className="border-b border-border">
+                <th className="p-4">Examination</th>
+                <th className="p-4">Year of Passing</th>
+                <th className="p-4">Board/University</th>
+                <th className="p-4">Result (%/CGPA)</th>
+                <th className="p-4">Document</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-border">
+              {ROWS.map((row) => {
+                const existing = findExisting(existingQualifications, row.key);
+                return (
+                  <tr
+                    key={row.key}
+                    className="hover:bg-bg/30 transition-colors"
+                  >
+                    <td className="p-4 font-bold text-primary dark:text-accent">
+                      {row.label}
+                    </td>
+                    <td className="p-4">
+                      <input
+                        type="text"
+                        {...register(`${row.key}_year`)}
+                        className="w-full border border-border rounded-lg px-3 py-2 bg-bg text-text focus:ring-2 focus:ring-accent/40"
+                        placeholder="e.g. 2022"
+                      />
+                    </td>
+                    <td className="p-4">
+                      <input
+                        type="text"
+                        {...register(`${row.key}_board`)}
+                        className="w-full border border-border rounded-lg px-3 py-2 bg-bg text-text focus:ring-2 focus:ring-accent/40"
+                        placeholder="Board Name"
+                      />
+                    </td>
+                    <td className="p-4">
+                      <input
+                        type="text"
+                        {...register(`${row.key}_percentage`)}
+                        className="w-full border border-border rounded-lg px-3 py-2 bg-bg text-text focus:ring-2 focus:ring-accent/40"
+                        placeholder="% / CGPA"
+                      />
+                    </td>
+                    <td className="p-4">
+                      <div className="flex items-center gap-3">
+                        <ExistingDoc
+                          existing={existing}
+                          isNew={newFiles[row.key]}
+                        />
+                        <label className="flex flex-col items-center justify-center h-10 w-10 rounded-lg border-2 border-dashed border-border hover:border-accent cursor-pointer transition-all bg-bg overflow-hidden">
+                          {previews[row.key] && previews[row.key] !== "pdf" ? (
+                            <img
+                              src={previews[row.key]}
+                              alt="preview"
+                              className="h-full w-full object-cover"
+                            />
+                          ) : (
+                            <FaFileUpload className="text-muted text-xs" />
+                          )}
+                          <input
+                            type="file"
+                            className="hidden"
+                            accept=".pdf,image/*"
+                            onChange={(e) => handleFileChange(e, row.key)}
+                          />
+                        </label>
+                      </div>
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
 
-          <tbody>
-            {ROWS.map((row) => {
-              const existing = findExisting(existingQualifications, row.key);
+        {/* Mobile/Tablet View: Card Layout */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 lg:hidden">
+          {ROWS.map((row) => {
+            const existing = findExisting(existingQualifications, row.key);
+            return (
+              <div
+                key={row.key}
+                className="bg-surface border border-border rounded-2xl p-5 shadow-sm"
+              >
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center">
+                    <FaGraduationCap className="text-primary text-sm" />
+                  </div>
+                  <h4 className="font-bold text-text uppercase text-xs tracking-wider">
+                    {row.label}
+                  </h4>
+                </div>
 
-              return (
-                <tr key={row.key} className="border-b border-border">
-                  <td className="p-3 text-text font-medium">{row.label}</td>
-
-                  <td className="p-3">
+                <div className="space-y-4">
+                  <div>
+                    <label className="text-[10px] font-black text-muted uppercase tracking-widest mb-1 block">
+                      Year of Passing
+                    </label>
                     <input
                       type="text"
                       {...register(`${row.key}_year`)}
-                      className="w-full border border-border rounded-md px-3 py-2 bg-surface text-text"
+                      className="w-full border border-border rounded-xl px-4 py-2.5 bg-bg text-text"
                       placeholder="Year"
                     />
-                  </td>
-
-                  <td className="p-3">
+                  </div>
+                  <div>
+                    <label className="text-[10px] font-black text-muted uppercase tracking-widest mb-1 block">
+                      Board/University
+                    </label>
                     <input
                       type="text"
                       {...register(`${row.key}_board`)}
-                      className="w-full border border-border rounded-md px-3 py-2 bg-surface text-text"
-                      placeholder="Board/University"
+                      className="w-full border border-border rounded-xl px-4 py-2.5 bg-bg text-text"
+                      placeholder="University Name"
                     />
-                  </td>
-
-                  <td className="p-3">
-                    <input
-                      type="text"
-                      {...register(`${row.key}_percentage`)}
-                      className="w-full border border-border rounded-md px-3 py-2 bg-surface text-text"
-                      placeholder="% / CGPA"
-                    />
-                  </td>
-
-                  <td className="p-3">
-                    {/* Show existing doc thumbnail if in edit mode and no new file chosen yet */}
-                    {existing?.document_url && !newFiles[row.key] && (
-                      <div className="mb-1 flex items-center gap-2">
-                        <img
-                          src={existing.document_url}
-                          alt="doc"
-                          className="h-9 w-9 object-cover rounded border border-border"
-                          onError={(e) => {
-                            e.target.style.display = "none";
-                          }}
+                  </div>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <label className="text-[10px] font-black text-muted uppercase tracking-widest mb-1 block">
+                        Result
+                      </label>
+                      <input
+                        type="text"
+                        {...register(`${row.key}_percentage`)}
+                        className="w-full border border-border rounded-xl px-4 py-2.5 bg-bg text-text"
+                        placeholder="% / CGPA"
+                      />
+                    </div>
+                    <div>
+                      <label className="text-[10px] font-black text-muted uppercase tracking-widest mb-1 block">
+                        Document
+                      </label>
+                      <div className="flex items-center gap-2">
+                        <ExistingDoc
+                          existing={existing}
+                          isNew={newFiles[row.key]}
                         />
-                        <span className="text-[10px] text-text-muted">
-                          Saved · select to replace
-                        </span>
+                        <label className="flex-1 flex items-center justify-center gap-2 h-[42px] border-2 border-dashed border-border rounded-xl bg-bg cursor-pointer hover:border-accent text-muted hover:text-accent transition-all text-xs overflow-hidden">
+                          {previews[row.key] && previews[row.key] !== "pdf" ? (
+                            <img
+                              src={previews[row.key]}
+                              alt="preview"
+                              className="h-full w-full object-cover"
+                            />
+                          ) : (
+                            <>
+                              <FaFileUpload />{" "}
+                              {newFiles[row.key] ? "Change" : "Upload"}
+                            </>
+                          )}
+                          <input
+                            type="file"
+                            className="hidden"
+                            onChange={(e) => handleFileChange(e, row.key)}
+                          />
+                        </label>
                       </div>
-                    )}
-
-                    <input
-                      type="file"
-                      accept=".pdf,image/*"
-                      className="text-sm text-text file:mr-2 file:py-1 file:px-2 file:rounded file:border-0 file:text-xs file:bg-primary file:text-white"
-                      onChange={(e) => {
-                        const file = e.target.files[0];
-                        console.log(
-                          `[StepQual] File selected for ${row.key}:`,
-                          file?.name,
-                          file?.size,
-                        );
-                        if (file) {
-                          setQualificationFiles((prev) => {
-                            const next = { ...prev, [row.key]: file };
-                            console.log(
-                              "[StepQual] Updated qualificationFiles:",
-                              Object.keys(next),
-                            );
-                            return next;
-                          });
-                          setNewFiles((prev) => ({ ...prev, [row.key]: true }));
-                        }
-                      }}
-                    />
-                  </td>
-                </tr>
-              );
-            })}
-          </tbody>
-        </table>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            );
+          })}
+        </div>
       </div>
     </FormSection>
+  );
+}
+
+function ExistingDoc({ existing, isNew }) {
+  if (!existing?.document_url || isNew) return null;
+  return (
+    <div className="relative group shrink-0">
+      <img
+        src={existing.document_url}
+        alt="doc"
+        className="h-10 w-10 object-cover rounded-lg border border-border"
+      />
+      <div className="absolute -top-1 -right-1 bg-accent rounded-full p-0.5 shadow-sm">
+        <FaHistory className="text-white text-[8px]" />
+      </div>
+    </div>
   );
 }

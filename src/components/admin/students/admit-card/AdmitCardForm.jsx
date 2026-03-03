@@ -2,8 +2,6 @@
 import FormInput from "../../../form/FormInput";
 
 export default function AdmitCardForm({ register, logic, searchRef }) {
-  // logic prop now comes from useAcademicFlow via the parent page
-
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
       {/* 1. Enrollment Search Logic */}
@@ -26,12 +24,9 @@ export default function AdmitCardForm({ register, logic, searchRef }) {
 
         {/* Search Results Dropdown */}
         {logic.showResults && (
-          <div
-            className="absolute z-[100] w-full bg-surface border border-border rounded-lg mt-1 shadow-2xl max-h-60 overflow-y-auto"
-            data-lenis-prevent="true"
-          >
+          <div className="absolute z-[100] w-full bg-surface border border-border rounded-lg mt-1 shadow-2xl max-h-60 overflow-y-auto">
             {logic.isSearching ? (
-              <div className="p-3 text-sm text-muted animate-pulse data-lenis-prevent">
+              <div className="p-3 text-sm text-muted animate-pulse ">
                 Searching...
               </div>
             ) : logic.searchResults?.length > 0 ? (

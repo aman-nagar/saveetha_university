@@ -1,6 +1,4 @@
-// src/components/ui/Modal.jsx
 import { useEffect } from "react";
-import { useSmoothScroll } from "../../context/SmoothScroll";
 
 export default function Modal({
   isOpen,
@@ -10,25 +8,24 @@ export default function Modal({
   footer,
   size = "md",
 }) {
-  const { disableLenis, enableLenis } = useSmoothScroll();
-
   useEffect(() => {
     const handleKeyDown = (e) => {
       if (e.key === "Escape") onClose();
     };
 
     if (isOpen) {
-      disableLenis();
+      // Prevent body scroll using native CSS when modal is open
+      document.body.style.overflow = "hidden";
       window.addEventListener("keydown", handleKeyDown);
     } else {
-      enableLenis();
+      document.body.style.overflow = "unset";
     }
 
     return () => {
-      enableLenis();
+      document.body.style.overflow = "unset";
       window.removeEventListener("keydown", handleKeyDown);
     };
-  }, [isOpen, onClose, disableLenis, enableLenis]);
+  }, [isOpen, onClose]);
 
   if (!isOpen) return null;
 
@@ -48,7 +45,7 @@ export default function Modal({
         onClick={onClose}
       />
 
-      {/* Modal */}
+      {/* Modal Container */}
       <div
         className={`
           relative bg-surface text-text rounded-t-xl sm:rounded-xl shadow-2xl
@@ -58,7 +55,7 @@ export default function Modal({
           duration-200 ease-out
         `}
       >
-        {/* Header — fixed */}
+        {/* Header — Fixed */}
         <div className="px-4 sm:px-6 py-3 sm:py-4 border-b border-border flex justify-between items-center flex-shrink-0">
           <h2 className="text-base sm:text-lg font-heading font-semibold truncate pr-4">
             {title}
@@ -84,10 +81,10 @@ export default function Modal({
           </button>
         </div>
 
-        {/* Body — scrollable */}
+        {/* Body — Scrollable */}
         <div className="p-4 sm:p-6 overflow-y-auto flex-1">{children}</div>
 
-        {/* Footer — fixed */}
+        {/* Footer — Fixed */}
         {footer && (
           <div className="px-4 sm:px-6 py-3 sm:py-4 border-t border-border flex flex-col-reverse sm:flex-row justify-end gap-2 sm:gap-3 flex-shrink-0">
             {footer}

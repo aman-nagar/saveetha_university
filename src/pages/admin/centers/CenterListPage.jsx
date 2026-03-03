@@ -28,7 +28,7 @@ export default function CenterListPage() {
   const [search, setSearch] = useState("");
   const [togglingId, setTogglingId] = useState(null);
   const [isDeleting, setIsDeleting] = useState(false);
-
+  const [perPage, setPerPage] = useState(10);
   useEffect(() => {
     loadCenters(1, "");
   }, []);
@@ -37,11 +37,10 @@ export default function CenterListPage() {
     setLoading(true);
     try {
       const response = await fetchCenters({ page, search: searchTerm });
-
-      // response is the pagination object directly
       setCenters(response.data || []);
       setCurrentPage(response.current_page || 1);
       setTotalPages(response.total_pages || 1);
+      setPerPage(response.per_page || 10);
     } catch (err) {
       console.error("Error loading centers:", err);
       show("error", err.message || "Failed to load centers");
@@ -165,6 +164,7 @@ export default function CenterListPage() {
           data={centers}
           actions={actions}
           loading={loading}
+          pageOffset={(currentPage - 1) * perPage}
           emptyMessage="No centers found. Click 'Add New Center' to get started."
         />
       </DataTableLayout>

@@ -7,6 +7,7 @@ export default function Table({
   loading = false,
   emptyMessage = "No data found",
   skeletonRows = 5,
+  pageOffset = 0, // ✅ NEW (default safe)
 }) {
   if (loading) {
     return (
@@ -23,7 +24,7 @@ export default function Table({
 
   return (
     <>
-      {/* Mobile */}
+      {/* ===================== MOBILE VIEW ===================== */}
       <div className="block sm:hidden">
         {data.length === 0 ? (
           <div className="text-center py-10 text-muted italic text-sm">
@@ -31,56 +32,60 @@ export default function Table({
           </div>
         ) : (
           <div className="divide-y divide-border">
-            {data.map((row, index) => (
-              <div
-                key={row.id ?? index}
-                className="p-3 hover:bg-bg/50 transition-colors"
-              >
-                <div className="flex items-start justify-between gap-2 mb-2">
-                  <div className="font-medium text-text text-sm">
-                    {columns[0]?.render
-                      ? columns[0].render(row, index)
-                      : (row[columns[0]?.key] ?? "—")}
+            {data.map((row, index) => {
+              const adjustedIndex = pageOffset + index; // ✅ global index
+
+              return (
+                <div
+                  key={row.id ?? index}
+                  className="p-3 hover:bg-bg/50 transition-colors"
+                >
+                  <div className="flex items-start justify-between gap-2 mb-2">
+                    <div className="font-medium text-text text-sm">
+                      {columns[0]?.render
+                        ? columns[0].render(row, adjustedIndex)
+                        : (row[columns[0]?.key] ?? "—")}
+                    </div>
+
+                    {actions.length > 0 && (
+                      <div className="flex items-center gap-1 shrink-0">
+                        {actions.map((action, idx) => (
+                          <button
+                            key={idx}
+                            onClick={() => action.onClick(row)}
+                            className={action.className}
+                            title={action.title}
+                          >
+                            {action.icon}
+                          </button>
+                        ))}
+                      </div>
+                    )}
                   </div>
 
-                  {actions.length > 0 && (
-                    <div className="flex items-center gap-1 shrink-0">
-                      {actions.map((action, idx) => (
-                        <button
-                          key={idx}
-                          onClick={() => action.onClick(row)}
-                          className={action.className}
-                          title={action.title}
-                        >
-                          {action.icon}
-                        </button>
-                      ))}
-                    </div>
-                  )}
+                  <div className="space-y-1.5">
+                    {columns.slice(1).map((col) => (
+                      <div
+                        key={col.key}
+                        className="flex items-center justify-between text-xs"
+                      >
+                        <span className="text-muted">{col.label}:</span>
+                        <span className="text-text font-medium">
+                          {col.render
+                            ? col.render(row, adjustedIndex)
+                            : (row[col.key] ?? "—")}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
                 </div>
-
-                <div className="space-y-1.5">
-                  {columns.slice(1).map((col) => (
-                    <div
-                      key={col.key}
-                      className="flex items-center justify-between text-xs"
-                    >
-                      <span className="text-muted">{col.label}:</span>
-                      <span className="text-text font-medium">
-                        {col.render
-                          ? col.render(row, index)
-                          : (row[col.key] ?? "—")}
-                      </span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         )}
       </div>
 
-      {/* Desktop */}
+      {/* ===================== DESKTOP VIEW ===================== */}
       <div className="hidden sm:block overflow-x-auto">
         <table className="w-full text-sm text-left">
           <thead className="bg-bg text-muted">
@@ -112,40 +117,44 @@ export default function Table({
                 </td>
               </tr>
             ) : (
-              data.map((row, index) => (
-                <tr
-                  key={row.id ?? index}
-                  className="border-b border-border hover:bg-bg/50 transition-colors"
-                >
-                  {columns.map((col) => (
-                    <td
-                      key={col.key}
-                      className="px-3 lg:px-6 py-3 lg:py-4 text-text text-xs lg:text-sm"
-                    >
-                      {col.render
-                        ? col.render(row, index)
-                        : (row[col.key] ?? "—")}
-                    </td>
-                  ))}
+              data.map((row, index) => {
+                const adjustedIndex = pageOffset + index; // ✅ global index
 
-                  {actions.length > 0 && (
-                    <td className="px-3 lg:px-6 py-3 lg:py-4">
-                      <div className="flex items-center justify-center gap-2">
-                        {actions.map((action, idx) => (
-                          <button
-                            key={idx}
-                            onClick={() => action.onClick(row)}
-                            className={action.className}
-                            title={action.title}
-                          >
-                            {action.icon}
-                          </button>
-                        ))}
-                      </div>
-                    </td>
-                  )}
-                </tr>
-              ))
+                return (
+                  <tr
+                    key={row.id ?? index}
+                    className="border-b border-border hover:bg-bg/50 transition-colors"
+                  >
+                    {columns.map((col) => (
+                      <td
+                        key={col.key}
+                        className="px-3 lg:px-6 py-3 lg:py-4 text-text text-xs lg:text-sm"
+                      >
+                        {col.render
+                          ? col.render(row, adjustedIndex)
+                          : (row[col.key] ?? "—")}
+                      </td>
+                    ))}
+
+                    {actions.length > 0 && (
+                      <td className="px-3 lg:px-6 py-3 lg:py-4">
+                        <div className="flex items-center justify-center gap-2">
+                          {actions.map((action, idx) => (
+                            <button
+                              key={idx}
+                              onClick={() => action.onClick(row)}
+                              className={action.className}
+                              title={action.title}
+                            >
+                              {action.icon}
+                            </button>
+                          ))}
+                        </div>
+                      </td>
+                    )}
+                  </tr>
+                );
+              })
             )}
           </tbody>
         </table>

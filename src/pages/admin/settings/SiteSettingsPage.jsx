@@ -42,10 +42,8 @@ export default function SiteSettingsPage() {
   };
 
   return (
-    <div className="w-full p-4 md:p-6 transition-colors duration-300">
+    <div className="w-full  transition-colors duration-300">
       {toast && <Toast {...toast} onClose={clear} />}
-
-      <h1 className="text-2xl font-bold mb-8 text-text">Site Settings</h1>
 
       <div className="bg-surface border border-border rounded-xl p-6 md:p-8 shadow-sm">
         {initialData ? (

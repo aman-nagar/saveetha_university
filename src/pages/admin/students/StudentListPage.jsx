@@ -37,11 +37,12 @@ export default function StudentListPage() {
   const [loading, setLoading] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
-  const [mode, setMode] = useState("active"); // "active" | "recycle"
+  const [mode, setMode] = useState("active");
 
   const [selectedStudent, setSelectedStudent] = useState(null);
   const [viewOpen, setViewOpen] = useState(false);
   const [viewLoading, setViewLoading] = useState(false);
+  const [perPage, setPerPage] = useState(10);
 
   useEffect(() => {
     loadStudents(1, search);
@@ -59,6 +60,7 @@ export default function StudentListPage() {
       setStudents(data.students || []);
       setCurrentPage(data.current_page || 1);
       setTotalPages(data.total_pages || 1);
+      setPerPage(data.per_page || 10);
     } catch (err) {
       show("error", err.message || "Failed to load students");
     } finally {
@@ -236,6 +238,7 @@ export default function StudentListPage() {
           data={students}
           actions={actions}
           loading={loading}
+          pageOffset={(currentPage - 1) * perPage}
           emptyMessage={
             mode === "active"
               ? "No active students found"

@@ -2,18 +2,6 @@
 import { useEffect, useState, useRef, useCallback } from "react";
 import { FaSearch } from "react-icons/fa";
 
-/**
- * Reusable Search Input
- *
- * Props:
- * - value (string) → controlled value (optional)
- * - onChange (function) → called immediately
- * - onDebounce (function) → called after delay
- * - placeholder (string)
- * - delay (number) → debounce delay (default 500ms)
- * - className (string) → extra wrapper styles
- * - inputClassName (string) → extra input styles
- */
 export default function SearchInput({
   value,
   onChange,

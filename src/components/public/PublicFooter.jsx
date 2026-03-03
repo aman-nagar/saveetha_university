@@ -97,10 +97,6 @@ export default function PublicFooter() {
               className="text-white/70 hover:text-accent"
             />
           </div>
-
-          <div className="text-white/70 text-sm mt-4 sm:mt-0">
-            Designed by <Link to="#">NSpro-webtech</Link>
-          </div>
         </div>
       </div>
     </Footer>

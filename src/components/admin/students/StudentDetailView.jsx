@@ -466,23 +466,6 @@ export default function StudentDetailView({ student }) {
             />
           </Section>
         </div>
-
-        <div className="flex flex-col sm:flex-row justify-between items-center gap-4 mt-12 pt-6 border-t border-border text-[10px] font-bold text-muted uppercase tracking-[0.2em]">
-          <div className="flex gap-6">
-            <span className="flex items-center gap-2">
-              <FaCalendarAlt size={12} />
-              Created: {student.created_at?.slice(0, 10) || "N/A"}
-            </span>
-            <span className="flex items-center gap-2">
-              <FaCalendarAlt size={12} />
-              Last Updated: {student.updated_at?.slice(0, 10) || "N/A"}
-            </span>
-          </div>
-          <div className="flex items-center gap-2">
-            <FaGlobe size={12} />
-            Student Management System v2.0
-          </div>
-        </div>
       </div>
     </div>
   );

@@ -93,14 +93,7 @@ function App() {
             >
               <Route index element={<CenterDashboardPage />} />
               <Route path="students" element={<StudentListPage />} />
-              <Route
-                path="students/add"
-                element={
-                  <FormEnabledRoute>
-                    <AddStudent />
-                  </FormEnabledRoute>
-                }
-              />
+              <Route path="students/add" element={<AddStudent />} />
 
               <Route
                 path="center/add"

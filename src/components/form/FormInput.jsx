@@ -6,10 +6,12 @@ export default function FormInput({
   name,
   register,
   required,
+  rules = {},
   type = "text",
   placeholder,
   error,
   className = "",
+  ...rest
 }) {
   return (
     <div className={`space-y-1.5 sm:space-y-2 ${className}`}>
@@ -20,7 +22,8 @@ export default function FormInput({
       <input
         type={type}
         placeholder={placeholder}
-        {...register(name, { required })}
+        {...register(name, { required, ...rules })}
+        {...rest}
         className={`
           w-full border rounded-lg px-3 py-2 sm:py-2.5 bg-surface text-text text-sm sm:text-base
           placeholder:text-muted/60

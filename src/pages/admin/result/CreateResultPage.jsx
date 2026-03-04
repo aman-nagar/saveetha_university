@@ -27,12 +27,12 @@ export default function CreateResult() {
   const rollNo = watch("rollNo"); // Watch the fetched roll number
 
   // ✅ Updated useEffect to handle both Subjects and Roll Number Auto-fetch
- useEffect(() => {
-  if (selectedDuration && flow.studentId) {
-    flow.loadSubjectsForPart(selectedDuration);
-    flow.syncRollNoFromAdmitCard(selectedDuration);
-  }
-}, [selectedDuration, flow.studentId]); // Ensure studentId is a dependency
+  useEffect(() => {
+    if (selectedDuration && flow.studentId) {
+      flow.loadSubjectsForPart(selectedDuration);
+      flow.syncRollNoFromAdmitCard(selectedDuration);
+    }
+  }, [selectedDuration, flow.studentId]); // Ensure studentId is a dependency
 
   const isDuplicate = history.some(
     (h) =>
@@ -60,11 +60,19 @@ export default function CreateResult() {
         session: formData.session,
         serial_no: formData.serial_no,
         issue_date: formData.issue_date,
-        roll_number: rollNo, // Send the fetched roll number
-        marks: flow.subjects.map((sub) => ({
-          subject_id: sub.id,
-          obtained_marks: formData.marks?.[sub.id]?.obtained || 0,
-        })),
+        roll_number: rollNo,
+
+        marks: flow.subjects.map((sub) => {
+          const theory = Number(formData.marks?.[sub.id]?.theory || 0);
+          const practical = Number(formData.marks?.[sub.id]?.practical || 0);
+
+          return {
+            subject_id: sub.id,
+            theory_marks: theory,
+            practical_marks: practical,
+            total_marks: theory + practical,
+          };
+        }),
       };
 
       console.log("Final Payload:", payload);
@@ -174,6 +182,7 @@ export default function CreateResult() {
               name="serial_no"
               register={register}
               placeholder="Enter Serial No"
+              required
             />
             <FormInput
               label="Issue Date"
@@ -186,6 +195,7 @@ export default function CreateResult() {
               name="session"
               register={register}
               placeholder="e.g., 2025-26"
+              required
             />
           </div>
 
@@ -203,23 +213,63 @@ export default function CreateResult() {
                 <thead className="bg-bg text-text-muted font-bold uppercase text-[10px]">
                   <tr>
                     <th className="px-6 py-4">Subject Name</th>
-                    <th className="px-6 py-4 w-48 text-center">
-                      Marks Obtained
+
+                    <th className="px-6 py-4 w-40 text-center">Theory Marks</th>
+
+                    <th className="px-6 py-4 w-40 text-center">
+                      Practical Marks
                     </th>
                   </tr>
                 </thead>
+
                 <tbody className="divide-y divide-border">
                   {flow.subjects.map((sub) => (
                     <tr key={sub.id} className="bg-surface hover:bg-bg/40">
                       <td className="px-6 py-4 font-semibold uppercase">
                         {sub.subject_name}
                       </td>
+
+                      {/* THEORY MARKS */}
                       <td className="px-6 py-4">
-                        <input
+                        <FormInput
+                          label={`max ${sub.max_theory_marks}`}
                           type="number"
-                          placeholder="Marks"
-                          {...register(`marks.${sub.id}.obtained`)}
-                          className="w-full p-2 border border-border rounded bg-bg text-center focus:ring-2 focus:ring-accent outline-none font-bold"
+                          name={`marks.${sub.id}.theory`}
+                          register={register}
+                          min={0}
+                          max={sub.max_theory_marks}
+                          placeholder={sub.max_theory_marks}
+                          required
+                          rules={{
+                            valueAsNumber: true,
+                            onChange: (e) => {
+                              const max = sub.max_theory_marks;
+                              const v = Number(e.target.value);
+                              if (v > max) e.target.value = max;
+                            },
+                          }}
+                        />
+                      </td>
+
+                      {/* PRACTICAL MARKS */}
+                      <td className="px-6 py-4">
+                        <FormInput
+                          label={`max ${sub.max_practical_marks}`}
+                          type="number"
+                          name={`marks.${sub.id}.practical`}
+                          register={register}
+                          min={0}
+                          max={sub.max_practical_marks}
+                          placeholder={sub.max_practical_marks}
+                          required
+                          rules={{
+                            valueAsNumber: true,
+                            onChange: (e) => {
+                              const max = sub.max_practical_marks;
+                              const v = Number(e.target.value);
+                              if (v > max) e.target.value = max;
+                            },
+                          }}
                         />
                       </td>
                     </tr>
@@ -252,7 +302,7 @@ export default function CreateResult() {
         columns={[
           { key: "enrollment_no", label: "Enrollment" },
           { key: "candidate_name", label: "Student" },
-          { key: "duration", label: "Year/Sem" },
+          { key: "duration", label: "Year/Sem/months" },
         ]}
         data={history}
       />

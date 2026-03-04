@@ -193,28 +193,30 @@ export default function StudentListPage() {
       </div>
 
       {/* Mode switch */}
-      <div className="flex border border-border rounded-lg overflow-hidden shadow-sm self-start sm:self-auto">
-        <button
-          onClick={() => setMode("active")}
-          className={`flex-1 sm:flex-none px-3 sm:px-4 py-2 text-xs sm:text-sm font-medium transition ${
-            mode === "active"
-              ? "bg-primary text-white"
-              : "bg-surface text-text hover:bg-bg"
-          }`}
-        >
-          Active
-        </button>
-        <button
-          onClick={() => setMode("recycle")}
-          className={`flex-1 sm:flex-none px-3 sm:px-4 py-2 text-xs sm:text-sm font-medium border-l border-border transition ${
-            mode === "recycle"
-              ? "bg-primary text-white"
-              : "bg-surface text-text hover:bg-bg"
-          }`}
-        >
-          Recycle Bin
-        </button>
-      </div>
+      {isAdmin && (
+        <div className="flex border border-border rounded-lg overflow-hidden shadow-sm self-start sm:self-auto">
+          <button
+            onClick={() => setMode("active")}
+            className={`flex-1 sm:flex-none px-3 sm:px-4 py-2 text-xs sm:text-sm font-medium transition ${
+              mode === "active"
+                ? "bg-primary text-white"
+                : "bg-surface text-text hover:bg-bg"
+            }`}
+          >
+            Active
+          </button>
+          <button
+            onClick={() => setMode("recycle")}
+            className={`flex-1 sm:flex-none px-3 sm:px-4 py-2 text-xs sm:text-sm font-medium border-l border-border transition ${
+              mode === "recycle"
+                ? "bg-primary text-white"
+                : "bg-surface text-text hover:bg-bg"
+            }`}
+          >
+            Recycle Bin
+          </button>
+        </div>
+      )}
     </div>
   );
 

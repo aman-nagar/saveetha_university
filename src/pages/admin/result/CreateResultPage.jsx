@@ -14,6 +14,7 @@ import {
   FaExclamationTriangle,
 } from "react-icons/fa";
 import { getTodayDate } from "../../../utils/formHelpers";
+import FormSelect from "../../../components/form/FormSelect";
 
 export default function CreateResult() {
   const { toast, show, clear } = useToast();
@@ -29,15 +30,14 @@ export default function CreateResult() {
 
   const selectedDuration = watch("selectedDuration");
   const enrollmentNo = watch("enrollmentNo");
-  const rollNo = watch("rollNo"); // Watch the fetched roll number
+  const rollNo = watch("rollNo");
 
-  // ✅ Updated useEffect to handle both Subjects and Roll Number Auto-fetch
   useEffect(() => {
     if (selectedDuration && flow.studentId) {
       flow.loadSubjectsForPart(selectedDuration);
       flow.syncRollNoFromAdmitCard(selectedDuration);
     }
-  }, [selectedDuration, flow.studentId]); // Ensure studentId is a dependency
+  }, [selectedDuration, flow.studentId]);
 
   const isDuplicate = history.some(
     (h) =>
@@ -93,27 +93,24 @@ export default function CreateResult() {
   };
 
   return (
-    <div className="w-full p-6 space-y-6">
+    <div className="w-full space-y-6">
       {toast && <Toast {...toast} onClose={clear} />}
-      <h1 className="text-2xl font-bold">Create Result</h1>
-
       <div className="bg-surface border border-border rounded-xl p-8 shadow-sm">
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-8">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             <div className="relative">
-              <label className="text-sm font-semibold mb-2 block text-text-muted">
-                Enrollment No.
-              </label>
-              <input
+              <FormInput
+                label="Enrollment No."
+                name="enrollmentSearch"
                 value={flow.searchTerm}
+                placeholder="Search enrollment..."
                 onChange={(e) => {
                   flow.setSearchTerm(e.target.value);
                   flow.setIsTyping(true);
                 }}
-                className="w-full border border-border rounded-lg px-3 py-2 bg-bg outline-none focus:ring-2 focus:ring-accent transition-all"
-                placeholder="Search enrollment..."
               />
-              {flow.showResults && (
+
+              {flow.showResults && flow.searchResults.length > 0 && (
                 <div className="absolute z-50 w-full bg-surface border border-border rounded-lg shadow-xl mt-1 max-h-48 overflow-auto">
                   {flow.searchResults.map((s) => (
                     <div
@@ -130,77 +127,54 @@ export default function CreateResult() {
                 </div>
               )}
             </div>
-
             <div>
-              <label className="text-sm font-semibold mb-2 block flex items-center gap-1 text-text-muted">
-                Roll No.{" "}
-                {rollNo && rollNo !== "Not Generated" && (
-                  <FaCheckCircle className="text-green-500 text-xs" />
-                )}
-              </label>
               <div className="relative">
-                <input
-                  {...register("rollNo")}
-                  className={`w-full border rounded-lg px-3 py-2 outline-none ${rollNo === "Not Generated" ? "border-danger text-danger bg-danger/5" : "border-border bg-bg/50 text-text-muted"}`}
+                <FormInput
+                  label={
+                    <>
+                      Roll NO{" "}
+                      {rollNo && rollNo !== "NOt Generated" && (
+                        <FaCheckCircle className="text-green-500 text-xs" />
+                      )}
+                    </>
+                  }
+                  name="rollNo"
+                  register={register}
                   readOnly
                   placeholder={
                     flow.isFetchingRoll
                       ? "Fetching..."
                       : "Auto-filled from Admit Card"
                   }
+                  rightIcon={
+                    flow.isFetchingRoll && (
+                      <FaSpinner className="animate-spin text-accent" />
+                    )
+                  }
                 />
-                {flow.isFetchingRoll && (
-                  <FaSpinner className="absolute right-3 top-3 animate-spin text-accent" />
-                )}
               </div>
             </div>
-
-            <FormInput
-              label="Course"
-              name="course"
-              register={register}
-              readOnly
-            />
-            <FormInput
-              label="Stream"
-              name="stream"
-              register={register}
-              readOnly
-            />
-          </div>
-
-          <hr className="border-border" />
-
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-            <div className="space-y-1">
-              <label className="text-sm font-semibold text-text-muted block">
-                Duration ({flow.courseType || "Part"})
-              </label>
-              <select
-                {...register("selectedDuration")}
-                className="w-full border border-border rounded-lg px-3 py-2 bg-bg text-sm outline-none focus:ring-2 focus:ring-accent"
-              >
-                <option value="">-- Select --</option>
-                {flow.durationOptions.map((opt) => (
-                  <option key={opt.value} value={opt.value}>
-                    {opt.label}
-                  </option>
-                ))}
-              </select>
+            <div className="flex space-x-5">
+              <FormInput
+                label="Course"
+                name="course"
+                register={register}
+                readOnly
+              />
+              <FormInput
+                label="Stream"
+                name="stream"
+                register={register}
+                readOnly
+              />
             </div>
-            {/* <FormInput
-              label="Serial No."
-              name="serial_no"
+            <FormSelect
+              label={`Duration (${flow.courseType || "Part"})`}
+              name="selectedDuration"
               register={register}
-              placeholder="Enter Serial No"
-              required
-            /> */}
-            <FormInput
-              label="Issue Date"
-              name="issue_date"
-              type="date"
-              register={register}
+              options={flow.durationOptions}
             />
+
             <FormInput
               label="Session"
               name="session"
@@ -208,6 +182,19 @@ export default function CreateResult() {
               placeholder="e.g., 2025-26"
               required
             />
+            <FormInput
+              label="Issue Date"
+              name="issue_date"
+              type="date"
+              register={register}
+            />
+            {/* <FormInput
+              label="Serial No."
+              name="serial_no"
+              register={register}
+              placeholder="Enter Serial No"
+              required
+            /> */}
           </div>
 
           {rollNo === "Not Generated" && (

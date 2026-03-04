@@ -5,6 +5,7 @@ import { fetchAllStreams } from "../api/courses/streamApi";
 import { fetchSubjectsByStream } from "../api/courses/subjectApi";
 import { fetchAdmitCards } from "../api/students/admitCardApi"; // ✅ Added for Roll No Lookup
 import { useCourseRules } from "./useCourseRules";
+import { fetchAllCourses } from "../api/courses/courseApi";
 
 export function useAcademicFlow(setValue) {
   const [searchTerm, setSearchTerm] = useState("");
@@ -18,7 +19,7 @@ export function useAcademicFlow(setValue) {
   const [subjects, setSubjects] = useState([]);
   const [loadingSubjects, setLoadingSubjects] = useState(false);
   const [isFetchingRoll, setIsFetchingRoll] = useState(false); // ✅ Loader for Roll No
-
+  const [courseId, setCourseId] = useState(null);
   const { durationOptions, courseType, getRulesByCourseName } =
     useCourseRules();
 
@@ -73,7 +74,15 @@ export function useAcademicFlow(setValue) {
             (s) => s.name.toLowerCase() === details.stream?.toLowerCase(),
           );
           if (sMatch) setStreamId(sMatch.id);
-          getRulesByCourseName(details.course);
+          const allRes = await fetchAllCourses();
+          const all = allRes.data || allRes;
+          const cMatch = all.find(
+            (c) => c.name.toLowerCase() === details.course?.toLowerCase(),
+          );
+          if (cMatch) {
+            setCourseId(cMatch.id); // ✅ Store the ID for the result payload
+            getRulesByCourseName(details.course);
+          }
         }
       } catch (err) {
         console.error("Details Fetch Error:", err);
@@ -167,6 +176,7 @@ export function useAcademicFlow(setValue) {
       syncRollNoFromAdmitCard, // ✅ Exported for CreateResult
       durationOptions,
       courseType,
+      courseId,
     }),
     [
       searchTerm,
@@ -184,6 +194,7 @@ export function useAcademicFlow(setValue) {
       syncRollNoFromAdmitCard,
       durationOptions,
       courseType,
+      // courseId,
     ],
   );
 }

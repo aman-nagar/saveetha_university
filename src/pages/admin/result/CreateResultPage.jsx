@@ -1,5 +1,5 @@
 import { useForm } from "react-hook-form";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useAcademicFlow } from "../../../hooks/useAcademicFlow";
 import { useToast } from "../../../context/ToastContext";
 import FormInput from "../../../components/form/FormInput";
@@ -12,9 +12,11 @@ import {
   FaCheckCircle,
   FaSpinner,
   FaExclamationTriangle,
+  FaEdit,
 } from "react-icons/fa";
 import { getTodayDate } from "../../../utils/formHelpers";
 import FormSelect from "../../../components/form/FormSelect";
+import { createResult, deleteResult, fetchResults, updateResult } from "../../../api/results/resultApi";
 
 export default function CreateResult() {
   const { toast, show, clear } = useToast();
@@ -27,10 +29,11 @@ export default function CreateResult() {
   const flow = useAcademicFlow(setValue);
   const [history, setHistory] = useState([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
-
   const selectedDuration = watch("selectedDuration");
   const enrollmentNo = watch("enrollmentNo");
   const rollNo = watch("rollNo");
+  const [loadingHistory, setLoadingHistory] = useState();
+  const [editingId, setEditingId] = useState(null);
 
   useEffect(() => {
     if (selectedDuration && flow.studentId) {
@@ -38,7 +41,22 @@ export default function CreateResult() {
       flow.syncRollNoFromAdmitCard(selectedDuration);
     }
   }, [selectedDuration, flow.studentId]);
-
+  const loadHistory = useCallback(async () => {
+    setLoadingHistory(true);
+    try {
+      const response = await fetchResults();
+      console.log(response);
+      const records = response.records || response.data || response;
+      setHistory(Array.isArray(records) ? records : []);
+    } catch (err) {
+      console.error("Failed to load history:", err);
+    } finally {
+      setLoadingHistory(false);
+    }
+  }, []);
+  useEffect(() => {
+    loadHistory();
+  }, [loadHistory]);
   const isDuplicate = history.some(
     (h) =>
       h.enrollment_no === enrollmentNo &&
@@ -46,49 +64,82 @@ export default function CreateResult() {
   );
 
   const onSubmit = async (formData) => {
-    if (!enrollmentNo) return show("error", "Please select a student first.");
-    if (!selectedDuration)
-      return show("error", "Please select a Year/Semester.");
-    if (rollNo === "Not Generated")
-      return show(
-        "error",
-        "Cannot create result: Admit card not found for this Semester.",
-      );
-    if (isDuplicate)
-      return show("error", "Result already exists for this selection.");
-
     setIsSubmitting(true);
     try {
       const payload = {
+        enrollment_no: enrollmentNo,
         student_id: flow.studentId,
+        course_id: flow.courseId,
+        stream_id: flow.streamId,
+        roll_no: rollNo,
         duration: Number(selectedDuration),
+        duration_type: flow.courseType,
         session: formData.session,
-        // serial_no: formData.serial_no,
         issue_date: formData.issue_date,
-        roll_number: rollNo,
-
-        marks: flow.subjects.map((sub) => {
-          const theory = Number(formData.marks?.[sub.id]?.theory || 0);
-          const practical = Number(formData.marks?.[sub.id]?.practical || 0);
-
-          return {
-            subject_id: sub.id,
-            theory_marks: theory,
-            practical_marks: practical,
-            total_marks: theory + practical,
-          };
-        }),
+        subjects: flow.subjects.map((sub) => ({
+          subject_id: sub.id,
+          subject_name: sub.subject_name,
+          theory_marks: Number(formData.marks?.[sub.id]?.theory || 0),
+          practical_marks: Number(formData.marks?.[sub.id]?.practical || 0),
+          total_marks:
+            Number(formData.marks?.[sub.id]?.theory || 0) +
+            Number(formData.marks?.[sub.id]?.practical || 0),
+        })),
       };
 
-      console.log("Final Payload:", payload);
-      // await createResultApi(payload); // Your actual API call here
-      show("success", "Result created successfully!");
+      if (editingId) {
+        await updateResult(editingId, payload);
+        show("success", "Result updated successfully!");
+      } else {
+        await createResult(payload);
+        show("success", "Result created successfully!");
+      }
+
+      setEditingId(null);
       reset();
       flow.setSearchTerm("");
+      loadHistory(); // Refresh the table
     } catch (err) {
-      show("error", err.message || "Failed to save result.");
+      show("error", err.message || "Operation failed");
     } finally {
       setIsSubmitting(false);
+    }
+  };
+
+  const handleEdit = (record) => {
+    setEditingId(record.id);
+
+    // Fill search bar and trigger student select logic
+    flow.setSearchTerm(record.enrollment_no);
+    flow.selectStudent({
+      id: record.student_id,
+      enrollment_no: record.enrollment_no,
+    });
+
+    // Populate standard fields
+    setValue("session", record.session);
+    setValue("selectedDuration", String(record.duration));
+    setValue("issue_date", record.issue_date);
+
+    // Populate Marks (assuming record.subjects is returned by your API)
+    if (record.subjects) {
+      record.subjects.forEach((sub) => {
+        setValue(`marks.${sub.subject_id}.theory`, sub.theory_marks);
+        setValue(`marks.${sub.id}.practical`, sub.practical_marks);
+      });
+    }
+
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
+  const handleDelete = async (id) => {
+    if (!window.confirm("Delete this result permanently?")) return;
+    try {
+      await deleteResult(id);
+      show("success", "Result deleted");
+      loadHistory();
+    } catch (err) {
+      show("error", "Delete failed");
     }
   };
 
@@ -295,15 +346,35 @@ export default function CreateResult() {
         </form>
       </div>
 
-      <Table
-        title="Recent Records History"
-        columns={[
-          { key: "enrollment_no", label: "Enrollment" },
-          { key: "candidate_name", label: "Student" },
-          { key: "duration", label: "Year/Sem/months" },
-        ]}
-        data={history}
-      />
+   <Table
+  title="Recent Records History"
+  data={history}
+  columns={[
+    { key: "enrollment_no", label: "Enrollment" },
+    { key: "roll_no", label: "Roll No." },
+    { key: "session", label: "Session" },
+    {
+      key: "actions",
+      label: "Actions",
+      render: (row) => (
+        <div className="flex gap-3">
+          <button 
+            onClick={() => handleEdit(row)} 
+            className="text-accent hover:opacity-70 transition"
+          >
+            <FaEdit size={16} title="Edit" />
+          </button>
+          <button 
+            onClick={() => handleDelete(row.id)} 
+            className="text-danger hover:opacity-70 transition"
+          >
+            <FaTrash size={16} title="Delete" />
+          </button>
+        </div>
+      )
+    }
+  ]}
+/>
     </div>
   );
 }

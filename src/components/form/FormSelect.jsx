@@ -8,6 +8,8 @@ export default function FormSelect({
   options = [],
   required,
   error,
+  disabled = false,
+  placeholder = "Select",
   onChangeCb, // optional: called with the full option object on change
   className = "",
 }) {
@@ -21,6 +23,7 @@ export default function FormSelect({
 
       <select
         {...rest}
+        disabled={disabled}
         onChange={(e) => {
           onChange(e); // keep RHF in sync
           if (onChangeCb) {
@@ -35,9 +38,10 @@ export default function FormSelect({
           focus:outline-none focus:ring-2 focus:ring-accent/40 focus:border-accent
           transition-all duration-200
           ${error ? "border-danger ring-1 ring-danger/30" : "border-border hover:border-muted/50"}
+          ${disabled ? "cursor-not-allowed opacity-70" : ""}
         `}
       >
-        <option value="">Select</option>
+        <option value="">{placeholder}</option>
         {options.map((opt) => (
           <option key={opt.value} value={opt.value}>
             {opt.label}

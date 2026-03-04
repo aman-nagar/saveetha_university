@@ -1,29 +1,40 @@
 // src/api/results/resultApi.js
 import { apiRequest } from "../client";
+const INDEX_ENDPOINT = "/admin/result/index.php";
+const UPDATE_ENDPOINT = "/admin/result/update.php";
+const DELETE_ENDPOINT = "/admin/result/delete.php";
 
-// Fetch student details by enrollment for auto-fill
-export const searchStudentByEnrollment = async (enrollment) => {
-  return await apiRequest(
-    `/results/search-student.php?enrollment=${enrollment}`,
-  );
+export const fetchResults = async () => {
+  return await apiRequest(INDEX_ENDPOINT);
 };
 
-// Fetch existing results for a student to check for duplicates
-export const fetchStudentResults = async (enrollment) => {
-  return await apiRequest(
-    `/results/student-results.php?enrollment=${enrollment}`,
-  );
+export const fetchResultById = async (id) => {
+  if (!id) throw new Error("Result ID is required");
+  return await apiRequest(`${INDEX_ENDPOINT}?id=${id}`);
 };
 
 // Submit new result
 export const createResult = async (resultData) => {
-  return await apiRequest("/results/create.php", {
+  return await apiRequest(INDEX_ENDPOINT, {
     method: "POST",
     body: JSON.stringify(resultData),
   });
 };
 
-// Delete a result
+// Update an existing result
+export const updateResult = async (id, resultData) => {
+  if (!id) throw new Error("Result ID is required");
+  return await apiRequest(UPDATE_ENDPOINT, {
+    method: "PUT",
+    body: JSON.stringify({ id, ...resultData }),
+  });
+};
+
+// Delete a result (Soft or Hard based on backend)
 export const deleteResult = async (id) => {
-  return await apiRequest(`/results/delete.php?id=${id}`, { method: "DELETE" });
+  if (!id) throw new Error("Result ID is required");
+  return await apiRequest(DELETE_ENDPOINT, {
+    method: "DELETE",
+    body: JSON.stringify({ id }),
+  });
 };

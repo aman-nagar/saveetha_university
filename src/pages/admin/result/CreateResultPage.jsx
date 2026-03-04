@@ -13,10 +13,15 @@ import {
   FaSpinner,
   FaExclamationTriangle,
 } from "react-icons/fa";
+import { getTodayDate } from "../../../utils/formHelpers";
 
 export default function CreateResult() {
   const { toast, show, clear } = useToast();
-  const { register, handleSubmit, setValue, watch, reset } = useForm();
+  const { register, handleSubmit, setValue, watch, reset } = useForm({
+    defaultValues: {
+      issue_date: getTodayDate(),
+    },
+  });
 
   const flow = useAcademicFlow(setValue);
   const [history, setHistory] = useState([]);
@@ -58,7 +63,7 @@ export default function CreateResult() {
         student_id: flow.studentId,
         duration: Number(selectedDuration),
         session: formData.session,
-        serial_no: formData.serial_no,
+        // serial_no: formData.serial_no,
         issue_date: formData.issue_date,
         roll_number: rollNo,
 
@@ -156,6 +161,12 @@ export default function CreateResult() {
               register={register}
               readOnly
             />
+            <FormInput
+              label="Stream"
+              name="stream"
+              register={register}
+              readOnly
+            />
           </div>
 
           <hr className="border-border" />
@@ -177,13 +188,13 @@ export default function CreateResult() {
                 ))}
               </select>
             </div>
-            <FormInput
+            {/* <FormInput
               label="Serial No."
               name="serial_no"
               register={register}
               placeholder="Enter Serial No"
               required
-            />
+            /> */}
             <FormInput
               label="Issue Date"
               name="issue_date"

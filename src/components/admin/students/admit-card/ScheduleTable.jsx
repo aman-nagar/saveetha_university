@@ -2,6 +2,7 @@
 import { useEffect } from "react";
 import { formatTimeAMPM } from "../../../../utils/formatters";
 import Table from "../../../table/Table";
+import { getTodayDate } from "../../../../utils/formHelpers";
 
 export default function ScheduleTable({
   register,
@@ -12,11 +13,7 @@ export default function ScheduleTable({
   watch, // Added
   setValue, // Added
 }) {
-  const getTodayDate = () => {
-    const now = new Date();
-    const local = new Date(now.getTime() - now.getTimezoneOffset() * 60000);
-    return local.toISOString().split("T")[0];
-  };
+ 
 
   const defaultDate = getTodayDate();
   const defaultStartTime = "10:00";

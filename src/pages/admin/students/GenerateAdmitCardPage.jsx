@@ -266,6 +266,7 @@ export default function GenerateAdmitCardPage() {
             <ScheduleTable
               register={register}
               watch={watch}
+              setValue={setValue}
               subjects={academicFlow.subjects}
               loading={academicFlow.loadingSubjects}
               courseType={academicFlow.courseType}

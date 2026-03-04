@@ -14,20 +14,6 @@ export function useCourseRules() {
     const count = Number(course.duration);
     const type = course.duration_type;
     setCourseType(type);
-
-    // let options = [];
-    // if (["year", "semester"].includes(type?.toLowerCase())) {
-    //   for (let i = 1; i <= count; i++) {
-    //     options.push({
-    //       label: `${type.charAt(0).toUpperCase() + type.slice(1)} ${i}`,
-    //       value: String(i)
-    //     });
-    //   }
-    // } else {
-    //   options.push({ label: `${count} ${type}`, value: String(count) });
-    // }
-    // setDurationOptions(options);
-    // return type;
     const options = generateDurationOptions(course.duration, type);
     setDurationOptions(options);
   };

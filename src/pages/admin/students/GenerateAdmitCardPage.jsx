@@ -46,7 +46,7 @@ export default function GenerateAdmitCardPage() {
     try {
       const response = await fetchAdmitCards(page);
 
-      console.log("History API Structured Response:", response);
+      // console.log("History API Structured Response:", response);
 
       setAdmitCards(response.records || []);
       setCurrentPage(response.page || 1);
@@ -56,7 +56,7 @@ export default function GenerateAdmitCardPage() {
 
       setTotalPages(Math.ceil(total / limit));
     } catch (err) {
-      console.error("History Load Error:", err);
+      // console.error("History Load Error:", err);
     } finally {
       setLoadingHistory(false);
     }

@@ -123,7 +123,7 @@ export async function searchEnrollment(query) {
   if (!query) return [];
   // Using your new specific search endpoint
   const response = await apiRequest(
-    `/students/index.php?enrollment_search=${encodeURIComponent(query)}`,
+    `/students/index.php?getRulesByCourseName=${encodeURIComponent(query)}`,
   );
   return response.students || response;
 }

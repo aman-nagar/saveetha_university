@@ -1,8 +1,8 @@
-// src/hooks/useAcademicFlow.js
 import { useState, useEffect, useCallback, useMemo } from "react";
 import { searchEnrollment, fetchStudentById } from "../api/students/studentApi";
 import { fetchAllStreams } from "../api/courses/streamApi";
 import { fetchSubjectsByStream } from "../api/courses/subjectApi";
+import { fetchAdmitCards } from "../api/students/admitCardApi"; // ✅ Added for Roll No Lookup
 import { useCourseRules } from "./useCourseRules";
 
 export function useAcademicFlow(setValue) {
@@ -16,13 +16,10 @@ export function useAcademicFlow(setValue) {
   const [streamId, setStreamId] = useState(null);
   const [subjects, setSubjects] = useState([]);
   const [loadingSubjects, setLoadingSubjects] = useState(false);
+  const [isFetchingRoll, setIsFetchingRoll] = useState(false); // ✅ Loader for Roll No
 
-  const {
-    durationOptions,
-    courseType,
-    loading: fetchingRules,
-    getRulesByCourseName,
-  } = useCourseRules();
+  const { durationOptions, courseType, getRulesByCourseName } =
+    useCourseRules();
 
   // 1. Search Logic
   useEffect(() => {
@@ -54,9 +51,6 @@ export function useAcademicFlow(setValue) {
   // 2. Select Student & Auto-fill Logic
   const selectStudent = useCallback(
     async (student) => {
-      console.log("=== SELECT STUDENT DEBUG ===");
-      console.log("Selected student from search:", student);
-      console.log("Student ID:", student.id);
       setIsTyping(false);
       setSearchTerm(student.enrollment_no);
       setValue("enrollmentNo", student.enrollment_no);
@@ -67,30 +61,17 @@ export function useAcademicFlow(setValue) {
       try {
         const response = await fetchStudentById(student.id);
         const details = response.data || response;
-        console.log("Full student details:", details);
-        console.log(
-          "Roll number in student data:",
-          details.roll_number,
-          "| roll_no:",
-          details.roll_no,
-        );
-        console.log("Course:", details.course, "| Stream:", details.stream);
         if (details) {
-          // Shared form filling
           setValue("course", details.course || "");
           setValue("stream", details.stream || "");
-          setValue("rollNo", "");
+          setValue("rollNo", ""); // ✅ Reset Roll No initially
           setValue("session", "");
 
-          // Map Stream to ID for subject fetching
           const streams = await fetchAllStreams();
           const sMatch = streams.find(
             (s) => s.name.toLowerCase() === details.stream?.toLowerCase(),
           );
-          console.log("Stream match:", sMatch);
           if (sMatch) setStreamId(sMatch.id);
-
-          // Sync Course Rules (Semesters/Years)
           getRulesByCourseName(details.course);
         }
       } catch (err) {
@@ -100,7 +81,50 @@ export function useAcademicFlow(setValue) {
     [setValue, getRulesByCourseName],
   );
 
-  // 3. Subject Fetcher
+  // 3. NEW: Sync Roll Number from Admit Card (Specific for Results)
+  const syncRollNoFromAdmitCard = useCallback(
+    async (selectedPart) => {
+      if (!studentId || !selectedPart) return;
+
+      setIsFetchingRoll(true);
+      try {
+        const response = await fetchAdmitCards();
+
+        // ✅ FIX: Extract the array from the "records" property
+        // If response.records exists, use it; otherwise, fallback to response itself.
+        const dataList = response?.records || response;
+
+        if (!Array.isArray(dataList)) {
+          console.error("❌ Data error: Expected an array but got:", dataList);
+          return;
+        }
+
+        // Find the admit card matching this student and this specific Year/Semester
+        // Note: Using enrollment_no or student_id depending on what your API provides
+        const match = dataList.find(
+          (r) =>
+            (r.student_id === studentId || r.enrollment_no === searchTerm) &&
+            String(r.duration) === String(selectedPart),
+        );
+
+        if (match) {
+          setValue("rollNo", match.roll_number);
+          setValue("session", match.session);
+          console.log("✅ Roll No Synced:", match.roll_number);
+        } else {
+          setValue("rollNo", "Not Generated");
+          console.warn("⚠️ No matching Admit Card found for this Duration.");
+        }
+      } catch (err) {
+        console.error("Roll Fetch Error:", err);
+      } finally {
+        setIsFetchingRoll(false);
+      }
+    },
+    [studentId, searchTerm, setValue], // Added searchTerm for more robust matching
+  );
+
+  // 4. Subject Fetcher
   const loadSubjectsForPart = useCallback(
     async (selectedPart) => {
       if (!streamId || !selectedPart) {
@@ -136,11 +160,12 @@ export function useAcademicFlow(setValue) {
       streamId,
       subjects,
       loadingSubjects,
+      isFetchingRoll,
       selectStudent,
       loadSubjectsForPart,
+      syncRollNoFromAdmitCard, // ✅ Exported for CreateResult
       durationOptions,
       courseType,
-      fetchingRules,
     }),
     [
       searchTerm,
@@ -152,11 +177,12 @@ export function useAcademicFlow(setValue) {
       streamId,
       subjects,
       loadingSubjects,
+      isFetchingRoll,
       selectStudent,
       loadSubjectsForPart,
+      syncRollNoFromAdmitCard,
       durationOptions,
       courseType,
-      fetchingRules,
     ],
   );
 }

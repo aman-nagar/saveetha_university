@@ -23,24 +23,21 @@ export async function apiRequest(endpoint, options = {}) {
     json = await response.json();
   }
 
-  // 2. Handle 401 Unauthorized / Forbidden
+  // 2. Handle 401 Unauthorized / Forbidden (Token Expired or Invalid)
   if (response.status === 401) {
     const isAuthPage =
       window.location.pathname.includes("login") ||
       window.location.pathname === "/portal";
     const backendError = json?.message || json?.errors || "Unauthorized access";
 
-    if (token && !isAuthPage) {
-      console.error("❌ PERMISSION ERROR:", backendError);
-      throw new Error(backendError);
-    }
-
+    // ✅ ALWAYS clear session when not on auth page
     if (!isAuthPage) {
+      console.error("❌ SESSION EXPIRED:", backendError);
       Cookies.remove("authToken");
       localStorage.removeItem("authUser");
       window.location.href = "/portal";
-      throw new Error("Session expired. Please login again.");
     }
+    
     throw new Error(backendError);
   }
 

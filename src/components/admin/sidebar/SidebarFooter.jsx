@@ -1,5 +1,6 @@
 import { FaSignOutAlt } from "react-icons/fa";
 import { useAuth } from "../../../context/AuthContext";
+import Button from "../../ui/Button";
 
 export default function SidebarFooter({ isCollapsed }) {
   // Use a safety check to avoid the "null" destructuring error
@@ -20,13 +21,9 @@ export default function SidebarFooter({ isCollapsed }) {
               </span>
             </div>
 
-            <button
-              onClick={logout}
-              className="p-2 rounded-lg hover:bg-red-500/20 text-white/40 hover:text-red-500 transition-colors"
-              title="Logout"
-            >
+            <Button onClick={logout} title="Logout">
               <FaSignOutAlt className="w-4 h-4" />
-            </button>
+            </Button>
 
             {/* Tooltip */}
             <div className="fixed left-14 hidden md:block bg-surface text-white text-xs py-1.5 px-3 rounded-md shadow-xl opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-[100] whitespace-nowrap border border-border">
@@ -51,13 +48,9 @@ export default function SidebarFooter({ isCollapsed }) {
               </div>
             </div>
 
-            <button
-              onClick={logout}
-              className="group p-2 rounded-xl bg-white/5 hover:bg-red-500/10 border border-white/5 hover:border-red-500/30 transition-all duration-300"
-              title="Sign Out"
-            >
+            <Button onClick={logout} title="Sign Out">
               <FaSignOutAlt className="w-4 h-4 text-white/40 group-hover:text-red-500 transition-colors" />
-            </button>
+            </Button>
           </div>
         )}
       </div>

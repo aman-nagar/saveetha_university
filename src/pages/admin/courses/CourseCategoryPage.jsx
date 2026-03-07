@@ -1,6 +1,6 @@
 // src/pages/admin/courses/CourseCategoryPage.jsx
 import { useEffect, useState } from "react";
-import { FaPen, FaTrash } from "react-icons/fa";
+import { FaFileExport, FaPen, FaTrash } from "react-icons/fa";
 import {
   fetchCourseCategories,
   createCourseCategory,
@@ -13,11 +13,12 @@ import { useToast } from "../../../context/ToastContext";
 import { useConfirm } from "../../../hooks/useConfirm";
 
 import CourseCategoryForm from "../../../components/admin/courses/CourseCategoryForm";
-import CourseCategoryImport from "../../../components/admin/courses/CourseCategoryImport";
-import MasterAcademicImport from "../../../components/admin/courses/MasterAcademicImport"; // ✅ NEW
 import Toast from "../../../components/ui/Toast";
 import Modal from "../../../components/ui/Modal";
 import Table from "../../../components/table/Table";
+import MasterAcademicImport from "../../../components/admin/courses/import-export/MasterAcademicImport";
+import { handleExport } from "../../../utils/exportCourse";
+import Button from "../../../components/ui/Button";
 
 export default function CourseCategoryPage() {
   const { toast, show, clear } = useToast();
@@ -38,21 +39,15 @@ export default function CourseCategoryPage() {
     load();
   }, [load]);
 
-  const handleCreate = async (nameOrForm) => {
-    const name = (
-      typeof nameOrForm === "string" ? nameOrForm : nameOrForm.category
-    )?.trim();
+  const handleCreate = async (formValues) => {
+    const name = formValues.category?.trim();
     if (!name) return;
-
     try {
       await createCourseCategory(name);
-      if (typeof nameOrForm !== "string") {
-        show("success", `Category "${name}" created`);
-        load();
-      }
+      show("success", `Category created`);
+      load();
     } catch (err) {
-      if (typeof nameOrForm !== "string") show("error", err.message);
-      throw err;
+      show("error", err.message);
     }
   };
 
@@ -61,7 +56,7 @@ export default function CourseCategoryPage() {
     if (!name || !editData) return;
     try {
       await updateCourseCategory(editData.id, name);
-      show("success", `Category updated successfully`);
+      show("success", `Updated successfully`);
       setEditData(null);
       load();
     } catch (err) {
@@ -73,7 +68,7 @@ export default function CourseCategoryPage() {
     if (!target) return;
     try {
       await remove(target.id);
-      show("success", `Category "${target.name}" deleted`);
+      show("success", `Deleted`);
     } catch (err) {
       show("error", err.message);
     } finally {
@@ -105,40 +100,37 @@ export default function CourseCategoryPage() {
     <div className="w-full space-y-6">
       {toast && <Toast {...toast} onClose={clear} />}
 
-      {/* 1. MASTER HIERARCHY IMPORT (FULL SYSTEM) */}
-      <MasterAcademicImport
-        showToast={show}
-        onComplete={load} // Refresh categories when done
-      />
+      {/* 1. MASTER IMPORT (The only import you need) */}
+      <MasterAcademicImport showToast={show} onComplete={load} />
+      <Button onClick={() => handleExport(categories)}>
+        <FaFileExport /> Export Categories to Excel
+      </Button>
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
+        {/* 2. MANUAL ADD (1/3 Width) */}
+        <div className="lg:col-span-1">
+          <CourseCategoryForm
+            onSubmit={handleCreate}
+            loading={loading}
+            mode="create"
+          />
+        </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start">
-        {/* 2. MANUAL CREATE FORM (SINGLE CATEGORY) */}
-        <CourseCategoryForm
-          onSubmit={handleCreate}
-          loading={loading}
-          mode="create"
-        />
-        {/* 3. EXCEL IMPORT BOX (CATEGORY ONLY) */}
-        <CourseCategoryImport
-          onImportComplete={handleCreate}
-          showToast={show}
-          existingData={categories}
-        />
+        {/* 3. CATEGORY LIST (2/3 Width) */}
+        <div className="lg:col-span-2">
+          <Table
+            title="Course Categories"
+            columns={columns}
+            data={categories}
+            actions={actions}
+            loading={loading}
+          />
+        </div>
       </div>
-
-      {/* 4. DATA TABLE */}
-      <Table
-        title="Course Categories"
-        columns={columns}
-        data={categories}
-        actions={actions}
-        loading={loading}
-      />
 
       {/* MODALS */}
       <Modal
         isOpen={!!editData}
-        title="Edit Course Category"
+        title="Edit Category"
         onClose={() => setEditData(null)}
       >
         <CourseCategoryForm
@@ -155,18 +147,8 @@ export default function CourseCategoryPage() {
         onClose={close}
         footer={
           <div className="flex gap-2">
-            <button
-              onClick={close}
-              className="px-4 py-2 border rounded-lg text-sm hover:bg-bg"
-            >
-              Cancel
-            </button>
-            <button
-              onClick={confirmDelete}
-              className="px-4 py-2 bg-danger text-white rounded-lg text-sm"
-            >
-              Delete
-            </button>
+            <Button onClick={close}>Cancel</Button>
+            <Button onClick={confirmDelete}>Delete</Button>
           </div>
         }
       >

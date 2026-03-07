@@ -4,6 +4,7 @@ import FormInput from "../../form/FormInput";
 import FormTextarea from "../../form/FormTextarea";
 import FormFileInput from "../../form/FormFileInput";
 import FormSection from "../../form/FormSection";
+import Button from "../../ui/Button";
 
 export default function SettingsForm({ onSubmit, loading, initialData }) {
   const { register, handleSubmit, reset } = useForm();
@@ -85,13 +86,13 @@ export default function SettingsForm({ onSubmit, loading, initialData }) {
         />
       </FormSection>
 
-      <button
+      <Button
         type="submit"
         disabled={loading}
-        className="px-6 py-2.5 bg-primary text-white rounded-lg cursor-pointer hover:bg-primary/90 transition disabled:opacity-60"
+        
       >
         {loading ? "Saving..." : "Update Settings"}
-      </button>
+      </Button>
     </form>
   );
 }

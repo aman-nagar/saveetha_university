@@ -202,7 +202,12 @@ export default function EditResultModal({
   };
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose} title="Edit Student Result" size="full">
+    <Modal
+      isOpen={isOpen}
+      onClose={onClose}
+      title="Edit Student Result"
+      size="full"
+    >
       {loadingDetails ? (
         <div className="py-14 flex items-center justify-center gap-3 text-muted">
           <FaSpinner className="animate-spin" />
@@ -340,23 +345,24 @@ export default function EditResultModal({
           ) : (
             <div className="bg-danger/10 border border-danger/20 text-danger px-6 py-4 rounded-lg flex items-center gap-3">
               <FaExclamationTriangle />
-              <span>No subjects found for this result. Cannot update marks.</span>
+              <span>
+                No subjects found for this result. Cannot update marks.
+              </span>
             </div>
           )}
 
           {/* FOOTER ACTIONS */}
           <div className="flex justify-end gap-4 pt-6 border-t border-border">
-            <button
-              type="button"
-              onClick={onClose}
-              className="px-8 py-2.5 border border-border rounded-lg hover:bg-bg transition-all font-medium"
-            >
+            <Button type="button" onClick={onClose}>
               Cancel
-            </button>
+            </Button>
             <Button
               type="submit"
               disabled={
-                isSubmitting || loadingRules || loadingDetails || subjects.length === 0
+                isSubmitting ||
+                loadingRules ||
+                loadingDetails ||
+                subjects.length === 0
               }
               className="px-10"
             >

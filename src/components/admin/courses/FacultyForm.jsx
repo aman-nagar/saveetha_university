@@ -3,6 +3,7 @@ import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import FormSection from "../../form/FormSection";
 import FormInput from "../../form/FormInput";
+import Button from "../../ui/Button";
 
 export default function FacultyForm({
   courseTypes = [],
@@ -33,7 +34,10 @@ export default function FacultyForm({
 
   return (
     <form onSubmit={handleSubmit(submitForm)} className="space-y-5">
-      <FormSection title={mode === "edit" ? "Edit Faculty" : "Add Faculty"} columns={2}>
+      <FormSection
+        title={mode === "edit" ? "Edit Faculty" : "Add Faculty"}
+        columns={2}
+      >
         {/* Course Type select */}
         <div className="space-y-1.5 sm:space-y-2">
           <label className="text-xs sm:text-sm font-medium text-text">
@@ -62,21 +66,17 @@ export default function FacultyForm({
       </FormSection>
 
       <div className="flex flex-col sm:flex-row gap-3">
-        <button
-          type="submit"
-          className="w-full sm:w-auto px-6 py-2.5 rounded-lg text-white bg-primary hover:bg-primary/90 transition text-sm sm:text-base font-medium"
-        >
+        <Button type="submit">
           {mode === "edit" ? "Update Faculty" : "Create Faculty"}
-        </button>
+        </Button>
 
         {mode === "edit" && (
-          <button
-            type="button"
+          <Button
             onClick={onCancel}
-            className="w-full sm:w-auto px-6 py-2.5 rounded-lg border border-border text-text hover:bg-bg transition text-sm sm:text-base"
+            
           >
             Cancel
-          </button>
+          </Button>
         )}
       </div>
     </form>

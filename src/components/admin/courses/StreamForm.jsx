@@ -3,6 +3,7 @@ import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import FormSection from "../../form/FormSection";
 import FormInput from "../../form/FormInput";
+import Button from "../../ui/Button";
 
 export default function StreamForm({
   courseList = [],
@@ -37,7 +38,10 @@ export default function StreamForm({
 
   return (
     <form onSubmit={handleSubmit(submitForm)} className="space-y-5">
-      <FormSection title={mode === "edit" ? "Edit Stream" : "Add Stream"} columns={2}>
+      <FormSection
+        title={mode === "edit" ? "Edit Stream" : "Add Stream"}
+        columns={2}
+      >
         {/* Course select */}
         <div className="space-y-1.5 sm:space-y-2">
           <label className="text-xs sm:text-sm font-medium text-text">
@@ -66,21 +70,21 @@ export default function StreamForm({
       </FormSection>
 
       <div className="flex flex-col sm:flex-row gap-3">
-        <button
+        <Button
           type="submit"
-          className="w-full sm:w-auto px-6 py-2.5 rounded-lg text-white bg-primary hover:bg-primary/90 transition text-sm sm:text-base font-medium"
+          
         >
           {mode === "edit" ? "Update Stream" : "Create Stream"}
-        </button>
+        </Button>
 
         {mode === "edit" && (
-          <button
+          <Button
             type="button"
             onClick={onCancel}
-            className="w-full sm:w-auto px-6 py-2.5 rounded-lg border border-border text-text hover:bg-bg transition text-sm sm:text-base"
+           
           >
             Cancel
-          </button>
+          </Button>
         )}
       </div>
     </form>

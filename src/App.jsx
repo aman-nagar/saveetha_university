@@ -33,6 +33,7 @@ import StudentLogin from "./pages/auth/StudentLogin";
 import FormEnabledRoute from "./context/FormEnabledRoute";
 import CreateResultPage from "./pages/admin/result/CreateResultPage";
 import { ToastProvider } from "./context/ToastContext";
+import CourseSettings from "./pages/admin/courses/CourseSettings";
 
 function App() {
   return (
@@ -79,6 +80,7 @@ function App() {
               <Route path="course" element={<CoursePage />} />
               <Route path="stream" element={<StreamPage />} />
               <Route path="subject" element={<SubjectPage />} />
+              <Route path="course-settings" element={<CourseSettings />} />
               <Route path="site-settings" element={<SiteSettingsPage />} />
             </Route>
 

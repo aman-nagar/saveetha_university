@@ -1,5 +1,4 @@
 // src/pages/admin/courses/CourseCategoryPage.jsx
-
 import { useEffect, useState } from "react";
 import { FaPen, FaTrash } from "react-icons/fa";
 import {
@@ -14,6 +13,8 @@ import { useToast } from "../../../context/ToastContext";
 import { useConfirm } from "../../../hooks/useConfirm";
 
 import CourseCategoryForm from "../../../components/admin/courses/CourseCategoryForm";
+import CourseCategoryImport from "../../../components/admin/courses/CourseCategoryImport";
+import MasterAcademicImport from "../../../components/admin/courses/MasterAcademicImport"; // ✅ NEW
 import Toast from "../../../components/ui/Toast";
 import Modal from "../../../components/ui/Modal";
 import Table from "../../../components/table/Table";
@@ -21,7 +22,6 @@ import Table from "../../../components/table/Table";
 export default function CourseCategoryPage() {
   const { toast, show, clear } = useToast();
   const { target, isOpen, open, close } = useConfirm();
-
   const [editData, setEditData] = useState(null);
 
   const {
@@ -38,25 +38,27 @@ export default function CourseCategoryPage() {
     load();
   }, [load]);
 
-  // CREATE
-  const handleCreate = async (formValues) => {
-    const name = formValues.category?.trim();
+  const handleCreate = async (nameOrForm) => {
+    const name = (
+      typeof nameOrForm === "string" ? nameOrForm : nameOrForm.category
+    )?.trim();
     if (!name) return;
 
     try {
       await createCourseCategory(name);
-      show("success", `Category "${name}" created`);
-      load();
+      if (typeof nameOrForm !== "string") {
+        show("success", `Category "${name}" created`);
+        load();
+      }
     } catch (err) {
-      show("error", err.message);
+      if (typeof nameOrForm !== "string") show("error", err.message);
+      throw err;
     }
   };
 
-  // UPDATE
   const handleUpdate = async (formValues) => {
     const name = formValues.category?.trim();
     if (!name || !editData) return;
-
     try {
       await updateCourseCategory(editData.id, name);
       show("success", `Category updated successfully`);
@@ -67,10 +69,8 @@ export default function CourseCategoryPage() {
     }
   };
 
-  // DELETE
   const confirmDelete = async () => {
     if (!target) return;
-
     try {
       await remove(target.id);
       show("success", `Category "${target.name}" deleted`);
@@ -105,14 +105,28 @@ export default function CourseCategoryPage() {
     <div className="w-full space-y-6">
       {toast && <Toast {...toast} onClose={clear} />}
 
-      {/* CREATE FORM */}
-      <CourseCategoryForm
-        onSubmit={handleCreate}
-        loading={loading}
-        mode="create"
+      {/* 1. MASTER HIERARCHY IMPORT (FULL SYSTEM) */}
+      <MasterAcademicImport
+        showToast={show}
+        onComplete={load} // Refresh categories when done
       />
 
-      {/* TABLE */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start">
+        {/* 2. MANUAL CREATE FORM (SINGLE CATEGORY) */}
+        <CourseCategoryForm
+          onSubmit={handleCreate}
+          loading={loading}
+          mode="create"
+        />
+        {/* 3. EXCEL IMPORT BOX (CATEGORY ONLY) */}
+        <CourseCategoryImport
+          onImportComplete={handleCreate}
+          showToast={show}
+          existingData={categories}
+        />
+      </div>
+
+      {/* 4. DATA TABLE */}
       <Table
         title="Course Categories"
         columns={columns}
@@ -121,7 +135,7 @@ export default function CourseCategoryPage() {
         loading={loading}
       />
 
-      {/* EDIT MODAL */}
+      {/* MODALS */}
       <Modal
         isOpen={!!editData}
         title="Edit Course Category"
@@ -135,26 +149,25 @@ export default function CourseCategoryPage() {
         />
       </Modal>
 
-      {/* DELETE MODAL */}
       <Modal
         isOpen={isOpen}
         title="Confirm Delete"
         onClose={close}
         footer={
-          <>
+          <div className="flex gap-2">
             <button
               onClick={close}
-              className="px-4 py-2 border border-border rounded-lg text-sm text-text hover:bg-bg transition"
+              className="px-4 py-2 border rounded-lg text-sm hover:bg-bg"
             >
               Cancel
             </button>
             <button
               onClick={confirmDelete}
-              className="px-4 py-2 bg-danger text-white rounded-lg text-sm hover:bg-danger/90 transition"
+              className="px-4 py-2 bg-danger text-white rounded-lg text-sm"
             >
               Delete
             </button>
-          </>
+          </div>
         }
       >
         {target && (

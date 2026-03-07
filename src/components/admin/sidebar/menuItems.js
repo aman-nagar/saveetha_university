@@ -52,6 +52,7 @@ export const menuItems = [
       { label: "Course", path: "/admin/course" },
       { label: "Stream", path: "/admin/stream" },
       { label: "Subjects", path: "/admin/subject" },
+      { label: "Course Settings", path: "/admin/course-settings" },
     ],
   },
   {

@@ -4,6 +4,7 @@ import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import FormSection from "../../form/FormSection";
 import FormInput from "../../form/FormInput";
+import Button from "../../ui/Button";
 
 export default function CourseCategoryForm({
   onSubmit,

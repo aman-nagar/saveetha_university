@@ -94,7 +94,7 @@ export default function StepQualification({
                     <input
                       type="file"
                       accept=".pdf,image/*"
-                      className="text-sm text-text file:mr-2 file:py-1 file:px-2 file:rounded file:border-0 file:text-xs file:bg-primary file:text-white"
+                      className="text-sm text-text px-5 file:mr-2 file:py-1 file:px-2 file:rounded file:border-0 file:text-xs file:bg-primary file:text-white"
                       onChange={(e) => {
                         const file = e.target.files[0];
                         console.log(

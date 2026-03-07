@@ -320,14 +320,6 @@ export default function StudentFormStepper({
   const handleFormSubmit = async (data) => {
     try {
       setLoading(true);
-
-      // ===== DEBUG START =====
-      console.log("=== FORM SUBMIT DEBUG ===");
-      console.log("Mode:", isEdit ? "EDIT" : "CREATE");
-      console.log("qualificationFiles state:", qualificationFiles);
-      console.log("qualificationFiles keys:", Object.keys(qualificationFiles));
-      // ===== DEBUG END =====
-
       const formData = new FormData();
 
       if (isEdit && student?.id) {

@@ -10,14 +10,19 @@ export default function FormFileInput({
   required = false,
   error,
   existingUrl = null,
+  onFileChange,
+  variant = "default",
 }) {
   const [preview, setPreview] = useState(existingUrl || null);
   const [isExisting, setIsExisting] = useState(!!existingUrl);
   const [fileName, setFileName] = useState("");
 
-  const { onChange, ...rest } = register(name, {
-    required: required ? "File is required" : false,
-  });
+  const registerProps = register
+    ? register(name, {
+        required: required ? "File is required" : false,
+      })
+    : {};
+  const { onChange, ...rest } = registerProps;
 
   const handleChange = (e) => {
     const file = e.target.files[0];
@@ -29,14 +34,18 @@ export default function FormFileInput({
       } else {
         setPreview(null);
       }
+      if (onFileChange) onFileChange(file, e);
+    } else if (onFileChange) {
+      onFileChange(null, e);
     }
-    onChange(e);
+    if (onChange) onChange(e);
   };
 
   const clearFile = () => {
     setPreview(null);
     setFileName("");
     setIsExisting(false);
+    if (onFileChange) onFileChange(null);
     // Reset input
     const input = document.querySelector(`input[name="${name}"]`);
     if (input) input.value = "";
@@ -44,11 +53,52 @@ export default function FormFileInput({
 
   const hasFile = preview || fileName;
 
+  if (variant === "simple") {
+    return (
+      <div className="space-y-1.5 sm:space-y-2 min-w-0">
+        {label && (
+          <label className="text-xs sm:text-sm font-medium text-text">
+            {label} {required && <span className="text-danger">*</span>}
+          </label>
+        )}
+
+        {isExisting && existingUrl && !fileName && (
+          <p className="text-[10px] sm:text-xs text-muted">
+            Current file saved. Select new file to replace.
+          </p>
+        )}
+
+        <input
+          type="file"
+          accept={accept}
+          name={name}
+          {...rest}
+          onChange={handleChange}
+          className={`
+            block w-full min-w-0 max-w-full overflow-hidden text-xs sm:text-sm text-text
+            file:mr-2 sm:file:mr-3 file:rounded-md file:border-0 file:bg-primary
+            file:px-2.5 sm:file:px-3 file:py-1.5 file:text-xs sm:file:text-sm file:font-medium file:text-white
+            hover:file:opacity-90
+          `}
+        />
+
+        {error && (
+          <p className="text-xs text-danger flex items-center gap-1">
+            <FiX className="w-3 h-3" />
+            {error.message}
+          </p>
+        )}
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-1.5 sm:space-y-2">
-      <label className="text-xs sm:text-sm font-medium text-text">
-        {label} {required && <span className="text-danger">*</span>}
-      </label>
+      {label && (
+        <label className="text-xs sm:text-sm font-medium text-text">
+          {label} {required && <span className="text-danger">*</span>}
+        </label>
+      )}
 
       <div
         className={`

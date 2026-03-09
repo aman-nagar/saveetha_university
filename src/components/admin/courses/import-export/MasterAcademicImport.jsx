@@ -143,6 +143,7 @@ export default function MasterAcademicImport({ onComplete, showToast }) {
             stream_id: stream.id,
             subject_name: row.SubjectName,
             subject_code: row.SubjectCode || "",
+            short_name: row.ShortName || "",
             max_theory_marks: row.MaxTheory || 100,
             max_practical_marks: row.MaxPractical || 0,
             duration: row.DurationPart || 1,

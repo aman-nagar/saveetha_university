@@ -1,7 +1,6 @@
 // src/pages/admin/courses/CourseCategoryPage.jsx
-
 import { useEffect, useState } from "react";
-import { FaPen, FaTrash } from "react-icons/fa";
+import { FaFileExport, FaPen, FaTrash } from "react-icons/fa";
 import {
   fetchCourseCategories,
   createCourseCategory,
@@ -17,11 +16,13 @@ import CourseCategoryForm from "../../../components/admin/courses/CourseCategory
 import Toast from "../../../components/ui/Toast";
 import Modal from "../../../components/ui/Modal";
 import Table from "../../../components/table/Table";
+import MasterAcademicImport from "../../../components/admin/courses/import-export/MasterAcademicImport";
+import { handleExport } from "../../../utils/exportCourse";
+import Button from "../../../components/ui/Button";
 
 export default function CourseCategoryPage() {
   const { toast, show, clear } = useToast();
   const { target, isOpen, open, close } = useConfirm();
-
   const [editData, setEditData] = useState(null);
 
   const {
@@ -38,28 +39,24 @@ export default function CourseCategoryPage() {
     load();
   }, [load]);
 
-  // CREATE
   const handleCreate = async (formValues) => {
     const name = formValues.category?.trim();
     if (!name) return;
-
     try {
       await createCourseCategory(name);
-      show("success", `Category "${name}" created`);
+      show("success", `Category created`);
       load();
     } catch (err) {
       show("error", err.message);
     }
   };
 
-  // UPDATE
   const handleUpdate = async (formValues) => {
     const name = formValues.category?.trim();
     if (!name || !editData) return;
-
     try {
       await updateCourseCategory(editData.id, name);
-      show("success", `Category updated successfully`);
+      show("success", `Updated successfully`);
       setEditData(null);
       load();
     } catch (err) {
@@ -67,13 +64,11 @@ export default function CourseCategoryPage() {
     }
   };
 
-  // DELETE
   const confirmDelete = async () => {
     if (!target) return;
-
     try {
       await remove(target.id);
-      show("success", `Category "${target.name}" deleted`);
+      show("success", `Deleted`);
     } catch (err) {
       show("error", err.message);
     } finally {
@@ -105,26 +100,37 @@ export default function CourseCategoryPage() {
     <div className="w-full space-y-6">
       {toast && <Toast {...toast} onClose={clear} />}
 
-      {/* CREATE FORM */}
-      <CourseCategoryForm
-        onSubmit={handleCreate}
-        loading={loading}
-        mode="create"
-      />
+      {/* 1. MASTER IMPORT (The only import you need) */}
+      <MasterAcademicImport showToast={show} onComplete={load} />
+      <Button onClick={() => handleExport(categories)}>
+        <FaFileExport /> Export Categories to Excel
+      </Button>
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
+        {/* 2. MANUAL ADD (1/3 Width) */}
+        <div className="lg:col-span-1">
+          <CourseCategoryForm
+            onSubmit={handleCreate}
+            loading={loading}
+            mode="create"
+          />
+        </div>
 
-      {/* TABLE */}
-      <Table
-        title="Course Categories"
-        columns={columns}
-        data={categories}
-        actions={actions}
-        loading={loading}
-      />
+        {/* 3. CATEGORY LIST (2/3 Width) */}
+        <div className="lg:col-span-2">
+          <Table
+            title="Course Categories"
+            columns={columns}
+            data={categories}
+            actions={actions}
+            loading={loading}
+          />
+        </div>
+      </div>
 
-      {/* EDIT MODAL */}
+      {/* MODALS */}
       <Modal
         isOpen={!!editData}
-        title="Edit Course Category"
+        title="Edit Category"
         onClose={() => setEditData(null)}
       >
         <CourseCategoryForm
@@ -135,26 +141,15 @@ export default function CourseCategoryPage() {
         />
       </Modal>
 
-      {/* DELETE MODAL */}
       <Modal
         isOpen={isOpen}
         title="Confirm Delete"
         onClose={close}
         footer={
-          <>
-            <button
-              onClick={close}
-              className="px-4 py-2 border border-border rounded-lg text-sm text-text hover:bg-bg transition"
-            >
-              Cancel
-            </button>
-            <button
-              onClick={confirmDelete}
-              className="px-4 py-2 bg-danger text-white rounded-lg text-sm hover:bg-danger/90 transition"
-            >
-              Delete
-            </button>
-          </>
+          <div className="flex gap-2">
+            <Button onClick={close}>Cancel</Button>
+            <Button onClick={confirmDelete}>Delete</Button>
+          </div>
         }
       >
         {target && (

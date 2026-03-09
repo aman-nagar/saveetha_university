@@ -9,8 +9,10 @@ import {
   FaTimes,
   FaSignOutAlt,
 } from "react-icons/fa";
-import logo2 from "../../../assets/images/logo2.png";
-import { useAuth } from "../../../context/AuthContext";
+import logo2 from "../../assets/images/logo2.png";
+
+import Button from "../ui/Button";
+import { useAuth } from "../../context/AuthContext";
 
 export default function MobileNavDrawer({
   isOpen,
@@ -85,22 +87,14 @@ export default function MobileNavDrawer({
               </Link>
 
               <div className="flex items-center space-x-2">
-                <button
-                  onClick={toggleTheme}
-                  className="p-2 rounded-lg hover:bg-white/10 text-white/70 hover:text-accent transition-colors"
-                  aria-label="Toggle theme"
-                >
+                <Button onClick={toggleTheme} aria-label="Toggle theme">
                   {theme === "dark" ? (
                     <FaSun className="w-4 h-4" />
                   ) : (
                     <FaMoon className="w-4 h-4" />
                   )}
-                </button>
-                <button
-                  onClick={onClose}
-                  className="p-2 rounded-lg hover:bg-white/10 text-white/70 hover:text-white transition-colors"
-                  aria-label="Close menu"
-                >
+                </Button>
+                <button onClick={onClose} aria-label="Close menu">
                   <FaTimes className="w-4 h-4" />
                 </button>
               </div>

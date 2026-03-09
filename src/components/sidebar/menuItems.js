@@ -85,4 +85,23 @@ export const menuItems = [
     roles: ["admin"],
     children: [{ label: "Site Setting", path: "/admin/site-settings" }],
   },
+  // students menus only
+
+  {
+    id: 7,
+    label: "My Academy",
+    icon: FaUserGraduate,
+    roles: ["student"],
+    children: [{ label: "Dashboard", path: "/student-dashboard" }],
+  },
+  {
+    id: 8,
+    label: "Downloads",
+    icon: TbReport,
+    roles: ["student"],
+    children: [
+      { label: "ID Card", path: "/student-dashboard/id-card" },
+      { label: "Admit Card", path: "/student-dashboard/admit-card" },
+    ],
+  },
 ];

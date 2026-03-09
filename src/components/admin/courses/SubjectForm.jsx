@@ -4,6 +4,7 @@ import { useForm } from "react-hook-form";
 import FormSection from "../../form/FormSection";
 import FormInput from "../../form/FormInput";
 import { useCourseRules } from "../../../hooks/useCourseRules";
+import Button from "../../ui/Button";
 
 export default function SubjectForm({
   streamList = [],
@@ -134,21 +135,14 @@ export default function SubjectForm({
       </FormSection>
 
       <div className="flex flex-col sm:flex-row gap-3">
-        <button
-          type="submit"
-          className="w-full sm:w-auto px-6 py-2.5 rounded-lg text-white bg-primary hover:bg-primary/90 transition text-sm sm:text-base font-medium shadow-sm"
-        >
+        <Button type="submit">
           {mode === "edit" ? "Update Subject" : "Create Subject"}
-        </button>
+        </Button>
 
         {mode === "edit" && (
-          <button
-            type="button"
-            onClick={onCancel}
-            className="w-full sm:w-auto px-6 py-2.5 rounded-lg border border-border text-text hover:bg-bg transition text-sm sm:text-base"
-          >
+          <Button type="button" onClick={onCancel}>
             Cancel
-          </button>
+          </Button>
         )}
       </div>
     </form>

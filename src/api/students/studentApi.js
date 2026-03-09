@@ -1,5 +1,4 @@
 // src/api/students/studentApi.js
-
 import { apiRequest } from "../client";
 
 // get all students pagination wise

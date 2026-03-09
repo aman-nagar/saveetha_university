@@ -6,14 +6,22 @@ const AuthContext = createContext(null);
 
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
+  const [studentData, setStudentData] = useState(null); // Store full student data from login API
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const token = Cookies.get("authToken");
     const storedUser = localStorage.getItem("authUser");
+    const storedStudentData = localStorage.getItem("studentData");
 
     if (token && storedUser) {
-      setUser(JSON.parse(storedUser));
+      const parsedUser = JSON.parse(storedUser);
+      setUser(parsedUser);
+
+      // Restore student data if it was stored
+      if (storedStudentData) {
+        setStudentData(JSON.parse(storedStudentData));
+      }
     }
 
     setLoading(false);
@@ -28,7 +36,14 @@ export function AuthProvider({ children }) {
       });
 
       localStorage.setItem("authUser", JSON.stringify(userData));
-      setUser(userData); // React will schedule this update
+
+      // For student role, store the entire response data
+      if (userData.role === "student" && userData.student_id) {
+        localStorage.setItem("studentData", JSON.stringify(userData));
+        setStudentData(userData);
+      }
+
+      setUser(userData);
 
       // Resolve immediately so the component can proceed
       resolve(userData);
@@ -51,6 +66,7 @@ export function AuthProvider({ children }) {
       Cookies.remove("authToken");
       localStorage.clear();
       setUser(null);
+      setStudentData(null);
 
       // 3. Redirect to the central portal
       window.location.href = "/portal";
@@ -61,11 +77,11 @@ export function AuthProvider({ children }) {
     <AuthContext.Provider
       value={{
         user,
+        studentData,
         loading,
         login,
         logout,
-        isAuthenticated: !!user, //Because user state is your real session indicator.
-        // isAuthenticated: !!Cookies.get("authToken"),  //This re-evaluates every render.
+        isAuthenticated: !!user,
       }}
     >
       {children}

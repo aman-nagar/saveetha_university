@@ -2,7 +2,7 @@
 import { useEffect, useState } from "react";
 import { Outlet } from "react-router-dom";
 import AdminHeader from "../components/admin/AdminHeader";
-import { AdminSidebar } from "../components/admin/sidebar/role/AdminSidebar";
+import Sidebar from "../components/sidebar/Sidebar";
 
 export default function AdminLayout() {
   const [theme, setTheme] = useState(
@@ -22,7 +22,7 @@ export default function AdminLayout() {
       className={`min-h-screen flex flex-col ${theme === "dark" ? "dark" : ""}`}
     >
       <div className="flex flex-1 bg-bg text-text">
-        <AdminSidebar theme={theme} toggleTheme={toggleTheme} />
+        <Sidebar theme={theme} toggleTheme={toggleTheme} />
         <div className="flex-1 flex flex-col min-w-0">
           <AdminHeader />
           {/* Added pt-14 for mobile to account for hamburger button space */}

@@ -1,7 +1,7 @@
 // src/components/admin/sidebar/SidebarHeader.jsx
 import { Link } from "react-router-dom";
 import { FaThumbtack, FaChevronRight, FaSun, FaMoon } from "react-icons/fa";
-import logo2 from "../../../assets/images/logo2.png";
+import logo2 from "../../assets/images/logo2.png";
 
 export default function SidebarHeader({
   isCollapsed,

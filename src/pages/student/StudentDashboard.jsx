@@ -6,9 +6,12 @@ const StudentDashboard = () => {
 
   if (!studentData) {
     return (
-      <div className="flex items-center justify-center min-h-screen bg-gray-50">
-        <div className="bg-white rounded-lg shadow-lg p-8 max-w-md text-center">
-          <p className="text-gray-600 text-lg font-medium">No student data available</p>
+      <div className="flex items-center justify-center min-h-[60vh]">
+        <div className="bg-surface rounded-2xl shadow-xl p-8 max-w-md text-center border border-border">
+          <div className="text-5xl mb-4">🎓</div>
+          <p className="text-text text-lg font-medium">
+            No student data available
+          </p>
         </div>
       </div>
     );
@@ -35,227 +38,198 @@ const StudentDashboard = () => {
     status,
   } = studentData;
 
-  const getStatusBadge = (status) => {
-    if (status === 1) {
-      return (
-        <span className="inline-block bg-green-100 text-green-800 px-4 py-1 rounded-full text-sm font-medium">
-          Active
-        </span>
-      );
-    }
-    return (
-      <span className="inline-block bg-red-100 text-red-800 px-4 py-1 rounded-full text-sm font-medium">
-        Inactive
-      </span>
-    );
-  };
-
   return (
-    <div className="space-y-8 animate-in fade-in duration-500">
-      {/* Welcome Header */}
-      <header className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-xl shadow-lg p-8">
-        <div className="flex items-center gap-6">
-          {photo ? (
-            <img
-              src={photo}
-              alt={candidate_name}
-              className="w-24 h-32 rounded-lg object-cover border-4 border-white shadow-lg"
-            />
-          ) : (
-            <div className="w-24 h-32 rounded-lg bg-blue-400 flex items-center justify-center border-4 border-white">
-              <span className="text-2xl">👤</span>
+    <div className="max-w-7xl mx-auto space-y-5 pb-8">
+      {/* Hero Banner */}
+      <div className="bg-gradient-to-r from-primary via-primary/90 to-secondary rounded-2xl shadow-2xl overflow-hidden border border-accent/20">
+        <div className="p-5 md:p-6 flex flex-col sm:flex-row items-center sm:items-start gap-5">
+          {/* Photo */}
+          <div className="flex-shrink-0">
+            <div className="relative w-24 h-32 rounded-xl overflow-hidden border-[3px] border-white/80 shadow-lg bg-white/10">
+              {photo ? (
+                <img
+                  src={photo}
+                  alt={candidate_name}
+                  className="w-full h-full object-cover"
+                />
+              ) : (
+                <div className="w-full h-full flex items-center justify-center text-white text-3xl">
+                  👤
+                </div>
+              )}
             </div>
-          )}
-          <div>
-            <h1 className="text-4xl font-bold">Welcome, {candidate_name}!</h1>
-            <p className="text-blue-100 mt-2 text-lg">{enrollment_no}</p>
-            <p className="text-blue-100 mt-1">
-              {course} • {stream}
+          </div>
+
+          {/* Info */}
+          <div className="flex-1 text-center sm:text-left min-w-0">
+            <p className="text-white/70 text-[10px] font-semibold uppercase tracking-[0.2em]">
+              Welcome Back
+            </p>
+            <h1 className="text-2xl md:text-3xl font-bold text-white mt-1 truncate">
+              {candidate_name}
+            </h1>
+            <p className="text-white/80 text-sm mt-1 font-medium">
+              EN: {enrollment_no}
+            </p>
+            <div className="mt-3 flex flex-wrap gap-2 justify-center sm:justify-start">
+              <span
+                className={`px-3 py-1 rounded-full text-xs font-bold border backdrop-blur-sm ${
+                  status === 1
+                    ? "bg-green-500/20 text-green-100 border-green-400/30"
+                    : "bg-red-500/20 text-red-100 border-red-400/30"
+                }`}
+              >
+                {status === 1 ? "Active" : "Inactive"}
+              </span>
+              <span className="bg-white/15 backdrop-blur-sm text-white px-3 py-1 rounded-full text-xs font-semibold border border-white/20">
+                {course}
+              </span>
+              <span className="bg-white/15 backdrop-blur-sm text-white px-3 py-1 rounded-full text-xs font-semibold border border-white/20">
+                {stream}
+              </span>
+            </div>
+          </div>
+
+          {/* Quick Actions */}
+          <div className="flex sm:flex-col gap-2 flex-shrink-0">
+            <a
+              href="/student-dashboard/id-card"
+              className="flex items-center gap-2 bg-white/15 hover:bg-white/25 backdrop-blur-sm text-white font-semibold py-2 px-4 rounded-xl transition-all text-sm border border-white/20 no-underline whitespace-nowrap"
+            >
+              <span>🪪</span>
+              <span>ID Card</span>
+            </a>
+            <a
+              href="/student-dashboard/admit-card"
+              className="flex items-center gap-2 bg-white/15 hover:bg-white/25 backdrop-blur-sm text-white font-semibold py-2 px-4 rounded-xl transition-all text-sm border border-white/20 no-underline whitespace-nowrap"
+            >
+              <span>🎫</span>
+              <span>Admit Card</span>
+            </a>
+          </div>
+        </div>
+      </div>
+
+      {/* Quick Stats */}
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+        {[
+          {
+            icon: "📅",
+            label: "Date of Birth",
+            value: new Date(dob).toLocaleDateString(),
+          },
+          { icon: "⚧", label: "Gender", value: gender || "N/A" },
+          {
+            icon: "🏷️",
+            label: "Category",
+            value: category?.toUpperCase() || "N/A",
+          },
+          { icon: "📱", label: "Contact", value: contact_number },
+        ].map((stat, i) => (
+          <div
+            key={i}
+            className="bg-surface rounded-xl p-4 border border-border shadow-sm hover:shadow-md transition-shadow"
+          >
+            <div className="text-lg mb-1">{stat.icon}</div>
+            <p className="text-muted text-[10px] font-bold uppercase tracking-wider">
+              {stat.label}
+            </p>
+            <p className="text-text font-bold text-sm mt-1 truncate">
+              {stat.value}
             </p>
           </div>
+        ))}
+      </div>
+
+      {/* Main Content */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
+        {/* Personal & Family */}
+        <div className="bg-surface rounded-2xl shadow-sm border border-border p-5 hover:shadow-md transition-shadow">
+          <h3 className="text-base font-bold text-text flex items-center gap-2 mb-4 pb-3 border-b border-border">
+            <span>👤</span> Personal & Family
+          </h3>
+          <div className="space-y-3">
+            {[
+              { label: "Full Name", value: candidate_name },
+              { label: "Enrollment No", value: enrollment_no },
+              { label: "Father's Name", value: father_name },
+              { label: "Mother's Name", value: mother_name },
+            ].map((field, i) => (
+              <div
+                key={i}
+                className="flex flex-col xs:flex-row xs:justify-between xs:items-center py-1.5 gap-0.5"
+              >
+                <span className="text-muted text-[11px] font-semibold uppercase tracking-wide">
+                  {field.label}
+                </span>
+                <span className="text-text font-semibold text-sm">
+                  {field.value}
+                </span>
+              </div>
+            ))}
+          </div>
         </div>
-      </header>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        {/* Main Content - Profile Information */}
-        <div className="lg:col-span-2 space-y-6">
-          {/* Personal Information */}
-          <div className="bg-white rounded-xl shadow-lg p-6">
-            <h3 className="text-xl font-bold text-gray-800 mb-6 border-b pb-4">
-              Personal Information
-            </h3>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div>
-                <label className="text-sm font-semibold text-gray-600">
-                  Full Name
-                </label>
-                <p className="text-gray-800 font-medium mt-1">{candidate_name}</p>
+        {/* Contact & Address */}
+        <div className="bg-surface rounded-2xl shadow-sm border border-border p-5 hover:shadow-md transition-shadow">
+          <h3 className="text-base font-bold text-text flex items-center gap-2 mb-4 pb-3 border-b border-border">
+            <span>📍</span> Contact & Address
+          </h3>
+          <div className="space-y-3">
+            {[
+              { label: "Email", value: email },
+              { label: "Phone", value: contact_number },
+              { label: "Address", value: address },
+              {
+                label: "Location",
+                value: `${city}, ${state}, ${country} - ${pincode}`,
+              },
+            ].map((field, i) => (
+              <div
+                key={i}
+                className="flex flex-col xs:flex-row xs:justify-between xs:items-start py-1.5 gap-0.5"
+              >
+                <span className="text-muted text-[11px] font-semibold uppercase tracking-wide flex-shrink-0">
+                  {field.label}
+                </span>
+                <span className="text-text font-semibold text-sm xs:text-right break-words xs:max-w-[65%]">
+                  {field.value}
+                </span>
               </div>
-
-              <div>
-                <label className="text-sm font-semibold text-gray-600">
-                  Enrollment Number
-                </label>
-                <p className="text-gray-800 font-medium mt-1">{enrollment_no}</p>
-              </div>
-
-              <div>
-                <label className="text-sm font-semibold text-gray-600">
-                  Date of Birth
-                </label>
-                <p className="text-gray-800 font-medium mt-1">
-                  {new Date(dob).toLocaleDateString()}
-                </p>
-              </div>
-
-              <div>
-                <label className="text-sm font-semibold text-gray-600">Gender</label>
-                <p className="text-gray-800 font-medium mt-1">{gender}</p>
-              </div>
-
-              <div>
-                <label className="text-sm font-semibold text-gray-600">Category</label>
-                <p className="text-gray-800 font-medium mt-1 uppercase">{category}</p>
-              </div>
-
-              <div>
-                <label className="text-sm font-semibold text-gray-600">
-                  Contact Number
-                </label>
-                <p className="text-gray-800 font-medium mt-1">{contact_number}</p>
-              </div>
-            </div>
+            ))}
           </div>
+        </div>
+      </div>
 
-          {/* Family Information */}
-          <div className="bg-white rounded-xl shadow-lg p-6">
-            <h3 className="text-xl font-bold text-gray-800 mb-6 border-b pb-4">
-              Family Information
-            </h3>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div>
-                <label className="text-sm font-semibold text-gray-600">
-                  Father's Name
-                </label>
-                <p className="text-gray-800 font-medium mt-1">{father_name}</p>
-              </div>
-
-              <div>
-                <label className="text-sm font-semibold text-gray-600">
-                  Mother's Name
-                </label>
-                <p className="text-gray-800 font-medium mt-1">{mother_name}</p>
-              </div>
+      {/* Academics & Help */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+        <div className="md:col-span-2 bg-gradient-to-br from-accent/10 to-accent/5 rounded-2xl p-5 border border-accent/20 hover:shadow-md transition-shadow">
+          <h3 className="text-base font-bold text-text flex items-center gap-2 mb-4 pb-3 border-b border-accent/20">
+            <span>📚</span> Academics
+          </h3>
+          <div className="grid grid-cols-2 gap-4">
+            <div className="bg-surface/60 rounded-xl p-4 border border-border/50">
+              <p className="text-muted text-[10px] font-bold uppercase tracking-wider">
+                Course
+              </p>
+              <p className="text-text font-bold mt-1">{course}</p>
             </div>
-          </div>
-
-          {/* Contact & Address Information */}
-          <div className="bg-white rounded-xl shadow-lg p-6">
-            <h3 className="text-xl font-bold text-gray-800 mb-6 border-b pb-4">
-              Contact & Address
-            </h3>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div>
-                <label className="text-sm font-semibold text-gray-600">Email</label>
-                <p className="text-gray-800 font-medium mt-1">{email}</p>
-              </div>
-
-              <div>
-                <label className="text-sm font-semibold text-gray-600">
-                  Contact Number
-                </label>
-                <p className="text-gray-800 font-medium mt-1">{contact_number}</p>
-              </div>
-
-              <div className="md:col-span-2">
-                <label className="text-sm font-semibold text-gray-600">Address</label>
-                <p className="text-gray-800 font-medium mt-1">{address}</p>
-              </div>
-
-              <div>
-                <label className="text-sm font-semibold text-gray-600">City</label>
-                <p className="text-gray-800 font-medium mt-1">{city}</p>
-              </div>
-
-              <div>
-                <label className="text-sm font-semibold text-gray-600">State</label>
-                <p className="text-gray-800 font-medium mt-1">{state}</p>
-              </div>
-
-              <div>
-                <label className="text-sm font-semibold text-gray-600">Country</label>
-                <p className="text-gray-800 font-medium mt-1">{country}</p>
-              </div>
-
-              <div>
-                <label className="text-sm font-semibold text-gray-600">Pincode</label>
-                <p className="text-gray-800 font-medium mt-1">{pincode}</p>
-              </div>
-            </div>
-          </div>
-
-          {/* Academic Information */}
-          <div className="bg-white rounded-xl shadow-lg p-6">
-            <h3 className="text-xl font-bold text-gray-800 mb-6 border-b pb-4">
-              Academic Information
-            </h3>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div>
-                <label className="text-sm font-semibold text-gray-600">Course</label>
-                <p className="text-gray-800 font-medium mt-1">{course}</p>
-              </div>
-
-              <div>
-                <label className="text-sm font-semibold text-gray-600">Stream</label>
-                <p className="text-gray-800 font-medium mt-1">{stream}</p>
-              </div>
+            <div className="bg-surface/60 rounded-xl p-4 border border-border/50">
+              <p className="text-muted text-[10px] font-bold uppercase tracking-wider">
+                Stream
+              </p>
+              <p className="text-text font-bold mt-1">{stream}</p>
             </div>
           </div>
         </div>
 
-        {/* Sidebar - Downloads */}
-        <div className="lg:col-span-1">
-          {/* Status Card */}
-          <div className="bg-white rounded-xl shadow-lg p-6 mb-6 sticky top-8">
-            <h3 className="text-lg font-bold text-gray-800 mb-4 border-b pb-3">
-              Account Status
-            </h3>
-            <div className="space-y-4">
-              <div>
-                <p className="text-sm text-gray-600">Status</p>
-                <div className="mt-2">{getStatusBadge(status)}</div>
-              </div>
-            </div>
-          </div>
-
-          {/* Downloads Menu */}
-          <div className="bg-white rounded-xl shadow-lg p-6 sticky top-48">
-            <h3 className="text-lg font-bold text-gray-800 mb-4 border-b pb-3">
-              Downloads
-            </h3>
-
-            <div className="space-y-3">
-              <a
-                href="/student-dashboard/id-card"
-                className="block w-full bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white p-4 rounded-lg font-bold text-center transition-all transform hover:scale-105"
-              >
-                <div className="text-2xl mb-2">🪪</div>
-                <span>ID Card</span>
-              </a>
-
-              <a
-                href="/student-dashboard/admit-card"
-                className="block w-full bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white p-4 rounded-lg font-bold text-center transition-all transform hover:scale-105"
-              >
-                <div className="text-2xl mb-2">🎫</div>
-                <span>Admit Card</span>
-              </a>
-            </div>
-          </div>
+        <div className="bg-gradient-to-br from-primary/10 to-secondary/10 rounded-2xl p-5 border border-primary/20 flex flex-col justify-center">
+          <div className="text-2xl mb-2">ℹ️</div>
+          <p className="font-semibold text-text text-sm mb-1">Need Help?</p>
+          <p className="text-muted text-xs leading-relaxed">
+            Contact the administration office for queries or assistance with
+            your academic records.
+          </p>
         </div>
       </div>
     </div>

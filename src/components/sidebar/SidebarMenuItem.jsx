@@ -1,3 +1,4 @@
+// src/components/admin/sidebar/SidebarMenuItem.jsx
 import { useRef, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { FaChevronDown } from "react-icons/fa";

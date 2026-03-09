@@ -1,9 +1,9 @@
+// src/components/admin/sidebar/SidebarFooter.jsx
 import { FaSignOutAlt } from "react-icons/fa";
-import { useAuth } from "../../../context/AuthContext";
-import Button from "../../ui/Button";
+import Button from "../ui/Button";
+import { useAuth } from "../../context/AuthContext";
 
 export default function SidebarFooter({ isCollapsed }) {
-  // Use a safety check to avoid the "null" destructuring error
   const { user, logout, loading } = useAuth();
 
   if (loading)

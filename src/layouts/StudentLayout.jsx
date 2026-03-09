@@ -1,20 +1,17 @@
-// src/layouts/AdminLayout.jsx
-import { useEffect, useState } from "react";
+// src/layouts/StudentLayout.jsx
+import { useState } from "react";
 import { Outlet } from "react-router-dom";
-import AdminHeader from "../components/admin/AdminHeader";
 import Sidebar from "../components/sidebar/Sidebar";
 
-export default function AdminLayout() {
+export default function StudentLayout() {
   const [theme, setTheme] = useState(
     localStorage.getItem("adminTheme") || "light",
   );
 
-  useEffect(() => {
-    localStorage.setItem("adminTheme", theme);
-  }, [theme]);
-
   const toggleTheme = () => {
-    setTheme((prev) => (prev === "dark" ? "light" : "dark"));
+    const newTheme = theme === "dark" ? "light" : "dark";
+    setTheme(newTheme);
+    localStorage.setItem("adminTheme", newTheme);
   };
 
   return (
@@ -22,11 +19,11 @@ export default function AdminLayout() {
       className={`min-h-screen flex flex-col ${theme === "dark" ? "dark" : ""}`}
     >
       <div className="flex flex-1 bg-bg text-text">
+        {/* We reuse the sidebar! It will automatically filter for "student" role */}
         <Sidebar theme={theme} toggleTheme={toggleTheme} />
+
         <div className="flex-1 flex flex-col min-w-0">
-          <AdminHeader />
-          {/* Added pt-14 for mobile to account for hamburger button space */}
-          <main className="w-full flex flex-1 justify-center p-2 md:p-4 overflow-x-hidden">
+          <main className="w-full flex-1 p-4 md:p-8 overflow-x-hidden">
             <Outlet />
           </main>
         </div>

@@ -1,15 +1,15 @@
-// src/components/admin/sidebar/role/AdminSidebar.jsx
+// src/components/admin/sidebar/role/Sidebar.jsx
 import { useState, useRef, useEffect } from "react";
 import { useLocation } from "react-router-dom";
-import { menuItems } from "../menuItems";
-import { SidebarMenuItem } from "../SidebarMenuItem";
-import SidebarHeader from "../SidebarHeader";
-import SidebarSearch from "../SidebarSearch";
-import SidebarFooter from "../SidebarFooter";
-import MobileNavDrawer from "../MobileNavDrawer";
-import { useAuth } from "../../../../context/AuthContext";
+import { menuItems } from "./menuItems";
+import { SidebarMenuItem } from "./SidebarMenuItem";
+import SidebarHeader from "./SidebarHeader";
+import SidebarSearch from "./SidebarSearch";
+import SidebarFooter from "./SidebarFooter";
+import MobileNavDrawer from "./MobileNavDrawer";
+import { useAuth } from "../../context/AuthContext";
 
-export const AdminSidebar = ({ theme, toggleTheme }) => {
+const Sidebar = ({ theme, toggleTheme }) => {
   const { user } = useAuth();
   const location = useLocation();
   const sidebarRef = useRef(null);
@@ -190,3 +190,5 @@ export const AdminSidebar = ({ theme, toggleTheme }) => {
     </>
   );
 };
+
+export default Sidebar;

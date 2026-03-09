@@ -9,9 +9,10 @@ import {
   FaTimes,
   FaSignOutAlt,
 } from "react-icons/fa";
-import logo2 from "../../../assets/images/logo2.png";
-import { useAuth } from "../../../context/AuthContext";
-import Button from "../../ui/Button";
+import logo2 from "../../assets/images/logo2.png";
+
+import Button from "../ui/Button";
+import { useAuth } from "../../context/AuthContext";
 
 export default function MobileNavDrawer({
   isOpen,

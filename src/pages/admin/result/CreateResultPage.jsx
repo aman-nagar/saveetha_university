@@ -51,7 +51,7 @@ export default function CreateResultPage() {
       flow.loadSubjectsForPart(selectedDuration);
       flow.syncRollNoFromAdmitCard(selectedDuration);
     }
-  }, [selectedDuration, flow.studentId, flow]);
+  }, [selectedDuration, flow.studentId, flow.loadSubjectsForPart, flow.syncRollNoFromAdmitCard]);
 
   // Fetch History
   const loadHistory = useCallback(async () => {

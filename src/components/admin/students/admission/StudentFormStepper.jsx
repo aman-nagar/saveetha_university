@@ -504,6 +504,8 @@ export default function StudentFormStepper({
             faculties={faculties}
             courses={courses}
             streams={streams}
+            watch={watch}
+            setValue={setValue}
           />
         )}
 

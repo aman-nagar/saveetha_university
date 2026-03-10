@@ -173,7 +173,7 @@ export function useAcademicFlow(setValue) {
       isFetchingRoll,
       selectStudent,
       loadSubjectsForPart,
-      syncRollNoFromAdmitCard, // ✅ Exported for CreateResult
+      syncRollNoFromAdmitCard,
       durationOptions,
       courseType,
       courseId,
@@ -183,7 +183,6 @@ export function useAcademicFlow(setValue) {
       searchResults,
       isSearching,
       showResults,
-      isTyping,
       studentId,
       streamId,
       subjects,
@@ -191,10 +190,9 @@ export function useAcademicFlow(setValue) {
       isFetchingRoll,
       selectStudent,
       loadSubjectsForPart,
-      syncRollNoFromAdmitCard,
       durationOptions,
       courseType,
-      // courseId,
+      courseId,
     ],
   );
 }

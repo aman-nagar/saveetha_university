@@ -10,7 +10,6 @@ export default function StepPersonal({
   watch,
   existingUrls = {},
 }) {
-  const selectedIdProof = watch("id_proof_type");
   const isEmployed = watch("employed");
 
   return (
@@ -68,31 +67,16 @@ export default function StepPersonal({
         ]}
         error={errors.category}
       />
-      <FormSelect
-        label="ID Proof Type"
-        name="id_proof_type"
-        register={register}
-        options={[
-          { label: "Aadhar Card", value: "aadhar_card" },
-          { label: "Pan Card", value: "pan_card" },
-          { label: "Voter ID Card", value: "voter_id_card" },
-          { label: "Passport", value: "passport" },
-          { label: "Other", value: "other" },
-        ]}
-        error={errors.id_proof_type}
-      />
 
-      {/* Show ID Proof Number only if selected */}
-      {selectedIdProof ? (
-        <FormInput
-          label="ID Proof Number"
-          name="id_proof_no"
-          register={register}
-          error={errors.id_proof_no}
-        />
-      ) : (
-        <div /> // keeps grid symmetry
-      )}
+      {/* Hidden field: Aadhar Card is always the default ID proof type */}
+      <input type="hidden" {...register("id_proof_type")} value="aadhar_card" />
+
+      <FormInput
+        label="ID Proof Number"
+        name="id_proof_no"
+        register={register}
+        error={errors.id_proof_no}
+      />
 
       {/* Photo — always shown */}
       <FormFileInput
@@ -102,36 +86,20 @@ export default function StepPersonal({
         existingUrl={existingUrls.photo_url || null}
       />
 
-      {/* If Aadhar selected → show front + back upload */}
-      {selectedIdProof === "aadhar_card" && (
-        <>
-          <FormFileInput
-            label="Aadhar Card Front"
-            name="id_proof_front"
-            register={register}
-            existingUrl={existingUrls.id_proof_front_url || null}
-          />
+      {/* Aadhar Card: Always show front + back upload */}
+      <FormFileInput
+        label="Aadhar Card Front"
+        name="id_proof_front"
+        register={register}
+        existingUrl={existingUrls.id_proof_front_url || null}
+      />
 
-          <FormFileInput
-            label="Aadhar Card Back"
-            name="id_proof_back"
-            register={register}
-            existingUrl={existingUrls.id_proof_back_url || null}
-          />
-        </>
-      )}
-
-      {/* For other ID types → single document upload */}
-      {selectedIdProof && selectedIdProof !== "aadhar_card" && (
-        <div className="sm:col-span-2">
-          <FormFileInput
-            label="Upload ID Proof"
-            name="id_proof_document"
-            register={register}
-            existingUrl={existingUrls.id_proof_document_url || null}
-          />
-        </div>
-      )}
+      <FormFileInput
+        label="Aadhar Card Back"
+        name="id_proof_back"
+        register={register}
+        existingUrl={existingUrls.id_proof_back_url || null}
+      />
 
       <FormSelect
         label="Are you employed?"

@@ -34,11 +34,6 @@ export const menuItems = [
       },
       { label: "Add New", path: "/admin/students/add", roles: ["admin"] },
       { label: "Add New", path: "/center/students/add", roles: ["center"] },
-      {
-        label: "Admit Cards",
-        path: "/admin/admit-card/generate",
-        roles: ["admin"],
-      },
     ],
   },
   {
@@ -73,13 +68,22 @@ export const menuItems = [
   },
   {
     id: 5,
+    label: "Admit Cards",
+    icon: TbReport,
+    roles: ["admin"],
+    children: [
+      { label: "Generate Admit Card", path: "/admin/admit-card/generate" },
+    ],
+  },
+  {
+    id: 6,
     label: "Result",
     icon: TbReport,
     roles: ["admin"],
     children: [{ label: "Create Result", path: "/admin/results/create" }],
   },
   {
-    id: 6,
+    id: 7,
     label: "Settings",
     icon: FaCog,
     roles: ["admin"],
@@ -88,14 +92,14 @@ export const menuItems = [
   // students menus only
 
   {
-    id: 7,
+    id: 8,
     label: "My Academy",
     icon: FaUserGraduate,
     roles: ["student"],
     children: [{ label: "Dashboard", path: "/student-dashboard" }],
   },
   {
-    id: 8,
+    id: 9,
     label: "Downloads",
     icon: TbReport,
     roles: ["student"],

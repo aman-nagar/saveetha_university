@@ -40,7 +40,7 @@ export default function StreamForm({
     <form onSubmit={handleSubmit(submitForm)} className="space-y-5">
       <FormSection
         title={mode === "edit" ? "Edit Stream" : "Add Stream"}
-        columns={2}
+        columns={3}
       >
         {/* Course select */}
         <div className="space-y-1.5 sm:space-y-2">
@@ -67,22 +67,22 @@ export default function StreamForm({
           register={register}
           required="Enter stream name"
         />
+        <FormInput
+          type="number"
+          label="Stream Fees"
+          name="stream_fees"
+          register={register}
+          required="Enter Fees Amount"
+        />
       </FormSection>
 
       <div className="flex flex-col sm:flex-row gap-3">
-        <Button
-          type="submit"
-          
-        >
+        <Button type="submit">
           {mode === "edit" ? "Update Stream" : "Create Stream"}
         </Button>
 
         {mode === "edit" && (
-          <Button
-            type="button"
-            onClick={onCancel}
-           
-          >
+          <Button type="button" onClick={onCancel}>
             Cancel
           </Button>
         )}

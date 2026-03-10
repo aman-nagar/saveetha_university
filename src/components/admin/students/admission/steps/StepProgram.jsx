@@ -66,6 +66,13 @@ export default function StepProgram({
         error={errors.stream}
         options={streamOptions}
       />
+      <FormInput
+        label="Stream Fee"
+        name="application_fee"
+        register={register}
+        type="number"
+        error={errors.application_fee}
+      />
 
       <FormInput
         label="Year"
@@ -112,23 +119,13 @@ export default function StepProgram({
       />
 
       <FormInput
-        label="Application Fee"
-        name="application_fee"
+        label="Duration"
+        name="duration"
         register={register}
-        type="number"
-        error={errors.application_fee}
+        type="text"
+        placeholder="e.g. 3 Years"
+        error={errors.duration}
       />
-
-      <div className="sm:col-span-2">
-        <FormInput
-          label="Duration"
-          name="duration"
-          register={register}
-          type="text"
-          placeholder="e.g. 3 Years"
-          error={errors.duration}
-        />
-      </div>
     </FormSection>
   );
 }

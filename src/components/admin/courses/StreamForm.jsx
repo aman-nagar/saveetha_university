@@ -20,10 +20,11 @@ export default function StreamForm({
     if (initialData) {
       reset({
         stream: initialData.name,
+        application_fee: initialData.application_fee || "",
       });
       onCourseChange(initialData.course_id);
     } else {
-      reset({ stream: "" });
+      reset({ stream: "", application_fee: "" });
     }
   }, [initialData, reset, onCourseChange]);
 
@@ -31,6 +32,7 @@ export default function StreamForm({
     await onSubmit({
       courseId: selectedCourse,
       name: data.stream,
+      applicationFee: parseFloat(data.application_fee),
     });
 
     if (mode === "create") reset();
@@ -70,7 +72,7 @@ export default function StreamForm({
         <FormInput
           type="number"
           label="Stream Fees"
-          name="stream_fees"
+          name="application_fee"
           register={register}
           required="Enter Fees Amount"
         />

@@ -3,6 +3,7 @@ import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import FormSection from "../../form/FormSection";
 import FormInput from "../../form/FormInput";
+import FormSelect from "../../form/FormSelect";
 import { useCourseRules } from "../../../hooks/useCourseRules";
 import Button from "../../ui/Button";
 
@@ -37,29 +38,53 @@ export default function SubjectForm({
       reset({ ...initialData });
       onStreamChange(initialData.stream_id);
     } else {
-      reset();
+      // Set default values for create mode
+      reset({
+        status: "1", // Default to Active
+      });
     }
   }, [initialData, reset, onStreamChange]);
 
   // 2. Sync Duration Options when selectedStream changes
   useEffect(() => {
+    if (!selectedStream) return;
+
     const sync = async () => {
-      const type = await getRulesByStreamId(selectedStream);
-      if (type) setValue("duration_type", type);
+      try {
+        const type = await getRulesByStreamId(selectedStream);
+        if (type) {
+          setValue("duration_type", type);
+        }
+      } catch (error) {
+        console.error("Error fetching duration type:", error);
+      }
     };
     sync();
   }, [selectedStream, getRulesByStreamId, setValue]);
 
   const submitForm = (data) => {
     if (!selectedStream) return;
-    onSubmit({
-      ...data,
-      id: initialData?.id,
-      stream_id: selectedStream,
+
+    // Build clean payload with only required fields
+    const payload = {
+      stream_id: parseInt(selectedStream),
+      subject_name: data.subject_name?.trim() || "",
+      subject_code: data.subject_code?.trim() || "",
+      short_name: data.short_name?.trim() || "",
       max_theory_marks: Number(data.max_theory_marks),
       max_practical_marks: Number(data.max_practical_marks),
       duration: Number(data.duration),
-    });
+      duration_type: data.duration_type || "",
+      status: Number(data.status || 0),
+      is_deleted: 0,
+    };
+
+    // Only include id if editing
+    if (initialData?.id) {
+      payload.id = initialData.id;
+    }
+
+    onSubmit(payload);
     if (mode === "create") reset();
   };
 
@@ -132,17 +157,27 @@ export default function SubjectForm({
           </select>
         </div>
         <input type="hidden" {...register("duration_type")} />
+
+        {/* Hidden status field - always send status: 1 (Active) */}
+        <input type="hidden" {...register("status")} value="1" />
       </FormSection>
 
       <div className="flex flex-col sm:flex-row gap-3">
-        <Button type="submit">
+        <button
+          type="submit"
+          className="w-full sm:w-auto px-6 py-2.5 rounded-lg text-white bg-primary hover:bg-primary/90 transition text-sm sm:text-base font-medium shadow-sm"
+        >
           {mode === "edit" ? "Update Subject" : "Create Subject"}
-        </Button>
+        </button>
 
         {mode === "edit" && (
-          <Button type="button" onClick={onCancel}>
+          <button
+            type="button"
+            onClick={onCancel}
+            className="w-full sm:w-auto px-6 py-2.5 rounded-lg border border-border text-text hover:bg-bg transition text-sm sm:text-base"
+          >
             Cancel
-          </Button>
+          </button>
         )}
       </div>
     </form>

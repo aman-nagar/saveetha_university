@@ -16,6 +16,7 @@ export function useCourseRules() {
     setCourseType(type);
     const options = generateDurationOptions(course.duration, type);
     setDurationOptions(options);
+    return type; // ✅ Return the type
   };
 
   // NEW: Used by GenerateAdmitCard (finds ID by name first)
@@ -44,15 +45,17 @@ export function useCourseRules() {
   const getRulesByStreamId = useCallback(async (streamId) => {
     if (!streamId) {
       setDurationOptions([]);
-      return;
+      return "";
     }
     setLoading(true);
     try {
       const streamData = await fetchStreamsById(streamId);
       const courseRes = await fetchCoursesById(streamData.course_id);
-      return processCourse(courseRes.data || courseRes);
+      const type = processCourse(courseRes.data || courseRes);
+      return type; // ✅ Return the type
     } catch (err) {
       console.error("getRulesByStreamId Error:", err);
+      return "";
     } finally {
       setLoading(false);
     }

@@ -16,7 +16,6 @@ import {
   FaDownload,
   FaTimes,
 } from "react-icons/fa";
-import html2pdf from "html2pdf.js";
 import { getTodayDate } from "../../../utils/formHelpers";
 import FormSelect from "../../../components/form/FormSelect";
 import FormInput from "../../../components/form/FormInput";
@@ -242,7 +241,7 @@ export default function CreateResultPage() {
 
       downloadTranscript({
         ...result,
-        student_name: student.name,
+        student_name: student.candidate_name,
         course_name: student.course,
         stream_name: student.stream,
       });

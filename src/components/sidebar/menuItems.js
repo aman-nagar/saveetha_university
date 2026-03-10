@@ -106,6 +106,7 @@ export const menuItems = [
     children: [
       { label: "ID Card", path: "/student-dashboard/id-card" },
       { label: "Admit Card", path: "/student-dashboard/admit-card" },
+      { label: "Results", path: "/student-dashboard/results" },
     ],
   },
 ];

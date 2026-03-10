@@ -125,11 +125,16 @@ export default function MasterAcademicImport({ onComplete, showToast }) {
               s.course_id == course.id,
           );
           if (!stream) {
-            const newStream = await createStream(course.id, row.Stream);
+            const newStream = await createStream(
+              course.id,
+              row.Stream,
+              row.StreamFee || 0 // Add StreamFee from Excel
+            );
             stream = {
               id: newStream.id || newStream,
               name: row.Stream,
               course_id: course.id,
+              application_fee: row.StreamFee || 0,
             };
             streams.push(stream);
           }

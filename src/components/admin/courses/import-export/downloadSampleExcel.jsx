@@ -12,11 +12,12 @@ export const downloadSampleExcel = () => {
       Duration: 3,
       DurationType: "Semester",
       Stream: "BCA (General)",
+      StreamFee: 5000,
       SubjectName: "Data Structures",
       SubjectCode: "BCA-201",
       MaxTheory: 70,
       MaxPractical: 30,
-      DurationPart: 3 // e.g., this subject belongs to the 3rd Semester
+      DurationPart: 3, // e.g., this subject belongs to the 3rd Semester
     },
     {
       Category: "Diploma (Annual)",
@@ -25,12 +26,13 @@ export const downloadSampleExcel = () => {
       Duration: 1,
       DurationType: "Year",
       Stream: "Computer Applications",
+      StreamFee: 4500,
       SubjectName: "Office Automation",
       SubjectCode: "PG-101",
       MaxTheory: 100,
       MaxPractical: 0,
-      DurationPart: 1 // e.g., 1st Year
-    }
+      DurationPart: 1, // e.g., 1st Year
+    },
   ];
 
   // 2. Create a new worksheet from the JSON data

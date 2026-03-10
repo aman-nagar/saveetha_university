@@ -57,18 +57,21 @@ const CreateResultPage = lazy(
   () => import("@/pages/admin/result/CreateResultPage"),
 );
 
-// ===== CENTER PAGES (with lazy loading) =====
+// ===== CENTER PAGES  =====
 const CenterDashboardPage = lazy(
   () => import("@/pages/center/CenterDashboardPage"),
 );
 
-// ===== STUDENT PAGES (with lazy loading) =====
+// ===== STUDENT PAGES  =====
 const StudentDashboard = lazy(() => import("@/pages/student/StudentDashboard"));
 const StudentIDCardPage = lazy(
   () => import("@/pages/student/StudentIDCardPage"),
 );
 const StudentAdmitCardPage = lazy(
   () => import("@/pages/student/StudentAdmitCardPage"),
+);
+const StudentResultPage = lazy(
+  () => import("@/pages/student/StudentResultPage"),
 );
 
 // ===== ERROR PAGES =====
@@ -169,6 +172,7 @@ function App() {
                 <Route index element={<StudentDashboard />} />
                 <Route path="id-card" element={<StudentIDCardPage />} />
                 <Route path="admit-card" element={<StudentAdmitCardPage />} />
+                <Route path="results" element={<StudentResultPage />} />
               </Route>
 
               {/* ===== ERROR ROUTES ===== */}

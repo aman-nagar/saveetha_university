@@ -48,8 +48,9 @@ export const CENTER_ROUTES = {
 // Student Routes
 export const STUDENT_ROUTES = {
   DASHBOARD: "/student-dashboard",
-  ID_CARD: '/student-dashboard/id-card',
-  ADMIT_CARD: '/student-dashboard/admit-card',
+  ID_CARD: "/student-dashboard/id-card",
+  ADMIT_CARD: "/student-dashboard/admit-card",
+  RESULTS: "/student-dashboard/results",
 };
 
 // Error Routes

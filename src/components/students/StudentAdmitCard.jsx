@@ -2,6 +2,7 @@
 import { useAuth } from "@/context/AuthContext";
 import { useEffect, useState, useRef } from "react";
 import { getAdmitCard } from "@/api/students/studentDashboardApi";
+import { Link } from "react-router-dom";
 import LoadingFallback from "../ui/LoadingFallback";
 import html2pdf from "html2pdf.js";
 
@@ -60,12 +61,12 @@ const StudentAdmitCard = () => {
             Your admit card has not been generated yet. Please contact the
             administration office or check back later.
           </p>
-          <a
-            href="/student-dashboard"
+          <Link
+            to="/student-dashboard"
             className="inline-block px-5 py-2.5 bg-primary hover:bg-primary/90 text-white font-bold rounded-xl no-underline transition-all active:scale-95"
           >
             Back to Dashboard
-          </a>
+          </Link>
         </div>
       </div>
     );
@@ -88,12 +89,12 @@ const StudentAdmitCard = () => {
             Your exam schedule has not been finalized. Please check back after
             the schedule is announced.
           </p>
-          <a
-            href="/student-dashboard"
+          <Link
+            to="/student-dashboard"
             className="inline-block px-5 py-2.5 bg-primary hover:bg-primary/90 text-white font-bold rounded-xl no-underline transition-all active:scale-95"
           >
             Back to Dashboard
-          </a>
+          </Link>
         </div>
       </div>
     );
@@ -628,13 +629,13 @@ const StudentAdmitCard = () => {
             <span>📥</span>
             <span>Download PDF</span>
           </button>
-          <a
-            href="/student-dashboard"
+          <Link
+            to="/student-dashboard"
             className="flex items-center gap-2 bg-accent hover:bg-accent/90 text-white font-bold py-2.5 px-5 rounded-xl shadow-lg transition-all active:scale-95 no-underline"
           >
             <span>←</span>
             <span>Back</span>
-          </a>
+          </Link>
         </div>
       </div>
     </div>

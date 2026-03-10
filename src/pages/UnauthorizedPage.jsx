@@ -1,4 +1,6 @@
 // Quick unauthorized page (add this as src/pages/Unauthorized.jsx)
+import { Link } from "react-router-dom";
+
 export default function UnauthorizedPage() {
   return (
     <div className="min-h-screen flex items-center justify-center bg-bg">
@@ -7,9 +9,9 @@ export default function UnauthorizedPage() {
         <p className="text-muted">
           You don't have permission to view this page.
         </p>
-        <a href="/portal" className="text-primary underline">
+        <Link to="/portal" className="text-primary underline">
           Go to Login
-        </a>
+        </Link>
       </div>
     </div>
   );

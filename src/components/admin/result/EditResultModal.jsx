@@ -1,32 +1,18 @@
 import { useForm } from "react-hook-form";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import Modal from "../../../components/ui/Modal";
 import FormInput from "../../../components/form/FormInput";
 import FormSelect from "../../../components/form/FormSelect";
 import Button from "../../../components/ui/Button";
-import { FaSpinner, FaExclamationTriangle } from "react-icons/fa";
+import { FaSpinner, FaExclamationTriangle, FaDownload } from "react-icons/fa";
+
+// APIs & Hooks
 import { fetchResultById, updateResult } from "../../../api/results/resultApi";
+import { fetchStudentById } from "../../../api/students/studentApi"; // ✅ To fix N/A bug
 import { useCourseRules } from "../../../hooks/useCourseRules";
-
-const EMPTY_FORM_STATE = {
-  session: "",
-  issue_date: "",
-  selectedDuration: "",
-  marks: {},
-};
-
-const toDateInputValue = (dateValue) => {
-  if (!dateValue) return "";
-
-  const rawValue = String(dateValue);
-  if (/^\d{4}-\d{2}-\d{2}/.test(rawValue)) {
-    return rawValue.slice(0, 10);
-  }
-
-  const parsed = new Date(dateValue);
-  if (Number.isNaN(parsed.getTime())) return "";
-  return parsed.toISOString().slice(0, 10);
-};
+import { fetchAdmitCards } from "../../../api/students/admitCardApi";
+import MarksEntryTable from "./MarksEntryTable"; // ✅ Reuse existing component
+import { toDateInputValue } from "../../../utils/formHelpers";
 
 export default function EditResultModal({
   isOpen,
@@ -38,8 +24,8 @@ export default function EditResultModal({
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [loadingDetails, setLoadingDetails] = useState(false);
   const [editableResult, setEditableResult] = useState(null);
+  const [isFetchingRoll, setIsFetchingRoll] = useState(false);
 
-  // Dynamic duration options (Year/Semester) based on selected result course
   const {
     durationOptions,
     getRulesByCourseName,
@@ -47,145 +33,87 @@ export default function EditResultModal({
     courseType,
   } = useCourseRules();
 
-  const { register, handleSubmit, reset } = useForm();
+  const {
+    register,
+    handleSubmit,
+    reset,
+    watch,
+    formState: { errors },
+  } = useForm();
+  const selectedDuration = watch("selectedDuration");
 
-  // 1. Load full result details when modal opens (history list can be partial)
+  // 1. Fetch Full Details & Resolve Student Names (Fixes N/A Bug)
   useEffect(() => {
-    if (!isOpen) {
-      setEditableResult(null);
-      reset(EMPTY_FORM_STATE);
-      return;
-    }
+    if (!isOpen || !resultData?.id) return;
 
-    if (!resultData?.id) {
-      setEditableResult(resultData || null);
-      return;
-    }
-
-    let isActive = true;
-
-    const loadResultDetails = async () => {
+    const loadFullData = async () => {
       setLoadingDetails(true);
-      setEditableResult(null);
-
       try {
-        const response = await fetchResultById(resultData.id);
-        const fullRecord = response?.data || response;
+        const res = await fetchResultById(resultData.id);
+        const data = res?.data || res;
 
-        if (!isActive) return;
-
-        if (fullRecord && typeof fullRecord === "object") {
-          setEditableResult({ ...resultData, ...fullRecord });
-        } else {
-          setEditableResult(resultData);
+        // ✅ BUG FIX: If name/course is missing, fetch from student API
+        if (data.student_id && (!data.student_name || !data.course_name)) {
+          const studentRes = await fetchStudentById(data.student_id);
+          const sData = studentRes.data || studentRes;
+          data.student_name = sData.name;
+          data.course_name = sData.course;
+          data.stream_name = sData.stream;
         }
+        setEditableResult(data);
       } catch (err) {
-        if (!isActive) return;
-
-        setEditableResult(resultData);
-        showToast(
-          "warning",
-          "Could not load full details. Editing available fields only.",
-        );
+        showToast("error", "Failed to load result details");
       } finally {
-        if (isActive) setLoadingDetails(false);
+        setLoadingDetails(false);
       }
     };
 
-    loadResultDetails();
+    loadFullData();
+  }, [isOpen, resultData?.id]);
 
-    return () => {
-      isActive = false;
-    };
-  }, [isOpen, reset, resultData, showToast]);
-
-  // 2. Load duration rules by course name
+  // 2. Sync Form & Rules
   useEffect(() => {
-    if (!isOpen || !editableResult) return;
+    if (!editableResult) return;
 
-    const courseName = editableResult.course_name || editableResult.course;
-    if (courseName) {
-      getRulesByCourseName(courseName);
-    }
-  }, [isOpen, editableResult, getRulesByCourseName]);
+    // Load duration options for the course
+    getRulesByCourseName(editableResult.course_name || editableResult.course);
 
-  // 3. Sync form values from editable result data
-  useEffect(() => {
-    if (!isOpen || !editableResult) return;
-
-    const formattedMarks = {};
-
+    // Map subject marks to react-hook-form structure
+    const marks = {};
     editableResult.subjects?.forEach((sub) => {
-      const subjectId = sub.subject_id ?? sub.id;
-      if (!subjectId) return;
-
-      formattedMarks[subjectId] = {
-        theory: sub.theory_marks ?? sub.theory ?? 0,
-        practical: sub.practical_marks ?? sub.practical ?? 0,
+      const id = sub.subject_id || sub.id;
+      marks[id] = {
+        theory: sub.theory_marks ?? 0,
+        practical: sub.practical_marks ?? 0,
       };
     });
 
     reset({
-      session: editableResult.session || "",
+      session: editableResult.session,
       issue_date: toDateInputValue(editableResult.issue_date),
-      selectedDuration: editableResult.duration
-        ? String(editableResult.duration)
-        : "",
-      marks: formattedMarks,
+      selectedDuration: String(editableResult.duration),
+      marks,
     });
-  }, [isOpen, editableResult, reset]);
-
-  const durationSelectOptions = useMemo(() => {
-    if (durationOptions.length > 0) return durationOptions;
-    if (!editableResult?.duration) return [];
-
-    const fallbackType = editableResult.duration_type || courseType || "Part";
-
-    return [
-      {
-        value: String(editableResult.duration),
-        label: `${fallbackType} ${editableResult.duration}`,
-      },
-    ];
-  }, [durationOptions, editableResult, courseType]);
-
-  const subjects = editableResult?.subjects || [];
+  }, [editableResult, reset, getRulesByCourseName]);
 
   const onSubmit = async (formData) => {
-    if (!editableResult?.id) {
-      showToast("error", "Unable to identify result to update.");
-      return;
-    }
-
-    if (!formData.selectedDuration) {
-      showToast("error", "Please select a duration.");
-      return;
-    }
-
     setIsSubmitting(true);
-
     try {
       const payload = {
-        student_id: editableResult.student_id,
-        enrollment_no: editableResult.enrollment_no,
-        roll_no: editableResult.roll_no,
-        course_id: editableResult.course_id,
-        stream_id: editableResult.stream_id,
+        ...formData,
+        id: editableResult.id,
         duration: Number(formData.selectedDuration),
         duration_type: courseType || editableResult.duration_type,
-        session: formData.session,
-        issue_date: formData.issue_date,
-        subjects: subjects.map((sub) => {
-          const subjectId = sub.subject_id ?? sub.id;
-          const theory = Number(formData.marks?.[subjectId]?.theory || 0);
-          const practical = Number(formData.marks?.[subjectId]?.practical || 0);
-
+        subjects: editableResult.subjects.map((sub) => {
+          const id = sub.subject_id || sub.id;
+          const t = Number(formData.marks[id]?.theory || 0);
+          const p = Number(formData.marks[id]?.practical || 0);
           return {
-            subject_id: subjectId,
+            subject_id: id,
             subject_name: sub.subject_name,
-            theory_marks: theory,
-            practical_marks: practical,
-            total_marks: theory + practical,
+            theory_marks: t,
+            practical_marks: p,
+            total_marks: t + p,
           };
         }),
       };
@@ -195,7 +123,7 @@ export default function EditResultModal({
       onUpdate();
       onClose();
     } catch (err) {
-      showToast("error", err.message || "Update failed");
+      showToast("error", err.message);
     } finally {
       setIsSubmitting(false);
     }
@@ -209,72 +137,60 @@ export default function EditResultModal({
       size="full"
     >
       {loadingDetails ? (
-        <div className="py-14 flex items-center justify-center gap-3 text-muted">
-          <FaSpinner className="animate-spin" />
-          <span>Loading result details...</span>
-        </div>
-      ) : !editableResult ? (
-        <div className="py-12 text-center text-muted">
-          No result selected for editing.
+        <div className="p-20 flex justify-center items-center gap-3">
+          <FaSpinner className="animate-spin" /> Loading...
         </div>
       ) : (
-        <form
-          onSubmit={handleSubmit(onSubmit)}
-          className="p-8 space-y-8 bg-surface"
-        >
-          {/* READ-ONLY INFO SECTION */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-6 p-5 bg-bg/40 rounded-xl border border-border/50">
+        <form onSubmit={handleSubmit(onSubmit)} className="p-8 space-y-8">
+          {/* Info Header */}
+          <div className="bg-slate-50 p-6 rounded-2xl border border-slate-100 grid grid-cols-2 md:grid-cols-4 gap-6">
             <div>
-              <label className="text-[10px] uppercase font-bold text-muted tracking-wider">
+              <label className="text-[10px] font-bold text-slate-400 uppercase">
+                Student Name
+              </label>
+              <p className="font-bold text-slate-800">
+                {editableResult?.student_name}
+              </p>
+            </div>
+            <div>
+              <label className="text-[10px] font-bold text-slate-400 uppercase">
                 Enrollment
               </label>
-              <p className="text-sm font-bold text-text mt-1">
-                {editableResult.enrollment_no}
+              <p className="font-bold text-slate-800">
+                {editableResult?.enrollment_no}
               </p>
             </div>
             <div>
-              <label className="text-[10px] uppercase font-bold text-muted tracking-wider">
-                Roll No
-              </label>
-              <p className="text-sm font-bold text-text mt-1">
-                {editableResult.roll_no}
-              </p>
-            </div>
-            <div>
-              <label className="text-[10px] uppercase font-bold text-muted tracking-wider">
+              <label className="text-[10px] font-bold text-slate-400 uppercase">
                 Course
               </label>
-              <p className="text-sm font-bold text-text mt-1">
-                {editableResult.course_name || "N/A"}
+              <p className="font-bold text-slate-800">
+                {editableResult?.course_name}
               </p>
             </div>
             <div>
-              <label className="text-[10px] uppercase font-bold text-muted tracking-wider">
-                Current Duration
+              <label className="text-[10px] font-bold text-slate-400 uppercase">
+                Stream
               </label>
-              <p className="text-sm font-bold text-accent mt-1">
-                {editableResult.duration_type} {editableResult.duration}
+              <p className="font-bold text-blue-600">
+                {editableResult?.stream_name}
               </p>
             </div>
           </div>
 
-          {/* EDITABLE METADATA SECTION */}
+          {/* Form Fields */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             <FormSelect
-              label={`Select Duration (${courseType || editableResult.duration_type || "Part"})`}
+              label="Duration"
               name="selectedDuration"
               register={register}
-              options={durationSelectOptions}
-              disabled={loadingRules}
-              required
-              placeholder={loadingRules ? "Loading..." : "Select duration"}
+              options={durationOptions}
             />
             <FormInput
               label="Session"
               name="session"
               register={register}
               required
-              placeholder="e.g. 2024-25"
             />
             <FormInput
               label="Issue Date"
@@ -285,92 +201,25 @@ export default function EditResultModal({
             />
           </div>
 
-          {durationSelectOptions.length === 0 && (
-            <div className="bg-danger/10 border border-danger/20 text-danger px-6 py-4 rounded-lg flex items-center gap-3">
-              <FaExclamationTriangle />
-              <span>
-                Duration rules could not be loaded for this course. Current
-                duration will be used.
-              </span>
-            </div>
-          )}
-
-          {/* MARKS EDITING TABLE */}
-          {subjects.length > 0 ? (
-            <div className="border border-border rounded-xl overflow-hidden shadow-sm">
-              <table className="w-full text-sm text-left">
-                <thead className="bg-bg/60 text-muted font-bold uppercase text-[10px]">
-                  <tr>
-                    <th className="px-6 py-4">Subject Name</th>
-                    <th className="px-6 py-4 text-center w-40">Theory Marks</th>
-                    <th className="px-6 py-4 text-center w-40">
-                      Practical Marks
-                    </th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-border">
-                  {subjects.map((sub) => {
-                    const subjectId = sub.subject_id ?? sub.id;
-
-                    return (
-                      <tr
-                        key={subjectId}
-                        className="hover:bg-bg/20 transition-colors"
-                      >
-                        <td className="px-6 py-4 font-semibold text-text">
-                          {sub.subject_name}
-                        </td>
-                        <td className="px-6 py-4">
-                          <input
-                            type="number"
-                            min="0"
-                            {...register(`marks.${subjectId}.theory`)}
-                            className="w-full p-2 border border-border rounded-lg text-center bg-bg focus:ring-2 focus:ring-primary/50 outline-none"
-                          />
-                        </td>
-                        <td className="px-6 py-4">
-                          <input
-                            type="number"
-                            min="0"
-                            {...register(`marks.${subjectId}.practical`)}
-                            className="w-full p-2 border border-border rounded-lg text-center bg-bg focus:ring-2 focus:ring-primary/50 outline-none"
-                          />
-                        </td>
-                      </tr>
-                    );
-                  })}
-                </tbody>
-              </table>
-            </div>
+          {/* Reused Table Component */}
+          {editableResult?.subjects?.length > 0 ? (
+            <MarksEntryTable
+              subjects={editableResult.subjects}
+              register={register}
+              errors={errors}
+            />
           ) : (
-            <div className="bg-danger/10 border border-danger/20 text-danger px-6 py-4 rounded-lg flex items-center gap-3">
-              <FaExclamationTriangle />
-              <span>
-                No subjects found for this result. Cannot update marks.
-              </span>
+            <div className="p-10 text-center border-2 border-dashed rounded-2xl text-slate-400">
+              No subjects found for this record.
             </div>
           )}
 
-          {/* FOOTER ACTIONS */}
-          <div className="flex justify-end gap-4 pt-6 border-t border-border">
-            <Button type="button" onClick={onClose}>
+          <div className="flex justify-end gap-3">
+            <Button variant="secondary" onClick={onClose}>
               Cancel
             </Button>
-            <Button
-              type="submit"
-              disabled={
-                isSubmitting ||
-                loadingRules ||
-                loadingDetails ||
-                subjects.length === 0
-              }
-              className="px-10"
-            >
-              {isSubmitting ? (
-                <FaSpinner className="animate-spin" />
-              ) : (
-                "Save Changes"
-              )}
+            <Button type="submit" loading={isSubmitting}>
+              Update Result
             </Button>
           </div>
         </form>

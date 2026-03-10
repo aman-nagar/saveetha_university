@@ -21,7 +21,9 @@ export default function FormSection({
           {title}
         </h2>
       </div>
-      <div className={`grid ${gridMap[columns] ?? "grid-cols-1"} gap-4 sm:gap-5`}>
+      <div
+        className={`grid ${gridMap[columns] ?? "grid-cols-1"} gap-4 sm:gap-5`}
+      >
         {children}
       </div>
     </div>

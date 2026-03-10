@@ -1,293 +1,99 @@
 import { useEffect, useState } from "react";
 import Modal from "../../../components/ui/Modal";
-import { FaSpinner, FaExclamationTriangle } from "react-icons/fa";
+import { FaSpinner, FaExclamationTriangle, FaDownload } from "react-icons/fa";
 import { fetchResultById } from "../../../api/results/resultApi";
+import { fetchStudentById } from "../../../api/students/studentApi"; // Added
+import { downloadTranscript } from "../../../utils/pdfGenerator"; // Added
 
-export default function ViewResultModal({
-  isOpen,
-  onClose,
-  resultData,
-  showToast,
-}) {
+export default function ViewResultModal({ isOpen, onClose, resultData, showToast }) {
   const [loading, setLoading] = useState(false);
   const [viewResult, setViewResult] = useState(null);
 
-  // Load full result details when modal opens
   useEffect(() => {
-    if (!isOpen) {
-      setViewResult(null);
-      return;
-    }
+    if (!isOpen || !resultData?.id) return;
 
-    if (!resultData?.id) {
-      setViewResult(resultData || null);
-      return;
-    }
-
-    let isActive = true;
-
-    const loadResultDetails = async () => {
+    const loadData = async () => {
       setLoading(true);
-      setViewResult(null);
-
       try {
-        const response = await fetchResultById(resultData.id);
-        const fullRecord = response?.data || response;
+        const res = await fetchResultById(resultData.id);
+        const result = res?.data || res;
 
-        if (!isActive) return;
+        // Fetch student details to get Course and Stream NAMES
+        const studentRes = await fetchStudentById(result.student_id);
+        const student = studentRes?.data || studentRes;
 
-        if (fullRecord && typeof fullRecord === "object") {
-          setViewResult({ ...resultData, ...fullRecord });
-        } else {
-          setViewResult(resultData);
-        }
+        setViewResult({
+          ...result,
+          student_name: student.name,
+          course_name: student.course,
+          stream_name: student.stream,
+          faculty_name: student.faculty
+        });
       } catch (err) {
-        if (!isActive) return;
-
-        setViewResult(resultData);
-        showToast(
-          "warning",
-          "Could not load full details. Showing available information.",
-        );
+        showToast("error", "Failed to load complete details.");
       } finally {
-        if (isActive) setLoading(false);
+        setLoading(false);
       }
     };
-
-    loadResultDetails();
-
-    return () => {
-      isActive = false;
-    };
-  }, [isOpen, resultData, showToast]);
+    loadData();
+  }, [isOpen, resultData]);
 
   return (
-    <Modal
-      isOpen={isOpen}
-      onClose={onClose}
-      title="View Result Details"
-      size="large"
-    >
+    <Modal isOpen={isOpen} onClose={onClose} title="Student Academic Record" size="large">
       {loading ? (
-        <div className="py-14 flex items-center justify-center gap-3 text-muted">
-          <FaSpinner className="animate-spin" />
-          <span>Loading result details...</span>
-        </div>
-      ) : !viewResult ? (
-        <div className="py-12 text-center text-muted">
-          <FaExclamationTriangle className="mx-auto mb-4" size={32} />
-          <p>No result data available.</p>
-        </div>
-      ) : (
-        <div className="p-8 space-y-6 bg-surface">
-          {/* Student Information Section */}
-          <div>
-            <h3 className="text-lg font-bold text-text border-b border-border/50 pb-3 mb-4">
-              Student Information
-            </h3>
-            <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-              <div className="bg-bg/40 p-4 rounded-lg border border-border/30">
-                <label className="text-[10px] uppercase font-bold text-muted block mb-2">
-                  Student Name
-                </label>
-                <p className="text-sm font-semibold text-text">
-                  {viewResult.student_name || "N/A"}
-                </p>
-              </div>
-              <div className="bg-bg/40 p-4 rounded-lg border border-border/30">
-                <label className="text-[10px] uppercase font-bold text-muted block mb-2">
-                  Enrollment Number
-                </label>
-                <p className="text-sm font-semibold text-text">
-                  {viewResult.enrollment_no || "N/A"}
-                </p>
-              </div>
-              <div className="bg-bg/40 p-4 rounded-lg border border-border/30">
-                <label className="text-[10px] uppercase font-bold text-muted block mb-2">
-                  Roll Number
-                </label>
-                <p className="text-sm font-semibold text-text">
-                  {viewResult.roll_no || "N/A"}
-                </p>
-              </div>
-            </div>
+        <div className="py-20 flex justify-center"><FaSpinner className="animate-spin" size={30} /></div>
+      ) : viewResult && (
+        <div className="p-6 space-y-6">
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-4 bg-slate-50 p-4 rounded-xl border border-slate-200">
+            <Detail label="Student" value={viewResult.student_name} />
+            <Detail label="Enrollment" value={viewResult.enrollment_no} />
+            <Detail label="Course" value={viewResult.course_name} />
+            <Detail label="Stream" value={viewResult.stream_name} />
+            <Detail label="Roll No" value={viewResult.roll_no} />
+            <Detail label="Session" value={viewResult.session} />
           </div>
 
-          {/* Academic Information Section */}
-          <div>
-            <h3 className="text-lg font-bold text-text border-b border-border/50 pb-3 mb-4">
-              Academic Information
-            </h3>
-            <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-              <div className="bg-bg/40 p-4 rounded-lg border border-border/30">
-                <label className="text-[10px] uppercase font-bold text-muted block mb-2">
-                  Course
-                </label>
-                <p className="text-sm font-semibold text-text">
-                  {viewResult.course_name || viewResult.course || "N/A"}
-                </p>
-              </div>
-              <div className="bg-bg/40 p-4 rounded-lg border border-border/30">
-                <label className="text-[10px] uppercase font-bold text-muted block mb-2">
-                  Stream
-                </label>
-                <p className="text-sm font-semibold text-accent">
-                  {viewResult.stream_name || viewResult.stream || "N/A"}
-                </p>
-              </div>
-              <div className="bg-bg/40 p-4 rounded-lg border border-border/30">
-                <label className="text-[10px] uppercase font-bold text-muted block mb-2">
-                  Faculty
-                </label>
-                <p className="text-sm font-semibold text-text">
-                  {viewResult.faculty_name || viewResult.faculty || "N/A"}
-                </p>
-              </div>
-              <div className="bg-bg/40 p-4 rounded-lg border border-border/30">
-                <label className="text-[10px] uppercase font-bold text-muted block mb-2">
-                  Duration Type
-                </label>
-                <p className="text-sm font-semibold text-text">
-                  {viewResult.duration_type || "N/A"}
-                </p>
-              </div>
-              <div className="bg-bg/40 p-4 rounded-lg border border-border/30">
-                <label className="text-[10px] uppercase font-bold text-muted block mb-2">
-                  Duration
-                </label>
-                <p className="text-sm font-semibold text-text">
-                  {viewResult.duration || "N/A"}
-                </p>
-              </div>
-              <div className="bg-bg/40 p-4 rounded-lg border border-border/30">
-                <label className="text-[10px] uppercase font-bold text-muted block mb-2">
-                  Session
-                </label>
-                <p className="text-sm font-semibold text-text">
-                  {viewResult.session || "N/A"}
-                </p>
-              </div>
-            </div>
-          </div>
+          <table className="w-full border-collapse">
+            <thead>
+              <tr className="bg-slate-800 text-white text-xs uppercase">
+                <th className="p-3 text-left">Subject</th>
+                <th className="p-3">Theory</th>
+                <th className="p-3">Practical</th>
+                <th className="p-3">Total</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-slate-200 border">
+              {viewResult.subjects.map((sub, i) => (
+                <tr key={i} className="text-sm">
+                  <td className="p-3 font-medium">{sub.subject_name}</td>
+                  <td className="p-3 text-center">{sub.theory_marks}</td>
+                  <td className="p-3 text-center">{sub.practical_marks}</td>
+                  <td className="p-3 text-center font-bold text-blue-600">
+                    {Number(sub.theory_marks) + Number(sub.practical_marks)}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
 
-          {/* Result Details Section */}
-          <div>
-            <h3 className="text-lg font-bold text-text border-b border-border/50 pb-3 mb-4">
-              Result Details
-            </h3>
-            <div className="grid grid-cols-2 gap-4">
-              <div className="bg-bg/40 p-4 rounded-lg border border-border/30">
-                <label className="text-[10px] uppercase font-bold text-muted block mb-2">
-                  Issue Date
-                </label>
-                <p className="text-sm font-semibold text-text">
-                  {viewResult.issue_date || "N/A"}
-                </p>
-              </div>
-              <div className="bg-bg/40 p-4 rounded-lg border border-border/30">
-                <label className="text-[10px] uppercase font-bold text-muted block mb-2">
-                  Total Subjects
-                </label>
-                <p className="text-sm font-semibold text-accent">
-                  {(viewResult.subjects || []).length}
-                </p>
-              </div>
-            </div>
-          </div>
-
-          {/* Marks Table Section */}
-          {viewResult.subjects && viewResult.subjects.length > 0 ? (
-            <div>
-              <h3 className="text-lg font-bold text-text border-b border-border/50 pb-3 mb-4">
-                Subject Marks
-              </h3>
-              <div className="border border-border rounded-lg overflow-hidden">
-                <table className="w-full text-sm">
-                  <thead className="bg-bg/60 text-muted font-bold uppercase text-[10px]">
-                    <tr>
-                      <th className="px-6 py-4 text-left">Subject Name</th>
-                      <th className="px-6 py-4 text-center">Theory</th>
-                      <th className="px-6 py-4 text-center">Practical</th>
-                      <th className="px-6 py-4 text-center">Total</th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-border">
-                    {viewResult.subjects.map((sub) => {
-                      const theory = Number(sub.theory_marks || 0);
-                      const practical = Number(sub.practical_marks || 0);
-                      const total = theory + practical;
-
-                      return (
-                        <tr
-                          key={sub.subject_id || sub.id}
-                          className="hover:bg-bg/20 transition-colors"
-                        >
-                          <td className="px-6 py-4 font-semibold text-text">
-                            {sub.subject_name}
-                          </td>
-                          <td className="px-6 py-4 text-center text-text">
-                            {theory}
-                          </td>
-                          <td className="px-6 py-4 text-center text-text">
-                            {practical}
-                          </td>
-                          <td className="px-6 py-4 text-center font-bold text-accent">
-                            {total}
-                          </td>
-                        </tr>
-                      );
-                    })}
-                  </tbody>
-                </table>
-              </div>
-            </div>
-          ) : (
-            <div className="bg-warning/10 border border-warning/20 text-warning px-6 py-4 rounded-lg flex items-center gap-3">
-              <FaExclamationTriangle />
-              <span>No subject marks found for this result.</span>
-            </div>
-          )}
-
-          {/* Audit Information Section */}
-          <div>
-            <h3 className="text-lg font-bold text-text border-b border-border/50 pb-3 mb-4">
-              Audit Information
-            </h3>
-            <div className="grid grid-cols-2 gap-4">
-              <div className="bg-bg/40 p-4 rounded-lg border border-border/30">
-                <label className="text-[10px] uppercase font-bold text-muted block mb-2">
-                  Created Date
-                </label>
-                <p className="text-sm font-semibold text-text">
-                  {viewResult.created_at
-                    ? new Date(viewResult.created_at).toLocaleDateString()
-                    : "N/A"}
-                </p>
-              </div>
-              <div className="bg-bg/40 p-4 rounded-lg border border-border/30">
-                <label className="text-[10px] uppercase font-bold text-muted block mb-2">
-                  Last Modified
-                </label>
-                <p className="text-sm font-semibold text-text">
-                  {viewResult.updated_at
-                    ? new Date(viewResult.updated_at).toLocaleDateString()
-                    : "N/A"}
-                </p>
-              </div>
-            </div>
-          </div>
-
-          {/* Close Button */}
-          <div className="flex justify-end pt-6 border-t border-border">
-            <button
-              onClick={onClose}
-              className="px-6 py-2 bg-primary text-white rounded-lg font-semibold hover:bg-primary/90 transition"
+          <div className="flex justify-end gap-3 pt-4">
+            <button 
+              onClick={() => downloadTranscript(viewResult)}
+              className="flex items-center gap-2 bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition"
             >
-              Close
+              <FaDownload /> Download PDF
             </button>
+            <button onClick={onClose} className="px-4 py-2 bg-slate-200 rounded-lg">Close</button>
           </div>
         </div>
       )}
     </Modal>
   );
 }
+
+const Detail = ({ label, value }) => (
+  <div>
+    <p className="text-[10px] uppercase font-bold text-slate-400">{label}</p>
+    <p className="text-sm font-semibold text-slate-800">{value || "N/A"}</p>
+  </div>
+);

@@ -81,7 +81,8 @@ export function useAcademicFlow(setValue) {
           );
           if (cMatch) {
             setCourseId(cMatch.id); // ✅ Store the ID for the result payload
-            getRulesByCourseName(details.course);
+            // ✅ AWAIT: Ensure duration options are loaded before selectStudent resolves
+            await getRulesByCourseName(details.course);
           }
         }
       } catch (err) {

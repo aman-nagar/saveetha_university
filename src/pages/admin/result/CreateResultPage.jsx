@@ -120,7 +120,12 @@ export default function CreateResultPage() {
       const targetStreamId = sMatch?.id;
 
       // 4. Setup Academic Flow (Wait for it to finish)
+      // ✅ THIS NOW PROPERLY AWAITS getRulesByCourseName
       await flow.selectStudent(studentData);
+
+      // ✅ CRITICAL: Small timeout to ensure durationOptions state updates
+      // and FormSelect component has the options available
+      await new Promise(resolve => setTimeout(resolve, 100));
 
       // 5. Fetch Subjects (Passing the manual Stream ID)
       const currentSubjects = await flow.loadSubjectsForPart(
@@ -146,11 +151,13 @@ export default function CreateResultPage() {
         }
       });
 
-      // 7. FINAL RESET: This will now auto-select duration because
-      // the durationOptions were loaded in step 4.
+      // 7. FINAL RESET: Duration options should now be available in durationOptions
       reset({
         enrollmentNo: data.enrollment_no,
         selectedDuration: String(data.duration), // Must be a string
+        course: studentData.course || "",
+        stream: studentData.stream || "",
+        rollNo: data.roll_no || "",
         session: data.session,
         issue_date: data.issue_date,
         marks: marksMap,

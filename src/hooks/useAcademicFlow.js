@@ -81,7 +81,8 @@ export function useAcademicFlow(setValue) {
           );
           if (cMatch) {
             setCourseId(cMatch.id); // ✅ Store the ID for the result payload
-            getRulesByCourseName(details.course);
+            // ✅ AWAIT: Ensure duration options are loaded before selectStudent resolves
+            await getRulesByCourseName(details.course);
           }
         }
       } catch (err) {
@@ -120,7 +121,6 @@ export function useAcademicFlow(setValue) {
         if (match) {
           setValue("rollNo", match.roll_number);
           setValue("session", match.session);
-          console.log("✅ Roll No Synced:", match.roll_number);
         } else {
           setValue("rollNo", "Not Generated");
           console.warn("⚠️ No matching Admit Card found for this Duration.");
@@ -134,22 +134,28 @@ export function useAcademicFlow(setValue) {
     [studentId, searchTerm, setValue], // Added searchTerm for more robust matching
   );
 
-  // 4. Subject Fetcher
+  // src/hooks/useAcademicFlow.js
+
   const loadSubjectsForPart = useCallback(
-    async (selectedPart) => {
-      if (!streamId || !selectedPart) {
+    async (selectedPart, manualStreamId = null) => {
+      // ✅ Use manualStreamId if provided (essential for Edit Mode)
+      const targetStreamId = manualStreamId || streamId;
+
+      if (!targetStreamId || !selectedPart) {
         setSubjects([]);
-        return;
+        return [];
       }
       setLoadingSubjects(true);
       try {
-        const allSubjects = await fetchSubjectsByStream(streamId);
+        const allSubjects = await fetchSubjectsByStream(targetStreamId);
         const filtered = allSubjects.filter(
           (sub) => String(sub.duration) === String(selectedPart),
         );
         setSubjects(filtered);
+        return filtered; // ✅ Return data so Edit mode can wait for it
       } catch (err) {
         console.error("Subject Fetch Error:", err);
+        return [];
       } finally {
         setLoadingSubjects(false);
       }

@@ -5,6 +5,8 @@ import { useToast } from "../../../context/ToastContext";
 import Button from "../../../components/ui/Button";
 import Table from "../../../components/table/Table";
 import Toast from "../../../components/ui/Toast";
+import { downloadTranscript } from "../../../utils/pdfGenerator";
+
 import {
   FaTrash,
   FaEdit,
@@ -94,10 +96,6 @@ export default function CreateResultPage() {
     loadHistory();
   }, [loadHistory]);
 
-  // Inside CreateResultPage.jsx
-
-  // Inside CreateResultPage.jsx
-
   const handleEditInitiate = async (record) => {
     setMode("edit");
     setEditingId(record.id);
@@ -125,7 +123,7 @@ export default function CreateResultPage() {
 
       // ✅ CRITICAL: Small timeout to ensure durationOptions state updates
       // and FormSelect component has the options available
-      await new Promise(resolve => setTimeout(resolve, 100));
+      await new Promise((resolve) => setTimeout(resolve, 100));
 
       // 5. Fetch Subjects (Passing the manual Stream ID)
       const currentSubjects = await flow.loadSubjectsForPart(
@@ -177,8 +175,6 @@ export default function CreateResultPage() {
     reset({ issue_date: getTodayDate(), session: "", selectedDuration: "" });
     flow.setSearchTerm("");
   };
-
-  // --- END EDIT LOGIC ---
 
   const handleDelete = async (id) => {
     if (!window.confirm("Delete this result permanently?")) return;
@@ -233,6 +229,26 @@ export default function CreateResultPage() {
       show("error", err.message || "Action failed");
     } finally {
       setIsSubmitting(false);
+    }
+  };
+
+  const handleDownload = async (row) => {
+    try {
+      const res = await fetchResultById(row.id);
+      const result = res.data || res;
+      // Enrich with names for the PDF
+      const studentRes = await fetchStudentById(result.student_id);
+      const student = studentRes.data || studentRes;
+
+      downloadTranscript({
+        ...result,
+        student_name: student.name,
+        course_name: student.course,
+        stream_name: student.stream,
+      });
+      show("success", "PDF Generated");
+    } catch (err) {
+      show("error", "Failed to generate PDF");
     }
   };
 
@@ -348,6 +364,13 @@ export default function CreateResultPage() {
                   className="text-blue-500 cursor-pointer hover:scale-110 transition-transform"
                 >
                   <FaEye size={16} />
+                </button>
+                <button
+                  onClick={() => handleDownload(row)}
+                  className="text-green-600 hover:scale-110 transition-transform"
+                  title="Download PDF"
+                >
+                  <FaDownload size={16} />
                 </button>
                 <button
                   onClick={() => handleDelete(row.id)}

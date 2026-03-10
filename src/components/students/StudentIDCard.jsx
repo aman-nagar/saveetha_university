@@ -1,6 +1,7 @@
 // src/components/students/StudentIDCard.jsx
 import { useAuth } from "@/context/AuthContext";
 import { useRef, useState } from "react";
+import { Link } from "react-router-dom";
 import html2pdf from "html2pdf.js";
 
 const StudentIDCard = () => {
@@ -133,8 +134,7 @@ const StudentIDCard = () => {
                     radial-gradient(circle at 25% 25%, rgba(255,255,255,0.4) 1px, transparent 1px),
                     radial-gradient(circle at 75% 75%, rgba(255,255,255,0.4) 1px, transparent 1px)
                   `,
-                  backgroundSize:
-                    "24px 24px, 24px 24px, 30px 30px, 30px 30px",
+                  backgroundSize: "24px 24px, 24px 24px, 30px 30px, 30px 30px",
                   pointerEvents: "none",
                 }}
               />
@@ -340,13 +340,13 @@ const StudentIDCard = () => {
             <span>📥</span>
             <span>Download PDF</span>
           </button>
-          <a
-            href="/student-dashboard"
+          <Link
+            to="/student-dashboard"
             className="flex items-center gap-2 bg-accent hover:bg-accent/90 text-white font-bold py-2.5 px-5 rounded-xl shadow-lg transition-all active:scale-95 no-underline"
           >
             <span>←</span>
             <span>Back</span>
-          </a>
+          </Link>
         </div>
 
         {/* Info Section */}

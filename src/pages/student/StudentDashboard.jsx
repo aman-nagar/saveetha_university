@@ -1,5 +1,6 @@
 // src/pages/student/StudentDashboard.jsx
 import { useAuth } from "@/context/AuthContext";
+import { Link } from "react-router-dom";
 
 const StudentDashboard = () => {
   const { studentData } = useAuth();
@@ -92,20 +93,20 @@ const StudentDashboard = () => {
 
           {/* Quick Actions */}
           <div className="flex sm:flex-col gap-2 flex-shrink-0">
-            <a
-              href="/student-dashboard/id-card"
+            <Link
+              to="/student-dashboard/id-card"
               className="flex items-center gap-2 bg-white/15 hover:bg-white/25 backdrop-blur-sm text-white font-semibold py-2 px-4 rounded-xl transition-all text-sm border border-white/20 no-underline whitespace-nowrap"
             >
               <span>🪪</span>
               <span>ID Card</span>
-            </a>
-            <a
-              href="/student-dashboard/admit-card"
+            </Link>
+            <Link
+              to="/student-dashboard/admit-card"
               className="flex items-center gap-2 bg-white/15 hover:bg-white/25 backdrop-blur-sm text-white font-semibold py-2 px-4 rounded-xl transition-all text-sm border border-white/20 no-underline whitespace-nowrap"
             >
               <span>🎫</span>
               <span>Admit Card</span>
-            </a>
+            </Link>
           </div>
         </div>
       </div>

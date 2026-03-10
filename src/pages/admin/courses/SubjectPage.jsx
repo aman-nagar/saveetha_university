@@ -55,6 +55,7 @@ export default function SubjectPage() {
   };
 
   const handleCreate = async (data) => {
+    console.log(data);
     try {
       await createSubject(data);
       show("success", "Subject created");

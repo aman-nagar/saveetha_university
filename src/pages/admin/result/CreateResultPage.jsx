@@ -10,32 +10,50 @@ import {
   FaEdit,
   FaExclamationTriangle,
   FaSpinner,
+  FaEye,
+  FaDownload,
+  FaTimes,
 } from "react-icons/fa";
+import html2pdf from "html2pdf.js";
 import { getTodayDate } from "../../../utils/formHelpers";
 import FormSelect from "../../../components/form/FormSelect";
 import FormInput from "../../../components/form/FormInput";
 import {
   createResult,
+  updateResult,
   deleteResult,
   fetchResults,
+  fetchResultById,
 } from "../../../api/results/resultApi";
-
-// Split Components
+import { fetchStudentById } from "../../../api/students/studentApi";
+// Shared Components
 import ResultFormHeader from "../../../components/admin/result/ResultFormHeader";
 import MarksEntryTable from "../../../components/admin/result/MarksEntryTable";
-import EditResultModal from "../../../components/admin/result/EditResultModal";
+import ViewResultModal from "../../../components/admin/result/ViewResultModal";
+import { fetchAllStreams } from "../../../api/courses/streamApi";
 
 export default function CreateResultPage() {
   const { toast, show, clear } = useToast();
 
-  // State Management
+  // Mode Management
+  const [mode, setMode] = useState("create"); // "create" or "edit"
+  const [editingId, setEditingId] = useState(null);
+
+  // History & View States
   const [history, setHistory] = useState([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [loadingHistory, setLoadingHistory] = useState(false);
-  const [selectedResultForEdit, setSelectedResultForEdit] = useState(null);
-  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [selectedResultForView, setSelectedResultForView] = useState(null);
+  const [isViewModalOpen, setIsViewModalOpen] = useState(false);
 
-  const { register, handleSubmit, setValue, watch, reset } = useForm({
+  const {
+    register,
+    handleSubmit,
+    setValue,
+    watch,
+    reset,
+    formState: { errors },
+  } = useForm({
     defaultValues: { issue_date: getTodayDate() },
   });
 
@@ -51,7 +69,12 @@ export default function CreateResultPage() {
       flow.loadSubjectsForPart(selectedDuration);
       flow.syncRollNoFromAdmitCard(selectedDuration);
     }
-  }, [selectedDuration, flow.studentId, flow.loadSubjectsForPart, flow.syncRollNoFromAdmitCard]);
+  }, [
+    selectedDuration,
+    flow.studentId,
+    flow.loadSubjectsForPart,
+    flow.syncRollNoFromAdmitCard,
+  ]);
 
   // Fetch History
   const loadHistory = useCallback(async () => {
@@ -61,7 +84,7 @@ export default function CreateResultPage() {
       const records = response.records || response.data || response;
       setHistory(Array.isArray(records) ? records : []);
     } catch (err) {
-      console.error("Failed to load history:", err);
+      console.error(err);
     } finally {
       setLoadingHistory(false);
     }
@@ -71,35 +94,97 @@ export default function CreateResultPage() {
     loadHistory();
   }, [loadHistory]);
 
-  // Handlers
-  const handleEditClick = (record) => {
-    setSelectedResultForEdit(record);
-    setIsEditModalOpen(true);
+  // Inside CreateResultPage.jsx
+
+  // Inside CreateResultPage.jsx
+
+  const handleEditInitiate = async (record) => {
+    setMode("edit");
+    setEditingId(record.id);
+
+    try {
+      // 1. Fetch full result details
+      const res = await fetchResultById(record.id);
+      const data = res?.data || res;
+
+      // 2. Fetch Student to resolve the Stream Name
+      const studentRes = await fetchStudentById(data.student_id);
+      const studentData = studentRes.data || studentRes;
+
+      // 3. Manually find the Stream ID (avoids waiting for hook state)
+      const allStreams = await fetchAllStreams();
+      console.log(allStreams);
+      const sMatch = allStreams.find(
+        (s) => s.name.toLowerCase() === studentData.stream?.toLowerCase(),
+      );
+      const targetStreamId = sMatch?.id;
+
+      // 4. Setup Academic Flow (Wait for it to finish)
+      await flow.selectStudent(studentData);
+
+      // 5. Fetch Subjects (Passing the manual Stream ID)
+      const currentSubjects = await flow.loadSubjectsForPart(
+        data.duration,
+        targetStreamId,
+      );
+
+      // 6. Map Marks (Safe numeric conversion)
+      const marksMap = {};
+      (data.subjects || []).forEach((savedSub) => {
+        const match = currentSubjects.find(
+          (s) =>
+            s.subject_name.toLowerCase() ===
+            savedSub.subject_name.toLowerCase(),
+        );
+
+        const subId = match?.id || savedSub.subject_id;
+        if (subId) {
+          marksMap[subId] = {
+            theory: Number(savedSub.theory_marks) || 0,
+            practical: Number(savedSub.practical_marks) || 0,
+          };
+        }
+      });
+
+      // 7. FINAL RESET: This will now auto-select duration because
+      // the durationOptions were loaded in step 4.
+      reset({
+        enrollmentNo: data.enrollment_no,
+        selectedDuration: String(data.duration), // Must be a string
+        session: data.session,
+        issue_date: data.issue_date,
+        marks: marksMap,
+      });
+
+      window.scrollTo({ top: 0, behavior: "smooth" });
+      show("success", "Edit mode activated");
+    } catch (err) {
+      console.error("Edit Init Error:", err);
+      show("error", "Failed to load record details");
+    }
   };
 
-  const closeEditModal = () => {
-    setIsEditModalOpen(false);
-    setSelectedResultForEdit(null);
+  const cancelEdit = () => {
+    setMode("create");
+    setEditingId(null);
+    reset({ issue_date: getTodayDate(), session: "", selectedDuration: "" });
+    flow.setSearchTerm("");
   };
+
+  // --- END EDIT LOGIC ---
 
   const handleDelete = async (id) => {
-    if (
-      !window.confirm(
-        "Are you sure you want to delete this result permanently?",
-      )
-    )
-      return;
+    if (!window.confirm("Delete this result permanently?")) return;
     try {
       await deleteResult(id);
-      show("success", "Result deleted successfully");
+      show("success", "Result deleted");
       loadHistory();
     } catch (err) {
-      show("error", err.message || "Failed to delete record");
+      show("error", err.message);
     }
   };
 
   const onSubmit = async (formData) => {
-    // Basic Validation
     if (!enrollmentNo) return show("error", "Please select a student first.");
     if (rollNo === "Not Generated")
       return show("error", "Admit card required.");
@@ -127,15 +212,18 @@ export default function CreateResultPage() {
         })),
       };
 
-      await createResult(payload);
-      show("success", "Result created successfully!");
+      if (mode === "edit") {
+        await updateResult(editingId, payload);
+        show("success", "Result updated successfully!");
+      } else {
+        await createResult(payload);
+        show("success", "Result created successfully!");
+      }
 
-      // Reset Form
-      reset({ issue_date: getTodayDate(), session: "", selectedDuration: "" });
-      flow.setSearchTerm("");
+      cancelEdit();
       loadHistory();
     } catch (err) {
-      show("error", err.message || "Failed to save result");
+      show("error", err.message || "Action failed");
     } finally {
       setIsSubmitting(false);
     }
@@ -145,8 +233,22 @@ export default function CreateResultPage() {
     <div className="w-full space-y-6">
       {toast && <Toast {...toast} onClose={clear} />}
 
-      {/* Main Creation Form */}
+      {/* Unified Form */}
       <div className="bg-surface border border-border rounded-xl p-8 shadow-sm">
+        <div className="flex justify-between items-center mb-6">
+          <h2 className="text-xl font-bold text-text">
+            {mode === "edit" ? "Update Result" : "Create New Result"}
+          </h2>
+          {mode === "edit" && (
+            <button
+              onClick={cancelEdit}
+              className="text-danger flex items-center gap-2 text-sm font-bold"
+            >
+              <FaTimes /> Cancel Edit
+            </button>
+          )}
+        </div>
+
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-8">
           <ResultFormHeader flow={flow} register={register} rollNo={rollNo} />
 
@@ -177,23 +279,32 @@ export default function CreateResultPage() {
           {rollNo === "Not Generated" && (
             <div className="bg-danger/10 border border-danger/20 text-danger px-6 py-4 rounded-lg flex items-center gap-3">
               <FaExclamationTriangle />
-              <span>
-                Admit Card missing for this student. Please generate it first.
-              </span>
+              <span>Admit Card missing for this student.</span>
             </div>
           )}
 
           {selectedDuration && flow.subjects.length > 0 && (
-            <MarksEntryTable subjects={flow.subjects} register={register} />
+            <MarksEntryTable
+              subjects={flow.subjects}
+              register={register}
+              errors={errors}
+            />
           )}
 
-          <div className="flex justify-end pt-4">
+          <div className="flex justify-end pt-4 gap-4">
+            {mode === "edit" && (
+              <Button variant="secondary" onClick={cancelEdit}>
+                Cancel
+              </Button>
+            )}
             <Button
               type="submit"
               disabled={isSubmitting || rollNo === "Not Generated"}
             >
               {isSubmitting ? (
                 <FaSpinner className="animate-spin" />
+              ) : mode === "edit" ? (
+                "Update Result"
               ) : (
                 "Save Result"
               )}
@@ -217,16 +328,23 @@ export default function CreateResultPage() {
             render: (row) => (
               <div className="flex gap-3">
                 <button
-                  onClick={() => handleEditClick(row)}
+                  onClick={() => handleEditInitiate(row)}
                   className="text-accent cursor-pointer hover:scale-110 transition-transform"
-                  title="Edit Result"
                 >
                   <FaEdit size={16} />
                 </button>
                 <button
+                  onClick={() => {
+                    setSelectedResultForView(row);
+                    setIsViewModalOpen(true);
+                  }}
+                  className="text-blue-500 cursor-pointer hover:scale-110 transition-transform"
+                >
+                  <FaEye size={16} />
+                </button>
+                <button
                   onClick={() => handleDelete(row.id)}
                   className="text-danger cursor-pointer hover:scale-110 transition-transform"
-                  title="Delete Result"
                 >
                   <FaTrash size={16} />
                 </button>
@@ -236,12 +354,11 @@ export default function CreateResultPage() {
         ]}
       />
 
-      {/* Edit Modal (Popup) */}
-      <EditResultModal
-        isOpen={isEditModalOpen}
-        onClose={closeEditModal}
-        resultData={selectedResultForEdit}
-        onUpdate={loadHistory}
+      {/* View Modal */}
+      <ViewResultModal
+        isOpen={isViewModalOpen}
+        onClose={() => setIsViewModalOpen(false)}
+        resultData={selectedResultForView}
         showToast={show}
       />
     </div>

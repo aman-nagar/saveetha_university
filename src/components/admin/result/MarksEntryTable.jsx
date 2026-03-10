@@ -54,14 +54,15 @@ export default function MarksEntryTable({ subjects, register, errors }) {
                   <input
                     type="number"
                     {...register(`marks.${subId}.practical`, {
+                      // ✅ Ensure this is .practical
                       valueAsNumber: true,
                       validate: (val) =>
                         val <= (sub.max_practical_marks || 0) ||
                         `Max ${sub.max_practical_marks}`,
                     })}
-                    className={`w-full p-2 border rounded-lg text-center bg-bg outline-none transition-all ${
-                      practicalErr
-                        ? "border-red-500 ring-1 ring-red-500"
+                    className={`w-full p-2 border rounded-lg text-center bg-bg outline-none ${
+                      errors?.marks?.[subId]?.practical
+                        ? "border-red-500"
                         : "border-slate-200"
                     }`}
                   />

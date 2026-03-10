@@ -56,7 +56,11 @@ export default function StreamPage() {
 
   const handleCreate = async (streamData) => {
     try {
-      await createStream(streamData.courseId, streamData.name, streamData.applicationFee);
+      await createStream(
+        streamData.courseId,
+        streamData.name,
+        streamData.applicationFee,
+      );
       show("success", "Stream created");
       load(streamData.courseId);
     } catch (err) {
@@ -68,7 +72,12 @@ export default function StreamPage() {
     if (!editData) return;
 
     try {
-      await updateStream(editData.id, streamData.name, streamData.courseId, streamData.applicationFee);
+      await updateStream(
+        editData.id,
+        streamData.name,
+        streamData.courseId,
+        streamData.applicationFee,
+      );
 
       show("success", "Stream updated");
       setEditData(null);
@@ -104,6 +113,11 @@ export default function StreamPage() {
       render: (row) => courseMap[row.course_id] || "—",
     },
     { key: "name", label: "Stream Name" },
+    {
+      key: "application_fee",
+      label: "Stream Fee",
+      render: (row) => (row.application_fee ? `₹${row.application_fee}` : "—"),
+    },
   ];
 
   const actions = [

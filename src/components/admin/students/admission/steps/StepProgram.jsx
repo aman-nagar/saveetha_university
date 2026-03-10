@@ -2,7 +2,7 @@
 import FormSection from "../../../../form/FormSection";
 import FormSelect from "../../../../form/FormSelect";
 import FormInput from "../../../../form/FormInput";
-import { useMemo } from "react";
+import { useMemo, useEffect } from "react";
 
 export default function StepProgram({
   register,
@@ -12,7 +12,21 @@ export default function StepProgram({
   courses = [],
   streams = [],
   isAdmin = false,
+  watch,
+  setValue,
 }) {
+  // Watch the stream field for changes
+  const selectedStreamName = watch("stream");
+
+  // Auto-fill application_fee when stream is selected
+  useEffect(() => {
+    if (selectedStreamName) {
+      const selectedStream = streams.find((s) => s.name === selectedStreamName);
+      if (selectedStream?.application_fee) {
+        setValue("application_fee", selectedStream.application_fee);
+      }
+    }
+  }, [selectedStreamName, streams, setValue]);
   const courseTypeOptions = useMemo(
     () =>
       courseTypes.map((ct) => ({ label: ct.name, value: ct.name, id: ct.id })),
@@ -71,6 +85,7 @@ export default function StepProgram({
         name="application_fee"
         register={register}
         type="number"
+        disabled={true}
         error={errors.application_fee}
       />
 

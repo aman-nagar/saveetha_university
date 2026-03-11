@@ -65,37 +65,35 @@ export default function StudentResultPage() {
 
   if (loading)
     return (
-      <div className="py-20 flex justify-center">
-        <FaSpinner className="animate-spin text-blue-600" size={40} />
+      <div className="py-20 flex justify-center bg-bg">
+        <FaSpinner className="animate-spin text-accent" size={40} />
       </div>
     );
 
   return (
-    <div className="w-full space-y-6 pb-20">
+    <div className="w-full space-y-6 pb-20 px-4 md:px-0 bg-bg min-h-screen">
       {toast && <Toast {...toast} onClose={clear} />}
 
       {!activeResult ? (
-        <div className="bg-white rounded-[2rem] p-8 shadow-sm border border-slate-100">
-          <h1 className="text-2xl font-serif font-bold text-slate-800 mb-8 border-b pb-4">
+        <div className="bg-surface rounded-[2rem] p-6 md:p-8 shadow-sm border border-border">
+          <h1 className="text-xl md:text-2xl font-serif font-bold text-text mb-8 border-b border-border pb-4">
             Academic Records
           </h1>
           <div className="grid grid-cols-1 gap-4">
             {results.map((res, i) => (
               <div
                 key={i}
-                className="p-6 rounded-3xl border border-slate-100 bg-slate-50/50 flex justify-between items-center"
+                className="p-5 md:p-6 rounded-3xl border border-border bg-bg/40 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 hover:border-accent/50 transition-colors"
               >
                 <div>
-                  <h3 className="text-lg font-bold text-slate-800 capitalize">
+                  <h3 className="text-lg font-bold text-text capitalize">
                     {res.duration_type} {res.duration}
                   </h3>
-                  <p className="text-sm text-slate-500">
-                    Session: {res.session}
-                  </p>
+                  <p className="text-sm text-muted">Session: {res.session}</p>
                 </div>
                 <Button
                   onClick={() => setActiveResult(res)}
-                  className="rounded-2xl flex items-center gap-2"
+                  className="rounded-2xl flex items-center gap-2 w-full sm:w-auto justify-center"
                 >
                   <FaEye /> View & Download
                 </Button>
@@ -105,17 +103,18 @@ export default function StudentResultPage() {
         </div>
       ) : (
         <div className="flex flex-col items-center space-y-6">
-          <div className="w-full max-w-[850px] flex justify-between items-center bg-white p-4 rounded-2xl shadow-sm border">
+          {/* Top Control Bar */}
+          <div className="w-full max-w-[850px] flex flex-col sm:flex-row justify-between items-center bg-surface p-4 rounded-2xl shadow-sm border border-border gap-4">
             <button
               onClick={() => setActiveResult(null)}
-              className="flex items-center gap-2 text-slate-600 font-bold hover:text-blue-600"
+              className="flex items-center gap-2 text-text font-bold hover:text-accent transition-colors"
             >
               <FaArrowLeft /> Back to List
             </button>
             <Button
               onClick={handleDownloadPDF}
               disabled={downloading}
-              className="bg-green-600 hover:bg-green-700"
+              className="bg-green-600 hover:bg-green-700 w-full sm:w-auto justify-center"
             >
               {downloading ? (
                 <FaSpinner className="animate-spin" />
@@ -126,12 +125,20 @@ export default function StudentResultPage() {
             </Button>
           </div>
 
-          <div className="overflow-auto w-full flex justify-center bg-slate-200 p-4 md:p-10 rounded-3xl shadow-inner">
-            <ResultPDFTemplate
-              ref={markSheetRef}
-              result={activeResult}
-              user={user}
-            />
+          {/* Marksheet Preview Wrapper */}
+          <div className="w-full flex justify-center bg-bg p-2 md:p-10 rounded-3xl border border-border overflow-hidden">
+            {/* Responsive Scale Container: 
+                On mobile, we shrink the 794px width marksheet so it fits the screen width 
+            */}
+            <div className="flex justify-center w-full overflow-x-auto custom-scrollbar pt-4 pb-8">
+              <div className="origin-top transform scale-[0.45] sm:scale-[0.7] md:scale-[1.0] transition-transform duration-300">
+                <ResultPDFTemplate
+                  ref={markSheetRef}
+                  result={activeResult}
+                  user={user}
+                />
+              </div>
+            </div>
           </div>
         </div>
       )}

@@ -34,40 +34,48 @@ export default function StudentResultPage() {
     }
   };
 
-  const handleDownloadPDF = async () => {
-    if (!markSheetRef.current || !activeResult) return;
+ const handleDownloadPDF = async () => {
+  if (!markSheetRef.current || !activeResult) return;
 
-    try {
-      setDownloading(true);
-      const html2pdf = (await import("html2pdf.js")).default;
+  try {
+    setDownloading(true);
+    const html2pdf = (await import("html2pdf.js")).default;
 
-      const opt = {
-        margin: 0,
-        filename: `MarkSheet_${activeResult.enrollment_no}_${activeResult.session}.pdf`,
-        image: { type: "jpeg", quality: 1 },
-        html2canvas: {
-          scale: 3,
-          useCORS: true,
-          letterRendering: true,
-          scrollX: 0,
-          scrollY: 0,
-        },
-        jsPDF: {
-          unit: "mm",
-          format: "a4",
-          orientation: "portrait",
-        },
-      };
+    // Use the specific element dimensions to lock the canvas
+    const element = markSheetRef.current;
+    
+    const opt = {
+      margin: 0,
+      filename: `MarkSheet_${activeResult.enrollment_no}.pdf`,
+      image: { type: "jpeg", quality: 1.0 }, // Maximum quality
+      html2canvas: {
+        scale: 4, // Higher scale prevents text "jitter" or shifting
+        useCORS: true,
+        letterRendering: true, // Crucial for absolute positioned text alignment
+        allowTaint: true,
+        scrollX: 0,
+        scrollY: 0,
+        width: 794, // Force exact pixel width of A4
+        height: 1123, // Force exact pixel height of A4
+      },
+      jsPDF: {
+        unit: "pt", // Points are more precise for absolute positioning than mm
+        format: "a4",
+        orientation: "portrait",
+        compress: true,
+      },
+    };
 
-      await html2pdf().set(opt).from(markSheetRef.current).save();
-      show("success", "Official Statement Downloaded");
-    } catch (err) {
-      console.error("PDF Generation Error:", err);
-      show("error", "Generation failed. Please try again.");
-    } finally {
-      setDownloading(false);
-    }
-  };
+    // Generate PDF
+    await html2pdf().set(opt).from(element).save();
+    show("success", "Official Statement Downloaded");
+  } catch (err) {
+    console.error("PDF Generation Error:", err);
+    show("error", "Generation failed. Please try again.");
+  } finally {
+    setDownloading(false);
+  }
+};
 
   if (loading)
     return (

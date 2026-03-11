@@ -5,7 +5,7 @@ import { fetchStudentResults } from "../../api/students/studentResultApi";
 import Toast from "../../components/ui/Toast";
 import { FaSpinner, FaDownload, FaArrowLeft, FaEye } from "react-icons/fa";
 import Button from "../../components/ui/Button";
-import universityLetterhead from "../../assets/images/student_result_format.png";
+import { ResultPDFTemplate } from "../../components/students/ResultPDFTemplate";
 
 export default function StudentResultPage() {
   const { user } = useAuth();
@@ -13,7 +13,6 @@ export default function StudentResultPage() {
   const [results, setResults] = useState([]);
   const [loading, setLoading] = useState(true);
   const [downloading, setDownloading] = useState(false);
-
   const [activeResult, setActiveResult] = useState(null);
   const markSheetRef = useRef(null);
 
@@ -25,7 +24,6 @@ export default function StudentResultPage() {
     setLoading(true);
     try {
       const response = await fetchStudentResults();
-      console.log("📊 Results Loaded:", response);
       setResults(Array.isArray(response) ? response : response.data || []);
     } catch (err) {
       show("error", "Failed to load results");
@@ -34,48 +32,36 @@ export default function StudentResultPage() {
     }
   };
 
- const handleDownloadPDF = async () => {
-  if (!markSheetRef.current || !activeResult) return;
-
-  try {
-    setDownloading(true);
-    const html2pdf = (await import("html2pdf.js")).default;
-
-    // Use the specific element dimensions to lock the canvas
-    const element = markSheetRef.current;
-    
-    const opt = {
-      margin: 0,
-      filename: `MarkSheet_${activeResult.enrollment_no}.pdf`,
-      image: { type: "jpeg", quality: 1.0 }, // Maximum quality
-      html2canvas: {
-        scale: 4, // Higher scale prevents text "jitter" or shifting
-        useCORS: true,
-        letterRendering: true, // Crucial for absolute positioned text alignment
-        allowTaint: true,
-        scrollX: 0,
-        scrollY: 0,
-        width: 794, // Force exact pixel width of A4
-        height: 1123, // Force exact pixel height of A4
-      },
-      jsPDF: {
-        unit: "pt", // Points are more precise for absolute positioning than mm
-        format: "a4",
-        orientation: "portrait",
-        compress: true,
-      },
-    };
-
-    // Generate PDF
-    await html2pdf().set(opt).from(element).save();
-    show("success", "Official Statement Downloaded");
-  } catch (err) {
-    console.error("PDF Generation Error:", err);
-    show("error", "Generation failed. Please try again.");
-  } finally {
-    setDownloading(false);
-  }
-};
+  const handleDownloadPDF = async () => {
+    if (!markSheetRef.current || !activeResult) return;
+    try {
+      setDownloading(true);
+      const html2pdf = (await import("html2pdf.js")).default;
+      const opt = {
+        margin: 0,
+        filename: `MarkSheet_${activeResult.enrollment_no}.pdf`,
+        image: { type: "jpeg", quality: 1 },
+        html2canvas: {
+          scale: 4,
+          useCORS: true,
+          letterRendering: true,
+          scrollX: 0,
+          scrollY: 0,
+        },
+        jsPDF: {
+          unit: "pt",
+          format: "a4",
+          orientation: "portrait",
+        },
+      };
+      await html2pdf().set(opt).from(markSheetRef.current).save();
+      show("success", "Official Statement Downloaded");
+    } catch (err) {
+      show("error", "PDF generation failed.");
+    } finally {
+      setDownloading(false);
+    }
+  };
 
   if (loading)
     return (
@@ -108,11 +94,7 @@ export default function StudentResultPage() {
                   </p>
                 </div>
                 <Button
-                  onClick={() => {
-                    console.log("📝 Opening Marksheet for:", res);
-                    console.log("📚 Subjects Data:", res.subjects);
-                    setActiveResult(res);
-                  }}
+                  onClick={() => setActiveResult(res)}
                   className="rounded-2xl flex items-center gap-2"
                 >
                   <FaEye /> View & Download
@@ -123,11 +105,10 @@ export default function StudentResultPage() {
         </div>
       ) : (
         <div className="flex flex-col items-center space-y-6">
-          {console.log("🎓 Active Marksheet:", activeResult)}
-          <div className="w-full max-w-[850px] flex justify-between items-center bg-white p-4 rounded-2xl shadow-sm border border-slate-200">
+          <div className="w-full max-w-[850px] flex justify-between items-center bg-white p-4 rounded-2xl shadow-sm border">
             <button
               onClick={() => setActiveResult(null)}
-              className="flex items-center gap-2 text-slate-600 font-bold hover:text-blue-600 transition-colors"
+              className="flex items-center gap-2 text-slate-600 font-bold hover:text-blue-600"
             >
               <FaArrowLeft /> Back to List
             </button>
@@ -146,356 +127,11 @@ export default function StudentResultPage() {
           </div>
 
           <div className="overflow-auto w-full flex justify-center bg-slate-200 p-4 md:p-10 rounded-3xl shadow-inner">
-            <div
+            <ResultPDFTemplate
               ref={markSheetRef}
-              className="relative flex-shrink-0"
-              style={{
-                width: "794px",
-                height: "1123px",
-                color: "#000000",
-                backgroundColor: "#ffffff",
-              }}
-            >
-              <img
-                src={universityLetterhead}
-                className="absolute inset-0 w-full h-full z-0"
-                alt="letterhead"
-              />
-
-              {/* 🎯 Alignment Overlay: All colors are Hex to prevent oklch error */}
-              <div
-                className="relative z-10 w-full h-full font-sans text-[13.5px]"
-                style={{ color: "#1a1a1a" }}
-              >
-                {/* Header Info */}
-                <div
-                  style={{
-                    position: "absolute",
-                    top: "229px",
-                    left: "245px",
-                    fontWeight: "700",
-                    color: "#000000",
-                  }}
-                >
-                  {activeResult.enrollment_no}
-                </div>
-                <div
-                  style={{
-                    position: "absolute",
-                    top: "256px",
-                    left: "695px",
-                    fontWeight: "700",
-                    color: "#000000",
-                  }}
-                >
-                  {activeResult.duration_type?.toUpperCase()}{" "}
-                  {activeResult.duration}
-                </div>
-
-                {/* Personal Details */}
-                <div
-                  style={{
-                    position: "absolute",
-                    top: "269px",
-                    left: "265px",
-                    color: "#000000",
-                  }}
-                >
-                  {activeResult.roll_no}
-                </div>
-                <div
-                  style={{
-                    position: "absolute",
-                    top: "297px",
-                    left: "265px",
-                    fontWeight: "600",
-                    color: "#000000",
-                  }}
-                >
-                  {(
-                    activeResult.student_name ||
-                    user?.name ||
-                    "N/A"
-                  ).toUpperCase()}
-                </div>
-                <div
-                  style={{
-                    position: "absolute",
-                    top: "325px",
-                    left: "265px",
-                    color: "#000000",
-                  }}
-                >
-                  {(
-                    activeResult.father_name ||
-                    user?.father_name ||
-                    "N/A"
-                  ).toUpperCase()}
-                </div>
-                <div
-                  style={{
-                    position: "absolute",
-                    top: "355px",
-                    left: "265px",
-                    color: "#000000",
-                  }}
-                >
-                  {(
-                    activeResult.mother_name ||
-                    user?.mother_name ||
-                    "N/A"
-                  ).toUpperCase()}
-                </div>
-                <div
-                  style={{
-                    position: "absolute",
-                    top: "383px",
-                    left: "265px",
-                    fontWeight: "600",
-                    color: "#000000",
-                  }}
-                >
-                  {activeResult.course_name || activeResult.course || "N/A"}
-                </div>
-
-                {/* 📊 Dynamic Table Section with Interleaved Max/Obtained Marks */}
-                <div
-                  style={{
-                    position: "absolute",
-                    top: "490px",
-                    left: "82px",
-                    width: "630px",
-                  }}
-                >
-                  <table
-                    style={{
-                      width: "100%",
-                      borderCollapse: "collapse",
-                      fontSize: "11px",
-                      lineHeight: "1.6",
-                      color: "#000000",
-                      border: "1px solid #000000",
-                    }}
-                  >
-                    <thead
-                      style={{
-                        backgroundColor: "#f3f4f6",
-                        fontSize: "9px",
-                        fontWeight: "bold",
-                      }}
-                    >
-                      <tr>
-                        <th
-                          style={{
-                            border: "1px solid #000000",
-                            padding: "4px",
-                          }}
-                        >
-                          Subject Name
-                        </th>
-                        <th
-                          style={{
-                            border: "1px solid #000000",
-                            padding: "4px",
-                            width: "65px",
-                          }}
-                        >
-                          Max Theory
-                        </th>
-                        <th
-                          style={{
-                            border: "1px solid #000000",
-                            padding: "4px",
-                            width: "65px",
-                          }}
-                        >
-                          Theory
-                        </th>
-                        <th
-                          style={{
-                            border: "1px solid #000000",
-                            padding: "4px",
-                            width: "65px",
-                          }}
-                        >
-                          Max Practical
-                        </th>
-                        <th
-                          style={{
-                            border: "1px solid #000000",
-                            padding: "4px",
-                            width: "65px",
-                          }}
-                        >
-                          Practical
-                        </th>
-                        <th
-                          style={{
-                            border: "1px solid #000000",
-                            padding: "4px",
-                            width: "65px",
-                          }}
-                        >
-                          Total
-                        </th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {(activeResult.subjects || []).map((sub, i) => {
-                        const maxTh = Number(sub.max_theory_marks || 0);
-                        const maxPr = Number(sub.max_practical_marks || 0);
-                        const th = Number(sub.theory_marks || 0);
-                        const pr = Number(sub.practical_marks || 0);
-
-                        return (
-                          <tr key={i}>
-                            <td
-                              style={{
-                                border: "1px solid #000000",
-                                padding: "4px 8px",
-                                textAlign: "left",
-                              }}
-                            >
-                              {sub.subject_name}
-                            </td>
-                            {/* Max Theory vs Theory Obtained */}
-                            <td
-                              style={{
-                                border: "1px solid #000000",
-                                textAlign: "center",
-                              }}
-                            >
-                              {maxTh}
-                            </td>
-                            <td
-                              style={{
-                                border: "1px solid #000000",
-                                textAlign: "center",
-                                backgroundColor: "#f9fafb",
-                              }}
-                            >
-                              {th}
-                            </td>
-
-                            {/* Max Practical vs Practical Obtained */}
-                            <td
-                              style={{
-                                border: "1px solid #000000",
-                                textAlign: "center",
-                              }}
-                            >
-                              {maxPr}
-                            </td>
-                            <td
-                              style={{
-                                border: "1px solid #000000",
-                                textAlign: "center",
-                                backgroundColor: "#f9fafb",
-                              }}
-                            >
-                              {pr}
-                            </td>
-
-                            {/* Row Total */}
-                            <td
-                              style={{
-                                border: "1px solid #000000",
-                                textAlign: "center",
-                                fontWeight: "700",
-                              }}
-                            >
-                              {th + pr}
-                            </td>
-                          </tr>
-                        );
-                      })}
-                    </tbody>
-
-                    {/* Footer with Aggregate Totals */}
-                    <tfoot style={{ backgroundColor: "#f3f4f6" }}>
-                      <tr style={{ fontWeight: "900" }}>
-                        <td
-                          style={{
-                            border: "1px solid #000000",
-                            padding: "6px 8px",
-                            textAlign: "right",
-                            fontSize: "9px",
-                          }}
-                        >
-                          GRAND TOTAL
-                        </td>
-                        {/* Total Max Theory */}
-                        <td
-                          style={{
-                            border: "1px solid #000000",
-                            textAlign: "center",
-                          }}
-                        >
-                          {activeResult.subjects.reduce(
-                            (acc, s) => acc + Number(s.max_theory_marks || 0),
-                            0,
-                          )}
-                        </td>
-                        {/* Total Obtained Theory */}
-                        <td
-                          style={{
-                            border: "1px solid #000000",
-                            textAlign: "center",
-                          }}
-                        >
-                          {activeResult.subjects.reduce(
-                            (acc, s) => acc + Number(s.theory_marks || 0),
-                            0,
-                          )}
-                        </td>
-                        {/* Total Max Practical */}
-                        <td
-                          style={{
-                            border: "1px solid #000000",
-                            textAlign: "center",
-                          }}
-                        >
-                          {activeResult.subjects.reduce(
-                            (acc, s) =>
-                              acc + Number(s.max_practical_marks || 0),
-                            0,
-                          )}
-                        </td>
-                        {/* Total Obtained Practical */}
-                        <td
-                          style={{
-                            border: "1px solid #000000",
-                            textAlign: "center",
-                          }}
-                        >
-                          {activeResult.subjects.reduce(
-                            (acc, s) => acc + Number(s.practical_marks || 0),
-                            0,
-                          )}
-                        </td>
-                        {/* Absolute Grand Total */}
-                        <td
-                          style={{
-                            border: "1px solid #000000",
-                            textAlign: "center",
-                            color: "#1e40af",
-                            fontSize: "13px",
-                          }}
-                        >
-                          {activeResult.subjects.reduce(
-                            (acc, s) =>
-                              acc +
-                              Number(s.theory_marks || 0) +
-                              Number(s.practical_marks || 0),
-                            0,
-                          )}
-                        </td>
-                      </tr>
-                    </tfoot>
-                  </table>
-                </div>
-              </div>
-            </div>
+              result={activeResult}
+              user={user}
+            />
           </div>
         </div>
       )}

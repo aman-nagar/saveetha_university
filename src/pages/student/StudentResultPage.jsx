@@ -25,6 +25,7 @@ export default function StudentResultPage() {
     setLoading(true);
     try {
       const response = await fetchStudentResults();
+      console.log("📊 Results Loaded:", response);
       setResults(Array.isArray(response) ? response : response.data || []);
     } catch (err) {
       show("error", "Failed to load results");
@@ -99,7 +100,11 @@ export default function StudentResultPage() {
                   </p>
                 </div>
                 <Button
-                  onClick={() => setActiveResult(res)}
+                  onClick={() => {
+                    console.log("📝 Opening Marksheet for:", res);
+                    console.log("📚 Subjects Data:", res.subjects);
+                    setActiveResult(res);
+                  }}
                   className="rounded-2xl flex items-center gap-2"
                 >
                   <FaEye /> View & Download
@@ -110,6 +115,7 @@ export default function StudentResultPage() {
         </div>
       ) : (
         <div className="flex flex-col items-center space-y-6">
+          {console.log("🎓 Active Marksheet:", activeResult)}
           <div className="w-full max-w-[850px] flex justify-between items-center bg-white p-4 rounded-2xl shadow-sm border border-slate-200">
             <button
               onClick={() => setActiveResult(null)}
@@ -244,7 +250,7 @@ export default function StudentResultPage() {
                   {activeResult.course_name || activeResult.course || "N/A"}
                 </div>
 
-                {/* 📊 Dynamic Table Section */}
+                {/* 📊 Dynamic Table Section with Interleaved Max/Obtained Marks */}
                 <div
                   style={{
                     position: "absolute",
@@ -257,85 +263,215 @@ export default function StudentResultPage() {
                     style={{
                       width: "100%",
                       borderCollapse: "collapse",
-                      fontSize: "13px",
-                      lineHeight: "1.8",
+                      fontSize: "11px",
+                      lineHeight: "1.6",
                       color: "#000000",
                       border: "1px solid #000000",
                     }}
                   >
-                    <thead>
-                      {/* If your background doesn't have headers, you can leave this empty or omit it */}
-                    </thead>
-                    <tbody>
-                      {(activeResult.subjects || []).map((sub, i) => (
-                        <tr key={i}>
-                          <td
-                            style={{
-                              width: "335px",
-                              textAlign: "left",
-                              padding: "4px 8px",
-                              border: "1px solid #000000",
-                            }}
-                          >
-                            {sub.subject_name}
-                          </td>
-                          <td
-                            style={{
-                              width: "95px",
-                              textAlign: "center",
-                              border: "1px solid #000000",
-                            }}
-                          >
-                            {sub.theory_marks || "0"}
-                          </td>
-                          <td
-                            style={{
-                              width: "95px",
-                              textAlign: "center",
-                              border: "1px solid #000000",
-                            }}
-                          >
-                            {sub.practical_marks || "0"}
-                          </td>
-                          <td
-                            style={{
-                              textAlign: "center",
-                              fontWeight: "700",
-                              border: "1px solid #000000",
-                            }}
-                          >
-                            {Number(sub.theory_marks || 0) +
-                              Number(sub.practical_marks || 0)}
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-
-                    {/* ✅ Dynamic Total Row: This moves up or down based on the number of subjects */}
-                    <tfoot style={{ backgroundColor: "#f9fafb" }}>
+                    <thead
+                      style={{
+                        backgroundColor: "#f3f4f6",
+                        fontSize: "9px",
+                        fontWeight: "bold",
+                      }}
+                    >
                       <tr>
-                        <td
-                          colSpan="3"
+                        <th
                           style={{
                             border: "1px solid #000000",
-                            padding: "8px",
-                            textAlign: "right",
-                            fontWeight: "900",
-                            textTransform: "uppercase",
-                            fontSize: "11px",
-                            letterSpacing: "1px",
+                            padding: "4px",
                           }}
                         >
-                          Grand Total
-                        </td>
+                          Subject Name
+                        </th>
+                        <th
+                          style={{
+                            border: "1px solid #000000",
+                            padding: "4px",
+                            width: "65px",
+                          }}
+                        >
+                          Max Theory
+                        </th>
+                        <th
+                          style={{
+                            border: "1px solid #000000",
+                            padding: "4px",
+                            width: "65px",
+                          }}
+                        >
+                          Theory
+                        </th>
+                        <th
+                          style={{
+                            border: "1px solid #000000",
+                            padding: "4px",
+                            width: "65px",
+                          }}
+                        >
+                          Max Practical
+                        </th>
+                        <th
+                          style={{
+                            border: "1px solid #000000",
+                            padding: "4px",
+                            width: "65px",
+                          }}
+                        >
+                          Practical
+                        </th>
+                        <th
+                          style={{
+                            border: "1px solid #000000",
+                            padding: "4px",
+                            width: "65px",
+                          }}
+                        >
+                          Total
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {(activeResult.subjects || []).map((sub, i) => {
+                        const maxTh = Number(sub.max_theory_marks || 0);
+                        const maxPr = Number(sub.max_practical_marks || 0);
+                        const th = Number(sub.theory_marks || 0);
+                        const pr = Number(sub.practical_marks || 0);
+
+                        return (
+                          <tr key={i}>
+                            <td
+                              style={{
+                                border: "1px solid #000000",
+                                padding: "4px 8px",
+                                textAlign: "left",
+                              }}
+                            >
+                              {sub.subject_name}
+                            </td>
+                            {/* Max Theory vs Theory Obtained */}
+                            <td
+                              style={{
+                                border: "1px solid #000000",
+                                textAlign: "center",
+                              }}
+                            >
+                              {maxTh}
+                            </td>
+                            <td
+                              style={{
+                                border: "1px solid #000000",
+                                textAlign: "center",
+                                backgroundColor: "#f9fafb",
+                              }}
+                            >
+                              {th}
+                            </td>
+
+                            {/* Max Practical vs Practical Obtained */}
+                            <td
+                              style={{
+                                border: "1px solid #000000",
+                                textAlign: "center",
+                              }}
+                            >
+                              {maxPr}
+                            </td>
+                            <td
+                              style={{
+                                border: "1px solid #000000",
+                                textAlign: "center",
+                                backgroundColor: "#f9fafb",
+                              }}
+                            >
+                              {pr}
+                            </td>
+
+                            {/* Row Total */}
+                            <td
+                              style={{
+                                border: "1px solid #000000",
+                                textAlign: "center",
+                                fontWeight: "700",
+                              }}
+                            >
+                              {th + pr}
+                            </td>
+                          </tr>
+                        );
+                      })}
+                    </tbody>
+
+                    {/* Footer with Aggregate Totals */}
+                    <tfoot style={{ backgroundColor: "#f3f4f6" }}>
+                      <tr style={{ fontWeight: "900" }}>
                         <td
                           style={{
                             border: "1px solid #000000",
-                            padding: "8px",
+                            padding: "6px 8px",
+                            textAlign: "right",
+                            fontSize: "9px",
+                          }}
+                        >
+                          GRAND TOTAL
+                        </td>
+                        {/* Total Max Theory */}
+                        <td
+                          style={{
+                            border: "1px solid #000000",
                             textAlign: "center",
-                            fontWeight: "900",
-                            fontSize: "16px",
-                            color: "#1e40af", // Matches your blue branding
+                          }}
+                        >
+                          {activeResult.subjects.reduce(
+                            (acc, s) => acc + Number(s.max_theory_marks || 0),
+                            0,
+                          )}
+                        </td>
+                        {/* Total Obtained Theory */}
+                        <td
+                          style={{
+                            border: "1px solid #000000",
+                            textAlign: "center",
+                          }}
+                        >
+                          {activeResult.subjects.reduce(
+                            (acc, s) => acc + Number(s.theory_marks || 0),
+                            0,
+                          )}
+                        </td>
+                        {/* Total Max Practical */}
+                        <td
+                          style={{
+                            border: "1px solid #000000",
+                            textAlign: "center",
+                          }}
+                        >
+                          {activeResult.subjects.reduce(
+                            (acc, s) =>
+                              acc + Number(s.max_practical_marks || 0),
+                            0,
+                          )}
+                        </td>
+                        {/* Total Obtained Practical */}
+                        <td
+                          style={{
+                            border: "1px solid #000000",
+                            textAlign: "center",
+                          }}
+                        >
+                          {activeResult.subjects.reduce(
+                            (acc, s) => acc + Number(s.practical_marks || 0),
+                            0,
+                          )}
+                        </td>
+                        {/* Absolute Grand Total */}
+                        <td
+                          style={{
+                            border: "1px solid #000000",
+                            textAlign: "center",
+                            color: "#1e40af",
+                            fontSize: "13px",
                           }}
                         >
                           {activeResult.subjects.reduce(

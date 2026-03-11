@@ -126,12 +126,10 @@ export default function StudentResultPage() {
           </div>
 
           {/* Marksheet Preview Wrapper */}
-          <div className="w-full flex justify-center bg-bg p-2 md:p-10 rounded-3xl border border-border overflow-hidden">
-            {/* Responsive Scale Container: 
-                On mobile, we shrink the 794px width marksheet so it fits the screen width 
-            */}
-            <div className="flex justify-center w-full overflow-x-auto custom-scrollbar pt-4 pb-8">
-              <div className="origin-top transform scale-[0.45] sm:scale-[0.7] md:scale-[1.0] transition-transform duration-300">
+          <div className="w-full bg-bg p-2 md:p-10 rounded-3xl border border-border overflow-hidden">
+            {/* Inner scrollable container - allows full horizontal and vertical scroll */}
+            <div className="w-full overflow-x-auto overflow-y-auto max-h-[90vh]">
+              <div className="inline-flex">
                 <ResultPDFTemplate
                   ref={markSheetRef}
                   result={activeResult}

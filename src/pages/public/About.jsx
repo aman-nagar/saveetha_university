@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import {
   FaHistory,
@@ -7,10 +7,22 @@ import {
   FaUniversity,
   FaMicroscope,
 } from "react-icons/fa";
+import AboutUsSection from "../../components/public/about/AboutUsSection";
+import { publicMock } from "../../data/header.mock";
 
 export default function About() {
+  const [aboutData, setAboutData] = useState(null);
+
+  useEffect(() => {
+    // Load mock data for about us section
+    setAboutData(publicMock.aboutUs);
+  }, []);
+
   return (
     <div className="bg-white text-primary">
+      {/* New AboutUs Section - Featured at Top */}
+      {aboutData && <AboutUsSection data={aboutData} />}
+
       {/* 1. Impact Hero Section */}
       <section className="relative h-[60vh] flex items-center justify-center bg-primary overflow-hidden">
         {/* Animated Background Gradients */}

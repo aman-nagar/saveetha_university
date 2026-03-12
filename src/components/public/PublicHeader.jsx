@@ -21,12 +21,12 @@ export default function PublicHeader() {
   return (
     <>
       <motion.div
-        className="fixed top-0 left-0 right-0 h-1 bg-accent z-[100] origin-left"
+        className="fixed top-0 left-0 right-0 h-1 bg-bg z-[100] origin-left"
         style={{ scaleX }}
       />
       <Navbar
         fluid
-        className="bg-surface border-b border-border shadow-sm px-4 sm:px-6 lg:px-20"
+        className="bg-bg border-b border-border shadow-sm px-4 sm:px-6 lg:px-20"
       >
         <NavbarBrand as={Link} to="/" className="gap-2">
           <img

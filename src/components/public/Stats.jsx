@@ -1,12 +1,38 @@
 import React from "react";
+import { usePublicContent } from "@/hooks/usePublicContent";
 
+/**
+ * Stats Section Component
+ * Displays key statistics
+ * Data from context: home.stats
+ */
 export default function Stats() {
-  const stats = [
+  const { home } = usePublicContent();
+  const statsData = home?.stats;
+
+  // Default stats if no data available
+  const defaultStats = [
     { number: "50+", label: "Programs" },
     { number: "100+", label: "Expert Faculty" },
     { number: "5000+", label: "Students" },
     { number: "25+", label: "Research Centers" },
   ];
+
+  // Convert object stats to array if needed
+  let stats = defaultStats;
+  if (statsData) {
+    if (Array.isArray(statsData)) {
+      stats = statsData;
+    } else if (typeof statsData === "object") {
+      // Convert object {students: 5000, faculty: 200, ...} to array
+      stats = [
+        { number: `${statsData.programs || 25}+`, label: "Programs" },
+        { number: `${statsData.faculty || 200}+`, label: "Expert Faculty" },
+        { number: `${statsData.students || 5000}+`, label: "Students" },
+        { number: `${statsData.research || 50}+`, label: "Research Centers" },
+      ];
+    }
+  }
 
   return (
     <section className="bg-bg py-12">

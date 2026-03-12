@@ -1,20 +1,57 @@
 import React from "react";
+import { usePublicContent } from "@/hooks/usePublicContent";
 
+/**
+ * CTA (Call To Action) Section Component
+ * Displays a promotional section with CTA buttons
+ * Data from context: home (uses home-level CTA if available)
+ */
 export default function CTA() {
+  const { home } = usePublicContent();
+  const ctaSection = home?.cta;
+
+  // Default CTA if no data available
+  const defaultCTA = {
+    title: "Start Your Academic Journey Today",
+    description:
+      "Admissions are open for the upcoming session. Apply now and secure your future.",
+    buttons: [
+      { text: "Apply Now", variant: "primary", link: "/apply" },
+    ],
+  };
+
+  const cta = ctaSection || defaultCTA;
+
+  if (!cta) return null;
+
   return (
     <section className="bg-primary text-white py-16">
       <div className="max-w-4xl mx-auto text-center px-6">
         <h2 className="text-3xl font-heading font-bold">
-          Start Your Academic Journey Today
+          {cta.title}
         </h2>
         <p className="mt-4 text-white/90">
-          Admissions are open for the upcoming session. Apply now and secure
-          your future.
+          {cta.description}
         </p>
 
-        <button className="mt-8 bg-accent text-primary font-semibold px-8 py-3 rounded-lg hover:opacity-90 transition">
-          Apply Now
-        </button>
+        {/* CTA Buttons */}
+        {cta.buttons && cta.buttons.length > 0 && (
+          <div className="mt-8 flex gap-4 justify-center flex-wrap">
+            {cta.buttons.map((button, idx) => (
+              <button
+                key={idx}
+                onClick={() => button.link && (window.location.href = button.link)}
+                className={`font-semibold px-8 py-3 rounded-lg transition ${
+                  button.variant === "secondary"
+                    ? "bg-white text-primary hover:opacity-90"
+                    : "bg-accent text-primary hover:opacity-90"
+                }`}
+              >
+                {button.text}
+              </button>
+            ))}
+          </div>
+        )}
       </div>
     </section>
   );

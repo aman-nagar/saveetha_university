@@ -1,17 +1,26 @@
-import { useEffect, useState } from "react";
-import { fetchPublicContent } from "../services/publicApi";
+// src / hooks / usePublicContent.js;
+import { useContext } from "react";
+import { PublicContentContext } from "../context/PublicContentContext";
 
+/**
+ * usePublicContent Hook
+ * Access global public website content from anywhere
+ * Returns: { content, loading, error, refreshContent, header, home, footer, announcements }
+ *
+ * Usage:
+ * const { header, loading, error } = usePublicContent();
+ * if (loading) return <Skeleton />;
+ * if (error) return <ErrorState />;
+ * return <Header data={header} />;
+ */
 export function usePublicContent() {
-  const [data, setData] = useState(null);
+  const context = useContext(PublicContentContext);
 
-  useEffect(() => {
-    fetchPublicContent().then(setData);
-  }, []);
+  if (!context) {
+    throw new Error(
+      "usePublicContent must be used within PublicContentProvider",
+    );
+  }
 
-  return {
-    loading: !data,
-    header: data?.header,
-    footer: data?.footer,
-    announcements: data?.announcements,
-  };
+  return context;
 }

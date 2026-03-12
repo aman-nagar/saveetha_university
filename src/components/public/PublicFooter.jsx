@@ -1,4 +1,4 @@
-// components/Footer.jsx
+// components/PublicFooter.jsx - Data-Driven Footer
 import {
   Footer,
   FooterCopyright,
@@ -7,98 +7,105 @@ import {
   FooterLinkGroup,
   FooterTitle,
 } from "flowbite-react";
-import { BsFacebook, BsInstagram, BsTwitter } from "react-icons/bs";
-import { Link } from "react-router-dom";
+import { BsFacebook, BsInstagram, BsTwitter, BsLinkedin } from "react-icons/bs";
 
-export default function PublicFooter() {
+/**
+ * PublicFooter Component - Data-Driven
+ * @param {Object} data - Footer configuration from API/mock
+ */
+export default function PublicFooter({ data }) {
+  // Handle missing data gracefully
+  const footerData = data || getDefaultFooterData();
+
   return (
-    <Footer className="bg-primary text-white rounded-none">
+    <Footer
+      className="rounded-none"
+      style={{ background: "var(--color-primary)" }}
+    >
       <div className="w-full">
-        <div className="grid w-full grid-cols-2 gap-8 px-6 py-10 md:grid-cols-4">
-          <div>
-            <FooterTitle title="University" className="text-accent" />
-            <FooterLinkGroup col>
-              <FooterLink href="#" className="text-white/80 hover:text-accent">
-                About
-              </FooterLink>
-              <FooterLink href="#" className="text-white/80 hover:text-accent">
-                Centers
-              </FooterLink>
-              <FooterLink href="#" className="text-white/80 hover:text-accent">
-                Admissions
-              </FooterLink>
-              <FooterLink href="#" className="text-white/80 hover:text-accent">
-                Contact
-              </FooterLink>
-            </FooterLinkGroup>
-          </div>
+        {/* Links Grid */}
+        <div className="grid w-full grid-cols-2 gap-8 px-6 py-10 md:grid-cols-3">
+          {/* Quick Links Column */}
+          {footerData.quickLinks && (
+            <div>
+              <FooterTitle title="Quick Links" className="text-accent" />
+              <FooterLinkGroup col>
+                {footerData.quickLinks.map((link) => (
+                  <FooterLink
+                    key={link.label}
+                    href={link.url}
+                    className="text-white/80 hover:text-accent"
+                  >
+                    {link.label}
+                  </FooterLink>
+                ))}
+              </FooterLinkGroup>
+            </div>
+          )}
 
-          <div>
-            <FooterTitle title="Students" className="text-accent" />
-            <FooterLinkGroup col>
-              <FooterLink href="#" className="text-white/80 hover:text-accent">
-                Student Portal
-              </FooterLink>
-              <FooterLink href="#" className="text-white/80 hover:text-accent">
-                Results
-              </FooterLink>
-              <FooterLink href="#" className="text-white/80 hover:text-accent">
-                Academic Calendar
-              </FooterLink>
-            </FooterLinkGroup>
-          </div>
+          {/* Contact Info */}
+          {footerData.contact && (
+            <div>
+              <FooterTitle title="Contact Us" className="text-accent" />
+              <div className="text-white/80 text-sm space-y-1">
+                <div>📞 {footerData.contact.phone}</div>
+                <div>📧 {footerData.contact.email}</div>
+                <div>📍 {footerData.contact.address}</div>
+              </div>
+            </div>
+          )}
 
-          <div>
-            <FooterTitle title="Legal" className="text-accent" />
-            <FooterLinkGroup col>
-              <FooterLink href="#" className="text-white/80 hover:text-accent">
-                Privacy Policy
-              </FooterLink>
-              <FooterLink href="#" className="text-white/80 hover:text-accent">
-                Terms & Conditions
-              </FooterLink>
-            </FooterLinkGroup>
-          </div>
-
-          <div>
-            <FooterTitle title="Contact" className="text-accent" />
-            <p className="text-white/80 text-sm">
-              aryavrat International University
-              <br />
-              Uttar Pradesh, India
-              <br />
-              info@university.edu
-            </p>
-          </div>
+          {/* Social Links */}
+          {footerData.social && (
+            <div>
+              <FooterTitle title="Follow Us" className="text-accent" />
+              <div className="flex space-x-4 text-white/80">
+                {footerData.social.map((social) => {
+                  const iconMap = {
+                    Facebook: BsFacebook,
+                    Twitter: BsTwitter,
+                    Instagram: BsInstagram,
+                    LinkedIn: BsLinkedin,
+                  };
+                  const Icon = iconMap[social.platform] || BsFacebook;
+                  return (
+                    <FooterIcon
+                      key={social.platform}
+                      href={social.url}
+                      icon={Icon}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-white/80 hover:text-accent hover:scale-110 transition"
+                    />
+                  );
+                })}
+              </div>
+            </div>
+          )}
         </div>
 
-        {/* Bottom bar */}
+        {/* Bottom Bar */}
         <div className="w-full border-t border-white/20 px-6 py-4 sm:flex sm:items-center sm:justify-between">
           <FooterCopyright
-            href="#"
-            by="Copyright 2018–2026 aryavrat International University"
+            by={footerData.copyright}
             className="text-white/70"
           />
-
-          <div className="mt-4 flex space-x-6 sm:mt-0">
-            <FooterIcon
-              href="#"
-              icon={BsFacebook}
-              className="text-white/70 hover:text-accent"
-            />
-            <FooterIcon
-              href="#"
-              icon={BsInstagram}
-              className="text-white/70 hover:text-accent"
-            />
-            <FooterIcon
-              href="#"
-              icon={BsTwitter}
-              className="text-white/70 hover:text-accent"
-            />
-          </div>
         </div>
       </div>
     </Footer>
   );
+}
+
+/**
+ * Default footer data if none provided
+ */
+function getDefaultFooterData() {
+  return {
+    copyright: "© 2026 Aryavart International University. All rights reserved.",
+    quickLinks: [
+      { label: "About", url: "/about" },
+      { label: "Programs", url: "/programs" },
+      { label: "Admissions", url: "/admission" },
+    ],
+  };
 }

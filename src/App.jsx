@@ -10,6 +10,7 @@ import PublicLayout from "@/layouts/PublicLayout";
 
 // ===== CONTEXT & PROVIDERS =====
 import { AuthProvider } from "@/context/AuthContext";
+import { PublicContentProvider } from "@/context/PublicContentContext";
 import ProtectedRoute from "@/context/ProtectedRoute";
 import FormEnabledRoute from "@/context/FormEnabledRoute";
 import { ToastProvider } from "@/context/ToastContext";
@@ -84,105 +85,110 @@ function App() {
   return (
     <AuthProvider>
       <ToastProvider>
-        <BrowserRouter>
-          <Suspense fallback={<LoadingFallback variant="dashboard" />}>
-            <Routes>
-              {/* ===== AUTH ROUTES ===== */}
-              <Route path={ROUTES.AUTH.PORTAL} element={<LoginPortal />} />
-              <Route
-                path={ROUTES.AUTH.STUDENT_LOGIN}
-                element={<StudentLogin />}
-              />
-              <Route path={ROUTES.AUTH.ADMIN_LOGIN} element={<AdminLogin />} />
-              <Route
-                path={ROUTES.AUTH.CENTER_LOGIN}
-                element={<CenterLogin />}
-              />
-
-              {/* ===== PUBLIC ROUTES ===== */}
-              <Route element={<PublicLayout />}>
-                <Route path={ROUTES.PUBLIC.HOME} element={<Home />} />
-                <Route path={ROUTES.PUBLIC.ABOUT} element={<About />} />
-                <Route path={ROUTES.PUBLIC.CONTACT} element={<Contact />} />
-                <Route path={ROUTES.PUBLIC.NEWS} element={<News />} />
-              </Route>
-
-              {/* ===== ADMIN ROUTES ===== */}
-              <Route
-                path={ROUTES.ADMIN.DASHBOARD}
-                element={
-                  <ProtectedRoute allowedRoles={["admin"]}>
-                    <AdminLayout />
-                  </ProtectedRoute>
-                }
-              >
-                <Route index element={<AdminDashboard />} />
-                <Route path="students" element={<StudentListPage />} />
-                <Route path="students/add" element={<AddStudent />} />
-                <Route path="students/edit/:id" element={<EditStudent />} />
-                <Route path="centers/add" element={<AddCenterPage />} />
-                <Route path="centers" element={<CenterListPage />} />
+        <PublicContentProvider>
+          <BrowserRouter>
+            <Suspense fallback={<LoadingFallback variant="dashboard" />}>
+              <Routes>
+                {/* ===== AUTH ROUTES ===== */}
+                <Route path={ROUTES.AUTH.PORTAL} element={<LoginPortal />} />
                 <Route
-                  path="admit-card/generate"
-                  element={<GenerateAdmitCardPage />}
+                  path={ROUTES.AUTH.STUDENT_LOGIN}
+                  element={<StudentLogin />}
                 />
-                <Route path="results/create" element={<CreateResultPage />} />
                 <Route
-                  path="course-category"
-                  element={<CourseCategoryPage />}
+                  path={ROUTES.AUTH.ADMIN_LOGIN}
+                  element={<AdminLogin />}
                 />
-                <Route path="faculty" element={<FacultyPage />} />
-                <Route path="course" element={<CoursePage />} />
-                <Route path="stream" element={<StreamPage />} />
-                <Route path="subject" element={<SubjectPage />} />
-                <Route path="site-settings" element={<SiteSettingsPage />} />
-              </Route>
-
-              {/* ===== CENTER ROUTES ===== */}
-              <Route
-                path={ROUTES.CENTER.DASHBOARD}
-                element={
-                  <ProtectedRoute allowedRoles={["center"]}>
-                    <CenterLayout />
-                  </ProtectedRoute>
-                }
-              >
-                <Route index element={<CenterDashboardPage />} />
-                <Route path="students" element={<StudentListPage />} />
-                <Route path="students/add" element={<AddStudent />} />
                 <Route
-                  path="center/add"
+                  path={ROUTES.AUTH.CENTER_LOGIN}
+                  element={<CenterLogin />}
+                />
+
+                {/* ===== PUBLIC ROUTES ===== */}
+                <Route element={<PublicLayout />}>
+                  <Route path={ROUTES.PUBLIC.HOME} element={<Home />} />
+                  <Route path={ROUTES.PUBLIC.ABOUT} element={<About />} />
+                  <Route path={ROUTES.PUBLIC.CONTACT} element={<Contact />} />
+                  <Route path={ROUTES.PUBLIC.NEWS} element={<News />} />
+                </Route>
+
+                {/* ===== ADMIN ROUTES ===== */}
+                <Route
+                  path={ROUTES.ADMIN.DASHBOARD}
                   element={
-                    <FormEnabledRoute>
-                      <AddCenterPage />
-                    </FormEnabledRoute>
+                    <ProtectedRoute allowedRoles={["admin"]}>
+                      <AdminLayout />
+                    </ProtectedRoute>
                   }
+                >
+                  <Route index element={<AdminDashboard />} />
+                  <Route path="students" element={<StudentListPage />} />
+                  <Route path="students/add" element={<AddStudent />} />
+                  <Route path="students/edit/:id" element={<EditStudent />} />
+                  <Route path="centers/add" element={<AddCenterPage />} />
+                  <Route path="centers" element={<CenterListPage />} />
+                  <Route
+                    path="admit-card/generate"
+                    element={<GenerateAdmitCardPage />}
+                  />
+                  <Route path="results/create" element={<CreateResultPage />} />
+                  <Route
+                    path="course-category"
+                    element={<CourseCategoryPage />}
+                  />
+                  <Route path="faculty" element={<FacultyPage />} />
+                  <Route path="course" element={<CoursePage />} />
+                  <Route path="stream" element={<StreamPage />} />
+                  <Route path="subject" element={<SubjectPage />} />
+                  <Route path="site-settings" element={<SiteSettingsPage />} />
+                </Route>
+
+                {/* ===== CENTER ROUTES ===== */}
+                <Route
+                  path={ROUTES.CENTER.DASHBOARD}
+                  element={
+                    <ProtectedRoute allowedRoles={["center"]}>
+                      <CenterLayout />
+                    </ProtectedRoute>
+                  }
+                >
+                  <Route index element={<CenterDashboardPage />} />
+                  <Route path="students" element={<StudentListPage />} />
+                  <Route path="students/add" element={<AddStudent />} />
+                  <Route
+                    path="center/add"
+                    element={
+                      <FormEnabledRoute>
+                        <AddCenterPage />
+                      </FormEnabledRoute>
+                    }
+                  />
+                </Route>
+
+                {/* ===== STUDENT ROUTES ===== */}
+                <Route
+                  path={ROUTES.STUDENT.DASHBOARD}
+                  element={
+                    <ProtectedRoute allowedRoles={["student"]}>
+                      <StudentLayout />
+                    </ProtectedRoute>
+                  }
+                >
+                  <Route index element={<StudentDashboard />} />
+                  <Route path="id-card" element={<StudentIDCardPage />} />
+                  <Route path="admit-card" element={<StudentAdmitCardPage />} />
+                  <Route path="results" element={<StudentResultPage />} />
+                </Route>
+
+                {/* ===== ERROR ROUTES ===== */}
+                <Route
+                  path={ROUTES.ERROR.UNAUTHORIZED}
+                  element={<UnauthorizedPage />}
                 />
-              </Route>
-
-              {/* ===== STUDENT ROUTES ===== */}
-              <Route
-                path={ROUTES.STUDENT.DASHBOARD}
-                element={
-                  <ProtectedRoute allowedRoles={["student"]}>
-                    <StudentLayout />
-                  </ProtectedRoute>
-                }
-              >
-                <Route index element={<StudentDashboard />} />
-                <Route path="id-card" element={<StudentIDCardPage />} />
-                <Route path="admit-card" element={<StudentAdmitCardPage />} />
-                <Route path="results" element={<StudentResultPage />} />
-              </Route>
-
-              {/* ===== ERROR ROUTES ===== */}
-              <Route
-                path={ROUTES.ERROR.UNAUTHORIZED}
-                element={<UnauthorizedPage />}
-              />
-            </Routes>
-          </Suspense>
-        </BrowserRouter>
+              </Routes>
+            </Suspense>
+          </BrowserRouter>
+        </PublicContentProvider>
       </ToastProvider>
     </AuthProvider>
   );

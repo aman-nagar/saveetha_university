@@ -1,14 +1,40 @@
 import React from "react";
+import { usePublicContent } from "@/hooks/usePublicContent";
 
+/**
+ * Programs Section Component
+ * Displays available programs/courses
+ * Data from context: home.programs[]
+ */
 export default function Programs() {
-  const programs = [
-    "Management",
-    "Law",
-    "Computer Science",
-    "Pharmacy",
-    "Education",
-    "Humanities",
+  const { home } = usePublicContent();
+  const programsData = home?.programs;
+
+  // Default programs if no data available
+  const defaultPrograms = [
+    {
+      name: "Management",
+      description: "High-quality curriculum with industry-focused learning.",
+      duration: "2 years",
+    },
+    {
+      name: "Law",
+      description: "High-quality curriculum with industry-focused learning.",
+      duration: "3 years",
+    },
+    {
+      name: "Computer Science",
+      description: "High-quality curriculum with industry-focused learning.",
+      duration: "2 years",
+    },
+    {
+      name: "Pharmacy",
+      description: "High-quality curriculum with industry-focused learning.",
+      duration: "2 years",
+    },
   ];
+
+  const programs = programsData?.length > 0 ? programsData : defaultPrograms;
 
   return (
     <section className="py-16 bg-bg">
@@ -29,11 +55,14 @@ export default function Programs() {
               className="bg-surface border border-border rounded-xl p-6 shadow-sm hover:shadow-md transition"
             >
               <h3 className="font-heading font-semibold text-lg text-primary">
-                {program}
+                {program.name}
               </h3>
               <p className="text-muted mt-2 text-sm">
-                High-quality curriculum with industry-focused learning.
+                {program.description}
               </p>
+              {program.duration && (
+                <p className="text-xs text-muted mt-1">Duration: {program.duration}</p>
+              )}
 
               <button className="mt-4 text-secondary font-medium hover:underline">
                 View details →

@@ -7,6 +7,7 @@ import {
   FaChalkboardTeacher,
 } from "react-icons/fa";
 import canvasConfetti from "canvas-confetti";
+import { usePublicContent } from "@/hooks/usePublicContent";
 
 /**
  * Reusable Counter Component with Spring Physics
@@ -70,8 +71,16 @@ function Counter({ value, triggerConfetti = false }) {
   );
 }
 
+/**
+ * WhyUS Component
+ * Displays reasons why students should choose this institution
+ * Data from context: home.about (reasons and stats)
+ */
 export default function WhyUs() {
-  const REASONS = [
+  const { home } = usePublicContent();
+  
+  // Default reasons
+  const DEFAULT_REASONS = [
     {
       title: "Academic Excellence",
       icon: <FaGraduationCap />,
@@ -98,12 +107,17 @@ export default function WhyUs() {
     },
   ];
 
-  const STATS = [
+  // Default stats
+  const DEFAULT_STATS = [
     { number: "50+", label: "Programs" },
     { number: "100+", label: "Expert Faculty" },
     { number: "5000+", label: "Alumni", celebrate: true },
     { number: "25+", label: "Research Centers" },
   ];
+
+  const aboutData = home?.about;
+  const REASONS = aboutData?.reasons?.length > 0 ? aboutData.reasons : DEFAULT_REASONS;
+  const STATS = aboutData?.stats?.length > 0 ? aboutData.stats : DEFAULT_STATS;
 
   return (
     <section className="relative py-24 px-4 bg-primary overflow-hidden">
@@ -122,8 +136,7 @@ export default function WhyUs() {
           className="text-center mb-16"
         >
           <h2 className="text-4xl md:text-5xl font-heading font-extrabold text-white mb-6">
-            Why <span className="text-accent italic">aryavrat</span>{" "}
-            International?
+            Why <span className="text-accent italic">Choose Us</span>?
           </h2>
           <div className="w-24 h-1.5 bg-accent mx-auto rounded-full mb-6" />
         </motion.div>
@@ -135,7 +148,7 @@ export default function WhyUs() {
               key={i}
               initial={{ opacity: 0, scale: 0.95 }}
               whileInView={{ opacity: 1, scale: 1 }}
-              transition={{ delay: reason.delay }}
+              transition={{ delay: reason.delay || 0.1 * i }}
               whileHover={{ y: -8 }}
               className="bg-white/5 backdrop-blur-md p-8 rounded-3xl border border-white/10 hover:border-accent/40 transition-all group"
             >

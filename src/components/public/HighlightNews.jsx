@@ -1,6 +1,11 @@
 import React from "react";
 import { Link } from "react-router-dom";
+import { usePublicContent } from "@/hooks/usePublicContent";
 
+/**
+ * NewsColumn Component
+ * Displays scrolling news items
+ */
 function NewsColumn({ title, items, headerColor }) {
   return (
     <div className="bg-surface border border-border rounded-3xl overflow-hidden shadow-md">
@@ -15,21 +20,27 @@ function NewsColumn({ title, items, headerColor }) {
       {/* Scrolling area */}
       <div className="h-64 overflow-hidden relative">
         <div className="absolute w-full animate-scroll">
-          {[...items, ...items].map((item, i) => (
-            <div
-              key={i}
-              className="flex gap-3 px-4 py-3 border-b border-border"
-            >
-              <div className="w-10 h-10 bg-primary/10 rounded-full flex items-center justify-center text-primary font-bold">
-                N
-              </div>
+          {items && items.length > 0 ? (
+            [...items, ...items].map((item, i) => (
+              <div
+                key={i}
+                className="flex gap-3 px-4 py-3 border-b border-border"
+              >
+                <div className="w-10 h-10 bg-primary/10 rounded-full flex items-center justify-center text-primary font-bold">
+                  N
+                </div>
 
-              <div className="text-sm">
-                <p className="text-text font-medium">{item.title}</p>
-                <p className="text-muted text-xs">Date: {item.date}</p>
+                <div className="text-sm">
+                  <p className="text-text font-medium">{item.title}</p>
+                  <p className="text-muted text-xs">Date: {item.date}</p>
+                </div>
               </div>
+            ))
+          ) : (
+            <div className="flex items-center justify-center h-full text-muted">
+              No news available
             </div>
-          ))}
+          )}
         </div>
       </div>
 
@@ -46,24 +57,38 @@ function NewsColumn({ title, items, headerColor }) {
   );
 }
 
+/**
+ * HighlightNews Component
+ * Displays news from three categories
+ * Data from context: home.announcements
+ */
 export default function HighlightNews() {
-  const campusNews = [
-    { title: "Diploma exam notice", date: "08/12/2025" },
-    { title: "Promotion notice for teachers", date: "21/11/2025" },
-    { title: "Scholarship notice", date: "30/10/2025" },
-  ];
+  const { home } = usePublicContent();
 
-  const announcements = [
-    { title: "Project Associate recruitment", date: "16/01/2026" },
-    { title: "Research incentive notice", date: "25/12/2025" },
-    { title: "Assistant professor recruitment", date: "18/11/2025" },
-  ];
+  // Default news data if no data available
+  const defaultNews = {
+    campusNews: [
+      { title: "Diploma exam notice", date: "08/12/2025" },
+      { title: "Promotion notice for teachers", date: "21/11/2025" },
+      { title: "Scholarship notice", date: "30/10/2025" },
+    ],
+    announcements: [
+      { title: "Project Associate recruitment", date: "16/01/2026" },
+      { title: "Research incentive notice", date: "25/12/2025" },
+      { title: "Assistant professor recruitment", date: "18/11/2025" },
+    ],
+    universityNews: [
+      { title: "Registration instructions", date: "07/02/2026" },
+      { title: "Semester course notice", date: "07/02/2026" },
+      { title: "Education policy update", date: "06/02/2026" },
+    ],
+  };
 
-  const universityNews = [
-    { title: "Registration instructions", date: "07/02/2026" },
-    { title: "Semester course notice", date: "07/02/2026" },
-    { title: "Education policy update", date: "06/02/2026" },
-  ];
+  const newsData = {
+    campusNews: home?.announcements?.[0] ? [home.announcements[0]] : defaultNews.campusNews,
+    announcements: home?.announcements?.[1] ? [home.announcements[1]] : defaultNews.announcements,
+    universityNews: home?.announcements?.[2] ? [home.announcements[2]] : defaultNews.universityNews,
+  };
 
   return (
     <section className="py-16 bg-bg">
@@ -79,17 +104,17 @@ export default function HighlightNews() {
         <div className="grid md:grid-cols-3 gap-6">
           <NewsColumn
             title="Campus News"
-            items={campusNews}
+            items={newsData.campusNews}
             headerColor="#0b1f4b"
           />
           <NewsColumn
             title="Announcements"
-            items={announcements}
+            items={newsData.announcements}
             headerColor="#b23a3a"
           />
           <NewsColumn
             title="University News"
-            items={universityNews}
+            items={newsData.universityNews}
             headerColor="#c9a227"
           />
         </div>

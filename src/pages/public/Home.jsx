@@ -15,8 +15,8 @@ import AcademicStreams from "./sections/AcademicStreams";
 export default function Home() {
   return (
     <div className="bg-bg">
-      <Hero />
       <HeroSlider />
+      <Hero />
       <HighlightNews />
       <Stats />
       <WhyUS />

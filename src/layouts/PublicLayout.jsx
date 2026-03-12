@@ -12,7 +12,7 @@ export default function PublicLayout() {
         <Outlet />
       </main>
       <PublicFooter />
-      <BackToTop /> {/* Add the button here */}
+      <BackToTop />
     </div>
   );
 }

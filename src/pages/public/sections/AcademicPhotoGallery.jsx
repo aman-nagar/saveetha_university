@@ -1,185 +1,126 @@
-// src/components/university/AcademicPhotoGallery.jsx
 import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { FaTimes, FaExpandAlt } from "react-icons/fa"; // Require react-icons
-import demoImage from "../../../assets/images/demoImage.jpeg";
-// Assuming this data comes from an API or prop
-const GALLY_IMAGES = [
-  {
-    id: 1,
-    src: demoImage,
-    alt: "University Event Group",
-  },
-  {
-    id: 2,
-    src: demoImage.jpeg,
-    alt: "Students Presentation",
-  },
-  {
-    id: 3,
-    src: demoImage.jpeg,
-    alt: "Official Ceremony",
-  },
-  {
-    id: 4,
-    src: demoImage.jpeg,
-    alt: "Bus Tour Group",
-  },
-  {
-    id: 5,
-    src: demoImage.jpeg,
-    alt: "Classroom Activity",
-  },
-  {
-    id: 6,
-    src: demoImage.jpeg,
-    alt: "Faculty Meeting",
-  },
-  {
-    id: 7,
-    src: demoImage.jpeg,
-    alt: "Dean and Staff",
-  },
-  {
-    id: 8,
-    src: demoImage.jpeg,
-    alt: "Award Reception",
-  },
-  {
-    id: 9,
-    src: demoImage.jpeg,
-    alt: "Student Leadership Team",
-  },
-];
+import { FaTimes, FaExpandAlt } from "react-icons/fa";
+import { usePublicContent } from "@/hooks/usePublicContent";
 
-// 1. Framer Motion Animation Variants
 const containerVariants = {
   hidden: { opacity: 0 },
   visible: {
     opacity: 1,
-    transition: {
-      staggerChildren: 0.1, // Images fade in one after another
-    },
+    transition: { staggerChildren: 0.15 },
   },
 };
 
 const itemVariants = {
-  hidden: { y: 20, opacity: 0 },
-  visible: { y: 0, opacity: 1, transition: { type: "spring", stiffness: 80 } },
+  hidden: { y: 30, opacity: 0 },
+  visible: {
+    y: 0,
+    opacity: 1,
+    transition: { type: "spring", stiffness: 60, damping: 15 },
+  },
 };
 
 export default function AcademicPhotoGallery() {
+  const { home } = usePublicContent();
+  const data = home?.gallery;
   const [selectedImage, setSelectedImage] = useState(null);
 
-  // Close the lightbox modal
+  if (!data) return null;
+
   const closeLightbox = () => setSelectedImage(null);
 
   return (
-    <div className="min-h-screen bg-gray-50/50 py-12 px-4 sm:px-6 lg:px-8">
+    <div className="py-20 px-4 sm:px-6 lg:px-8 bg-white">
       <div className="max-w-7xl mx-auto">
-        {/* Gallery Section Header */}
-        <div className="mb-10 text-center md:text-left">
-          <h2 className="text-3xl md:text-4xl font-heading font-extrabold text-primary tracking-tight">
-            Photo <span className="text-accent">Gallery</span>
+        {/* Header */}
+        <div className="mb-12 text-center md:text-left">
+          <h2 className="text-4xl md:text-5xl font-heading font-black text-primary tracking-tight">
+            {data.heading} <span className="text-accent">{data.highlight}</span>
           </h2>
-          <div className="h-1.5 w-24 bg-accent mt-3 rounded-full mx-auto md:mx-0"></div>
-          <p className="mt-4  text-muted ">
-            A visual journey through the vibrant student life, prestigious
-            ceremonies, and innovative learning at our university.
-          </p>
+          <div className="h-1.5 w-24 bg-accent mt-4 rounded-full mx-auto md:mx-0"></div>
+          <p className="mt-6 text-muted  leading-relaxed">{data.description}</p>
         </div>
 
-        {/* 2. Bento Grid Layout */}
+        {/* 1-Row Grid Layout */}
         <motion.div
           variants={containerVariants}
           initial="hidden"
           whileInView="visible"
-          viewport={{ once: true, amount: 0.3 }} // Animate only once when 30% visible
-          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"
+          viewport={{ once: true, amount: 0.2 }}
+          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8"
         >
-          {GALLY_IMAGES.map((image) => (
+          {data.images.map((image) => (
             <motion.div
               key={image.id}
               variants={itemVariants}
-              className="relative group cursor-pointer aspect-[4/3] rounded-2xl overflow-hidden shadow-md border border-gray-100 bg-white"
+              className="relative group cursor-pointer aspect-[4/3] rounded-3xl overflow-hidden shadow-xl bg-gray-100"
               onClick={() => setSelectedImage(image)}
-              // 3. Hover Interactions
-              whileHover={{
-                scale: 1.03,
-                transition: { duration: 0.3, ease: "easeOut" },
-              }}
+              whileHover={{ y: -8 }}
             >
-              {/* Image with subtle pan on hover */}
               <img
-                src={demoImage}
+                src={image.src}
                 alt={image.alt}
-                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+                className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
               />
 
-              {/* Black Gradient Overlay on Hover */}
-              <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-
-              {/* Caption & Expand Icon appearing on hover */}
-              <div className="absolute bottom-0 left-0 right-0 p-5 transform translate-y-4 group-hover:translate-y-0 transition-transform duration-300">
-                <div className="flex items-center justify-between gap-4">
-                  <p className="text-white font-medium text-sm truncate opacity-0 group-hover:opacity-100 transition-opacity duration-400 delay-100">
-                    {image.alt}
-                  </p>
-                  <motion.div
-                    whileHover={{ scale: 1.2 }}
-                    className="p-2.5 rounded-full bg-accent/90 text-primary opacity-0 group-hover:opacity-100 transition-opacity duration-300 shadow-xl"
-                  >
+              {/* Hover Overlay */}
+              <div className="absolute inset-0 bg-gradient-to-t from-primary/90 via-primary/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                <div className="absolute bottom-0 left-0 right-0 p-8 flex items-end justify-between">
+                  <div>
+                    <span className="text-accent text-xs font-bold uppercase tracking-widest block mb-1">
+                      {image.category || "University"}
+                    </span>
+                    <p className="text-white font-bold text-lg leading-tight">
+                      {image.alt}
+                    </p>
+                  </div>
+                  <div className="p-3 rounded-full bg-accent text-primary shadow-lg">
                     <FaExpandAlt size={16} />
-                  </motion.div>
+                  </div>
                 </div>
               </div>
             </motion.div>
           ))}
         </motion.div>
 
-        {/* 4. Lightbox (Click to enlarge modal) */}
+        {/* Lightbox Modal */}
         <AnimatePresence>
           {selectedImage && (
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              onClick={closeLightbox} // Click outside to close
-              className="fixed inset-0 z-50 p-4 flex items-center justify-center bg-black/90 backdrop-blur-sm"
+              onClick={closeLightbox}
+              className="fixed inset-0 z-50 flex items-center justify-center bg-primary/95 backdrop-blur-md p-4"
             >
-              {/* Animation for the modal content */}
               <motion.div
-                initial={{ scale: 0.9, opacity: 0, y: 50 }}
-                animate={{ scale: 1, opacity: 1, y: 0 }}
-                exit={{ scale: 0.9, opacity: 0, y: 50 }}
-                transition={{ type: "spring", damping: 20, stiffness: 120 }}
-                onClick={(e) => e.stopPropagation()} // Stop click-through
-                className="relative max-w-5xl max-h-[90vh] bg-white rounded-3xl overflow-hidden shadow-2xl border-4 border-accent/20"
+                initial={{ scale: 0.9, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                exit={{ scale: 0.9, opacity: 0 }}
+                onClick={(e) => e.stopPropagation()}
+                className="relative max-w-5xl w-full bg-white rounded-[2rem] overflow-hidden shadow-2xl"
               >
-                {/* Image */}
                 <img
-                  src={demoImage}
+                  src={selectedImage.src}
                   alt={selectedImage.alt}
-                  className="w-full h-auto object-contain max-h-[80vh]"
+                  className="w-full h-auto max-h-[75vh] object-contain"
                 />
 
-                {/* Lightbox Footer (Navy Background) */}
-                <div className="bg-primary p-6 text-center">
-                  <h4 className="text-white text-lg font-bold">
+                <div className="bg-primary p-8 text-center">
+                  <h4 className="text-white text-xl font-black italic uppercase tracking-wider">
                     {selectedImage.alt}
                   </h4>
-                  <p className="text-gray-300 text-sm mt-1">
-                    University Event Archive
+                  <p className="text-accent text-sm font-bold mt-2 uppercase">
+                    Saveetha Amravati University Archive
                   </p>
                 </div>
 
-                {/* Close Button (Gold Accent) */}
                 <motion.button
                   whileHover={{ scale: 1.1, rotate: 90 }}
                   onClick={closeLightbox}
-                  className="absolute top-5 right-5 z-50 p-3 rounded-full bg-accent/90 text-primary shadow-xl"
+                  className="absolute top-6 right-6 p-4 rounded-full bg-accent text-primary shadow-2xl"
                 >
-                  <FaTimes size={18} />
+                  <FaTimes size={20} />
                 </motion.button>
               </motion.div>
             </motion.div>

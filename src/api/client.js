@@ -38,7 +38,6 @@ export async function apiRequest(endpoint, options = {}) {
       localStorage.removeItem("authUser");
       window.location.href = "/portal";
     }
-    
     throw new Error(backendError);
   }
 

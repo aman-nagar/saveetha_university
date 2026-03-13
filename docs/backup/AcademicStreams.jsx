@@ -27,7 +27,7 @@ const STREAMS = [
     accent: "text-secondary",
   },
   {
-    title: "Pharmacy",
+    title: "Agriculture",
     subtitle: "Medical Innovation",
     icon: <FaPills />,
     size: "md:col-span-1 md:row-span-1",

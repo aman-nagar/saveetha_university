@@ -19,11 +19,11 @@ import {
 
 const GOLD = "#d4a843";
 const CARD_SPACING = 260;
-``
+``;
 const STEPS = [
   {
     title: "Seamless Admission",
-    desc: "A simplified, digital-first process to jumpstart your academic journey in fields like BCA, Law, or Pharmacy.",
+    desc: "A simplified, digital-first process to jumpstart your academic journey in fields like BCA, faculty of science, or agriculture.",
     Icon: FaUserPlus,
     align: "left",
     year: "Step 01",

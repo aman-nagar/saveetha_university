@@ -67,10 +67,16 @@ const ProgramSchema = z.object({
   link: z.string().url().or(z.string().startsWith("/")).optional(),
 });
 
+const StatItemSchema = z.object({
+  value: z.number(),
+  suffix: z.string().optional(),
+  label: z.string(),
+});
 const StatsSchema = z.object({
-  students: z.number(),
-  faculty: z.number(),
-  programs: z.number(),
+  items: z.array(StatItemSchema).optional(),
+  students: z.number().optional(),
+  faculty: z.number().optional(),
+  programs: z.number().optional(),
   research: z.number().optional(),
 });
 
@@ -90,12 +96,64 @@ const AnnouncementSchema = z.object({
   isHighlight: z.boolean().optional(),
 });
 
+const WhyUsSchema = z.object({
+  heading: z.string(),
+  highlight: z.string(),
+  reasons: z.array(
+    z.object({
+      id: z.number(),
+      title: z.string(),
+      icon: z.string(),
+      desc: z.string(),
+    }),
+  ),
+  stats: z.array(
+    z.object({
+      id: z.number(),
+      number: z.string(),
+      label: z.string(),
+    }),
+  ),
+});
+
+const GalleryImageSchema = z.object({
+  id: z.union([z.number(), z.string()]),
+  src: z.string(),
+  alt: z.string(),
+  category: z.string().optional(),
+});
+
+const GallerySchema = z.object({
+  heading: z.string(),
+  highlight: z.string(),
+  description: z.string(),
+  images: z.array(GalleryImageSchema),
+});
+
 const HomeSchema = z.object({
   hero: HeroSchema,
   programs: z.array(ProgramSchema),
   stats: StatsSchema,
   testimonials: z.array(TestimonialSchema),
   announcements: z.array(AnnouncementSchema),
+  whyUs: WhyUsSchema.optional(),
+  gallery: GallerySchema.optional(), // CRITICAL: Add this line
+  academicStreams: z
+    .object({
+      title: z.string(),
+      highlightTitle: z.string(),
+      subtitle: z.string(),
+      streams: z.array(
+        z.object({
+          id: z.number(),
+          name: z.string(),
+          approval: z.string(),
+          levels: z.string(),
+          image: z.string(),
+        }),
+      ),
+    })
+    .optional(),
   about: z
     .object({
       title: z.string(),

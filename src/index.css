@@ -146,3 +146,19 @@ textarea:focus::placeholder {
 }
 
 /* Custom Placeholder Styling */
+
+.gateway-text-effect {
+  color: white;
+  -webkit-text-stroke: 1px var(--color-secondary);
+  text-shadow: 0 0 15px rgba(161, 42, 42, 0.6);
+}
+
+/* stats card */
+@keyframes shimmer {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
+}

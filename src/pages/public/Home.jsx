@@ -9,24 +9,31 @@ import HighlightNews from "../../components/public/HighlightNews";
 import AcademicPhotoGallery from "./sections/AcademicPhotoGallery";
 import StudentReviews from "./sections/StudentReviews";
 import StepIntoaryavrat from "./sections/StepIntoAryavart";
-import AcademicStreams from "./sections/AcademicStreams";
+
 import AboutUsSection from "../../components/public/about/AboutUsSection";
 import { publicMock } from "../../data/header.mock";
+import VideoSection from "../../components/public/sections/VideoSection";
+import AcademicStreams from "../../components/public/sections/AcademicStreams";
 
 export default function Home() {
+  const videoUrl =
+    "https://www.youtube.com/embed/6ygTNiz550I?si=91IJ5rQO_cPWCLzj";
+
   return (
     <div className="bg-bg">
       <HeroSlider />
       <Hero />
       <AboutUsSection data={publicMock.aboutUs} />
+      <VideoSection videoUrl={videoUrl} />
       <HighlightNews />
-      <Stats />
+      {/* <Stats /> */}
       <WhyUS />
+      <AcademicStreams data={publicMock.home.academicStreams} />
+
       <Programs />
       <AcademicPhotoGallery />
       <StudentReviews />
       {/* <StepIntoaryavrat /> */}
-      <AcademicStreams />
       <CTA />
     </div>
   );

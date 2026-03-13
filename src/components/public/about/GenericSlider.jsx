@@ -62,28 +62,25 @@ export default function GenericSlider({
 
   return (
     <div
-      className={`relative w-full ${sizeClasses[size]} bg-gray-900 rounded-lg overflow-hidden`}
+      className={`relative w-full ${sizeClasses[size]} bg-transparent overflow-hidden`}
     >
-      {/* Slides Container */}
       <div className="relative w-full h-full">
-        {slides.map((slide, index) => (
-          <div
-            key={index}
-            className={`group ${
-              index === currentSlide ? "active" : ""
-            } absolute inset-0 transition-all duration-500 ${effectClasses[effect]}`}
-          >
-            {renderSlide ? (
-              renderSlide(slide)
-            ) : (
-              <div className="w-full h-full bg-gradient-to-b from-gray-800 to-gray-900 flex items-center justify-center text-white">
-                <p className="text-center">
-                  {slide.content || "Slide content"}
-                </p>
-              </div>
-            )}
-          </div>
-        ))}
+        {slides.map((slide, index) => {
+          const isActive = index === currentSlide;
+
+          return (
+            <div
+              key={index}
+              className={`absolute inset-0 transition-all duration-700 ease-in-out ${
+                isActive
+                  ? "opacity-100 z-10 translate-x-0"
+                  : "opacity-0 z-0 pointer-events-none"
+              }`}
+            >
+              {renderSlide(slide)}
+            </div>
+          );
+        })}
       </div>
 
       {/* Navigation Arrows */}

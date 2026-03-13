@@ -18,17 +18,17 @@ export default function Programs() {
       duration: "2 years",
     },
     {
-      name: "Law",
+      name: "faculty of science",
       description: "High-quality curriculum with industry-focused learning.",
       duration: "3 years",
     },
     {
-      name: "Computer Science",
+      name: "Engineering",
       description: "High-quality curriculum with industry-focused learning.",
       duration: "2 years",
     },
     {
-      name: "Pharmacy",
+      name: "Agriculture",
       description: "High-quality curriculum with industry-focused learning.",
       duration: "2 years",
     },
@@ -57,11 +57,11 @@ export default function Programs() {
               <h3 className="font-heading font-semibold text-lg text-primary">
                 {program.name}
               </h3>
-              <p className="text-muted mt-2 text-sm">
-                {program.description}
-              </p>
+              <p className="text-muted mt-2 text-sm">{program.description}</p>
               {program.duration && (
-                <p className="text-xs text-muted mt-1">Duration: {program.duration}</p>
+                <p className="text-xs text-muted mt-1">
+                  Duration: {program.duration}
+                </p>
               )}
 
               <button className="mt-4 text-secondary font-medium hover:underline">

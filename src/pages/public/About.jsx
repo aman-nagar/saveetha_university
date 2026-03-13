@@ -43,7 +43,7 @@ export default function About() {
             Defining <span className="text-accent">Excellence.</span>
           </h1>
           <p className="max-w-6xl mx-auto text-white/80 text-lg md:text-xl font-light leading-relaxed">
-            Aryavart International University is a sanctuary of innovation,
+            Saveetha Amravati University is a sanctuary of innovation,
             blending traditional values with global academic standards.
           </p>
         </motion.div>

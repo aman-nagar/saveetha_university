@@ -1,4 +1,6 @@
+// src/components/public/header/Navbar.jsx
 import { useState, useRef, useEffect } from "react";
+import { Link } from "react-router-dom";
 
 /**
  * Navbar Component - Mobile First Responsive
@@ -39,13 +41,13 @@ export default function Navbar({ items }) {
         {/* Desktop Navigation */}
         <div className="hidden md:flex gap-1 lg:gap-6 text-white font-medium text-sm lg:text-base">
           {items.map((item) => (
-            <a
+            <Link
               key={item.label}
-              href={item.url}
+              to={item.url}
               className="px-3 lg:px-4 py-2 hover:bg-accent hover:text-primary rounded transition duration-200 whitespace-nowrap"
             >
               {item.label}
-            </a>
+            </Link>
           ))}
         </div>
 
@@ -97,14 +99,14 @@ export default function Navbar({ items }) {
           >
             <div className="max-w-7xl mx-auto px-3 py-2 flex flex-col gap-1">
               {items.map((item) => (
-                <a
+                <Link
                   key={item.label}
                   href={item.url}
                   className="block px-4 py-3 text-white hover:bg-accent hover:text-primary rounded transition duration-200 font-medium text-sm border-l-4 border-transparent hover:border-accent"
                   onClick={() => setMobileMenuOpen(false)}
                 >
                   {item.label}
-                </a>
+                </Link>
               ))}
             </div>
           </div>

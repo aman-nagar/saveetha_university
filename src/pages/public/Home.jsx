@@ -14,6 +14,9 @@ import AboutUsSection from "../../components/public/about/AboutUsSection";
 import { publicMock } from "../../data/header.mock";
 import VideoSection from "../../components/public/sections/VideoSection";
 import AcademicStreams from "../../components/public/sections/AcademicStreams";
+import ImageSection from "../../components/public/sections/ImageScetion";
+import LeadingSection from "../../components/public/sections/LeadingSection";
+import AccreditationSection from "../../components/public/sections/AccreditationSection";
 
 export default function Home() {
   const videoUrl =
@@ -30,11 +33,14 @@ export default function Home() {
       <WhyUS />
       <AcademicStreams data={publicMock.home.academicStreams} />
 
+    <AccreditationSection />
       <Programs />
+      <CTA />
       <AcademicPhotoGallery />
+      <LeadingSection />
       <StudentReviews />
       {/* <StepIntoaryavrat /> */}
-      <CTA />
+      <ImageSection />
     </div>
   );
 }

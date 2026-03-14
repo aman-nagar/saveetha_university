@@ -3,11 +3,6 @@ import { HiArrowRight, HiX } from "react-icons/hi";
 import { MdPercent } from "react-icons/md";
 import { usePublicContent } from "@/hooks/usePublicContent";
 
-/**
- * AnnouncementBar Component
- * Displays scrolling announcements/promotions
- * Uses announcements data from PublicContentContext
- */
 export default function AnnouncementBar() {
   const { announcements } = usePublicContent();
 
@@ -38,13 +33,13 @@ export default function AnnouncementBar() {
             <span className="[&_p]:inline">
               {current.title}&nbsp;
               {current.link && current.linkText && (
-                <a
+                <Link
                   href={current.link || "#"}
                   className="ml-0 flex items-center text-sm font-medium text-cyan-600 hover:underline md:ml-1 md:inline-flex dark:text-cyan-500"
                 >
                   {current.linkText}
                   <HiArrowRight className="ml-2" />
-                </a>
+                </Link>
               )}
             </span>
           </p>

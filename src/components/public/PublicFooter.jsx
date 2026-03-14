@@ -1,6 +1,5 @@
 // components/PublicFooter.jsx - Data-Driven Footer
 import {
-  Footer,
   FooterCopyright,
   FooterIcon,
   FooterLink,
@@ -8,23 +7,22 @@ import {
   FooterTitle,
 } from "flowbite-react";
 import { BsFacebook, BsInstagram, BsTwitter, BsLinkedin } from "react-icons/bs";
+import worldMap from "../../assets/images/wmap.jpg";
 
-/**
- * PublicFooter Component - Data-Driven
- * @param {Object} data - Footer configuration from API/mock
- */
 export default function PublicFooter({ data }) {
-  // Handle missing data gracefully
   const footerData = data || getDefaultFooterData();
 
   return (
-    <Footer
-      className="rounded-none"
-      style={{ background: "var(--color-primary)" }}
+    <footer
+      className="relative w-full overflow-hidden bg-fixed bg-cover bg-center"
+      style={{ backgroundImage: `url(${worldMap})` }}
     >
-      <div className="w-full">
+      <div className="absolute inset-0 bg-primary/70 z-0" />
+
+      {/* 2. CONTENT CONTAINER (Must be relative z-10 to stay above overlay) */}
+      <div className="relative z-10 w-full">
         {/* Links Grid */}
-        <div className="grid w-full grid-cols-2 gap-8 px-6 py-10 md:grid-cols-3">
+        <div className="grid w-full grid-cols-2 gap-8 px-6 py-10 md:grid-cols-3 max-w-7xl mx-auto">
           {/* Quick Links Column */}
           {footerData.quickLinks && (
             <div>
@@ -85,20 +83,17 @@ export default function PublicFooter({ data }) {
         </div>
 
         {/* Bottom Bar */}
-        <div className="w-full border-t border-white/20 px-6 py-4 sm:flex sm:items-center sm:justify-between">
+        <div className="w-full border-t border-white/20 px-6 py-4 sm:flex sm:items-center sm:justify-between max-w-7xl mx-auto">
           <FooterCopyright
             by={footerData.copyright}
             className="text-white/70"
           />
         </div>
       </div>
-    </Footer>
+    </footer>
   );
 }
 
-/**
- * Default footer data if none provided
- */
 function getDefaultFooterData() {
   return {
     copyright: "© 2026 Saveetha Amravati University. All rights reserved.",

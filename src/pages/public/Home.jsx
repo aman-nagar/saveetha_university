@@ -23,7 +23,7 @@ export default function Home() {
     "https://www.youtube.com/embed/6ygTNiz550I?si=91IJ5rQO_cPWCLzj";
 
   return (
-    <div className="bg-bg">
+    <div className="bg-bg ">
       <HeroSlider />
       <Hero />
       <AboutUsSection data={publicMock.aboutUs} />

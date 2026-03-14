@@ -106,8 +106,8 @@ export default function AboutUsSection({ data }) {
         {/* 2. THE DIVIDER BANNER */}
         {/* Positioning it at the bottom with half-out overlap */}
         <div className="absolute left-0 right-0 bottom-0 translate-y-1/2 z-20 px-4">
-          <div className="max-w-6xl mx-auto backdrop-blur-xl bg-white/10 border border-white/20 py-4 md:py-8 rounded-full shadow-[0_20px_50px_rgba(0,0,0,0.5)]">
-            <h3 className="text-xl md:text-5xl lg:text-6xl font-heading font-black text-center text-white uppercase tracking-[0.2em] leading-tight">
+          <div className="max-w-6xl mx-auto backdrop-blur-xl bg-bg/20 border border-secondary/1 py-4 md:py-8 rounded-full shadow-[0_20px_50px_rgba(0,0,0,0.5)]">
+            <h3 className="text-xl md:text-2xl lg:text-4xl font-heading font-black text-center text-bg uppercase tracking-[0.2em] leading-tight">
               <span className="block drop-shadow-lg">{tagline}</span>
             </h3>
           </div>
@@ -118,7 +118,7 @@ export default function AboutUsSection({ data }) {
       <div
         className="relative min-h-[600px] bg-fixed bg-cover bg-center flex items-center pt-20"
         style={{
-          backgroundImage: `linear-gradient(rgba(0,0,0,0.85), rgba(0,0,0,0.85)), url('https://images.unsplash.com/photo-1497366216548-37526070297c?q=80&w=2069')`,
+          backgroundImage: ` linear-gradient(rgb(143 70 70 / 85%), rgba(0, 0, 0, 0.85)),  url('https://images.unsplash.com/photo-1497366216548-37526070297c?q=80&w=2069')`,
         }}
       >
         <div className="w-full">

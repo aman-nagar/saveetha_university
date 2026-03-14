@@ -3,6 +3,7 @@ import React from "react";
 import { motion } from "framer-motion";
 import { usePublicContent } from "@/hooks/usePublicContent";
 import demoImage from "../../assets/images/demoImage.jpeg";
+import { Link } from "react-router-dom";
 
 /**
  * Hero Component
@@ -68,7 +69,7 @@ export default function Hero() {
               className="flex gap-4 flex-wrap"
             >
               {ctaButtons.map((button, idx) => (
-                <a
+                <Link
                   key={idx}
                   href={button.url || "#"}
                   className={`px-8 py-3 rounded-lg font-semibold transition-all hover:scale-105 ${
@@ -78,7 +79,7 @@ export default function Hero() {
                   }`}
                 >
                   {button.label}
-                </a>
+                </Link>
               ))}
             </motion.div>
           )}

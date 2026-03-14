@@ -4,6 +4,12 @@ import admissionImage from "../assets/images/admission-open.jpg";
 import successPathImg from "../assets/images/success-path.jpg";
 import studentImg from "../assets/images/student.jpg";
 import bgGallery from "../assets/images/bg-gallery.jpg";
+import bottomEducation from "../assets/images/bottomEducation.png";
+import aicteLogo from "../assets/images/section/aicte.png";
+import aiuLogo from "../assets/images/section/aiu.svg";
+import bciLogo from "../assets/images/section/bci.png";
+import pciLogo from "../assets/images/section/Pharmacy_Council_of_India_Logo.png";
+import ugcLogo from "../assets/images/section/ugc.png";
 
 export const publicMock = {
   // ===== HEADER (Global for all pages) =====
@@ -11,11 +17,7 @@ export const publicMock = {
     topbar: {
       email: "info@aiuniversity.edu.in",
       phone: "+91-9355822001",
-      links: [
-        { label: "ERP Login", url: "/erp" },
-        { label: "Career", url: "/career" },
-        { label: "Media", url: "/media" },
-      ],
+      links: [{ label: "Login", url: "/portal" }],
       admissionButton: {
         label: "Admission-2026",
         url: "/admission",
@@ -34,18 +36,100 @@ export const publicMock = {
     navigation: [
       { label: "Home", url: "/" },
       { label: "About", url: "/about" },
-      { label: "Academics", url: "/academics" },
       { label: "Admission", url: "/admission" },
       { label: "Programs", url: "/programs" },
       { label: "Examination", url: "/examination" },
       { label: "Research", url: "/research" },
-      { label: "Gallery", url: "/gallery" },
-      { label: "Contact Us", url: "/contact" },
+      { label: "News", url: "/news" },
+      { label: "Contact us", url: "/contact" },
     ],
   },
 
   // ===== HOME PAGE SECTIONS =====
   home: {
+    accreditationSection: {
+      title: "Approvals & Accreditation",
+      highlight: "and Membership",
+      description:
+        "AIU has been Established by State Legislature of Government of Tripura by Act No 03 of 2023 & Established by the UGC under Section 2(f) of the UGC Act 1956.",
+      approvals: [
+        {
+          id: 1,
+          title: "Established under Tripura Act No. 03 of 2023",
+          links: ["Tripura Act No. 03 of 2023", "Notification on Enforcement"],
+          color: "bg-[#FFD700]", // Gold
+          logo: ugcLogo,
+        },
+        {
+          id: 2,
+          title: "Under Section 2(f) of UGC Act 1956",
+          links: ["Extract of UGC letter", "AIU List of Universities"],
+          color: "bg-[#FF671F]", // Saffron
+          logo: ugcLogo,
+        },
+        {
+          id: 3,
+          title: "Member of Association of Indian Universities (AIU)",
+          links: ["AIU Letter for Membership"],
+          color: "bg-[#B22222]", // Deep Red
+          logo: aiuLogo,
+        },
+        {
+          id: 4,
+          title: "All India Council for Technical Education (AICTE)",
+          links: ["AICTE Public Notice"],
+          color: "bg-[#2E7D32]", // Academic Green
+          logo: aicteLogo,
+        },
+        {
+          id: 5,
+          title: "PCI Approved",
+          links: ["PCI Approval (2025-2026)", "PCI Approval (2026-2027)"],
+          color: "bg-[#1565C0]", // Research Blue
+          logo: pciLogo,
+        },
+        {
+          id: 6,
+          title: "Bar Council of India Approved",
+          links: ["BCI Approval", "BCI Approval List"],
+          color: "bg-[#455A64]", // Legal Slate
+          logo: bciLogo,
+        },
+      ],
+    },
+    leadingSection: {
+      title: "LEADING THE WAY IN",
+      highlight: "EDUCATION",
+      image: bgGallery, // Your parallax background
+      features: [
+        {
+          id: 1,
+          label: "RANKED NO. 1",
+          sublabel: "Educational Leader",
+          icon: "rank",
+        },
+        {
+          id: 2,
+          label: "Anti Ragging",
+          sublabel: "Secured Campus",
+          icon: "secure",
+        },
+        {
+          id: 3,
+          label: "Tie-Up with",
+          sublabel: "Research Bodies",
+          icon: "research",
+        },
+        { id: 4, label: "Industry", sublabel: "Exposure", icon: "industry" },
+        { id: 5, label: "24X7", sublabel: "Secured Campus", icon: "clock" },
+        {
+          id: 6,
+          label: "Medical",
+          sublabel: "Facilities in Campus",
+          icon: "medical",
+        },
+      ],
+    },
     slider: [
       {
         id: 1,
@@ -82,8 +166,10 @@ export const publicMock = {
     hero: {
       title: "Shaping Futures Through Quality Education",
       subtitle: "EXCELLENCE IN ACADEMICS",
-      description: "Industry-oriented programs, experienced faculty, and a modern campus designed for tomorrow's leaders.",
-      backgroundImage: "https://images.unsplash.com/photo-1541339907198-e08756dedf3f?q=80&w=2070",
+      description:
+        "Industry-oriented programs, experienced faculty, and a modern campus designed for tomorrow's leaders.",
+      backgroundImage:
+        "https://images.unsplash.com/photo-1541339907198-e08756dedf3f?q=80&w=2070",
       ctaButtons: [
         { label: "Apply Now", variant: "primary", url: "/apply" },
         { label: "Explore Programs", variant: "secondary", url: "/programs" },

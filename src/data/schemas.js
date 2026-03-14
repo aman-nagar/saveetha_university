@@ -130,6 +130,35 @@ const GallerySchema = z.object({
   images: z.array(GalleryImageSchema),
 });
 
+const LeadingSectionSchema = z.object({
+  title: z.string(),
+  highlight: z.string(),
+  image: z.string(),
+  features: z.array(
+    z.object({
+      id: z.number(),
+      label: z.string(),
+      sublabel: z.string(),
+      icon: z.string(),
+    }),
+  ),
+});
+const AccreditationSectionSchema = z.object({
+  title: z.string(),
+  highlight: z.string(),
+  description: z.string(),
+  approvals: z.array(
+    z.object({
+      id: z.number(),
+      title: z.string(),
+
+      links: z.array(z.string()),
+      color: z.string(),
+      logo: z.string(),
+    }),
+  ),
+});
+
 const HomeSchema = z.object({
   hero: HeroSchema,
   programs: z.array(ProgramSchema),
@@ -137,7 +166,9 @@ const HomeSchema = z.object({
   testimonials: z.array(TestimonialSchema),
   announcements: z.array(AnnouncementSchema),
   whyUs: WhyUsSchema.optional(),
-  gallery: GallerySchema.optional(), // CRITICAL: Add this line
+  gallery: GallerySchema.optional(),
+  leadingSection: LeadingSectionSchema.optional(),
+  accreditationSection: AccreditationSectionSchema.optional(),
   academicStreams: z
     .object({
       title: z.string(),

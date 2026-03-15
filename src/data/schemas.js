@@ -159,7 +159,7 @@ const AccreditationSectionSchema = z.object({
   ),
 });
 
-// Add to your schemas.js
+// academics page
 const ExaminationCommitteeSchema = z.object({
   title: z.string(),
   subtitle: z.string(),
@@ -171,6 +171,18 @@ const ExaminationCommitteeSchema = z.object({
       id: z.number(),
       name: z.string(),
       designation: z.string(),
+    }),
+  ),
+});
+// gallery page
+const GalleryPageSchema = z.object({
+  title: z.string(),
+  albums: z.array(
+    z.object({
+      id: z.number(),
+      title: z.string(),
+      image: z.string(),
+      link: z.string(),
     }),
   ),
 });
@@ -247,12 +259,13 @@ export const PublicContentSchema = z.object({
   header: HeaderSchema,
   home: HomeSchema,
   footer: FooterSchema,
+  announcements: z.array(AnnouncementSchema),
   academics: z
     .object({
       examinationCommittee: ExaminationCommitteeSchema.optional(),
     })
     .optional(),
-  announcements: z.array(AnnouncementSchema),
+  galleryPage: GalleryPageSchema.optional(),
 });
 
 // ===== EXPORT INDIVIDUAL SCHEMAS =====

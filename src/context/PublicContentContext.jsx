@@ -56,6 +56,7 @@ export function PublicContentProvider({ children }) {
     home: content?.home,
     footer: content?.footer,
     academics: content?.academics,
+    galleryPage: content?.galleryPage,
     announcements: content?.announcements || [],
   };
 

@@ -547,4 +547,45 @@ export const publicMock = {
       ],
     },
   },
+  galleryPage: {
+    title: "Gallery",
+    albums: [
+      {
+        id: 1,
+        title: "Meeting With Tripura Ministers",
+        image: "https://images.unsplash.com/photo-1524178232363-1fb28f74b0cd?q=80&w=800",
+        link: "/gallery/ministers"
+      },
+      {
+        id: 2,
+        title: "World Environment Day 2023",
+        image: "https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?q=80&w=800",
+        link: "/gallery/environment"
+      },
+      {
+        id: 3,
+        title: "First Admission",
+        image: "https://images.unsplash.com/photo-1523240795612-9a054b0db644?q=80&w=800",
+        link: "/gallery/admission-1"
+      },
+      {
+        id: 4,
+        title: "Admission August 2023",
+        image: "https://images.unsplash.com/photo-1523580494863-6f3031224c94?q=80&w=800",
+        link: "/gallery/admission-aug"
+      },
+      {
+        id: 5,
+        title: "News & Facebook Links",
+        image: "https://images.unsplash.com/photo-1540747913346-19e32dc3e97e?q=80&w=800",
+        link: "/gallery/social"
+      },
+      {
+        id: 6,
+        title: "Admission September 2023",
+        image: "https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?q=80&w=800",
+        link: "/gallery/admission-sep"
+      }
+    ]
+  }
 };

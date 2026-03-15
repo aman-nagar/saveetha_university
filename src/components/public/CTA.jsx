@@ -1,4 +1,5 @@
 import React from "react";
+import { Link } from "react-router-dom";
 import { usePublicContent } from "@/hooks/usePublicContent";
 
 /**
@@ -15,9 +16,7 @@ export default function CTA() {
     title: "Start Your Academic Journey Today",
     description:
       "Admissions are open for the upcoming session. Apply now and secure your future.",
-    buttons: [
-      { text: "Apply Now", variant: "primary", link: "/apply" },
-    ],
+    buttons: [{ text: "Apply Now", variant: "primary", link: "/contact" }],
   };
 
   const cta = ctaSection || defaultCTA;
@@ -27,29 +26,38 @@ export default function CTA() {
   return (
     <section className="bg-primary text-white py-16">
       <div className="max-w-4xl mx-auto text-center px-6">
-        <h2 className="text-3xl font-heading font-bold">
-          {cta.title}
-        </h2>
-        <p className="mt-4 text-white/90">
-          {cta.description}
-        </p>
+        <h2 className="text-3xl font-heading font-bold">{cta.title}</h2>
+        <p className="mt-4 text-white/90">{cta.description}</p>
 
         {/* CTA Buttons */}
         {cta.buttons && cta.buttons.length > 0 && (
           <div className="mt-8 flex gap-4 justify-center flex-wrap">
-            {cta.buttons.map((button, idx) => (
-              <button
-                key={idx}
-                onClick={() => button.link && (window.location.href = button.link)}
-                className={`font-semibold px-8 py-3 rounded-lg transition ${
-                  button.variant === "secondary"
-                    ? "bg-white text-primary hover:opacity-90"
-                    : "bg-accent text-primary hover:opacity-90"
-                }`}
-              >
-                {button.text}
-              </button>
-            ))}
+            {cta.buttons.map((button, idx) =>
+              button.link ? (
+                <Link
+                  key={idx}
+                  to={button.link}
+                  className={`font-semibold px-8 py-3 rounded-lg transition ${
+                    button.variant === "secondary"
+                      ? "bg-white text-primary hover:opacity-90"
+                      : "bg-accent text-primary hover:opacity-90"
+                  }`}
+                >
+                  {button.text}
+                </Link>
+              ) : (
+                <button
+                  key={idx}
+                  className={`font-semibold px-8 py-3 rounded-lg transition ${
+                    button.variant === "secondary"
+                      ? "bg-white text-primary hover:opacity-90"
+                      : "bg-accent text-primary hover:opacity-90"
+                  }`}
+                >
+                  {button.text}
+                </button>
+              ),
+            )}
           </div>
         )}
       </div>

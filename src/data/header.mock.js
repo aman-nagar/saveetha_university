@@ -169,7 +169,7 @@ export const publicMock = {
       backgroundImage:
         "https://images.unsplash.com/photo-1541339907198-e08756dedf3f?q=80&w=2070",
       ctaButtons: [
-        { label: "Apply Now", variant: "primary", url: "/apply" },
+        { label: "Apply Now", variant: "primary", url: "/contact" },
         { label: "Explore Programs", variant: "secondary", url: "/programs" },
       ],
     },

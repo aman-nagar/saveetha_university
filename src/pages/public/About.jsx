@@ -95,9 +95,9 @@ export default function About() {
                 </span>
               </h2>
               <p className="text-muted text-lg leading-relaxed">
-                Inheriting a legacy of quality from the Aryavart Group, our
-                university stands as a beacon of professional education in the
-                heart of Uttar Pradesh. We are recognized under the state's
+                Inheriting a legacy of quality from the Saveetha Amravati Group,
+                our university stands as a beacon of professional education in
+                the heart of Uttar Pradesh. We are recognized under the state's
                 rigorous academic acts, ensuring every degree we grant is a
                 global passport to success.
               </p>

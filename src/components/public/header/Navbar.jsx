@@ -2,10 +2,6 @@
 import { useState, useRef, useEffect } from "react";
 import { Link } from "react-router-dom";
 
-/**
- * Navbar Component - Mobile First Responsive
- * Displays main navigation with mobile hamburger menu
- */
 export default function Navbar({ items }) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const menuRef = useRef(null);

@@ -1,3 +1,4 @@
+// src/components/public/about/GenericSlider.jsx
 import { useState, useEffect } from "react";
 
 /**

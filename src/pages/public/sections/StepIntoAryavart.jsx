@@ -465,7 +465,7 @@ export default function AryavartPath() {
                 backgroundClip: "text",
               }}
             >
-              Aryavart
+              Saveetha Amravati
             </span>{" "}
             Path
           </h2>

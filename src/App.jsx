@@ -23,6 +23,8 @@ const Home = lazy(() => import("@/pages/public/Home"));
 const About = lazy(() => import("@/pages/public/About"));
 const Contact = lazy(() => import("@/pages/public/Contact"));
 const News = lazy(() => import("@/pages/public/News"));
+const AcademicsPage = lazy(() => import("@/pages/public/AcademicsPage"));
+// import AcademicsPage from "./pages/public/AcademicsPage";
 
 // ===== AUTH PAGES =====
 const LoginPortal = lazy(() => import("@/pages/auth/LoginPortal"));
@@ -110,6 +112,10 @@ function App() {
                   <Route path={ROUTES.PUBLIC.ABOUT} element={<About />} />
                   <Route path={ROUTES.PUBLIC.CONTACT} element={<Contact />} />
                   <Route path={ROUTES.PUBLIC.NEWS} element={<News />} />
+                  <Route
+                    path={ROUTES.PUBLIC.ACADEMICS}
+                    element={<AcademicsPage />}
+                  />
                 </Route>
 
                 {/* ===== ADMIN ROUTES ===== */}

@@ -1,26 +1,30 @@
+// src/services/publicApi.js
 import { fetchHeader } from "../api/public/headerApi";
 import { fetchHome } from "../api/public/homeApi";
 import { fetchFooter } from "../api/public/footerApi";
+import { fetchAcademics } from "../api/public/academicsApi";
 import { publicMock } from "../data/header.mock";
 
 /**
  * Fetch all public content at once
  * Called once by PublicContentContext at app startup
- * Returns combined data for header, home, footer, and announcements
+ * Returns combined data for header, home, footer, academics, and announcements
  */
 export async function fetchPublicContent() {
   try {
     // Fetch all content in parallel for better performance
-    const [header, home, footer] = await Promise.all([
+    const [header, home, footer, academics] = await Promise.all([
       fetchHeader(),
       fetchHome(),
       fetchFooter(),
+      fetchAcademics(),
     ]);
 
     return {
       header,
       home,
       footer,
+      academics,
       announcements: publicMock.announcements,
     };
   } catch (err) {

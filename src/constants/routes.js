@@ -17,6 +17,7 @@ export const PUBLIC_ROUTES = {
   ABOUT: "/about",
   CONTACT: "/contact",
   NEWS: "/news",
+  ACADEMICS: "/academics",
 };
 
 // Admin Routes

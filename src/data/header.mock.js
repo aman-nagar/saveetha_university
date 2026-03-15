@@ -36,11 +36,9 @@ export const publicMock = {
     navigation: [
       { label: "Home", url: "/" },
       { label: "About", url: "/about" },
-      { label: "Admission", url: "/admission" },
-      { label: "Programs", url: "/programs" },
-      { label: "Examination", url: "/examination" },
-      { label: "Research", url: "/research" },
+      { label: "Academics", url: "/academics" },
       { label: "News", url: "/news" },
+      { label: "Gallery", url: "/gallery" },
       { label: "Contact us", url: "/contact" },
     ],
   },
@@ -429,7 +427,7 @@ export const publicMock = {
 
   // ===== FOOTER =====
   footer: {
-    copyright: "© 2026 Saveetha Amravati University. All rights reserved.",
+    copyright: "2026 Saveetha Amravati University. All rights reserved.",
     quickLinks: [
       { label: "About", url: "/about" },
       { label: "Programs", url: "/programs" },
@@ -512,4 +510,41 @@ export const publicMock = {
     "Campus recruitment drives in progress",
     "Scholarship applications now open",
   ],
+
+  academics: {
+    // Separate by specific sub-pages
+    examinationCommittee: {
+      title: "Examination Committee",
+      subtitle:
+        "Structure and Functions of the Examination and Assessment Council",
+      overview:
+        "The Examination Committee is a key body within Saveetha Amravati University, led by the Vice Chancellor and supported by three divisions: Examination, Assessment, and Record Maintenance. Its primary responsibilities include conducting examinations, publishing results, and awarding certificates to students who successfully complete their final examinations. Additionally, the Committee maintains comprehensive records related to examinations and organizes workshops and seminars aimed at enhancing the examination system.",
+      objective:
+        "To manage all aspects of Internal and External Assessment Examinations in accordance with University notifications and regulations.",
+      responsibilities: [
+        "Exam Cell distributes and collects completed exam forms for verification within designated timeframes.",
+        "Issuance of notices to students regarding collection and submission deadlines for exam forms.",
+        "Preparation of relevant timetables for university examinations.",
+        "Organization of block and seating arrangements for display on notice boards and website.",
+        "Coordination of teaching faculty for examination duties (minimum two-week availability).",
+        "Ensuring availability of necessary stationery (answer sheets, drawing sheets, charts, etc.).",
+        "Conducting pre-exam meetings to brief faculty on procedures and invigilation responsibilities.",
+        "Preparation of examiner lists in consultation with the Chief of Examinations (COE).",
+        "Analysis and verification of exam results before distribution to appropriate officials.",
+        "Conducting internal assessments according to the academic calendar.",
+        "Processing of university circulars, guidelines, and notifications under COE signature.",
+      ],
+      members: [
+        { id: 1, name: "Dr. Shaiju David, VC", designation: "Chairperson" },
+        {
+          id: 2,
+          name: "Mrs. Jyoti Agrawal, COE",
+          designation: "Member Secretary",
+        },
+        { id: 3, name: "Mrs. Ruma Koiri, Registrar", designation: "Member" },
+        { id: 4, name: "Mr. Gourish Chakraborty", designation: "Member" },
+        { id: 5, name: "Mr. Chandan Kumar Debnath", designation: "Member" },
+      ],
+    },
+  },
 };

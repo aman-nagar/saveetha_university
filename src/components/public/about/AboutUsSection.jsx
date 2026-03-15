@@ -36,36 +36,35 @@ export default function AboutUsSection({ data }) {
   } = data || {};
 
   const renderProfileSlide = (profile) => (
-    <div className="w-full h-full flex items-center justify-center">
-      {/* Background stays dark to ensure text is visible */}
-      <div className="max-w-6xl mx-auto flex flex-col md:flex-row items-center gap-10 px-6">
-        {/* Profile Image */}
+    <div className="w-full h-full flex items-center justify-center py-10">
+      <div className="max-w-6xl mx-auto flex flex-col md:flex-row items-center gap-6 md:gap-10 px-6">
+        {/* Profile Image - Adjusted for Mobile scaling */}
         <div className="relative flex-shrink-0">
-          <div className="w-48 h-48 md:w-64 md:h-64 rounded-full border-[8px] border-white/10 overflow-hidden shadow-2xl">
+          <div className="w-32 h-32 sm:w-48 sm:h-48 md:w-64 md:h-64 rounded-full border-[4px] md:border-[8px] border-white/10 overflow-hidden shadow-2xl">
             <img
-              src={profile.image} // This uses studentImg from your fallback
+              src={profile.image}
               alt={profile.name}
               className="w-full h-full object-cover"
             />
           </div>
         </div>
 
-        {/* Testimonial Text */}
-        <div className="flex-1 text-white text-left">
-          <div className="mb-4">
-            <span className="text-6xl font-serif text-accent opacity-50 block h-8">
+        {/* Testimonial Text - Adjusted alignment for Mobile */}
+        <div className="flex-1 text-white text-center md:text-left">
+          <div className="mb-2 md:mb-4">
+            <span className="text-4xl md:text-6xl font-serif text-accent opacity-50 block h-6 md:h-8">
               “
             </span>
-            <p className="text-lg md:text-xl leading-relaxed font-light italic text-gray-100">
+            <p className="text-sm md:text-xl leading-relaxed font-light italic text-gray-100 line-clamp-6 md:line-clamp-none">
               {profile.testimonial}
             </p>
           </div>
 
-          <div className="mt-6 pt-4 border-t border-accent/30">
-            <p className="text-xl md:text-2xl font-bold tracking-tight">
+          <div className="mt-4 pt-4 border-t border-accent/30">
+            <p className="text-lg md:text-2xl font-bold tracking-tight">
               {profile.name}
             </p>
-            <p className="text-accent font-medium uppercase tracking-widest text-sm">
+            <p className="text-accent font-medium uppercase tracking-widest text-[10px] md:text-sm">
               {profile.title}
             </p>
           </div>

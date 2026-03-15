@@ -3,6 +3,7 @@ import React from "react";
 import { motion } from "framer-motion";
 import { usePublicContent } from "@/hooks/usePublicContent";
 import demoImage from "../../assets/images/demoImage.jpeg";
+import CTAButton from "@/components/ui/CTAButton"; // ← adjust path as needed
 import { Link } from "react-router-dom";
 
 export default function Hero() {
@@ -11,81 +12,92 @@ export default function Hero() {
 
   if (!heroData) return null;
 
-  const { title, subtitle, description, backgroundImage, ctaButtons } = heroData;
+  const { title, subtitle, description, backgroundImage, ctaButtons } =
+    heroData;
+  const heroBgImage = backgroundImage || demoImage;
 
   return (
-    <section className="min-h-[80vh] md:h-[80vh] bg-primary text-white overflow-hidden relative flex flex-col md:flex-row">
-      
-      {/* LEFT CONTENT: Centered text area */}
-      <div className="flex-1 relative z-10 flex items-center justify-center p-8 md:p-16 lg:p-24">
-        {/* Optional background for text readability if needed */}
-        <div className="max-w-xl">
+    <section className="relative min-h-screen bg-primary text-white overflow-hidden">
+      {/* BACKGROUND */}
+      <div className="absolute inset-0 z-0">
+        <img
+          src={heroBgImage}
+          alt=""
+          className="h-full w-full object-cover object-center"
+          loading="eager"
+        />
+        {/* Darker overlay + subtle blur for readability */}
+        <div className="absolute inset-0 bg-black/50" />
+        {/* Extra gradient feel on mobile */}
+        <div className="absolute inset-0 bg-gradient-to-b from-black/30 via-transparent to-black/50 md:hidden" />
+      </div>
+
+      {/* CONTENT – centered on all screens */}
+      <div className="relative z-10 flex min-h-screen items-center justify-center px-5 py-16 sm:px-8 md:px-12 lg:px-16">
+        <div className="w-full max-w-3xl text-center">
           <motion.div
-            initial={{ opacity: 0, x: -50 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.8 }}
+            initial={{ opacity: 0, y: 40 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, ease: "easeOut" }}
           >
             {subtitle && (
-              <motion.span
+              <motion.p
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
-                transition={{ delay: 0.2 }}
-                className="inline-block text-accent font-bold text-sm uppercase tracking-[0.3em] mb-4"
+                transition={{ delay: 0.25 }}
+                className="mb-4 inline-block text-sm font-bold uppercase tracking-[0.3em] text-accent sm:text-base"
               >
                 {subtitle}
-              </motion.span>
+              </motion.p>
             )}
 
-            <h1 className="text-4xl md:text-5xl lg:text-6xl font-heading font-black leading-tight mb-6 tracking-tighter">
+            <h1 className="text-4xl font-black leading-tight tracking-tight sm:text-5xl md:text-6xl lg:text-7xl">
               {title}
             </h1>
 
-            <p className="text-white/80 text-lg leading-relaxed mb-10 font-light">
+            <p className="mt-6 text-lg leading-relaxed text-white/90 sm:mt-8 sm:text-xl md:text-2xl md:leading-relaxed">
               {description}
             </p>
 
-            {ctaButtons && ctaButtons.length > 0 && (
+            {ctaButtons?.length > 0 && (
               <motion.div
-                initial={{ opacity: 0, y: 20 }}
+                initial={{ opacity: 0, y: 30 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.4 }}
-                className="flex gap-4 flex-wrap"
+                transition={{ delay: 0.5, duration: 0.7 }}
+                className="mt-10 flex flex-wrap justify-center gap-5 sm:gap-6"
               >
-                {ctaButtons.map((button, idx) => (
-                  <Link
-                    key={idx}
-                    to={button.url || "#"} // FIXED: to instead of href
-                    className={`px-8 py-4 rounded-full font-bold uppercase tracking-widest text-xs transition-all hover:scale-105 shadow-lg ${
-                      button.variant === "secondary"
-                        ? "border-2 border-accent text-accent hover:bg-accent hover:text-primary"
-                        : "bg-accent text-primary hover:bg-white"
-                    }`}
-                  >
-                    {button.label}
-                  </Link>
-                ))}
+                {ctaButtons.map((button, idx) => {
+                  // Map your data's variant to CTAButton variant
+                  let variant = "glass"; // Default to glass for hero section
+
+                  if (button.variant === "secondary") {
+                    variant = "secondary";
+                  } else if (button.variant === "outline") {
+                    variant = "outline";
+                  } else if (button.variant === "primary") {
+                    variant = "primary";
+                  } else if (button.variant === "gradient") {
+                    variant = "gradient";
+                  } else if (button.variant === "minimal") {
+                    variant = "minimal";
+                  }
+
+                  return (
+                    <CTAButton key={idx} variant={variant} size="lg">
+                      <Link
+                        to={button.url || "#"}
+                        className="block w-full h-full text-center"
+                      >
+                        {button.label}
+                      </Link>
+                    </CTAButton>
+                  );
+                })}
               </motion.div>
             )}
           </motion.div>
         </div>
       </div>
-
-      {/* RIGHT IMAGE: Full height, Half width */}
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 1 }}
-        className="flex-1 w-full h-[400px] md:h-full relative overflow-hidden"
-      >
-        <img
-          src={demoImage}
-          alt="Campus Excellence"
-          className="absolute inset-0 w-full h-full object-cover object-center"
-        />
-        {/* Subtle Navy Gradient Overlay to blend text with image on small screens */}
-        <div className="absolute inset-0 bg-gradient-to-t md:bg-gradient-to-r from-primary via-transparent to-transparent opacity-60 md:opacity-30"></div>
-      </motion.div>
-      
     </section>
   );
 }

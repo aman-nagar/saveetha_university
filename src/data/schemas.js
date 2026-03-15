@@ -159,6 +159,22 @@ const AccreditationSectionSchema = z.object({
   ),
 });
 
+// Add to your schemas.js
+const ExaminationCommitteeSchema = z.object({
+  title: z.string(),
+  subtitle: z.string(),
+  overview: z.string(),
+  objective: z.string(),
+  responsibilities: z.array(z.string()),
+  members: z.array(
+    z.object({
+      id: z.number(),
+      name: z.string(),
+      designation: z.string(),
+    }),
+  ),
+});
+
 const HomeSchema = z.object({
   hero: HeroSchema,
   programs: z.array(ProgramSchema),
@@ -169,6 +185,7 @@ const HomeSchema = z.object({
   gallery: GallerySchema.optional(),
   leadingSection: LeadingSectionSchema.optional(),
   accreditationSection: AccreditationSectionSchema.optional(),
+  examinationCommitteeSchema: ExaminationCommitteeSchema.optional(),
   academicStreams: z
     .object({
       title: z.string(),
@@ -230,6 +247,11 @@ export const PublicContentSchema = z.object({
   header: HeaderSchema,
   home: HomeSchema,
   footer: FooterSchema,
+  academics: z
+    .object({
+      examinationCommittee: ExaminationCommitteeSchema.optional(),
+    })
+    .optional(),
   announcements: z.array(AnnouncementSchema),
 });
 
@@ -243,6 +265,7 @@ export {
   StatsSchema,
   TestimonialSchema,
   AnnouncementSchema,
+  ExaminationCommitteeSchema,
 };
 
 /**

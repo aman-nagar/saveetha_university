@@ -1,3 +1,4 @@
+// src/context/PublicContentContext.jsx
 import { createContext, useState, useEffect } from "react";
 import { fetchPublicContent } from "../services/publicApi";
 
@@ -54,6 +55,7 @@ export function PublicContentProvider({ children }) {
     header: content?.header,
     home: content?.home,
     footer: content?.footer,
+    academics: content?.academics,
     announcements: content?.announcements || [],
   };
 

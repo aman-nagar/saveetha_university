@@ -96,7 +96,7 @@ export default function PublicFooter({ data }) {
 
 function getDefaultFooterData() {
   return {
-    copyright: "© 2026 Saveetha Amravati University. All rights reserved.",
+    copyright: "2026 Saveetha Amravati University. All rights reserved.",
     quickLinks: [
       { label: "About", url: "/about" },
       { label: "Programs", url: "/programs" },

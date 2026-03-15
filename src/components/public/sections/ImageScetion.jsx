@@ -3,7 +3,7 @@ import img from "../../../assets/images/bottomEducation.png";
 
 export default function ImageSection() {
   return (
-    <section className="w-full my-4 overflow-hidden">
+    <section className="w-full my-1 overflow-hidden">
       <img
         src={img}
         alt="University Visual"

@@ -25,6 +25,7 @@ export async function fetchPublicContent() {
       home,
       footer,
       academics,
+      galleryPage: publicMock.galleryPage,
       announcements: publicMock.announcements,
     };
   } catch (err) {

@@ -2,6 +2,8 @@
  * BrandingBar Component - Mobile First Responsive
  * Displays university logo, name, tagline, and recognition
  */
+import { Link } from "react-router-dom";
+
 export default function BrandingBar({ data }) {
   if (!data) return null;
 
@@ -38,11 +40,13 @@ export default function BrandingBar({ data }) {
 
         {/* Right Banner - Hidden on mobile, visible on tablet+ */}
         {data.rightBanner && (
-          <img
-            src={data.rightBanner}
-            alt="university banner"
-            className="hidden sm:block h-14 sm:h-16 md:h-20 lg:h-24 w-auto object-contain flex-shrink-0"
-          />
+          <Link to="/contact">
+            <img
+              src={data.rightBanner}
+              alt="university banner"
+              className="hidden sm:block h-14 sm:h-16 md:h-20 lg:h-24 w-auto object-contain shrink-0 cursor-pointer hover:opacity-80 transition-opacity"
+            />
+          </Link>
         )}
       </div>
     </div>

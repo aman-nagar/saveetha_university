@@ -77,7 +77,7 @@ export function HeroSlider() {
               <div className="mb-6 inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm rounded-full px-4 py-2 border border-accent/30">
                 <div className="w-6 h-6 rounded-full bg-accent/80"></div>
                 <span className="text-xs font-bold uppercase tracking-widest text-white/80">
-                  Saveetha Amaravati
+                  Saveetha Amaravati University
                 </span>
               </div>
 

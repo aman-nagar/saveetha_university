@@ -16,7 +16,7 @@ export const publicMock = {
   header: {
     topbar: {
       email: "info@aiuniversity.edu.in",
-      phone: "+91-9355822001",
+      phone: "+918062182405",
       links: [{ label: "Login", url: "/portal" }],
       admissionButton: {
         label: "Admission-2026",

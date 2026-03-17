@@ -1,20 +1,16 @@
 // src/components/public/AnnouncementPopup.jsx
 import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Link } from "react-router-dom";
-import { MdClose, MdCheckCircle } from "react-icons/md";
-import { BiRightArrowAlt } from "react-icons/bi";
-
-const MotionLink = motion(Link);
+import { MdClose, MdGavel, MdLanguage } from "react-icons/md";
 
 export default function AnnouncementPopup() {
-  const [isOpen, setIsOpen] = useState(true);
+  const [isOpen, setIsOpen] = useState(false);
 
   useEffect(() => {
-    // Show popup after 800ms delay on every page load
+    // Show popup after a short delay
     const timer = setTimeout(() => {
       setIsOpen(true);
-    }, 800);
+    }, 1000);
     return () => clearTimeout(timer);
   }, []);
 
@@ -32,202 +28,82 @@ export default function AnnouncementPopup() {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={handleClose}
-            className="fixed inset-0 bg-black/50 backdrop-blur-sm z-40"
+            className="fixed inset-0 bg-black/60 backdrop-blur-md z-[100]"
           />
 
-          {/* Popup Container - Mobile First */}
+          {/* Popup Container */}
           <motion.div
-            initial={{ opacity: 0, scale: 0.9, y: 50 }}
+            initial={{ opacity: 0, scale: 0.9, y: 20 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.9, y: 50 }}
-            transition={{ type: "spring", damping: 28, stiffness: 300 }}
-            className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-3 sm:p-4"
+            exit={{ opacity: 0, scale: 0.9, y: 20 }}
+            className="fixed inset-0 z-[101] flex items-center justify-center p-4 pointer-events-none"
           >
-            <div className="w-full max-w-md sm:max-w-lg bg-white rounded-t-3xl sm:rounded-2xl shadow-2xl overflow-hidden">
-              {/* Header Section with Gradient */}
-              <div className="relative bg-linear-to-br from-primary via-[#0e2d61] to-accent px-4 sm:px-6 md:px-8 py-4 sm:py-8 md:py-10 text-white overflow-hidden">
-                {/* Animated Background Shapes */}
-                <motion.div
-                  animate={{ opacity: [0.1, 0.2, 0.1] }}
-                  transition={{ duration: 4, repeat: Infinity }}
-                  className="absolute top-0 right-0 w-32 sm:w-48 h-32 sm:h-48 bg-white/10 rounded-full -mr-16 sm:-mr-24 -mt-16 sm:-mt-24"
-                />
-                <motion.div
-                  animate={{ opacity: [0.05, 0.15, 0.05] }}
-                  transition={{ duration: 5, repeat: Infinity }}
-                  className="absolute bottom-0 left-0 w-24 sm:w-40 h-24 sm:h-40 bg-white/5 rounded-full -ml-12 sm:-ml-20 -mb-12 sm:-mb-20"
-                />
+            <div className="w-full max-w-lg bg-white rounded-3xl shadow-2xl overflow-hidden pointer-events-auto relative border border-gray-100">
+              
+              {/* Close Button */}
+              <button
+                onClick={handleClose}
+                className="absolute top-4 right-4 p-2 bg-gray-100 hover:bg-red-500 hover:text-white rounded-full transition-all duration-300 z-10"
+              >
+                <MdClose size={20} />
+              </button>
 
-                {/* Close Button */}
-                <motion.button
-                  whileHover={{ rotate: 90 }}
-                  whileTap={{ scale: 0.85 }}
-                  onClick={handleClose}
-                  type="button"
-                  className="absolute top-2 sm:top-4 right-2 sm:right-4 p-3 sm:p-2 hover:bg-white/20 rounded-full transition-colors z-20 active:bg-white/30"
-                >
-                  <MdClose size={24} className="sm:w-5 sm:h-5" />
-                </motion.button>
-
-                {/* Header Content */}
-                <div className="relative z-10 pr-8">
-                  <motion.div
-                    initial={{ opacity: 0, y: -10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.1 }}
-                    className="inline-block mb-3 sm:mb-4"
-                  >
-                    <span className="inline-flex items-center gap-1.5 sm:gap-2 px-2.5 sm:px-3 py-1 sm:py-1.5 bg-white/15 rounded-full border border-white/30 text-[10px] sm:text-xs font-bold uppercase tracking-wider">
-                      <span className="animate-pulse">●</span> Limited Time
-                    </span>
-                  </motion.div>
-
-                  <motion.h2
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.15 }}
-                    className="text-2xl sm:text-3xl md:text-4xl font-heading font-black mb-1 sm:mb-2 leading-tight"
-                  >
-                    B.Ed Admission 2026-28
-                  </motion.h2>
-
-                  <motion.p
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.2 }}
-                    className="text-white/85 text-xs sm:text-sm md:text-base font-light"
-                  >
-                    Seats Now Available • All Categories Welcome
-                  </motion.p>
-                </div>
+              {/* Yellow Top Banner (Matches Image) */}
+              <div className="bg-[#FFD700] py-4 px-6 text-center shadow-sm">
+                <h2 className="text-xl sm:text-2xl font-heading font-black text-[#8B0000] uppercase tracking-tight">
+                  Saveetha Amaravati University
+                </h2>
               </div>
 
-              {/* Body Content - Mobile First */}
-              <div className="px-4 sm:px-6 md:px-8 py-4 sm:py-6 md:py-8">
-                {/* Main Description */}
-                <motion.p
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  transition={{ delay: 0.25 }}
-                  className="text-gray-700 text-xs sm:text-sm md:text-base mb-3 sm:mb-4 leading-relaxed font-light"
-                >
-                  Join our prestigious teacher education institution and make a
-                  difference with world-class faculty, modern infrastructure,
-                  and comprehensive placements.
-                </motion.p>
+              {/* Body Content */}
+              <div className="p-8 sm:p-10 text-center">
+                
+                {/* Red Legal Notice Label */}
+                <div className="flex items-center justify-center gap-2 mb-6">
+                  <MdGavel className="text-[#a12a2a]" size={24} />
+                  <h3 className="text-xl sm:text-2xl font-black text-[#a12a2a] uppercase tracking-wide">
+                    Legal Notice: —
+                  </h3>
+                </div>
 
-                {/* Key Features */}
-                <motion.div
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  transition={{ delay: 0.3 }}
-                  className="space-y-2 sm:space-y-2.5 mb-3 sm:mb-4"
-                >
-                  {[
-                    "Multiple specializations available",
-                    "100% placement assistance",
-                    "Scholarship opportunities",
-                  ].map((feature, idx) => (
-                    <div
-                      key={idx}
-                      className="flex items-start gap-2.5 sm:gap-3 text-xs sm:text-sm text-gray-700"
+                {/* Main Text Content */}
+                <div className="space-y-6">
+                  <p className="text-gray-700 text-lg sm:text-xl leading-relaxed font-medium">
+                    This website{" "}
+                    <a 
+                      href="https://www.saveethaamaravatiuniversity.ac.in" 
+                      className="text-blue-700 font-bold hover:underline break-all"
                     >
-                      <MdCheckCircle
-                        className="text-accent shrink-0 mt-0.5"
-                        size={16}
-                      />
-                      <span className="font-medium">{feature}</span>
-                    </div>
-                  ))}
-                </motion.div>
-
-                {/* Stats Bar - Stack on mobile */}
-                <motion.div
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.35 }}
-                  className="bg-linear-to-r from-primary/5 to-accent/5 rounded-lg sm:rounded-xl p-3 sm:p-5 mb-3 sm:mb-4 border border-primary/10"
-                >
-                  <div className="flex items-center justify-between">
-                    {/* Years Stat */}
-                    <div className="flex-1 text-center">
-                      <div className="text-xl sm:text-2xl md:text-3xl font-black text-primary leading-none">
-                        15+
-                      </div>
-                      <div className="text-[10px] sm:text-xs text-gray-500 mt-1 uppercase tracking-wider font-bold">
-                        Years
-                      </div>
-                    </div>
-
-                    {/* Divider */}
-                    <div className="h-8 w-px bg-gray-300 mx-1"></div>
-
-                    {/* Placements Stat */}
-                    <div className="flex-1 text-center">
-                      <div className="text-xl sm:text-2xl md:text-3xl font-black text-primary leading-none">
-                        100%
-                      </div>
-                      <div className="text-[10px] sm:text-xs text-gray-500 mt-1 uppercase tracking-wider font-bold">
-                        Placements
-                      </div>
-                    </div>
-
-                    {/* Divider */}
-                    <div className="h-8 w-px bg-gray-300 mx-1"></div>
-
-                    {/* Alumni Stat */}
-                    <div className="flex-1 text-center">
-                      <div className="text-xl sm:text-2xl md:text-3xl font-black text-accent leading-none">
-                        5000+
-                      </div>
-                      <div className="text-[10px] sm:text-xs text-gray-500 mt-1 uppercase tracking-wider font-bold">
-                        Alumni
-                      </div>
-                    </div>
-                  </div>
-                </motion.div>
-
-                {/* Deadline Alert */}
-                <motion.div
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.4 }}
-                  className="bg-red-50 border border-red-200 rounded-lg p-2.5 sm:p-4 mb-3 sm:mb-4"
-                >
-                  <p className="text-[10px] sm:text-xs md:text-sm text-red-900 font-semibold">
-                    ⏰ Admission closes{" "}
-                    <span className="text-red-700 font-black">
-                      31st March 2026
+                      www.saveethaamaravatiuniversity.ac.in
+                    </a>{" "}
+                    is the official and authentic website of 
+                    <span className="font-bold text-gray-900 ml-1">
+                      Saveetha Amaravati University.
                     </span>
                   </p>
-                </motion.div>
 
-                {/* Buttons - Stack on mobile */}
-                <motion.div
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  transition={{ delay: 0.45 }}
-                  className="flex flex-col sm:flex-row gap-2.5 sm:gap-3"
+                  <div className="h-px w-20 bg-gray-200 mx-auto" />
+
+                  <p className="text-gray-600 text-base sm:text-lg leading-relaxed italic">
+                    Any use of other similar or imitation websites may lead to 
+                    legal action by the University.
+                  </p>
+                </div>
+
+                {/* Action Button */}
+                <motion.button
+                  whileHover={{ scale: 1.03 }}
+                  whileTap={{ scale: 0.98 }}
+                  onClick={handleClose}
+                  className="mt-10 w-full py-4 bg-primary text-white font-bold rounded-2xl shadow-lg hover:bg-primary/90 transition-all uppercase tracking-widest text-sm flex items-center justify-center gap-2"
                 >
-                  <MotionLink
-                    whileHover={{ scale: 1.02 }}
-                    whileTap={{ scale: 0.97 }}
-                    to="/contact"
-                    className="flex-1 bg-linear-to-r from-primary to-accent text-white font-bold py-2.5 sm:py-3 px-3 sm:px-4 rounded-lg text-center text-xs sm:text-sm md:text-base flex items-center justify-center gap-1.5 sm:gap-2 hover:shadow-lg transition-all"
-                  >
-                    Apply Now <BiRightArrowAlt size={16} />
-                  </MotionLink>
-
-                  <motion.button
-                    whileHover={{ scale: 1.02 }}
-                    whileTap={{ scale: 0.97 }}
-                    onClick={handleClose}
-                    className="flex-1 border-2 border-primary text-primary font-bold py-2.5 sm:py-3 px-3 sm:px-4 rounded-lg hover:bg-primary/5 text-xs sm:text-sm md:text-base transition-all"
-                  >
-                    Dismiss
-                  </motion.button>
-                </motion.div>
+                  <MdLanguage size={18} />
+                  Proceed to Official Site
+                </motion.button>
               </div>
+
+              {/* Bottom Decorative Element */}
+              <div className="h-2 bg-gradient-to-r from-[#FFD700] via-primary to-[#a12a2a]" />
             </div>
           </motion.div>
         </>

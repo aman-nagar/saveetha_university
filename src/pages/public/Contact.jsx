@@ -42,7 +42,7 @@ export default function Contact() {
               Mobile No.
             </h3>
             <p className="text-muted text-lg font-semibold tracking-tight">
-              08062182405
+               08062182405
             </p>
           </div>
 
@@ -55,7 +55,7 @@ export default function Contact() {
               Mail
             </h3>
             <p className="text-muted break-all text-sm font-medium">
-              info@aryavratamaravatiuniversity.ac.in
+              info@saveethaamaravatiuniversity.ac.in
             </p>
           </div>
         </div>

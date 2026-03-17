@@ -439,7 +439,8 @@ export const publicMock = {
     contact: {
       phone: "+91-9355822001",
       email: "info@aiuniversity.edu.in",
-      address: "Tripura, India - Established by Government of Tripura Act 2023",
+      address:
+        "Vaishnavi Complex, Chennai - Kolkata Hwy, Guru Nanak Colony, Vijayawada, Andhra Pradesh 520008",
     },
     social: [
       {

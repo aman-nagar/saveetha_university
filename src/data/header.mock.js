@@ -28,7 +28,7 @@ export const publicMock = {
       logo: logo,
       universityName: "Saveetha Amravati University",
       tagline:
-        "Established by State Legislature of Government of Tripura by Act No 03 of 2023",
+        "Established by State Legislature of Government of Andhra pradesh by Act No 18 of 2018",
       recognition: "Recognised Under Section 2(f) of UGC Act, 1956",
       rightBanner: admissionImage,
     },

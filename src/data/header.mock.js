@@ -437,8 +437,8 @@ export const publicMock = {
       { label: "Terms & Conditions", url: "/terms" },
     ],
     contact: {
-      phone: "+91-9355822001",
-      email: "info@aiuniversity.edu.in",
+      phone: "+9108062182405",
+      email: "info@saveethaamaravatiuniversity.ac.in",
       address:
         "Vaishnavi Complex, Chennai - Kolkata Hwy, Guru Nanak Colony, Vijayawada, Andhra Pradesh 520008",
     },

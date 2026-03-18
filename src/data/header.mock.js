@@ -431,8 +431,9 @@ export const publicMock = {
     copyright: "2026 Saveetha Amravati University. All rights reserved.",
     quickLinks: [
       { label: "About", url: "/about" },
-      { label: "Programs", url: "/programs" },
-      { label: "Admissions", url: "/admission" },
+      { label: "Academics", url: "/academics" },
+      { label: "News", url: "/news" },
+      { label: "Gallery", url: "/gallery" },
       { label: "Contact", url: "/contact" },
       { label: "Privacy Policy", url: "/privacy" },
       { label: "Terms & Conditions", url: "/terms" },

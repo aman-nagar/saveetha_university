@@ -53,9 +53,9 @@ export const publicMock = {
       approvals: [
         {
           id: 1,
-          title: "Established under Andhra Pradesh Act No. 03 of 2023",
+          title: "Established under Andhra Pradesh Act No. 18 of 2018",
           links: [
-            "Andhra Pradesh Act No. 03 of 2023",
+            "Andhra Pradesh Act No. 18 of 2018",
             "Notification on Enforcement",
           ],
           color: "bg-[#FFD700]", // Gold

@@ -19,6 +19,9 @@ export const PUBLIC_ROUTES = {
   NEWS: "/news",
   ACADEMICS: "/academics",
   GALLERY: "/gallery",
+  APPLY_FRANCHISE: "/apply-franchise",
+  FRANCHISE_SUCCESS: "/franchise/success",
+  DOWNLOAD: "/download",
 };
 
 // Admin Routes

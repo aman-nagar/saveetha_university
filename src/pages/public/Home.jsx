@@ -8,7 +8,6 @@ import CTA from "../../components/public/CTA";
 import HighlightNews from "../../components/public/HighlightNews";
 import AcademicPhotoGallery from "./sections/AcademicPhotoGallery";
 import StudentReviews from "./sections/StudentReviews";
-import StepIntoaryavrat from "./sections/StepIntoAryavart";
 import AnnouncementPopup from "../../components/public/AnnouncementPopup";
 
 import AboutUsSection from "../../components/public/about/AboutUsSection";
@@ -41,7 +40,6 @@ export default function Home() {
       <AcademicPhotoGallery />
       <LeadingSection />
       <StudentReviews />
-      {/* <StepIntoaryavrat /> */}
       <ImageSection />
     </div>
   );

@@ -39,7 +39,7 @@ export default function AdmitCardDetails({ data }) {
         {/* ── Header ──────────────────────────────────────────── */}
         <div className="text-center mb-4 print:mb-2 border-b-2 border-black pb-3 print:pb-2">
           <h1 className="text-xl sm:text-3xl print:text-xl font-serif font-extrabold text-black uppercase mb-2 print:mb-1">
-            aryavrat International University
+            Saveetha Amaravati University
           </h1>
           <div className="inline-block bg-black text-white px-6 sm:px-10 py-1.5 print:py-1 text-sm sm:text-xl print:text-sm font-bold tracking-widest rounded-sm">
             ADMIT CARD
@@ -182,7 +182,7 @@ export default function AdmitCardDetails({ data }) {
               hour12: true,
             })}
           </span>
-          <span>Verification URL: www.aryavratuniversity.ac.in</span>
+          <span>Verification URL: www.saveethaamaravatiuniversity.ac.in/</span>
         </div>
       </div>
     </div>

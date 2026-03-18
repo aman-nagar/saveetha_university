@@ -1,10 +1,8 @@
 // src/data/header.mock.js
 import logo from "../assets/images/logo2.png";
 import admissionImage from "../assets/images/admission-open.jpg";
-import successPathImg from "../assets/images/success-path.jpg";
 import studentImg from "../assets/images/student.jpg";
 import bgGallery from "../assets/images/bg-gallery.jpg";
-import bottomEducation from "../assets/images/bottomEducation.png";
 import aicteLogo from "../assets/images/section/aicte.png";
 import aiuLogo from "../assets/images/section/aiu.svg";
 import bciLogo from "../assets/images/section/bci.png";
@@ -19,7 +17,7 @@ export const publicMock = {
       phone: "+918062182405",
       links: [{ label: "Login", url: "/portal" }],
       admissionButton: {
-        label: "Admission-2026",
+        label: "Download Admission Form",
         url: "/admission",
       },
     },

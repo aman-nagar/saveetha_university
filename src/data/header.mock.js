@@ -17,7 +17,7 @@ export const publicMock = {
       phone: "+918062182405",
       links: [{ label: "Login", url: "/portal" }],
       admissionButton: {
-        label: "Download Admission Form",
+        label: "Admission",
         url: "/admission",
       },
     },
@@ -38,6 +38,8 @@ export const publicMock = {
       { label: "News", url: "/news" },
       { label: "Gallery", url: "/gallery" },
       { label: "Contact us", url: "/contact" },
+      { label: "Download", url: "/download" },
+      { label: "Apply franchise", url: "/apply-franchise" },
     ],
   },
 
@@ -478,7 +480,7 @@ export const publicMock = {
       {
         id: 1,
         name: "Prof. (Dr) Manik Saha",
-        title: "Chief Minister of Andhra Pradesh",
+        // title: "Chief Minister of Andhra Pradesh",
         image:
           "https://img.freepik.com/premium-photo/portrait-handsome-positive-young-man-isolated-gray-background_146377-4812.jpg?w=1480",
         testimonial:
@@ -487,7 +489,7 @@ export const publicMock = {
       {
         id: 2,
         name: "Dr. Rajesh Kumar",
-        title: "Vice Chancellor",
+        // title: "Vice Chancellor",
         image:
           "https://img.freepik.com/free-photo/photo-handsome-unshaven-guy-looks-with-pleasant-expression-directly-camera_176532-8164.jpg?t=st=1773393986~exp=1773397586~hmac=405bb7ddaa8378bc9c94c667e341148acd51b482ece3a3869203e9e4db999090&w=1480",
         testimonial:
@@ -496,7 +498,7 @@ export const publicMock = {
       {
         id: 3,
         name: "Prof. Neha Sharma",
-        title: "Director, Academic Affairs",
+        // title: "Director, Academic Affairs",
         image:
           "https://img.freepik.com/free-photo/portrait-expressive-young-woman_1258-48167.jpg?t=st=1773394017~exp=1773397617~hmac=cee6ebf524eb801faffe6cd6d2d15408740f5174aae5b2d1d608b8cbf83e0994&w=1480",
         testimonial:

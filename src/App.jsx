@@ -25,6 +25,8 @@ const Contact = lazy(() => import("@/pages/public/Contact"));
 const News = lazy(() => import("@/pages/public/News"));
 const AcademicsPage = lazy(() => import("@/pages/public/AcademicsPage"));
 const GalleryPage = lazy(() => import("@/pages/public/GalleryPage"));
+const ApplyFranchisePage = lazy(() => import("@/pages/public/ApplyFranchisePage"));
+const FranchiseSuccessPage = lazy(() => import("@/pages/public/FranchiseSuccessPage"));
 
 // ===== AUTH PAGES =====
 const LoginPortal = lazy(() => import("@/pages/auth/LoginPortal"));
@@ -119,6 +121,18 @@ function App() {
                   <Route
                     path={ROUTES.PUBLIC.GALLERY}
                     element={<GalleryPage />}
+                  />
+                  <Route
+                    path={ROUTES.PUBLIC.APPLY_FRANCHISE}
+                    element={<ApplyFranchisePage />}
+                  />
+                </Route>
+
+                {/* ===== FRANCHISE SUCCESS PAGE ===== */}
+                <Route element={<PublicLayout />}>
+                  <Route
+                    path={ROUTES.PUBLIC.FRANCHISE_SUCCESS}
+                    element={<FranchiseSuccessPage />}
                   />
                 </Route>
 

@@ -31,9 +31,9 @@ export default function Navbar({ items }) {
   return (
     <nav
       style={{ background: "var(--color-primary)" }}
-      className="sticky top-0 z-40 w-full shadow-md"
+      className="sticky top-0 z-40 w-full shadow-md relative"
     >
-      <div className="max-w-7xl mx-auto px-3 sm:px-4 py-2 sm:py-3">
+      <div className="max-w-7xl mx-auto px-3 sm:px-4 py-2 sm:py-3 relative">
         {/* Desktop Navigation */}
         <div className="hidden md:flex gap-1 lg:gap-6 text-white font-medium text-sm lg:text-base">
           {items.map((item) => (
@@ -91,13 +91,13 @@ export default function Navbar({ items }) {
         {mobileMenuOpen && (
           <div
             ref={menuRef}
-            className="md:hidden absolute left-0 right-0 top-full bg-primary/95 border-t-2 border-accent shadow-lg backdrop-blur-sm"
+            className="md:hidden fixed left-0 right-0 top-30 sm:top-40 bg-primary/95 border-t-2 border-accent shadow-lg backdrop-blur-sm z-50"
           >
             <div className="max-w-7xl mx-auto px-3 py-2 flex flex-col gap-1">
               {items.map((item) => (
                 <Link
                   key={item.label}
-                  href={item.url}
+                  to={item.url}
                   className="block px-4 py-3 text-white hover:bg-accent hover:text-primary rounded transition duration-200 font-medium text-sm border-l-4 border-transparent hover:border-accent"
                   onClick={() => setMobileMenuOpen(false)}
                 >

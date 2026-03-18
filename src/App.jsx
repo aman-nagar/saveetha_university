@@ -26,6 +26,7 @@ const News = lazy(() => import("@/pages/public/News"));
 const AcademicsPage = lazy(() => import("@/pages/public/AcademicsPage"));
 const GalleryPage = lazy(() => import("@/pages/public/GalleryPage"));
 const WIEP = lazy(() => import("@/pages/public/WIEP-formPage"));
+const ApplyAdmissionPage = lazy(() => import("@/pages/public/ApplyAdmissionPage"));
 
 // ===== AUTH PAGES =====
 const LoginPortal = lazy(() => import("@/pages/auth/LoginPortal"));
@@ -124,6 +125,10 @@ function App() {
                   <Route
                     path={ROUTES.PUBLIC.APPLY_FRANCHISE}
                     element={<WIEP />}
+                  />
+                  <Route
+                    path={ROUTES.PUBLIC.APPLY_ADMISSION}
+                    element={<ApplyAdmissionPage />}
                   />
                 </Route>
 

@@ -11,6 +11,11 @@ export default function StepCommunication({ register, errors }) {
         label="Contact Number"
         name="contact_number"
         register={register}
+        required="Contact number is required"
+        pattern={{
+          value: /^[0-9]{10}$/,
+          message: "Contact number must be exactly 10 digits",
+        }}
         error={errors.contact_number}
       />
 

@@ -296,9 +296,9 @@ export default function StudentFormStepper({
   // ── Step validation fields ──
   const stepFields = {
     1: ["candidate_name", "dob", "gender"],
-    2: ["email"],
+    2: ["email", "contact_number"],
     3: [],
-    4: [],
+    4: ["course_type", "faculty", "course", "stream"],
   };
 
   const next = async () => {
@@ -346,13 +346,6 @@ export default function StudentFormStepper({
         const percentage = data[`${key}_percentage`];
         const file = qualificationFiles[key];
 
-        // ===== DEBUG START =====
-        console.log(`--- Qual [${key}] ---`);
-        console.log("  year:", year, "board:", board, "pct:", percentage);
-        console.log("  file from state:", file);
-        console.log("  has data?", !!(year || board || percentage));
-        // ===== DEBUG END =====
-
         if (!year && !board && !percentage) return;
 
         formData.append(`qualifications[${qi}][examination]`, key);
@@ -377,26 +370,8 @@ export default function StudentFormStepper({
           }
         }
 
-        // ===== DEBUG START =====
-        console.log(
-          `  → Appended as qualifications[${qi}], file appended:`,
-          !!file,
-        );
-        // ===== DEBUG END =====
-
         qi++;
       });
-
-      // ===== DEBUG: Log full FormData contents =====
-      console.log("=== FULL FORMDATA ===");
-      for (let [key, value] of formData.entries()) {
-        if (value instanceof File) {
-          console.log(`  ${key}: [File] ${value.name} (${value.size} bytes)`);
-        } else {
-          console.log(`  ${key}: ${value}`);
-        }
-      }
-      console.log("=== END FORMDATA ===");
 
       await onSubmitProp(formData);
 

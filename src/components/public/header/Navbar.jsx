@@ -91,9 +91,9 @@ export default function Navbar({ items }) {
         {mobileMenuOpen && (
           <div
             ref={menuRef}
-            className="md:hidden fixed left-0 right-0 top-30 sm:top-40 bg-primary/95 border-t-2 border-accent shadow-lg backdrop-blur-sm z-50"
+            className="md:hidden absolute left-0 right-0 top-full w-full bg-primary/95 border-t-2 border-accent shadow-lg backdrop-blur-sm z-50"
           >
-            <div className="max-w-7xl mx-auto px-3 py-2 flex flex-col gap-1">
+            <div className="px-3 py-2 flex flex-col gap-1">
               {items.map((item) => (
                 <Link
                   key={item.label}

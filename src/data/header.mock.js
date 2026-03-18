@@ -49,12 +49,15 @@ export const publicMock = {
       title: "Approvals & Accreditation",
       highlight: "and Membership",
       description:
-        "AIU has been Established by State Legislature of Government of Tripura by Act No 03 of 2023 & Established by the UGC under Section 2(f) of the UGC Act 1956.",
+        "SAU has been Established by State Legislature of Government of Andhra Pradesh by Act No 03 of 2023 & Established by the UGC under Section 2(f) of the UGC Act 1956.",
       approvals: [
         {
           id: 1,
-          title: "Established under Tripura Act No. 03 of 2023",
-          links: ["Tripura Act No. 03 of 2023", "Notification on Enforcement"],
+          title: "Established under Andhra Pradesh Act No. 03 of 2023",
+          links: [
+            "Andhra Pradesh Act No. 03 of 2023",
+            "Notification on Enforcement",
+          ],
           color: "bg-[#FFD700]", // Gold
           logo: ugcLogo,
         },
@@ -469,18 +472,18 @@ export const publicMock = {
   // ===== ABOUT US SECTION =====
   aboutUs: {
     heading: "About Us",
-    content: `Welcome to Saveetha Amravati University, a leading institution of higher education committed to providing an exceptional academic experience for its students. It is the first ever university in North Tripura which offers its students an array of multiple disciplines including Social Sciences and Humanities, Science and technology, management and commerce, library science, computer science, faculty of science, agriculture, physiotherapy, paramedical, skill education and many more. Our faculty members are experts in their fields, and they are committed to helping students develop the knowledge, skills, and critical thinking abilities needed to succeed in today's rapidly changing world. We believe that education is not just about imparting knowledge, but also about fostering the development of well-rounded individuals who can contribute meaningfully to society.`,
+    content: `Welcome to Saveetha Amravati University, a leading institution of higher education committed to providing an exceptional academic experience for its students. It is the first ever university in North Andhra Pradesh which offers its students an array of multiple disciplines including Social Sciences and Humanities, Science and technology, management and commerce, library science, computer science, faculty of science, agriculture, physiotherapy, paramedical, skill education and many more. Our faculty members are experts in their fields, and they are committed to helping students develop the knowledge, skills, and critical thinking abilities needed to succeed in today's rapidly changing world. We believe that education is not just about imparting knowledge, but also about fostering the development of well-rounded individuals who can contribute meaningfully to society.`,
     tagline: "SA: A GATEWAY TO HIGHER EDUCATION",
     readMoreText: "Read More...",
     profiles: [
       {
         id: 1,
         name: "Prof. (Dr) Manik Saha",
-        title: "Chief Minister of Tripura",
+        title: "Chief Minister of Andhra Pradesh",
         image:
           "https://img.freepik.com/premium-photo/portrait-handsome-positive-young-man-isolated-gray-background_146377-4812.jpg?w=1480",
         testimonial:
-          "It gives me immense pleasure to convey my warm greetings and congratulation to Saveetha Amravati University as it embarks on its new journey in our state. I am happy to know that the Saveetha Amravati University, which is going to set up its campus in Tilthai, Dharmanagar, North Tripura District, is the first University in India offering fully 'Learn and Earn' Degree/Diploma programmes with industries. Understandably, the local youths of our state will be immensely benefited by pursuing the courses offered by the said University.",
+          "It gives me immense pleasure to convey my warm greetings and congratulation to Saveetha Amravati University as it embarks on its new journey in our state. I am happy to know that the Saveetha Amravati University, which is going to set up its campus in Tilthai, Dharmanagar, North Andhra Pradesh District, is the first University in India offering fully 'Learn and Earn' Degree/Diploma programmes with industries. Understandably, the local youths of our state will be immensely benefited by pursuing the courses offered by the said University.",
       },
       {
         id: 2,
@@ -553,7 +556,7 @@ export const publicMock = {
     albums: [
       {
         id: 1,
-        title: "Meeting With Tripura Ministers",
+        title: "Meeting With Andhra Pradesh Ministers",
         image:
           "https://images.unsplash.com/photo-1523580494863-6f3031224c94?q=80&w=800",
         link: "/gallery/ministers",

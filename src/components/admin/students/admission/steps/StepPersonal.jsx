@@ -35,6 +35,7 @@ export default function StepPersonal({
         name="dob"
         type="date"
         register={register}
+        required="Date of birth is required"
         error={errors.dob}
       />
 

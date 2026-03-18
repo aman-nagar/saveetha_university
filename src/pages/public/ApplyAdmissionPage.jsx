@@ -2,49 +2,34 @@
  * src/pages/public/ApplyAdmissionPage.jsx
  * PUBLIC STUDENT ADMISSION PAGE
  *
- * Reuses the existing StudentFormStepper component from admin
+ * Reuses StudentFormStepper component with public APIs
  * No authentication required - public form submission
  */
 
 import { useToast } from "../../context/ToastContext";
 import Toast from "../../components/ui/Toast";
 import StudentFormStepper from "../../components/admin/students/admission/StudentFormStepper";
-import GradientBackground from "../../components/ui/GradientBackground";
+import { submitPublicAdmission } from "../../api/public/publicAdmissionApi";
 
 export default function ApplyAdmissionPage() {
   const { toast, show, clear } = useToast();
 
-  const handleSubmitAdmission = async (data) => {
+  const handleSubmitAdmission = async (formData) => {
     try {
-      // Store admission data in localStorage for reference
-      const admissionData = {
-        ...data,
-        submitted_date: new Date().toISOString(),
-        reference_id: "ADM-" + Date.now(),
-      };
+      // Submit to public admission API
+      const response = await submitPublicAdmission(formData);
 
-      localStorage.setItem("admission_data", JSON.stringify(admissionData));
-
-      // Show success message
+      // Show success message with reference ID
       show({
-        message: `✅ Admission application submitted successfully! Reference ID: ${admissionData.reference_id}`,
+        message: `✅ Application submitted successfully! Reference ID: ${response.reference_id}`,
         type: "success",
         duration: 3000,
       });
-
-      // Redirect to success page with reference ID
-      setTimeout(() => {
-        navigate("/admission/success", {
-          state: {
-            referenceId: admissionData.reference_id,
-            candidateName: data.candidate_name,
-          },
-        });
-      }, 1500);
     } catch (err) {
-      console.error("❌ Error submitting admission application:", err);
+      console.error("Error submitting admission application:", err);
       show({
-        message: "Failed to submit application. Please try again.",
+        message:
+          err.message || "Failed to submit application. Please try again.",
         type: "error",
         duration: 3000,
       });
@@ -53,8 +38,6 @@ export default function ApplyAdmissionPage() {
 
   return (
     <div className="min-h-screen bg-bg">
-      <GradientBackground />
-
       {/* Header Section */}
       <div className="relative pt-12 sm:pt-16 lg:pt-20 pb-8 sm:pb-12 lg:pb-16 px-4 sm:px-6 lg:px-20">
         <div className="max-w-3xl mx-auto text-center">

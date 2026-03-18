@@ -53,6 +53,7 @@ export default function StepProgram({
         label="Course Type"
         name="course_type"
         register={register}
+        required="Course type is required"
         error={errors.course_type}
         options={courseTypeOptions}
       />
@@ -61,6 +62,7 @@ export default function StepProgram({
         label="Faculty"
         name="faculty"
         register={register}
+        required="Faculty is required"
         error={errors.faculty}
         options={facultyOptions}
       />
@@ -69,6 +71,7 @@ export default function StepProgram({
         label="Course"
         name="course"
         register={register}
+        required="Course is required"
         error={errors.course}
         options={courseOptions}
       />
@@ -77,6 +80,7 @@ export default function StepProgram({
         label="Stream"
         name="stream"
         register={register}
+        required="Stream is required"
         error={errors.stream}
         options={streamOptions}
       />

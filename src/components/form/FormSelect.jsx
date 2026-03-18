@@ -41,9 +41,11 @@ export default function FormSelect({
           ${disabled ? "cursor-not-allowed opacity-70" : ""}
         `}
       >
-        <option value="">{placeholder}</option>
-        {options.map((opt) => (
-          <option key={opt.value} value={opt.value}>
+        <option key="__empty__" value="">
+          {placeholder}
+        </option>
+        {options.map((opt, idx) => (
+          <option key={opt.id || opt.value || idx} value={opt.value}>
             {opt.label}
           </option>
         ))}

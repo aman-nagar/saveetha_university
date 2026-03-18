@@ -1,16 +1,5 @@
-/**
- * src/pages/public/ApplyFranchisePage.jsx
- * PUBLIC PAGE: Franchise Application Form
- *
- * Route: /apply-franchise
- * Authentication: NOT REQUIRED
- *
- * This is a PUBLIC form - separate from admin center management
- * Uses same form components but different API endpoint
- */
-
+// src/pages/public/ApplyFranchisePage.jsx
 import { useForm } from "react-hook-form";
-import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 import FormSection from "../../components/form/FormSection";
 import FormInput from "../../components/form/FormInput";
@@ -26,7 +15,6 @@ import { allStates } from "../../utils/staticData";
 export default function ApplyFranchisePage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { toast, show, clear } = useToast();
-  const navigate = useNavigate();
 
   const {
     register,
@@ -72,20 +60,10 @@ export default function ApplyFranchisePage() {
       // Submit to PUBLIC franchise API (no auth required)
       const response = await submitFranchiseApplication(formData);
 
-      show("success", "Franchise application submitted successfully!");
-
-      // Store reference ID for tracking
-      if (response.reference_id) {
-        localStorage.setItem("franchiseRefId", response.reference_id);
-      }
-
-      // Redirect to success page after 2 seconds
-      setTimeout(() => {
-        navigate("/franchise/success", {
-          state: { referenceId: response.reference_id },
-        });
-      }, 2000);
-
+      show(
+        "success",
+        "✅ Franchise application submitted successfully! You will receive updates via email.",
+      );
       reset();
     } catch (err) {
       show("error", err.message || "Failed to submit application");
@@ -102,13 +80,8 @@ export default function ApplyFranchisePage() {
         {/* Header */}
         <div className="text-center mb-12">
           <h1 className="text-3xl sm:text-4xl font-heading font-bold text-primary mb-3">
-            Become Our Franchise Partner
+            Work Integrated Education Program (WIEP)
           </h1>
-          <p className="text-lg text-text/70 max-w-4xl mx-auto">
-            Join Saveetha Amravati University and expand quality education in
-            your region. Fill out the form below to apply for franchise
-            partnership.
-          </p>
         </div>
 
         {/* Form Card */}
@@ -245,13 +218,8 @@ export default function ApplyFranchisePage() {
 
             {/* Action Buttons */}
             <div className="flex flex-col-reverse sm:flex-row justify-end gap-4 pt-6 border-t border-border">
-              <Button
-                type="button"
-                variant="secondary"
-                onClick={() => navigate("/")}
-                disabled={isSubmitting}
-              >
-                Cancel
+              <Button type="reset" variant="secondary" disabled={isSubmitting}>
+                Clear Form
               </Button>
               <Button
                 type="submit"

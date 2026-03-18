@@ -20,10 +20,6 @@ import {
   FiChevronRight,
   FiCheck,
   FiLoader,
-  FiUser,
-  FiMapPin,
-  FiBook,
-  FiLayers,
 } from "react-icons/fi";
 
 const QUAL_KEYS = [

@@ -39,7 +39,8 @@ export const publicMock = {
       { label: "Gallery", url: "/gallery" },
       { label: "Contact us", url: "/contact" },
       { label: "Download", url: "/download" },
-      { label: "Apply franchise", url: "/apply-franchise" },
+      { label: "WIEP Form", url: "/wiep-Form" },
+      { label: "Student Admission", url: "/apply-admission" },
     ],
   },
 

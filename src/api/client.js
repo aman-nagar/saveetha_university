@@ -1,7 +1,6 @@
 // src/api/client.js
 import Cookies from "js-cookie";
-
-const BASE_URL = "https://api.nsprowebtech.com/backend/api/v1";
+import { BASE_URL } from "./apiConfig";
 
 export async function apiRequest(endpoint, options = {}) {
   const token = Cookies.get("authToken");

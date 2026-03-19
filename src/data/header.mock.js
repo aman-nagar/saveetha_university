@@ -10,7 +10,6 @@ import pciLogo from "../assets/images/section/Pharmacy_Council_of_India_Logo.png
 import ugcLogo from "../assets/images/section/ugc.png";
 
 export const publicMock = {
-  // ===== HEADER (Global for all pages) =====
   header: {
     topbar: {
       email: "info@aiuniversity.edu.in",

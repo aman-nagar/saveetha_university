@@ -1,25 +1,20 @@
-// src / hooks / usePublicContent.js;
-import { useContext } from "react";
-import { PublicContentContext } from "../context/PublicContentContext";
-
 /**
- * usePublicContent Hook
- * Access global public website content from anywhere
- * Returns: { content, loading, error, refreshContent, header, home, footer, announcements }
+ * src/hooks/usePublicContent.js
+ * SIMPLIFIED HOOK - Access public data from anywhere
  *
  * Usage:
- * const { header, loading, error } = usePublicContent();
- * if (loading) return <Skeleton />;
- * if (error) return <ErrorState />;
- * return <Header data={header} />;
+ * const { data, loading, error } = usePublicContent();
+ * const { header, siteDetails } = usePublicContent();
  */
+
+import { useContext } from "react";
+import { PublicDataContext } from "../context/PublicDataContext";
+
 export function usePublicContent() {
-  const context = useContext(PublicContentContext);
+  const context = useContext(PublicDataContext);
 
   if (!context) {
-    throw new Error(
-      "usePublicContent must be used within PublicContentProvider",
-    );
+    throw new Error("usePublicContent must be used within PublicDataProvider");
   }
 
   return context;

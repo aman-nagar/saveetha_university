@@ -8,7 +8,7 @@
  * - Uses public endpoints from backend
  */
 
-const BASE_URL = "https://api.nsprowebtech.com/backend/api/v1";
+import { BASE_URL } from "../apiConfig";
 const PUBLIC_COURSES_ENDPOINT = "/public/courses.php";
 const PUBLIC_ADMISSION_ENDPOINT = "/public/student_form.php";
 

@@ -42,7 +42,7 @@ export default function Contact() {
               Mobile No.
             </h3>
             <p className="text-muted text-lg font-semibold tracking-tight">
-               08062182405
+              08062182405
             </p>
           </div>
 

@@ -42,6 +42,7 @@ export function PublicDataProvider({ children }) {
       // Define all public API endpoints
       const endpoints = {
         siteDetails: "/public/details.php",
+        downloadForms: "/public/download-form.php",
         // Add more as they're available:
         // header: "/public/header.php",
         // footer: "/public/footer.php",

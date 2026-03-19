@@ -1,21 +1,9 @@
-/**
- * src/api/public/publicAdmissionApi.js
- * PUBLIC ADMISSION API SERVICE
- *
- * Provides public APIs for student admission form
- * - No authentication required
- * - Response structures match admin APIs exactly
- * - Uses public endpoints from backend
- */
+// src/api/public/publicAdmissionApi.js
 
 import { BASE_URL } from "../apiConfig";
 const PUBLIC_COURSES_ENDPOINT = "/public/courses.php";
 const PUBLIC_ADMISSION_ENDPOINT = "/public/student_form.php";
 
-/**
- * Public API Request Handler (No Auth Required)
- * Returns clean data or throws error
- */
 async function publicApiRequest(endpoint, options = {}) {
   const headers = { ...options.headers };
 

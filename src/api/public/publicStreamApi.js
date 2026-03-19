@@ -1,20 +1,8 @@
-/**
- * src/api/public/publicStreamApi.js
- * PUBLIC STREAM API
- *
- * Fetch streams by course for public student admission form
- * Uses public endpoint (no auth required)
- */
-
+// src/api/public/publicStreamApi.js
 import { publicApiRequest } from "./publicApiRequest";
 
 const ENDPOINT = "/public/courses.php";
 
-/**
- * Fetch streams by course ID
- * GET /public/courses.php?type=stream&course_id={id}
- * Returns: [{id, name, application_fee}, ...]
- */
 export async function fetchPublicStreams(courseId) {
   if (!courseId) {
     return [];

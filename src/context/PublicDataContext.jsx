@@ -1,14 +1,4 @@
-/**
- * src/context/PublicDataContext.jsx
- * SIMPLIFIED PUBLIC DATA CONTEXT
- *
- * Single unified context for all public APIs
- * - Fetches from multiple endpoints in parallel
- * - Provides fallback to static/mock data
- * - No validation, no normalization
- * - Simple, clean, scalable
- */
-
+// src/context/PublicDataContext.jsx
 import { createContext, useState, useEffect } from "react";
 import { BASE_URL } from "../api/apiConfig";
 

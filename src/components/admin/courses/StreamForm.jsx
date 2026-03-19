@@ -3,9 +3,16 @@ import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import FormSection from "../../form/FormSection";
 import FormInput from "../../form/FormInput";
+import FormSelect from "../../form/FormSelect";
 import Button from "../../ui/Button";
 
 export default function StreamForm({
+  courseTypes = [],
+  selectedCourseType,
+  onCourseTypeChange,
+  facultyList = [],
+  selectedFaculty,
+  onFacultyChange,
   courseList = [],
   selectedCourse,
   onCourseChange,
@@ -13,6 +20,10 @@ export default function StreamForm({
   initialData = null,
   mode = "create",
   onCancel,
+  loadingFaculties = false,
+  loadingCourses = false,
+  isEmptyFaculties = false,
+  isEmptyCourses = false,
 }) {
   const { register, handleSubmit, reset } = useForm();
 
@@ -22,11 +33,14 @@ export default function StreamForm({
         stream: initialData.name,
         application_fee: initialData.application_fee || "",
       });
+      // In edit mode, cascade: set course type first, then faculty, then course
+      onCourseTypeChange(initialData.course_type_id);
+      onFacultyChange(initialData.faculty_id);
       onCourseChange(initialData.course_id);
     } else {
       reset({ stream: "", application_fee: "" });
     }
-  }, [initialData, reset, onCourseChange]);
+  }, [initialData, reset, onCourseTypeChange, onFacultyChange, onCourseChange]);
 
   const submitForm = async (data) => {
     await onSubmit({
@@ -44,24 +58,63 @@ export default function StreamForm({
         title={mode === "edit" ? "Edit Stream" : "Add Stream"}
         columns={3}
       >
+        {/* Course Type select */}
+        <FormSelect
+          label="Course Type"
+          name="courseType"
+          register={register}
+          options={courseTypes.map((ct) => ({
+            value: ct.id,
+            label: ct.name,
+            id: ct.id,
+          }))}
+          onChangeCb={(selected) => {
+            onCourseTypeChange(selected?.value || "");
+          }}
+          disabled={courseTypes.length === 0}
+          placeholder="Select Course Type"
+          required="Course type is required"
+        />
+
+        {/* Faculty select */}
+        <FormSelect
+          label="Faculty"
+          name="faculty"
+          register={register}
+          options={facultyList.map((f) => ({
+            value: f.id,
+            label: f.name,
+            id: f.id,
+          }))}
+          onChangeCb={(selected) => {
+            onFacultyChange(selected?.value || "");
+          }}
+          disabled={!selectedCourseType || facultyList.length === 0}
+          isLoading={loadingFaculties}
+          isEmpty={isEmptyFaculties}
+          placeholder="Select Faculty"
+          required="Faculty is required"
+        />
+
         {/* Course select */}
-        <div className="space-y-1.5 sm:space-y-2">
-          <label className="text-xs sm:text-sm font-medium text-text">
-            Select Course <span className="text-danger">*</span>
-          </label>
-          <select
-            value={selectedCourse}
-            onChange={(e) => onCourseChange(e.target.value)}
-            className="w-full border border-border rounded-lg px-3 py-2 sm:py-2.5 bg-surface text-text text-sm sm:text-base focus:outline-none focus:ring-2 focus:ring-accent/40 focus:border-accent transition-all duration-200 hover:border-muted/50"
-          >
-            <option value="">Select Course</option>
-            {courseList.map((c) => (
-              <option key={c.id} value={c.id}>
-                {c.name}
-              </option>
-            ))}
-          </select>
-        </div>
+        <FormSelect
+          label="Course"
+          name="course"
+          register={register}
+          options={courseList.map((c) => ({
+            value: c.id,
+            label: c.name,
+            id: c.id,
+          }))}
+          onChangeCb={(selected) => {
+            onCourseChange(selected?.value || "");
+          }}
+          disabled={!selectedFaculty || courseList.length === 0}
+          isLoading={loadingCourses}
+          isEmpty={isEmptyCourses}
+          placeholder="Select Course"
+          required="Course is required"
+        />
 
         <FormInput
           label="Stream Name"

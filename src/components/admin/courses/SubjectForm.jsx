@@ -8,6 +8,15 @@ import { useCourseRules } from "../../../hooks/useCourseRules";
 import Button from "../../ui/Button";
 
 export default function SubjectForm({
+  courseTypes = [],
+  selectedCourseType,
+  onCourseTypeChange,
+  facultyList = [],
+  selectedFaculty,
+  onFacultyChange,
+  courseList = [],
+  selectedCourse,
+  onCourseChange,
   streamList = [],
   selectedStream,
   onStreamChange,
@@ -15,6 +24,12 @@ export default function SubjectForm({
   initialData = null,
   mode = "create",
   onCancel,
+  loadingFaculties = false,
+  loadingCourses = false,
+  loadingStreams = false,
+  isEmptyFaculties = false,
+  isEmptyCourses = false,
+  isEmptyStreams = false,
 }) {
   const {
     register,
@@ -36,6 +51,10 @@ export default function SubjectForm({
   useEffect(() => {
     if (initialData) {
       reset({ ...initialData });
+      // In edit mode, cascade: set course type first, then faculty, then course, then stream
+      onCourseTypeChange(initialData.course_type_id);
+      onFacultyChange(initialData.faculty_id);
+      onCourseChange(initialData.course_id);
       onStreamChange(initialData.stream_id);
     } else {
       // Set default values for create mode
@@ -43,7 +62,14 @@ export default function SubjectForm({
         status: "1", // Default to Active
       });
     }
-  }, [initialData, reset, onStreamChange]);
+  }, [
+    initialData,
+    reset,
+    onCourseTypeChange,
+    onFacultyChange,
+    onCourseChange,
+    onStreamChange,
+  ]);
 
   // 2. Sync Duration Options when selectedStream changes
   useEffect(() => {
@@ -94,24 +120,83 @@ export default function SubjectForm({
         title={mode === "edit" ? "Edit Subject" : "Add Subject"}
         columns={2}
       >
+        {/* Course Type select */}
+        <FormSelect
+          label="Course Type"
+          name="courseType"
+          register={register}
+          options={courseTypes.map((ct) => ({
+            value: ct.id,
+            label: ct.name,
+            id: ct.id,
+          }))}
+          onChangeCb={(selected) => {
+            onCourseTypeChange(selected?.value || "");
+          }}
+          disabled={courseTypes.length === 0}
+          placeholder="Select Course Type"
+          required="Course type is required"
+        />
+
+        {/* Faculty select */}
+        <FormSelect
+          label="Faculty"
+          name="faculty"
+          register={register}
+          options={facultyList.map((f) => ({
+            value: f.id,
+            label: f.name,
+            id: f.id,
+          }))}
+          onChangeCb={(selected) => {
+            onFacultyChange(selected?.value || "");
+          }}
+          disabled={!selectedCourseType || facultyList.length === 0}
+          isLoading={loadingFaculties}
+          isEmpty={isEmptyFaculties}
+          placeholder="Select Faculty"
+          required="Faculty is required"
+        />
+
+        {/* Course select */}
+        <FormSelect
+          label="Course"
+          name="course"
+          register={register}
+          options={courseList.map((c) => ({
+            value: c.id,
+            label: c.name,
+            id: c.id,
+          }))}
+          onChangeCb={(selected) => {
+            onCourseChange(selected?.value || "");
+          }}
+          disabled={!selectedFaculty || courseList.length === 0}
+          isLoading={loadingCourses}
+          isEmpty={isEmptyCourses}
+          placeholder="Select Course"
+          required="Course is required"
+        />
+
         {/* Stream select */}
-        <div className="space-y-2">
-          <label className="text-sm font-medium text-text">
-            Select Stream *
-          </label>
-          <select
-            value={selectedStream}
-            onChange={(e) => onStreamChange(e.target.value)}
-            className="w-full border border-border rounded-lg px-3 py-2 bg-surface text-sm focus:ring-2 focus:ring-accent outline-none"
-          >
-            <option value="">Select Stream</option>
-            {streamList.map((s) => (
-              <option key={s.id} value={s.id}>
-                {s.name}
-              </option>
-            ))}
-          </select>
-        </div>
+        <FormSelect
+          label="Stream"
+          name="stream"
+          register={register}
+          options={streamList.map((s) => ({
+            value: s.id,
+            label: s.name,
+            id: s.id,
+          }))}
+          onChangeCb={(selected) => {
+            onStreamChange(selected?.value || "");
+          }}
+          disabled={!selectedCourse || streamList.length === 0}
+          isLoading={loadingStreams}
+          isEmpty={isEmptyStreams}
+          placeholder="Select Stream"
+          required="Stream is required"
+        />
 
         <FormInput
           label="Subject Name"

@@ -1,3 +1,4 @@
+// src/pages/admin/courses/FacultyPage.jsx
 import { useEffect, useState } from "react";
 import { FaPen, FaTrash } from "react-icons/fa";
 import { fetchCourseCategories } from "../../../api/courses/courseTypeApi";

@@ -12,18 +12,28 @@ export default function FormSelect({
   placeholder = "Select",
   onChangeCb, // optional: called with the full option object on change
   className = "",
+  isLoading = false, // NEW: shows loading spinner and disables select
 }) {
   const { onChange, ...rest } = register(name, { required });
 
   return (
     <div className={`space-y-1.5 sm:space-y-2 ${className}`}>
-      <label className="text-xs sm:text-sm font-medium text-text">
-        {label} {required && <span className="text-danger">*</span>}
-      </label>
+      <div className="flex items-center justify-between">
+        <label className="text-xs sm:text-sm font-medium text-text">
+          {label} {required && <span className="text-danger">*</span>}
+        </label>
+        {/* Loading spinner indicator */}
+        {isLoading && (
+          <div className="flex items-center gap-1.5">
+            <div className="w-3 h-3 border-2 border-accent border-t-transparent rounded-full animate-spin"></div>
+            <span className="text-xs text-muted">Loading...</span>
+          </div>
+        )}
+      </div>
 
       <select
         {...rest}
-        disabled={disabled}
+        disabled={disabled || isLoading}
         onChange={(e) => {
           onChange(e); // keep RHF in sync
           if (onChangeCb) {
@@ -38,7 +48,7 @@ export default function FormSelect({
           focus:outline-none focus:ring-2 focus:ring-accent/40 focus:border-accent
           transition-all duration-200
           ${error ? "border-danger ring-1 ring-danger/30" : "border-border hover:border-muted/50"}
-          ${disabled ? "cursor-not-allowed opacity-70" : ""}
+          ${disabled || isLoading ? "cursor-not-allowed opacity-70" : ""}
         `}
       >
         <option key="__empty__" value="">

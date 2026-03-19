@@ -3,9 +3,13 @@ import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import FormSection from "../../form/FormSection";
 import FormInput from "../../form/FormInput";
+import FormSelect from "../../form/FormSelect";
 import Button from "../../ui/Button";
 
 export default function CourseForm({
+  courseTypes = [],
+  selectedCourseType,
+  onCourseTypeChange,
   facultyList = [],
   selectedFaculty,
   onFacultyChange,
@@ -13,6 +17,7 @@ export default function CourseForm({
   initialData = null,
   mode = "create",
   onCancel,
+  loadingFaculties = false,
 }) {
   const { register, handleSubmit, reset } = useForm();
 
@@ -23,6 +28,8 @@ export default function CourseForm({
         duration: initialData.duration,
         duration_type: initialData.duration_type,
       });
+      // In edit mode, cascade: set course type first, then faculty
+      onCourseTypeChange(initialData.course_type_id);
       onFacultyChange(initialData.faculty_id);
     } else {
       reset({
@@ -31,7 +38,7 @@ export default function CourseForm({
         duration_type: "",
       });
     }
-  }, [initialData, reset, onFacultyChange]);
+  }, [initialData, reset, onCourseTypeChange, onFacultyChange]);
 
   const submitForm = async (data) => {
     await onSubmit({
@@ -50,24 +57,42 @@ export default function CourseForm({
         title={mode === "edit" ? "Edit Course" : "Add Course"}
         columns={2}
       >
+        {/* Course Type select */}
+        <FormSelect
+          label="Course Type"
+          name="courseType"
+          register={register}
+          options={courseTypes.map((ct) => ({
+            value: ct.id,
+            label: ct.name,
+            id: ct.id,
+          }))}
+          onChangeCb={(selected) => {
+            onCourseTypeChange(selected?.value || "");
+          }}
+          disabled={courseTypes.length === 0}
+          placeholder="Select Course Type"
+          required="Course type is required"
+        />
+
         {/* Faculty select */}
-        <div className="space-y-1.5 sm:space-y-2">
-          <label className="text-xs sm:text-sm font-medium text-text">
-            Select Faculty <span className="text-danger">*</span>
-          </label>
-          <select
-            value={selectedFaculty}
-            onChange={(e) => onFacultyChange(e.target.value)}
-            className="w-full border border-border rounded-lg px-3 py-2 sm:py-2.5 bg-surface text-text text-sm sm:text-base focus:outline-none focus:ring-2 focus:ring-accent/40 focus:border-accent transition-all duration-200 hover:border-muted/50"
-          >
-            <option value="">Select Faculty</option>
-            {facultyList.map((f) => (
-              <option key={f.id} value={f.id}>
-                {f.name}
-              </option>
-            ))}
-          </select>
-        </div>
+        <FormSelect
+          label="Faculty"
+          name="faculty"
+          register={register}
+          options={facultyList.map((f) => ({
+            value: f.id,
+            label: f.name,
+            id: f.id,
+          }))}
+          onChangeCb={(selected) => {
+            onFacultyChange(selected?.value || "");
+          }}
+          disabled={!selectedCourseType || facultyList.length === 0}
+          isLoading={loadingFaculties}
+          placeholder="Select Faculty"
+          required="Faculty is required"
+        />
 
         <FormInput
           label="Course Name"

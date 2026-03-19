@@ -1,7 +1,8 @@
 // src/pages/admin/courses/CoursePage.jsx
 import { useEffect, useState } from "react";
 import { FaPen, FaTrash } from "react-icons/fa";
-import { fetchAllFaculty } from "../../../api/courses/facultyApi";
+import { fetchCourseCategories } from "../../../api/courses/courseTypeApi";
+import { fetchFaculty, fetchAllFaculty } from "../../../api/courses/facultyApi";
 import {
   fetchCourses,
   createCourse,
@@ -22,6 +23,9 @@ export default function CoursePage() {
   const { toast, show, clear } = useToast();
   const { target, isOpen, open, close } = useConfirm();
 
+  const [courseTypes, setCourseTypes] = useState([]);
+  const [selectedCourseType, setSelectedCourseType] = useState("");
+  const [loadingFaculties, setLoadingFaculties] = useState(false);
   const [facultyList, setFacultyList] = useState([]);
   const [selectedFaculty, setSelectedFaculty] = useState("");
   const [editData, setEditData] = useState(null);
@@ -36,22 +40,59 @@ export default function CoursePage() {
     deleteFn: deleteCourse,
   });
 
+  // Load course types on mount
   useEffect(() => {
-    loadFaculty();
+    loadCourseTypes();
   }, []);
 
-  const loadFaculty = async () => {
+  const loadCourseTypes = async () => {
     try {
-      const data = await fetchAllFaculty();
-      setFacultyList(data);
+      const data = await fetchCourseCategories();
+      setCourseTypes(data);
     } catch (err) {
       show("error", err.message);
+    }
+  };
+
+  // Load faculties when course type is selected
+  const handleCourseTypeChange = async (value) => {
+    setSelectedCourseType(value);
+    setFacultyList([]); // Clear previous faculties
+    setSelectedFaculty(""); // Clear previous faculty selection
+
+    if (value && !editData) {
+      setLoadingFaculties(true);
+      try {
+        const data = await fetchFaculty(value);
+        setFacultyList(data);
+      } catch (err) {
+        show("error", err.message);
+      } finally {
+        setLoadingFaculties(false);
+      }
     }
   };
 
   const handleFacultyChange = (value) => {
     setSelectedFaculty(value);
     if (value && !editData) load(value);
+  };
+
+  // In edit mode, cascade load: course type -> faculties -> courses
+  const handleEditClick = async (row) => {
+    setEditData(row);
+    // First set course type to load its faculties
+    setSelectedCourseType(row.course_type_id);
+    setLoadingFaculties(true);
+    try {
+      const faculties = await fetchFaculty(row.course_type_id);
+      setFacultyList(faculties);
+      setSelectedFaculty(row.faculty_id);
+    } catch (err) {
+      show("error", err.message);
+    } finally {
+      setLoadingFaculties(false);
+    }
   };
 
   const handleCreate = async (courseData) => {
@@ -123,10 +164,7 @@ export default function CoursePage() {
       icon: <FaPen />,
       className:
         "px-3 py-1 rounded bg-blue-600 text-white hover:bg-blue-700 text-sm",
-      onClick: (row) => {
-        setEditData(row);
-        setSelectedFaculty(row.faculty_id);
-      },
+      onClick: handleEditClick,
     },
     {
       icon: <FaTrash />,
@@ -141,11 +179,15 @@ export default function CoursePage() {
       {toast && <Toast {...toast} onClose={clear} />}
 
       <CourseForm
+        courseTypes={courseTypes}
+        selectedCourseType={selectedCourseType}
+        onCourseTypeChange={handleCourseTypeChange}
         facultyList={facultyList}
         selectedFaculty={selectedFaculty}
         onFacultyChange={handleFacultyChange}
         onSubmit={handleCreate}
         mode="create"
+        loadingFaculties={loadingFaculties}
       />
 
       <Table
@@ -163,6 +205,9 @@ export default function CoursePage() {
         onClose={() => setEditData(null)}
       >
         <CourseForm
+          courseTypes={courseTypes}
+          selectedCourseType={selectedCourseType}
+          onCourseTypeChange={handleCourseTypeChange}
           facultyList={facultyList}
           selectedFaculty={selectedFaculty}
           onFacultyChange={handleFacultyChange}
@@ -170,6 +215,7 @@ export default function CoursePage() {
           initialData={editData}
           mode="edit"
           onCancel={() => setEditData(null)}
+          loadingFaculties={loadingFaculties}
         />
       </Modal>
 

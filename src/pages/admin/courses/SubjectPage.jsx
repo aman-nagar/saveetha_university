@@ -1,7 +1,10 @@
 // src/pages/admin/courses/SubjectPage.jsx
 import { useEffect, useState } from "react";
 import { FaPen, FaTrash } from "react-icons/fa";
-import { fetchAllStreams } from "../../../api/courses/streamApi";
+import { fetchCourseCategories } from "../../../api/courses/courseTypeApi";
+import { fetchFaculty } from "../../../api/courses/facultyApi";
+import { fetchCourses } from "../../../api/courses/courseApi";
+import { fetchStreams, fetchAllStreams } from "../../../api/courses/streamApi";
 import {
   fetchSubjects,
   createSubject,
@@ -25,6 +28,15 @@ export default function SubjectPage() {
   const { toast, show, clear } = useToast();
   const { target, isOpen, open, close } = useConfirm();
 
+  const [courseTypes, setCourseTypes] = useState([]);
+  const [selectedCourseType, setSelectedCourseType] = useState("");
+  const [loadingFaculties, setLoadingFaculties] = useState(false);
+  const [facultyList, setFacultyList] = useState([]);
+  const [selectedFaculty, setSelectedFaculty] = useState("");
+  const [loadingCourses, setLoadingCourses] = useState(false);
+  const [courseList, setCourseList] = useState([]);
+  const [selectedCourse, setSelectedCourse] = useState("");
+  const [loadingStreams, setLoadingStreams] = useState(false);
   const [streamList, setStreamList] = useState([]);
   const [selectedStream, setSelectedStream] = useState("");
   const [editData, setEditData] = useState(null);
@@ -41,16 +53,120 @@ export default function SubjectPage() {
   });
 
   useEffect(() => {
-    loadStreams();
-    load();
+    loadCourseTypes();
   }, []);
 
-  const loadStreams = async () => {
+  const loadCourseTypes = async () => {
     try {
-      const data = await fetchAllStreams();
-      setStreamList(data);
+      const data = await fetchCourseCategories();
+      setCourseTypes(data);
     } catch (err) {
       show("error", err.message);
+    }
+  };
+
+  // Load faculties when course type is selected
+  const handleCourseTypeChange = async (value) => {
+    setSelectedCourseType(value);
+    setFacultyList([]);
+    setSelectedFaculty("");
+    setCourseList([]);
+    setSelectedCourse("");
+    setStreamList([]);
+    setSelectedStream("");
+
+    if (value && !editData) {
+      setLoadingFaculties(true);
+      try {
+        const data = await fetchFaculty(value);
+        setFacultyList(data);
+      } catch (err) {
+        show("error", err.message);
+      } finally {
+        setLoadingFaculties(false);
+      }
+    }
+  };
+
+  // Load courses when faculty is selected
+  const handleFacultyChange = async (value) => {
+    setSelectedFaculty(value);
+    setCourseList([]);
+    setSelectedCourse("");
+    setStreamList([]);
+    setSelectedStream("");
+
+    if (value && !editData) {
+      setLoadingCourses(true);
+      try {
+        const data = await fetchCourses(value);
+        setCourseList(data);
+      } catch (err) {
+        show("error", err.message);
+      } finally {
+        setLoadingCourses(false);
+      }
+    }
+  };
+
+  // Load streams when course is selected
+  const handleCourseChange = async (value) => {
+    setSelectedCourse(value);
+    setStreamList([]);
+    setSelectedStream("");
+
+    if (value && !editData) {
+      setLoadingStreams(true);
+      try {
+        const data = await fetchStreams(value);
+        setStreamList(data);
+      } catch (err) {
+        show("error", err.message);
+      } finally {
+        setLoadingStreams(false);
+      }
+    }
+  };
+
+  const handleStreamChange = (value) => {
+    setSelectedStream(value);
+    if (value && !editData) load(value);
+  };
+
+  // In edit mode, cascade load: course type -> faculties -> courses -> streams
+  const handleEditClick = async (row) => {
+    setEditData(row);
+    // First set course type to load its faculties
+    setSelectedCourseType(row.course_type_id);
+    setLoadingFaculties(true);
+    try {
+      const faculties = await fetchFaculty(row.course_type_id);
+      setFacultyList(faculties);
+      setSelectedFaculty(row.faculty_id);
+
+      // Then load courses for selected faculty
+      setLoadingCourses(true);
+      try {
+        const courses = await fetchCourses(row.faculty_id);
+        setCourseList(courses);
+        setSelectedCourse(row.course_id);
+
+        // Then load streams for selected course
+        setLoadingStreams(true);
+        try {
+          const streams = await fetchStreams(row.course_id);
+          setStreamList(streams);
+          setSelectedStream(row.stream_id);
+        } finally {
+          setLoadingStreams(false);
+        }
+      } finally {
+        setLoadingCourses(false);
+      }
+    } catch (err) {
+      show("error", err.message);
+    } finally {
+      setLoadingFaculties(false);
     }
   };
 
@@ -148,10 +264,7 @@ export default function SubjectPage() {
       icon: <FaPen />,
       className:
         "px-3 py-1 rounded bg-blue-600 text-white hover:bg-blue-700 text-sm",
-      onClick: (row) => {
-        setEditData(row);
-        setSelectedStream(row.stream_id);
-      },
+      onClick: handleEditClick,
     },
     {
       icon: <FaTrash />,
@@ -166,11 +279,23 @@ export default function SubjectPage() {
       {toast && <Toast {...toast} onClose={clear} />}
 
       <SubjectForm
+        courseTypes={courseTypes}
+        selectedCourseType={selectedCourseType}
+        onCourseTypeChange={handleCourseTypeChange}
+        facultyList={facultyList}
+        selectedFaculty={selectedFaculty}
+        onFacultyChange={handleFacultyChange}
+        courseList={courseList}
+        selectedCourse={selectedCourse}
+        onCourseChange={handleCourseChange}
         streamList={streamList}
         selectedStream={selectedStream}
-        onStreamChange={setSelectedStream}
+        onStreamChange={handleStreamChange}
         onSubmit={handleCreate}
         mode="create"
+        loadingFaculties={loadingFaculties}
+        loadingCourses={loadingCourses}
+        loadingStreams={loadingStreams}
       />
 
       <Table
@@ -188,13 +313,25 @@ export default function SubjectPage() {
         onClose={() => setEditData(null)}
       >
         <SubjectForm
+          courseTypes={courseTypes}
+          selectedCourseType={selectedCourseType}
+          onCourseTypeChange={handleCourseTypeChange}
+          facultyList={facultyList}
+          selectedFaculty={selectedFaculty}
+          onFacultyChange={handleFacultyChange}
+          courseList={courseList}
+          selectedCourse={selectedCourse}
+          onCourseChange={handleCourseChange}
           streamList={streamList}
           selectedStream={selectedStream}
-          onStreamChange={setSelectedStream}
+          onStreamChange={handleStreamChange}
           onSubmit={handleUpdate}
           initialData={editData}
           mode="edit"
           onCancel={() => setEditData(null)}
+          loadingFaculties={loadingFaculties}
+          loadingCourses={loadingCourses}
+          loadingStreams={loadingStreams}
         />
       </Modal>
 

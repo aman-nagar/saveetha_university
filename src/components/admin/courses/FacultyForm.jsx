@@ -70,14 +70,7 @@ export default function FacultyForm({
           {mode === "edit" ? "Update Faculty" : "Create Faculty"}
         </Button>
 
-        {mode === "edit" && (
-          <Button
-            onClick={onCancel}
-            
-          >
-            Cancel
-          </Button>
-        )}
+        {mode === "edit" && <Button onClick={onCancel}>Cancel</Button>}
       </div>
     </form>
   );

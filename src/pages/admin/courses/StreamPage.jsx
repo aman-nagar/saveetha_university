@@ -1,7 +1,9 @@
 // src/pages/admin/courses/StreamPage.jsx
 import { useEffect, useState } from "react";
 import { FaPen, FaTrash } from "react-icons/fa";
-import { fetchAllCourses } from "../../../api/courses/courseApi";
+import { fetchCourseCategories } from "../../../api/courses/courseTypeApi";
+import { fetchFaculty } from "../../../api/courses/facultyApi";
+import { fetchCourses, fetchAllCourses } from "../../../api/courses/courseApi";
 import {
   fetchStreams,
   createStream,
@@ -22,6 +24,12 @@ export default function StreamPage() {
   const { toast, show, clear } = useToast();
   const { target, isOpen, open, close } = useConfirm();
 
+  const [courseTypes, setCourseTypes] = useState([]);
+  const [selectedCourseType, setSelectedCourseType] = useState("");
+  const [loadingFaculties, setLoadingFaculties] = useState(false);
+  const [facultyList, setFacultyList] = useState([]);
+  const [selectedFaculty, setSelectedFaculty] = useState("");
+  const [loadingCourses, setLoadingCourses] = useState(false);
   const [courseList, setCourseList] = useState([]);
   const [selectedCourse, setSelectedCourse] = useState("");
   const [editData, setEditData] = useState(null);
@@ -37,21 +45,88 @@ export default function StreamPage() {
   });
 
   useEffect(() => {
-    loadCourses();
+    loadCourseTypes();
   }, []);
 
-  const loadCourses = async () => {
+  const loadCourseTypes = async () => {
     try {
-      const data = await fetchAllCourses();
-      setCourseList(data);
+      const data = await fetchCourseCategories();
+      setCourseTypes(data);
     } catch (err) {
       show("error", err.message);
+    }
+  };
+
+  // Load faculties when course type is selected
+  const handleCourseTypeChange = async (value) => {
+    setSelectedCourseType(value);
+    setFacultyList([]);
+    setSelectedFaculty("");
+    setCourseList([]);
+    setSelectedCourse("");
+
+    if (value && !editData) {
+      setLoadingFaculties(true);
+      try {
+        const data = await fetchFaculty(value);
+        setFacultyList(data);
+      } catch (err) {
+        show("error", err.message);
+      } finally {
+        setLoadingFaculties(false);
+      }
+    }
+  };
+
+  // Load courses when faculty is selected
+  const handleFacultyChange = async (value) => {
+    setSelectedFaculty(value);
+    setCourseList([]);
+    setSelectedCourse("");
+
+    if (value && !editData) {
+      setLoadingCourses(true);
+      try {
+        const data = await fetchCourses(value);
+        setCourseList(data);
+      } catch (err) {
+        show("error", err.message);
+      } finally {
+        setLoadingCourses(false);
+      }
     }
   };
 
   const handleCourseChange = (value) => {
     setSelectedCourse(value);
     if (value && !editData) load(value);
+  };
+
+  // In edit mode, cascade load: course type -> faculties -> courses
+  const handleEditClick = async (row) => {
+    setEditData(row);
+    // First set course type to load its faculties
+    setSelectedCourseType(row.course_type_id);
+    setLoadingFaculties(true);
+    try {
+      const faculties = await fetchFaculty(row.course_type_id);
+      setFacultyList(faculties);
+      setSelectedFaculty(row.faculty_id);
+
+      // Then load courses for selected faculty
+      setLoadingCourses(true);
+      try {
+        const courses = await fetchCourses(row.faculty_id);
+        setCourseList(courses);
+        setSelectedCourse(row.course_id);
+      } finally {
+        setLoadingCourses(false);
+      }
+    } catch (err) {
+      show("error", err.message);
+    } finally {
+      setLoadingFaculties(false);
+    }
   };
 
   const handleCreate = async (streamData) => {
@@ -125,10 +200,7 @@ export default function StreamPage() {
       icon: <FaPen />,
       className:
         "px-3 py-1 rounded bg-blue-600 text-white hover:bg-blue-700 text-sm",
-      onClick: (row) => {
-        setEditData(row);
-        setSelectedCourse(row.course_id);
-      },
+      onClick: handleEditClick,
     },
     {
       icon: <FaTrash />,
@@ -143,11 +215,19 @@ export default function StreamPage() {
       {toast && <Toast {...toast} onClose={clear} />}
 
       <StreamForm
+        courseTypes={courseTypes}
+        selectedCourseType={selectedCourseType}
+        onCourseTypeChange={handleCourseTypeChange}
+        facultyList={facultyList}
+        selectedFaculty={selectedFaculty}
+        onFacultyChange={handleFacultyChange}
         courseList={courseList}
         selectedCourse={selectedCourse}
         onCourseChange={handleCourseChange}
         onSubmit={handleCreate}
         mode="create"
+        loadingFaculties={loadingFaculties}
+        loadingCourses={loadingCourses}
       />
 
       <Table
@@ -165,6 +245,12 @@ export default function StreamPage() {
         onClose={() => setEditData(null)}
       >
         <StreamForm
+          courseTypes={courseTypes}
+          selectedCourseType={selectedCourseType}
+          onCourseTypeChange={handleCourseTypeChange}
+          facultyList={facultyList}
+          selectedFaculty={selectedFaculty}
+          onFacultyChange={handleFacultyChange}
           courseList={courseList}
           selectedCourse={selectedCourse}
           onCourseChange={handleCourseChange}
@@ -172,6 +258,8 @@ export default function StreamPage() {
           initialData={editData}
           mode="edit"
           onCancel={() => setEditData(null)}
+          loadingFaculties={loadingFaculties}
+          loadingCourses={loadingCourses}
         />
       </Modal>
 

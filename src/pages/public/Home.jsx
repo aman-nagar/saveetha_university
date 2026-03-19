@@ -19,16 +19,13 @@ import LeadingSection from "../../components/public/sections/LeadingSection";
 import AccreditationSection from "../../components/public/sections/AccreditationSection";
 
 export default function Home() {
-  const videoUrl =
-    "https://www.youtube.com/embed/6ygTNiz550I?si=91IJ5rQO_cPWCLzj";
-
   return (
     <div className="bg-bg ">
       <AnnouncementPopup />
       <HeroSlider />
       <Hero />
       <AboutUsSection data={publicMock.aboutUs} />
-      <VideoSection videoUrl={videoUrl} />
+      <VideoSection />
       <HighlightNews />
       {/* <Stats /> */}
       <WhyUS />

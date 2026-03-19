@@ -1,14 +1,4 @@
-/**
- * src/api/public/publicApiRequest.js
- * PUBLIC API REQUEST HANDLER
- *
- * Simple fetch wrapper for public endpoints (NO AUTH REQUIRED)
- * - Does NOT inject auth headers
- * - Does NOT redirect on 401
- * - Used ONLY for public-facing APIs
- * - Never touches AuthContext or admin auth logic
- */
-
+// src/api/public/publicApiRequest.js
 import { BASE_URL } from "../apiConfig";
 
 export async function publicApiRequest(endpoint, options = {}) {

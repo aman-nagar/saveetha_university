@@ -1,12 +1,4 @@
-/**
- * src/api/public/franchiseApi.js
- * PUBLIC API for Franchise Applications
- *
- * NOTE: This is COMPLETELY SEPARATE from admin center management
- * - No authentication required
- * - Uses /public/franchise/ endpoint (not /centers/)
- * - Dummy implementation for now, real API can be connected later
- */
+// src/api/public/franchiseApi.js
 
 import { apiRequest } from "../client";
 

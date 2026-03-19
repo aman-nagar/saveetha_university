@@ -25,6 +25,7 @@ const Contact = lazy(() => import("@/pages/public/Contact"));
 const News = lazy(() => import("@/pages/public/News"));
 const AcademicsPage = lazy(() => import("@/pages/public/AcademicsPage"));
 const GalleryPage = lazy(() => import("@/pages/public/GalleryPage"));
+const DownloadFormPage = lazy(() => import("@/pages/public/DownloadFormPage"));
 const WIEP = lazy(() => import("@/pages/public/WIEP-formPage"));
 const ApplyAdmissionPage = lazy(
   () => import("@/pages/public/ApplyAdmissionPage"),
@@ -123,6 +124,10 @@ function App() {
                   <Route
                     path={ROUTES.PUBLIC.GALLERY}
                     element={<GalleryPage />}
+                  />
+                  <Route
+                    path={ROUTES.PUBLIC.DOWNLOAD_FORM}
+                    element={<DownloadFormPage />}
                   />
                   <Route
                     path={ROUTES.PUBLIC.APPLY_FRANCHISE}

@@ -21,7 +21,7 @@ export const PUBLIC_ROUTES = {
   GALLERY: "/gallery",
   APPLY_FRANCHISE: "/wiep-Form",
   APPLY_ADMISSION: "/apply-admission",
-  DOWNLOAD: "/download",
+  DOWNLOAD_FORM: "/download-form",
 };
 
 // Admin Routes

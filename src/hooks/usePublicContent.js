@@ -1,12 +1,4 @@
-/**
- * src/hooks/usePublicContent.js
- * SIMPLIFIED HOOK - Access public data from anywhere
- *
- * Usage:
- * const { data, loading, error } = usePublicContent();
- * const { header, siteDetails } = usePublicContent();
- */
-
+// src/hooks/usePublicContent.js
 import { useContext } from "react";
 import { PublicDataContext } from "../context/PublicDataContext";
 

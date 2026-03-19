@@ -1,10 +1,16 @@
-// src/components/admin/students/admission/steps/StepPersonal.jsx
-import FormInput from "../../../../form/FormInput";
-import FormSelect from "../../../../form/FormSelect";
-import FormSection from "../../../../form/FormSection";
-import FormFileInput from "../../../../form/FormFileInput";
+/**
+ * src/components/public/admission/steps/PublicStepPersonal.jsx
+ * PUBLIC ADMISSION - PERSONAL DETAILS STEP
+ *
+ * Reuses form components but is independently maintained from admin version
+ */
 
-export default function StepPersonal({
+import FormInput from "../../../form/FormInput";
+import FormSelect from "../../../form/FormSelect";
+import FormSection from "../../../form/FormSection";
+import FormFileInput from "../../../form/FormFileInput";
+
+export default function PublicStepPersonal({
   register,
   errors,
   watch,

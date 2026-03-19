@@ -1,10 +1,16 @@
-// src/components/admin/students/admission/steps/StepProgram.jsx
-import FormSection from "../../../../form/FormSection";
-import FormSelect from "../../../../form/FormSelect";
-import FormInput from "../../../../form/FormInput";
+/**
+ * src/components/public/admission/steps/PublicStepProgram.jsx
+ * PUBLIC ADMISSION - PROGRAMME DETAILS STEP
+ *
+ * Uses public APIs instead of admin APIs
+ */
+
+import FormSection from "../../../form/FormSection";
+import FormSelect from "../../../form/FormSelect";
+import FormInput from "../../../form/FormInput";
 import { useMemo, useEffect } from "react";
 
-export default function StepProgram({
+export default function PublicStepProgram({
   register,
   errors,
   courseTypes = [],

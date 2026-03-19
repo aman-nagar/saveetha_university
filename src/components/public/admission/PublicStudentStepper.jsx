@@ -1,19 +1,20 @@
-// src/components/admin/students/admission/StudentFormStepper.jsx
+// src/components/public/admission/PublicStudentStepper.jsx
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
-import { useToast } from "../../../../context/ToastContext";
-import Toast from "../../../ui/Toast";
+import { useToast } from "../../../context/ToastContext";
+import Toast from "../../ui/Toast";
 
-import StepPersonal from "./steps/StepPersonal";
-import StepCommunication from "./steps/StepCommunication";
-import StepQualification from "./steps/StepQualification";
-import StepProgram from "./steps/StepProgram";
-import AdmissionStepper from "./AdmissionStepper";
+import PublicAdmissionStepper from "./PublicAdmissionStepper";
+import PublicStepPersonal from "./steps/PublicStepPersonal";
+import PublicStepCommunication from "./steps/PublicStepCommunication";
+import PublicStepQualification from "./steps/PublicStepQualification";
+import PublicStepProgram from "./steps/PublicStepProgram";
 
-import { fetchCourseCategories } from "../../../../api/courses/courseTypeApi";
-import { fetchFaculty } from "../../../../api/courses/facultyApi";
-import { fetchCourses } from "../../../../api/courses/courseApi";
-import { fetchStreams } from "../../../../api/courses/streamApi";
+import { fetchPublicCourseTypes } from "../../../api/public/publicCourseTypeApi";
+import { fetchPublicFaculties } from "../../../api/public/publicFacultyApi";
+import { fetchPublicCourses } from "../../../api/public/publicCourseApi";
+import { fetchPublicStreams } from "../../../api/public/publicStreamApi";
+import { submitPublicAdmission } from "../../../api/public/publicAdmissionApi";
 
 import {
   FiChevronLeft,
@@ -88,11 +89,11 @@ function buildDefaultValues(student) {
   };
 }
 
-export default function StudentFormStepper({
+export default function PublicStudentStepper({
   mode = "create",
   student = null,
   onSubmit: onSubmitProp,
-  submitLabel = "Submit",
+  submitLabel = "Submit Application",
 }) {
   const isEdit = mode === "edit";
 
@@ -138,7 +139,7 @@ export default function StudentFormStepper({
     const init = async () => {
       try {
         // 1. Always load course types
-        const ctList = await fetchCourseCategories();
+        const ctList = await fetchPublicCourseTypes();
         setCourseTypes(ctList);
 
         if (!isEdit || !student) {
@@ -157,7 +158,7 @@ export default function StudentFormStepper({
           cId = null;
 
         if (ctId) {
-          fList = await fetchFaculty(ctId);
+          fList = await fetchPublicFaculties(ctId);
           setFaculties(fList);
 
           // 3. Find faculty by name → get its ID
@@ -166,7 +167,7 @@ export default function StudentFormStepper({
         }
 
         if (fId) {
-          cList = await fetchCourses(fId);
+          cList = await fetchPublicCourses(fId);
           setCourses(cList);
 
           // 4. Find course by name → get its ID
@@ -175,7 +176,7 @@ export default function StudentFormStepper({
         }
 
         if (cId) {
-          sList = await fetchStreams(cId);
+          sList = await fetchPublicStreams(cId);
           setStreams(sList);
         }
 
@@ -216,7 +217,7 @@ export default function StudentFormStepper({
 
     const load = async () => {
       try {
-        const data = await fetchFaculty(ctId);
+        const data = await fetchPublicFaculties(ctId);
         setFaculties(data);
         setCourses([]);
         setStreams([]);
@@ -251,7 +252,7 @@ export default function StudentFormStepper({
 
     const load = async () => {
       try {
-        const data = await fetchCourses(fId);
+        const data = await fetchPublicCourses(fId);
         setCourses(data);
         setStreams([]);
         setValue("course", "");
@@ -282,7 +283,7 @@ export default function StudentFormStepper({
 
     const load = async () => {
       try {
-        const data = await fetchStreams(cId);
+        const data = await fetchPublicStreams(cId);
         setStreams(data);
         setValue("stream", "");
         setSelectedIds((prev) => ({ ...prev, courseId: cId }));
@@ -312,7 +313,7 @@ export default function StudentFormStepper({
 
   const prev = () => setStep((s) => Math.max(s - 1, 1));
 
-  // ── Build FormData and call parent onSubmit ──
+  // ── Build FormData and call parent onSubmit or submitPublicAdmission ──
   const handleFormSubmit = async (data) => {
     try {
       setLoading(true);
@@ -346,13 +347,6 @@ export default function StudentFormStepper({
         const percentage = data[`${key}_percentage`];
         const file = qualificationFiles[key];
 
-        // ===== DEBUG START =====
-        console.log(`--- Qual [${key}] ---`);
-        console.log("  year:", year, "board:", board, "pct:", percentage);
-        console.log("  file from state:", file);
-        console.log("  has data?", !!(year || board || percentage));
-        // ===== DEBUG END =====
-
         if (!year && !board && !percentage) return;
 
         formData.append(`qualifications[${qi}][examination]`, key);
@@ -377,34 +371,22 @@ export default function StudentFormStepper({
           }
         }
 
-        // ===== DEBUG START =====
-        console.log(
-          `  → Appended as qualifications[${qi}], file appended:`,
-          !!file,
-        );
-        // ===== DEBUG END =====
-
         qi++;
       });
 
-      // ===== DEBUG: Log full FormData contents =====
-      console.log("=== FULL FORMDATA ===");
-      for (let [key, value] of formData.entries()) {
-        if (value instanceof File) {
-          console.log(`  ${key}: [File] ${value.name} (${value.size} bytes)`);
-        } else {
-          console.log(`  ${key}: ${value}`);
-        }
+      // If custom onSubmit provided (for admin use), call it
+      // Otherwise, submit to public admission API
+      if (onSubmitProp) {
+        await onSubmitProp(formData);
+      } else {
+        await submitPublicAdmission(formData);
       }
-      console.log("=== END FORMDATA ===");
-
-      await onSubmitProp(formData);
 
       show(
         "success",
         isEdit
           ? "Student updated successfully!"
-          : "Student created successfully!",
+          : "Application submitted successfully!",
       );
 
       if (!isEdit) {
@@ -463,11 +445,11 @@ export default function StudentFormStepper({
     <div className="w-full max-w-7xl px-2 sm:px-0">
       {toast && <Toast {...toast} onClose={clear} />}
 
-      <AdmissionStepper step={step} />
+      <PublicAdmissionStepper step={step} />
 
       <form>
         {step === 1 && (
-          <StepPersonal
+          <PublicStepPersonal
             register={register}
             errors={errors}
             watch={watch}
@@ -476,7 +458,7 @@ export default function StudentFormStepper({
         )}
 
         {step === 2 && (
-          <StepCommunication
+          <PublicStepCommunication
             register={register}
             errors={errors}
             watch={watch}
@@ -484,7 +466,7 @@ export default function StudentFormStepper({
         )}
 
         {step === 3 && (
-          <StepQualification
+          <PublicStepQualification
             register={register}
             errors={errors}
             setQualificationFiles={setQualificationFiles}
@@ -493,7 +475,7 @@ export default function StudentFormStepper({
         )}
 
         {step === 4 && (
-          <StepProgram
+          <PublicStepProgram
             register={register}
             errors={errors}
             courseTypes={courseTypes}

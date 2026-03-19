@@ -69,7 +69,7 @@ export default function Contact() {
             <iframe
               title="University Location"
               src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3825.437158760447!2d80.648358!3d16.503348!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zMTbCsDMwJzEyLjAiTiA4MMKwMzgnNTQuMSJF!5e0!3m2!1sen!2sin!4v1650000000000"
-              className="w-full h-full min-h-[400px] border-0 grayscale hover:grayscale-0 transition-all duration-700"
+              className="w-full h-full min-h-96 border-0 grayscale hover:grayscale-0 transition-all duration-700"
               loading="lazy"
             />
           </div>

@@ -1,10 +1,14 @@
-// src/components/admin/students/admission/steps/StepCommunication.jsx
-import FormInput from "../../../../form/FormInput";
-import FormSection from "../../../../form/FormSection";
-import FormSelect from "../../../../form/FormSelect";
-import FormTextarea from "../../../../form/FormTextarea";
+/**
+ * src/components/public/admission/steps/PublicStepCommunication.jsx
+ * PUBLIC ADMISSION - COMMUNICATION DETAILS STEP
+ */
 
-export default function StepCommunication({ register, errors }) {
+import FormInput from "../../../form/FormInput";
+import FormSelect from "../../../form/FormSelect";
+import FormSection from "../../../form/FormSection";
+import FormTextarea from "../../../form/FormTextarea";
+
+export default function PublicStepCommunication({ register, errors }) {
   return (
     <FormSection title="Communication Details" columns={2}>
       <FormInput

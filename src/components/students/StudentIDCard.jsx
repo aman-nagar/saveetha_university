@@ -2,7 +2,6 @@
 import { useAuth } from "@/context/AuthContext";
 import { useRef, useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import html2pdf from "html2pdf.js";
 import { getIDCardFormat } from "@/api/students/studentDashboardApi";
 
 const StudentIDCard = () => {
@@ -64,25 +63,6 @@ const StudentIDCard = () => {
     address,
   } = studentData;
 
-  const handleDownloadPDF = async () => {
-    setIsGeneratingPdf(true);
-    await new Promise((resolve) => setTimeout(resolve, 300));
-    const element = cardRef.current;
-    const opt = {
-      margin: 0,
-      filename: `${candidate_name}_ID_Card.pdf`,
-      image: { type: "jpeg", quality: 1 },
-      html2canvas: { scale: 4, useCORS: true, letterRendering: true },
-      jsPDF: { unit: "mm", format: [152.4, 95.25], orientation: "landscape" },
-    };
-    try {
-      await html2pdf().set(opt).from(element).save();
-    } catch (err) {
-      alert("Error generating PDF.");
-    } finally {
-      setIsGeneratingPdf(false);
-    }
-  };
 
   return (
     <div className="min-h-screen p-4 pt-6 pb-8 bg-gray-50">
@@ -170,12 +150,8 @@ const StudentIDCard = () => {
           >
             🖨️ Print
           </button>
-          <button
-            onClick={handleDownloadPDF}
-            className="bg-blue-600 text-white px-6 py-3 rounded-lg font-bold hover:opacity-90 transition-all flex items-center gap-2 shadow-lg active:scale-95"
-          >
-            {isGeneratingPdf ? "Generating..." : "📥 Download PDF"}
-          </button>
+         
+         
           <Link
             to="/student-dashboard"
             className="bg-gray-800 text-white px-6 py-3 rounded-lg font-bold no-underline hover:bg-black transition-all shadow-lg active:scale-95"

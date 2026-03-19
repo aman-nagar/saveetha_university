@@ -1,5 +1,10 @@
 # 🔍 Code Flow Analysis - Public Website Architecture
 
+then what is right approach?
+later i have multiple api's like for header,footer ,slider,testimonial, download-forms,may be dynamic page creation from admin, these api's data will add from admin panel and then goes to backend and the fetch and set to public ui, i explained you my scenario please understand it and refine my codebase on public related codes don't touch my admin's code or api or context
+i think the better approach is fetch api and pass data through public context in every component directly like header.jsx , footer.jsx etc is best approach , what's your approach do as best and if not neccesory then keep the static data as it is and try to refine only api based data slowly we get most of component dynamic data then remove the zod and satic data flow
+what is righ approach i think if we wait for later then messed up it and it overcomplecated and very time consuming what is your suggetion? don't code just explain me what shuould we do? make a plan
+
 ## 📊 Current Code Flow Diagram
 
 ```

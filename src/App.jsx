@@ -10,7 +10,7 @@ import PublicLayout from "@/layouts/PublicLayout";
 
 // ===== CONTEXT & PROVIDERS =====
 import { AuthProvider } from "@/context/AuthContext";
-import { PublicContentProvider } from "@/context/PublicContentContext";
+import { PublicDataProvider } from "@/context/PublicDataContext";
 import ProtectedRoute from "@/context/ProtectedRoute";
 import FormEnabledRoute from "@/context/FormEnabledRoute";
 import { ToastProvider } from "@/context/ToastContext";
@@ -26,7 +26,9 @@ const News = lazy(() => import("@/pages/public/News"));
 const AcademicsPage = lazy(() => import("@/pages/public/AcademicsPage"));
 const GalleryPage = lazy(() => import("@/pages/public/GalleryPage"));
 const WIEP = lazy(() => import("@/pages/public/WIEP-formPage"));
-const ApplyAdmissionPage = lazy(() => import("@/pages/public/ApplyAdmissionPage"));
+const ApplyAdmissionPage = lazy(
+  () => import("@/pages/public/ApplyAdmissionPage"),
+);
 
 // ===== AUTH PAGES =====
 const LoginPortal = lazy(() => import("@/pages/auth/LoginPortal"));
@@ -89,7 +91,7 @@ function App() {
   return (
     <AuthProvider>
       <ToastProvider>
-        <PublicContentProvider>
+        <PublicDataProvider>
           <BrowserRouter>
             <Suspense fallback={<LoadingFallback variant="dashboard" />}>
               <Routes>
@@ -208,7 +210,7 @@ function App() {
               </Routes>
             </Suspense>
           </BrowserRouter>
-        </PublicContentProvider>
+        </PublicDataProvider>
       </ToastProvider>
     </AuthProvider>
   );

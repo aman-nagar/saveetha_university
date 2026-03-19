@@ -1,6 +1,10 @@
-// src/components/admin/students/admission/steps/StepQualification.jsx
+/**
+ * src/components/public/admission/steps/PublicStepQualification.jsx
+ * PUBLIC ADMISSION - QUALIFICATION DETAILS STEP
+ */
+
+import FormSection from "../../../form/FormSection";
 import { useState } from "react";
-import FormSection from "../../../../form/FormSection";
 
 const ROWS = [
   { label: "Secondary", key: "secondary" },

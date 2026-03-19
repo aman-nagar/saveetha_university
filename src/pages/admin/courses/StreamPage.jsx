@@ -228,6 +228,8 @@ export default function StreamPage() {
         mode="create"
         loadingFaculties={loadingFaculties}
         loadingCourses={loadingCourses}
+        isEmptyFaculties={facultyList.length === 0 && !loadingFaculties}
+        isEmptyCourses={courseList.length === 0 && !loadingCourses}
       />
 
       <Table
@@ -260,6 +262,8 @@ export default function StreamPage() {
           onCancel={() => setEditData(null)}
           loadingFaculties={loadingFaculties}
           loadingCourses={loadingCourses}
+          isEmptyFaculties={facultyList.length === 0 && !loadingFaculties}
+          isEmptyCourses={courseList.length === 0 && !loadingCourses}
         />
       </Modal>
 

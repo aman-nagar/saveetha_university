@@ -188,6 +188,7 @@ export default function CoursePage() {
         onSubmit={handleCreate}
         mode="create"
         loadingFaculties={loadingFaculties}
+        isEmptyFaculties={facultyList.length === 0 && !loadingFaculties}
       />
 
       <Table
@@ -216,6 +217,7 @@ export default function CoursePage() {
           mode="edit"
           onCancel={() => setEditData(null)}
           loadingFaculties={loadingFaculties}
+          isEmptyFaculties={facultyList.length === 0 && !loadingFaculties}
         />
       </Modal>
 

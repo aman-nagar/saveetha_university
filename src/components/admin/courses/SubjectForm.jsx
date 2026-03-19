@@ -27,6 +27,9 @@ export default function SubjectForm({
   loadingFaculties = false,
   loadingCourses = false,
   loadingStreams = false,
+  isEmptyFaculties = false,
+  isEmptyCourses = false,
+  isEmptyStreams = false,
 }) {
   const {
     register,
@@ -150,6 +153,7 @@ export default function SubjectForm({
           }}
           disabled={!selectedCourseType || facultyList.length === 0}
           isLoading={loadingFaculties}
+          isEmpty={isEmptyFaculties}
           placeholder="Select Faculty"
           required="Faculty is required"
         />
@@ -169,6 +173,7 @@ export default function SubjectForm({
           }}
           disabled={!selectedFaculty || courseList.length === 0}
           isLoading={loadingCourses}
+          isEmpty={isEmptyCourses}
           placeholder="Select Course"
           required="Course is required"
         />
@@ -188,6 +193,7 @@ export default function SubjectForm({
           }}
           disabled={!selectedCourse || streamList.length === 0}
           isLoading={loadingStreams}
+          isEmpty={isEmptyStreams}
           placeholder="Select Stream"
           required="Stream is required"
         />

@@ -18,6 +18,7 @@ export default function CourseForm({
   mode = "create",
   onCancel,
   loadingFaculties = false,
+  isEmptyFaculties = false,
 }) {
   const { register, handleSubmit, reset } = useForm();
 
@@ -90,6 +91,7 @@ export default function CourseForm({
           }}
           disabled={!selectedCourseType || facultyList.length === 0}
           isLoading={loadingFaculties}
+          isEmpty={isEmptyFaculties}
           placeholder="Select Faculty"
           required="Faculty is required"
         />

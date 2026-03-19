@@ -296,6 +296,9 @@ export default function SubjectPage() {
         loadingFaculties={loadingFaculties}
         loadingCourses={loadingCourses}
         loadingStreams={loadingStreams}
+        isEmptyFaculties={facultyList.length === 0 && !loadingFaculties}
+        isEmptyCourses={courseList.length === 0 && !loadingCourses}
+        isEmptyStreams={streamList.length === 0 && !loadingStreams}
       />
 
       <Table
@@ -332,6 +335,9 @@ export default function SubjectPage() {
           loadingFaculties={loadingFaculties}
           loadingCourses={loadingCourses}
           loadingStreams={loadingStreams}
+          isEmptyFaculties={facultyList.length === 0 && !loadingFaculties}
+          isEmptyCourses={courseList.length === 0 && !loadingCourses}
+          isEmptyStreams={streamList.length === 0 && !loadingStreams}
         />
       </Modal>
 

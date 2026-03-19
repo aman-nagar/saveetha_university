@@ -22,6 +22,8 @@ export default function StreamForm({
   onCancel,
   loadingFaculties = false,
   loadingCourses = false,
+  isEmptyFaculties = false,
+  isEmptyCourses = false,
 }) {
   const { register, handleSubmit, reset } = useForm();
 
@@ -89,6 +91,7 @@ export default function StreamForm({
           }}
           disabled={!selectedCourseType || facultyList.length === 0}
           isLoading={loadingFaculties}
+          isEmpty={isEmptyFaculties}
           placeholder="Select Faculty"
           required="Faculty is required"
         />
@@ -108,6 +111,7 @@ export default function StreamForm({
           }}
           disabled={!selectedFaculty || courseList.length === 0}
           isLoading={loadingCourses}
+          isEmpty={isEmptyCourses}
           placeholder="Select Course"
           required="Course is required"
         />

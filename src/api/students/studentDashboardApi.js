@@ -8,3 +8,7 @@ export async function getAdmitCard() {
     method: "GET",
   });
 }
+
+export async function getIDCardFormat() {
+  return await apiRequest("/view-format/id_card.php");
+}

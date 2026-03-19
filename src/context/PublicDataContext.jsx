@@ -81,8 +81,6 @@ export function PublicDataProvider({ children }) {
           ]),
         ),
       }));
-
-      console.log("✅ Public data loaded:", newData);
     } catch (err) {
       console.error("❌ Error loading public data:", err);
       setError(err.message);

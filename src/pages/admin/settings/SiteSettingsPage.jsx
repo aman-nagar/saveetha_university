@@ -1,6 +1,5 @@
 // src/pages/admin/settings/SiteSettingsPage.jsx
 import { useState, useEffect } from "react";
-import SettingsForm from "../../../components/admin/settings/SettingsForm";
 import {
   updateSiteSettings,
   fetchSiteSettings,
@@ -8,6 +7,7 @@ import {
 import { useToast } from "../../../context/ToastContext";
 import Toast from "../../../components/ui/Toast";
 import SettingsSkeleton from "../../../components/ui/skeleton/SettingsSkeleton";
+import SettingsForm from "../../../components/admin/settings/site-settings-forms/SettingsForm";
 
 export default function SiteSettingsPage() {
   const [loading, setLoading] = useState(false);
@@ -53,7 +53,7 @@ export default function SiteSettingsPage() {
             initialData={initialData}
           />
         ) : (
-          <SettingsSkeleton /> // ✅ Replaced the simple pulse with a structured skeleton
+          <SettingsSkeleton />
         )}
       </div>
     </div>

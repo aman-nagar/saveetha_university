@@ -1,11 +1,12 @@
+// src/pages/admin/settings/SiteSettings.jsx
 import { useState, useEffect } from "react";
-import SettingsForm from "../../../components/admin/settings/SettingsForm";
+import SettingsForm from "../../../components/admin/settings/site-settings-forms/SettingsForm";
+import { useToast } from "../../../context/ToastContext";
+import Toast from "../../../components/ui/Toast";
 import {
   updateSiteSettings,
   fetchSiteSettings,
-} from "../../../api/settingsApi";
-import { useToast } from "../../../context/ToastContext";
-import Toast from "../../../components/ui/Toast";
+} from "../../../api/settings/settingAPI";
 
 export default function SiteSettingsPage() {
   const [loading, setLoading] = useState(false);
@@ -14,9 +15,7 @@ export default function SiteSettingsPage() {
 
   const loadSettings = async () => {
     try {
-      console.log("📡 FETCHING: Requesting site settings...");
       const res = await fetchSiteSettings();
-      console.log("📦 RECEIVE: Raw API Response:", res);
 
       // Check if data exists in the response structure
       if (res) {

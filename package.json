@@ -1,6 +1,6 @@
 {
-  "name": "collage-managment",
-  "homepage": "https://collage.nsprowebtech.com/",
+  "name": "saveetha-amravati",
+  "homepage": ".",
   "private": true,
   "version": "0.0.0",
   "type": "module",
@@ -14,7 +14,6 @@
   },
   "dependencies": {
     "@tailwindcss/vite": "^4.1.18",
-    "canvas-confetti": "^1.9.4",
     "clsx": "^2.1.1",
     "flowbite": "^4.0.1",
     "flowbite-react": "^0.12.17",

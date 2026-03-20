@@ -182,6 +182,16 @@ export default function ApplyFranchisePage() {
                 error={errors.pincode}
                 placeholder="6 digit pincode"
               />
+
+              <FormInput
+                label="Contact Number"
+                name="contact_number"
+                type="tel"
+                register={register}
+                required="Contact number is required"
+                error={errors.contact_number}
+                placeholder="10 digit mobile number"
+              />
             </FormSection>
 
             {/* SECTION 3: CONTACT INFORMATION */}
@@ -197,13 +207,13 @@ export default function ApplyFranchisePage() {
               />
 
               <FormInput
-                label="Contact Number"
-                name="contact_number"
+                label="Password"
+                name="password"
                 type="tel"
                 register={register}
-                required="Contact number is required"
-                error={errors.contact_number}
-                placeholder="10 digit mobile number"
+                required="password required"
+                error={errors.password}
+                placeholder="password"
               />
             </FormSection>
 

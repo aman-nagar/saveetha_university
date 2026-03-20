@@ -1,10 +1,11 @@
+// src/components/admin/settings/site-settings-forms/SettingsForm.jsx
 import { useForm } from "react-hook-form";
 import { useEffect } from "react";
-import FormInput from "../../form/FormInput";
-import FormTextarea from "../../form/FormTextarea";
-import FormFileInput from "../../form/FormFileInput";
-import FormSection from "../../form/FormSection";
-import Button from "../../ui/Button";
+import FormInput from "../../../form/FormInput";
+import FormTextarea from "../../../form/FormTextarea";
+import FormFileInput from "../../../form/FormFileInput";
+import FormSection from "../../../form/FormSection";
+import Button from "../../../ui/Button";
 
 export default function SettingsForm({ onSubmit, loading, initialData }) {
   const { register, handleSubmit, reset } = useForm();
@@ -86,11 +87,7 @@ export default function SettingsForm({ onSubmit, loading, initialData }) {
         />
       </FormSection>
 
-      <Button
-        type="submit"
-        disabled={loading}
-        
-      >
+      <Button type="submit" disabled={loading}>
         {loading ? "Saving..." : "Update Settings"}
       </Button>
     </form>

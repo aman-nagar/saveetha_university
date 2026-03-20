@@ -1,3 +1,4 @@
+// src/constants/routes.js
 /**
  * Application Routes Constants
  * Centralized route definitions to avoid hardcoding strings throughout the app

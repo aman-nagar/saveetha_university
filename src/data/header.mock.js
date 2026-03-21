@@ -137,7 +137,7 @@ export const publicMock = {
         title: "Welcome to Saveetha Amaravati University",
         subtitle: "Excellence in Education",
         image:
-          "https://saveethaamaravatiuniversity.ac.in/uploads/slider__17705748893.jpg",
+          "https://images.unsplash.com/photo-1517694712202-14dd9538aa97?w=1200&h=600&fit=crop",
         bgColor: "bg-primary",
       },
       {

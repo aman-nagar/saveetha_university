@@ -21,7 +21,7 @@ export default function SettingsTable({
       </div>
     );
   }
-
+  console.log(data);
   if (!data || data.length === 0) {
     return (
       <div className="py-12 text-center">

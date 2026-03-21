@@ -12,7 +12,6 @@ export default function SettingsForm({ onSubmit, loading, initialData }) {
 
   useEffect(() => {
     if (initialData) {
-      console.log("🔄 FORM RESET: Populating inputs with initialData...");
       reset(initialData);
     }
   }, [initialData, reset]);

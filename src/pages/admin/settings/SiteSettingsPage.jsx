@@ -18,7 +18,7 @@ const SETTING_TABS = [
   // { id: "footer", label: "Footer", icon: "📍" },
   // { id: "testimonials", label: "Testimonials", icon: "⭐" },
   // { id: "news", label: "News & Updates", icon: "📰" },
-  // { id: "sliders", label: "Sliders", icon: "🎨" },
+  { id: "sliders", label: "Sliders", icon: "🎨" },
 ];
 
 export default function SiteSettingsPage() {

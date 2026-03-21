@@ -121,32 +121,31 @@ export function deleteNews(id) {
 }
 
 // ============================================
-// SLIDERS & CAROUSELS (CRUD)
+// SLIDERS & CAROUSELS
 // ============================================
 export function fetchSliders() {
-  // TODO: Replace with actual endpoint: /settings/sliders
-  return apiRequest("/settings/sliders");
+  return apiRequest("/admin/sliders.php?admin=true");
 }
 
 export function createSlider(formData) {
-  // TODO: Replace with actual endpoint: /settings/sliders (POST)
-  return apiRequest("/settings/sliders", {
+  return apiRequest("/admin/sliders.php", {
     method: "POST",
     body: formData,
   });
 }
 
-export function updateSlider(id, formData) {
-  // TODO: Replace with actual endpoint: /settings/sliders/{id} (PUT)
-  return apiRequest(`/settings/sliders/${id}`, {
-    method: "PUT",
-    body: formData,
+export function updateSliderStatus(id, status) {
+  return apiRequest("/admin/sliders.php", {
+    method: "PATCH",
+    body: JSON.stringify({
+      id: id,
+      status: status ? 1 : 0,
+    }),
   });
 }
 
 export function deleteSlider(id) {
-  // TODO: Replace with actual endpoint: /settings/sliders/{id} (DELETE)
-  return apiRequest(`/settings/sliders/${id}`, {
+  return apiRequest(`/admin/sliders.php?id=${id}`, {
     method: "DELETE",
   });
 }

@@ -72,10 +72,16 @@ export default function GenerateAdmitCardPage() {
   };
 
   useEffect(() => {
-    if (selectedPart) {
-      academicFlow.loadSubjectsForPart(selectedPart);
+    if (selectedPart && academicFlow.streamId) {
+      console.log(
+        "📌 LOADING SUBJECTS: Duration:",
+        selectedPart,
+        "| StreamID:",
+        academicFlow.streamId,
+      );
+      academicFlow.loadSubjectsForPart(selectedPart, academicFlow.streamId);
     }
-  }, [selectedPart, academicFlow.loadSubjectsForPart]);
+  }, [selectedPart, academicFlow.streamId, academicFlow.loadSubjectsForPart]);
 
   // ✅ 1. Improved Edit Logic: Fetches full details to get the missing Student ID
   const handleEdit = async (record) => {
@@ -92,7 +98,7 @@ export default function GenerateAdmitCardPage() {
       academicFlow.setSearchTerm(details.enrollment_no);
 
       // Select student using the ID from full details to avoid 'undefined' errors
-      await academicFlow.selectStudent({
+      const returnedStreamId = await academicFlow.selectStudent({
         id: details.student_id,
         enrollment_no: details.enrollment_no,
       });
@@ -102,8 +108,11 @@ export default function GenerateAdmitCardPage() {
       setValue("session", details.session);
       setValue("selectedDuration", String(details.duration));
 
-      // Load subjects and set schedule
-      await academicFlow.loadSubjectsForPart(details.duration);
+      // Load subjects and set schedule (use returnedStreamId for immediate access)
+      await academicFlow.loadSubjectsForPart(
+        details.duration,
+        returnedStreamId,
+      );
 
       details.subjects?.forEach((sub) => {
         setValue(`schedule.${sub.subject_id}.date`, sub.exam_date);

@@ -3,50 +3,64 @@ import { useEffect, useState } from "react";
 import {
   fetchSliders,
   createSlider,
-  updateSlider,
+  updateSliderStatus,
   deleteSlider,
 } from "@/api/settings/settingAPI";
-import { useSettingsCrud } from "@/hooks/useSettingsCrud";
+
 import Button from "@/components/ui/Button";
 import SliderModal from "@/components/admin/settings/modals/SliderModal";
 import SettingsTable from "@/components/admin/settings/SettingsTable";
+import { useToast } from "../../../../context/ToastContext";
 
 export default function SlidersTab({ onSuccess, onError }) {
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [editingItem, setEditingItem] = useState(null);
+  const [data, setData] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const { showToast } = useToast();
 
-  const { data, loading, create, update, remove, load } = useSettingsCrud(
-    fetchSliders,
-    createSlider,
-    updateSlider,
-    deleteSlider,
-    onError,
-  );
+  const loadSliders = async () => {
+    try {
+      setLoading(true);
+      const response = await fetchSliders();
+      console.log(response);
+      setData(response?.data || []);
+    } catch (err) {
+      showToast("Failed to load sliders", "error");
+      onError?.(err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
-    load();
+    loadSliders();
   }, []);
 
   const handleAdd = () => {
-    setEditingItem(null);
     setIsModalOpen(true);
   };
 
-  const handleEdit = (item) => {
-    setEditingItem(item);
-    setIsModalOpen(true);
-  };
-
-  const handleSave = async (formData) => {
+  const handleCreate = async (formData) => {
     try {
-      if (editingItem?.id) {
-        await update(editingItem.id, formData);
-      } else {
-        await create(formData);
-      }
+      await createSlider(formData);
+      showToast("Slider created successfully", "success");
       onSuccess?.();
       setIsModalOpen(false);
+      loadSliders();
     } catch (err) {
+      showToast(err.message, "error");
+      onError?.(err.message);
+    }
+  };
+
+  const handleToggleStatus = async (id, currentStatus) => {
+    try {
+      await updateSliderStatus(id, !currentStatus);
+      showToast("Status updated successfully", "success");
+      onSuccess?.();
+      loadSliders();
+    } catch (err) {
+      showToast(err.message, "error");
       onError?.(err.message);
     }
   };
@@ -54,16 +68,19 @@ export default function SlidersTab({ onSuccess, onError }) {
   const handleDelete = async (id) => {
     if (!window.confirm("Delete this slider?")) return;
     try {
-      await remove(id);
+      await deleteSlider(id);
+      showToast("Slider deleted successfully", "success");
       onSuccess?.();
+      loadSliders();
     } catch (err) {
+      showToast(err.message, "error");
       onError?.(err.message);
     }
   };
 
   const columns = [
+    { key: "heading", label: "Heading" },
     { key: "title", label: "Title" },
-    { key: "position", label: "Position", render: (pos) => pos || "-" },
     {
       key: "image_url",
       label: "Image",
@@ -79,11 +96,27 @@ export default function SlidersTab({ onSuccess, onError }) {
         ),
     },
     {
-      key: "is_active",
+      key: "status",
       label: "Status",
-      render: (active) => (active ? "✅ Active" : "⏳ Inactive"),
+      render: (status, row) => (
+        <button
+          onClick={() => handleToggleStatus(row.id, status === 1)}
+          className="px-3 py-1.5 rounded text-xs font-medium transition-colors"
+          style={{
+            backgroundColor: status === 1 ? "#10b98133" : "#ef444433",
+            color: status === 1 ? "#10b981" : "#ef4444",
+          }}
+        >
+          {status === 1 ? "✅ Active" : "⏳ Inactive"}
+        </button>
+      ),
     },
   ];
+
+  // Modify onDelete to only accept ID in SettingsTable
+  const handleTableDelete = (id) => {
+    handleDelete(id);
+  };
 
   return (
     <div className="space-y-4">
@@ -95,16 +128,16 @@ export default function SlidersTab({ onSuccess, onError }) {
         columns={columns}
         data={data}
         loading={loading}
-        onEdit={handleEdit}
-        onDelete={handleDelete}
+        onEdit={() => {}} // Disabled - no edit
+        onDelete={handleTableDelete}
         emptyMessage="No sliders yet. Create carousel images."
       />
 
       <SliderModal
         isOpen={isModalOpen}
-        item={editingItem}
+        item={null}
         onClose={() => setIsModalOpen(false)}
-        onSave={handleSave}
+        onSave={handleCreate}
       />
     </div>
   );

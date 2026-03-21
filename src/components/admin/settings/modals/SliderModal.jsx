@@ -14,16 +14,14 @@ export default function SliderModal({ isOpen, item, onClose, onSave }) {
   useEffect(() => {
     if (item) {
       reset({
+        heading: item.heading || "",
         title: item.title || "",
-        position: item.position || "",
-        description: item.description || "",
-        is_active: item.is_active || false,
+        is_active: item.status === 1 || false,
       });
     } else {
       reset({
+        heading: "",
         title: "",
-        position: "",
-        description: "",
         image: "",
         is_active: true,
       });
@@ -33,13 +31,22 @@ export default function SliderModal({ isOpen, item, onClose, onSave }) {
   const handleFormSubmit = async (data) => {
     const formData = new FormData();
 
-    Object.keys(data).forEach((key) => {
-      if (key === "image" && data[key]?.[0]) {
-        formData.append(key, data[key][0]);
-      } else {
-        formData.append(key, data[key] === null ? "" : data[key]);
-      }
-    });
+    // Add ID if updating (API requires ID and status for PATCH)
+    if (item?.id) {
+      formData.append("id", item.id);
+    }
+
+    // Add required fields (API expects: heading, title, image, status)
+    formData.append("heading", data.heading);
+    formData.append("title", data.title);
+
+    // Map is_active (boolean) to status (1 or 0) - API format
+    formData.append("status", data.is_active ? 1 : 0);
+
+    // Add image if provided
+    if (data.image?.[0]) {
+      formData.append("image", data.image[0]);
+    }
 
     await onSave(formData);
   };
@@ -52,6 +59,14 @@ export default function SliderModal({ isOpen, item, onClose, onSave }) {
     >
       <form onSubmit={handleSubmit(handleFormSubmit)} className="space-y-4">
         <FormInput
+          label="Heading"
+          name="heading"
+          register={register}
+          required="Heading is required"
+          placeholder="Slider heading"
+        />
+
+        <FormInput
           label="Title"
           name="title"
           register={register}
@@ -59,26 +74,11 @@ export default function SliderModal({ isOpen, item, onClose, onSave }) {
           placeholder="Slider title"
         />
 
-        <FormInput
-          label="Position"
-          name="position"
-          type="number"
-          register={register}
-          placeholder="Display order"
-        />
-
         <FormFileInput
           label="Image"
           name="image"
           register={register}
           existingUrl={item?.image_url}
-        />
-
-        <FormTextarea
-          label="Description"
-          name="description"
-          register={register}
-          placeholder="Slider description..."
         />
 
         <div>

@@ -1,11 +1,11 @@
 // src/hooks/useAcademicFlow.js
 import { useState, useEffect, useCallback, useMemo } from "react";
 import { searchEnrollment, fetchStudentById } from "../api/students/studentApi";
-import { fetchAllStreams } from "../api/courses/streamApi";
+import { fetchAllStreams, fetchStreamsById } from "../api/courses/streamApi";
 import { fetchSubjectsByStream } from "../api/courses/subjectApi";
 import { fetchAdmitCards } from "../api/students/admitCardApi"; // ✅ Added for Roll No Lookup
 import { useCourseRules } from "./useCourseRules";
-import { fetchAllCourses } from "../api/courses/courseApi";
+import { fetchAllCourses, fetchCoursesById } from "../api/courses/courseApi";
 
 export function useAcademicFlow(setValue) {
   const [searchTerm, setSearchTerm] = useState("");
@@ -16,10 +16,12 @@ export function useAcademicFlow(setValue) {
 
   const [studentId, setStudentId] = useState(null);
   const [streamId, setStreamId] = useState(null);
+  const [streamName, setStreamName] = useState(null); // ✅ Track stream name
   const [subjects, setSubjects] = useState([]);
   const [loadingSubjects, setLoadingSubjects] = useState(false);
   const [isFetchingRoll, setIsFetchingRoll] = useState(false); // ✅ Loader for Roll No
   const [courseId, setCourseId] = useState(null);
+  const [courseName, setCourseName] = useState(null); // ✅ Track course name
   const { durationOptions, courseType, getRulesByCourseName } =
     useCourseRules();
 
@@ -53,6 +55,12 @@ export function useAcademicFlow(setValue) {
   // 2. Select Student & Auto-fill Logic
   const selectStudent = useCallback(
     async (student) => {
+      console.log(
+        "📌 ENROLLMENT SELECTED:",
+        student.enrollment_no,
+        "ID:",
+        student.id,
+      );
       setIsTyping(false);
       setSearchTerm(student.enrollment_no);
       setValue("enrollmentNo", student.enrollment_no);
@@ -60,34 +68,57 @@ export function useAcademicFlow(setValue) {
       setShowResults(false);
       setSubjects([]);
 
+      let selectedStreamId = null; // ✅ Track streamId locally
+      let selectedCourseId = null; // ✅ Track courseId locally
+
       try {
+        console.log("🔍 Fetching student details...");
         const response = await fetchStudentById(student.id);
         const details = response.data || response;
         if (details) {
-          setValue("course", details.course || "");
-          setValue("stream", details.stream || "");
+          console.log("✅ Student Details Fetched:", {
+            course: details.course,
+            stream: details.stream,
+          });
+
+          // ✅ Student API returns IDs directly, not names!
+          const courseId = details.course; // This is an ID like "6"
+          const streamId = details.stream; // This is an ID like "14"
+
+          console.log("🔍 Fetching course and stream names by ID...");
+
+          // Fetch course name by ID
+          const courseRes = await fetchCoursesById(courseId);
+          const courseName = courseRes.data?.name || courseRes.name || "";
+          console.log("✅ Course Fetched - ID:", courseId, "Name:", courseName);
+
+          // Fetch stream name by ID
+          const streamRes = await fetchStreamsById(streamId);
+          const streamName = streamRes.data?.name || streamRes.name || "";
+          console.log("✅ Stream Fetched - ID:", streamId, "Name:", streamName);
+
+          // Set form values with names
+          setCourseName(courseName);
+          setStreamName(streamName);
+          setValue("course", courseName);
+          setValue("stream", streamName);
           setValue("rollNo", ""); // ✅ Reset Roll No initially
           setValue("session", "");
 
-          const streams = await fetchAllStreams();
-          const sMatch = streams.find(
-            (s) => s.name.toLowerCase() === details.stream?.toLowerCase(),
-          );
-          if (sMatch) setStreamId(sMatch.id);
-          const allRes = await fetchAllCourses();
-          const all = allRes.data || allRes;
-          const cMatch = all.find(
-            (c) => c.name.toLowerCase() === details.course?.toLowerCase(),
-          );
-          if (cMatch) {
-            setCourseId(cMatch.id); // ✅ Store the ID for the result payload
-            // ✅ AWAIT: Ensure duration options are loaded before selectStudent resolves
-            await getRulesByCourseName(details.course);
-          }
+          // Set IDs
+          setCourseId(courseId);
+          setStreamId(streamId);
+          selectedStreamId = streamId;
+          selectedCourseId = courseId;
+
+          // Fetch duration rules using course name
+          console.log("🔍 Fetching course rules for:", courseName);
+          await getRulesByCourseName(courseName);
         }
       } catch (err) {
-        console.error("Details Fetch Error:", err);
+        console.error("❌ [selectStudent] Error:", err.message);
       }
+      return selectedStreamId; // ✅ Return streamId for immediate use
     },
     [setValue, getRulesByCourseName],
   );
@@ -140,21 +171,69 @@ export function useAcademicFlow(setValue) {
     async (selectedPart, manualStreamId = null) => {
       // ✅ Use manualStreamId if provided (essential for Edit Mode)
       const targetStreamId = manualStreamId || streamId;
+      console.log(
+        "📌 DURATION SELECTED:",
+        selectedPart,
+        "| StreamID:",
+        targetStreamId,
+      );
 
       if (!targetStreamId || !selectedPart) {
+        console.warn(
+          "❌ Missing: StreamID:",
+          targetStreamId,
+          "| Part:",
+          selectedPart,
+        );
         setSubjects([]);
         return [];
       }
       setLoadingSubjects(true);
       try {
+        console.log("🔍 Fetching subjects for StreamID:", targetStreamId);
         const allSubjects = await fetchSubjectsByStream(targetStreamId);
-        const filtered = allSubjects.filter(
+        console.log(
+          "✅ All Subjects Fetched:",
+          allSubjects.map((s) => ({
+            id: s.subject_id || s.id,
+            name: s.subject_name || s.name,
+            duration: s.duration,
+          })),
+        );
+        // Normalize: ensure each subject has 'id' field (from subject_id or id)
+        const normalizedSubjects = allSubjects.map((s) => ({
+          ...s,
+          id: s.subject_id || s.id, // Add normalized id field for ScheduleTable
+        }));
+        const filtered = normalizedSubjects.filter(
           (sub) => String(sub.duration) === String(selectedPart),
+        );
+        console.log(
+          "✅ Filtered Subjects for Part",
+          selectedPart,
+          ":",
+          filtered.length,
+          "found",
+        );
+        if (filtered.length === 0) {
+          console.warn("❌ NO SUBJECTS FOUND for duration", selectedPart);
+          console.log(
+            "Available durations:",
+            normalizedSubjects.map((s) => s.duration),
+          );
+        }
+        console.log(
+          "📋 Filtered Subject Details:",
+          filtered.map((s) => ({
+            id: s.subject_id || s.id,
+            name: s.subject_name || s.name,
+            duration: s.duration,
+          })),
         );
         setSubjects(filtered);
         return filtered; // ✅ Return data so Edit mode can wait for it
       } catch (err) {
-        console.error("Subject Fetch Error:", err);
+        console.error("❌ [loadSubjectsForPart] Error:", err.message);
         return [];
       } finally {
         setLoadingSubjects(false);
@@ -174,6 +253,8 @@ export function useAcademicFlow(setValue) {
       setIsTyping,
       studentId,
       streamId,
+      streamName,
+      courseName,
       subjects,
       loadingSubjects,
       isFetchingRoll,
@@ -191,6 +272,8 @@ export function useAcademicFlow(setValue) {
       showResults,
       studentId,
       streamId,
+      streamName,
+      courseName,
       subjects,
       loadingSubjects,
       isFetchingRoll,

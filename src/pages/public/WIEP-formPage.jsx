@@ -9,6 +9,7 @@ import FormFileInput from "../../components/form/FormFileInput";
 import Button from "../../components/ui/Button";
 import Toast from "../../components/ui/Toast";
 import { useToast } from "../../context/ToastContext";
+import { SEOHelmet } from "@/components/SEO/SEOHelmet";
 import { submitFranchiseApplication } from "../../api/public/franchiseApi";
 import { allStates } from "../../utils/staticData";
 
@@ -73,9 +74,11 @@ export default function ApplyFranchisePage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-primary/5 to-white py-12">
-      <div className="max-w-4xl mx-auto px-4 sm:px-6">
-        {toast && <Toast {...toast} onClose={clear} />}
+    <>
+      <SEOHelmet page="wiepForm" />
+      <div className="min-h-screen bg-gradient-to-b from-primary/5 to-white py-12">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6">
+          {toast && <Toast {...toast} onClose={clear} />}
 
         {/* Header */}
         <div className="text-center mb-12">
@@ -276,6 +279,7 @@ export default function ApplyFranchisePage() {
           </div>
         </div>
       </div>
-    </div>
+      </div>
+    </>
   );
 }

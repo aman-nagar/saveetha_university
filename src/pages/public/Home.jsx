@@ -9,6 +9,7 @@ import HighlightNews from "../../components/public/HighlightNews";
 import AcademicPhotoGallery from "./sections/AcademicPhotoGallery";
 import StudentReviews from "./sections/StudentReviews";
 import AnnouncementPopup from "../../components/public/AnnouncementPopup";
+import { SEOHelmet } from "@/components/SEO/SEOHelmet";
 
 import AboutUsSection from "../../components/public/about/AboutUsSection";
 import { publicMock } from "../../data/header.mock";
@@ -20,24 +21,27 @@ import AccreditationSection from "../../components/public/sections/Accreditation
 
 export default function Home() {
   return (
-    <div className="bg-bg ">
-      <AnnouncementPopup />
-      <HeroSlider />
-      <Hero />
-      <AboutUsSection data={publicMock.aboutUs} />
-      <VideoSection />
-      <HighlightNews />
-      {/* <Stats /> */}
-      <WhyUS />
-      <AcademicStreams data={publicMock.home.academicStreams} />
+    <>
+      <SEOHelmet page="home" />
+      <div className="bg-bg ">
+        <AnnouncementPopup />
+        <HeroSlider />
+        <Hero />
+        <AboutUsSection data={publicMock.aboutUs} />
+        <VideoSection />
+        <HighlightNews />
+        {/* <Stats /> */}
+        <WhyUS />
+        <AcademicStreams data={publicMock.home.academicStreams} />
 
-      <AccreditationSection />
-      <Programs />
-      <CTA />
-      <AcademicPhotoGallery />
-      <LeadingSection />
-      <StudentReviews />
-      <ImageSection />
-    </div>
+        <AccreditationSection />
+        <Programs />
+        <CTA />
+        <AcademicPhotoGallery />
+        <LeadingSection />
+        <StudentReviews />
+        <ImageSection />
+      </div>
+    </>
   );
 }

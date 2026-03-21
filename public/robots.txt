@@ -1,0 +1,45 @@
+# Robots.txt for Saveetha Amravati University
+# Directs search engine crawlers on site crawl and index behavior
+
+# Allow all crawlers to index public pages
+User-agent: *
+Allow: /
+Disallow: /admin/
+Disallow: /center/
+Disallow: /portal/
+Disallow: /login
+Disallow: /unauthorized
+Disallow: /admin-login
+Disallow: /center-login
+
+# Crawl delay (seconds between requests)
+Crawl-delay: 1
+
+# Request rate
+Request-rate: 1/10s
+
+# Specific rules for Google
+User-agent: Googlebot
+Allow: /
+Disallow: /admin/
+Disallow: /center/
+Disallow: /portal/
+Crawl-delay: 0
+
+# Specific rules for Bing
+User-agent: Bingbot
+Allow: /
+Disallow: /admin/
+Disallow: /center/
+Disallow: /portal/
+Crawl-delay: 1
+
+# Block other crawlers if needed
+User-agent: AdsBot-Google
+Allow: /
+
+User-agent: MJ12bot
+Allow: /
+
+# Point to sitemap
+Sitemap: https://saveethaamaravatiuniversity.ac.in/sitemap.xml

@@ -112,6 +112,7 @@ export default function StudentFormStepper({
     courseTypeId: null,
     facultyId: null,
     courseId: null,
+    streamId: null,
   });
 
   const currentYear = new Date().getFullYear();
@@ -132,6 +133,7 @@ export default function StudentFormStepper({
   const watchedCourseType = watch("course_type");
   const watchedFaculty = watch("faculty");
   const watchedCourse = watch("course");
+  const watchedStream = watch("stream");
 
   // ── Load Course Types + Init cascade (handles both create & edit) ──
   useEffect(() => {
@@ -174,13 +176,23 @@ export default function StudentFormStepper({
           cId = cMatch?.id ?? null;
         }
 
+        let sId = null;
         if (cId) {
           sList = await fetchStreams(cId);
           setStreams(sList);
+
+          // 5. Find stream by name → get its ID
+          const sMatch = sList.find((s) => s.name === student.stream);
+          sId = sMatch?.id ?? null;
         }
 
         // Store resolved IDs so future user-changes trigger correct cascades
-        setSelectedIds({ courseTypeId: ctId, facultyId: fId, courseId: cId });
+        setSelectedIds({
+          courseTypeId: ctId,
+          facultyId: fId,
+          courseId: cId,
+          streamId: sId,
+        });
 
         // Populate form fields now that all dropdowns are loaded
         reset(buildDefaultValues(student));
@@ -204,7 +216,12 @@ export default function StudentFormStepper({
       setValue("faculty", "");
       setValue("course", "");
       setValue("stream", "");
-      setSelectedIds({ courseTypeId: null, facultyId: null, courseId: null });
+      setSelectedIds({
+        courseTypeId: null,
+        facultyId: null,
+        courseId: null,
+        streamId: null,
+      });
       return;
     }
 
@@ -223,7 +240,12 @@ export default function StudentFormStepper({
         setValue("faculty", "");
         setValue("course", "");
         setValue("stream", "");
-        setSelectedIds({ courseTypeId: ctId, facultyId: null, courseId: null });
+        setSelectedIds({
+          courseTypeId: ctId,
+          facultyId: null,
+          courseId: null,
+          streamId: null,
+        });
       } catch (err) {
         show("error", err.message);
       }
@@ -239,7 +261,12 @@ export default function StudentFormStepper({
       setStreams([]);
       setValue("course", "");
       setValue("stream", "");
-      setSelectedIds((prev) => ({ ...prev, facultyId: null, courseId: null }));
+      setSelectedIds((prev) => ({
+        ...prev,
+        facultyId: null,
+        courseId: null,
+        streamId: null,
+      }));
       return;
     }
 
@@ -256,7 +283,12 @@ export default function StudentFormStepper({
         setStreams([]);
         setValue("course", "");
         setValue("stream", "");
-        setSelectedIds((prev) => ({ ...prev, facultyId: fId, courseId: null }));
+        setSelectedIds((prev) => ({
+          ...prev,
+          facultyId: fId,
+          courseId: null,
+          streamId: null,
+        }));
       } catch (err) {
         show("error", err.message);
       }
@@ -285,13 +317,29 @@ export default function StudentFormStepper({
         const data = await fetchStreams(cId);
         setStreams(data);
         setValue("stream", "");
-        setSelectedIds((prev) => ({ ...prev, courseId: cId }));
+        setSelectedIds((prev) => ({ ...prev, courseId: cId, streamId: null }));
       } catch (err) {
         show("error", err.message);
       }
     };
     load();
   }, [watchedCourse, courses, cascadeReady]);
+
+  // ── User-triggered: Stream changed → track stream ID ──
+  useEffect(() => {
+    if (!cascadeReady || !watchedStream) {
+      setSelectedIds((prev) => ({ ...prev, streamId: null }));
+      return;
+    }
+
+    const sMatch = streams.find((s) => s.name === watchedStream);
+    const sId = sMatch?.id ?? null;
+
+    if (!sId) return;
+    if (selectedIds.streamId === sId) return;
+
+    setSelectedIds((prev) => ({ ...prev, streamId: sId }));
+  }, [watchedStream, streams, cascadeReady]);
 
   // ── Step validation fields ──
   const stepFields = {
@@ -335,7 +383,18 @@ export default function StudentFormStepper({
         if (value instanceof FileList) {
           if (value.length > 0) formData.append(key, value[0]);
         } else {
-          formData.append(key, value ?? "");
+          // Send IDs for cascade fields instead of names, using same keys
+          if (key === "course_type") {
+            formData.append(key, selectedIds.courseTypeId ?? "");
+          } else if (key === "faculty") {
+            formData.append(key, selectedIds.facultyId ?? "");
+          } else if (key === "course") {
+            formData.append(key, selectedIds.courseId ?? "");
+          } else if (key === "stream") {
+            formData.append(key, selectedIds.streamId ?? "");
+          } else {
+            formData.append(key, value ?? "");
+          }
         }
       });
 

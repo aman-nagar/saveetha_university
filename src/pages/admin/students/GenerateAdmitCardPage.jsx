@@ -72,11 +72,16 @@ export default function GenerateAdmitCardPage() {
   };
 
   useEffect(() => {
-    if (selectedPart) {
-      // Pass streamId if available, otherwise loadSubjectsForPart will use the hook's streamId
+    if (selectedPart && academicFlow.streamId) {
+      console.log(
+        "📌 LOADING SUBJECTS: Duration:",
+        selectedPart,
+        "| StreamID:",
+        academicFlow.streamId,
+      );
       academicFlow.loadSubjectsForPart(selectedPart, academicFlow.streamId);
     }
-  }, [selectedPart, academicFlow.streamId, academicFlow]);
+  }, [selectedPart, academicFlow.streamId, academicFlow.loadSubjectsForPart]);
 
   // ✅ 1. Improved Edit Logic: Fetches full details to get the missing Student ID
   const handleEdit = async (record) => {

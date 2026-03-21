@@ -13,35 +13,48 @@ export default function ScheduleTable({
   watch, // Added
   setValue, // Added
 }) {
- 
-
   const defaultDate = getTodayDate();
   const defaultStartTime = "10:00";
   const defaultEndTime = "12:00";
   const scheduleValues = watch("schedule") || {};
 
-  useEffect(() => {
-    if (!subjects?.length) return;
+  console.log("📌 ScheduleTable Subjects:", subjects);
 
+  useEffect(() => {
+    if (!subjects?.length) {
+      console.warn("⚠️ No subjects provided to ScheduleTable");
+      return;
+    }
+
+    console.log(
+      "📌 Setting default schedule values for",
+      subjects.length,
+      "subjects",
+    );
     subjects.forEach((subject) => {
-      const current = scheduleValues?.[subject.id] || {};
+      const subjectId = subject.id || subject.subject_id;
+      if (!subjectId) {
+        console.warn("❌ Subject missing ID:", subject);
+        return;
+      }
+      const current = scheduleValues?.[subjectId] || {};
 
       if (!current.date) {
-        setValue(`schedule.${subject.id}.date`, defaultDate, {
+        setValue(`schedule.${subjectId}.date`, defaultDate, {
           shouldDirty: false,
           shouldTouch: false,
         });
       }
 
       if (!current.start_time) {
-        setValue(`schedule.${subject.id}.start_time`, defaultStartTime, {
+        setValue(`schedule.${subjectId}.start_time`, defaultStartTime, {
           shouldDirty: false,
           shouldTouch: false,
         });
       }
 
       if (!current.end_time) {
-        setValue(`schedule.${subject.id}.end_time`, defaultEndTime, {
+        setValue(`schedule.${subjectId}.end_time`, defaultEndTime, {
           shouldDirty: false,
           shouldTouch: false,
         });

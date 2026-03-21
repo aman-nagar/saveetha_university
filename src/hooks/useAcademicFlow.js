@@ -200,13 +200,30 @@ export function useAcademicFlow(setValue) {
             duration: s.duration,
           })),
         );
-        const filtered = allSubjects.filter(
+        // Normalize: ensure each subject has 'id' field (from subject_id or id)
+        const normalizedSubjects = allSubjects.map((s) => ({
+          ...s,
+          id: s.subject_id || s.id, // Add normalized id field for ScheduleTable
+        }));
+        const filtered = normalizedSubjects.filter(
           (sub) => String(sub.duration) === String(selectedPart),
         );
         console.log(
           "✅ Filtered Subjects for Part",
           selectedPart,
           ":",
+          filtered.length,
+          "found",
+        );
+        if (filtered.length === 0) {
+          console.warn("❌ NO SUBJECTS FOUND for duration", selectedPart);
+          console.log(
+            "Available durations:",
+            normalizedSubjects.map((s) => s.duration),
+          );
+        }
+        console.log(
+          "📋 Filtered Subject Details:",
           filtered.map((s) => ({
             id: s.subject_id || s.id,
             name: s.subject_name || s.name,

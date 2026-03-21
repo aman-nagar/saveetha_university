@@ -1,8 +1,46 @@
 // src/components/admin/courses/AdmitCardDetails.jsx
 import { FiUser } from "react-icons/fi";
+import { useState, useEffect } from "react";
 import { formatTimeAMPM, formatExamDate } from "../../../../utils/formatters";
+import { fetchStreamsById } from "../../../../api/courses/streamApi";
 
 export default function AdmitCardDetails({ data }) {
+  const [streamName, setStreamName] = useState(null);
+  const [loadingStream, setLoadingStream] = useState(false);
+
+  useEffect(() => {
+    if (!data?.stream_id) return;
+
+    setLoadingStream(true);
+    fetchStreamsById(data.stream_id)
+      .then((res) => {
+        const name = res.data?.name || res.name;
+        console.log("📌 Stream Name Fetched:", name);
+        setStreamName(name);
+      })
+      .catch((err) => {
+        console.error("❌ Failed to fetch stream:", err);
+        setStreamName("Unknown Stream");
+      })
+      .finally(() => setLoadingStream(false));
+  }, [data?.stream_id]);
+
+  console.group("Detail Data Contents");
+
+  if (data instanceof FormData) {
+    for (const [key, value] of data.entries()) {
+      console.log(
+        `${key}:`,
+        value instanceof File
+          ? `File (${value.name}, ${value.size} bytes)`
+          : value,
+      );
+    }
+  } else {
+    console.dir(data, { depth: null });
+  }
+
+  console.groupEnd();
   if (!data) return null;
 
   return (
@@ -62,7 +100,10 @@ export default function AdmitCardDetails({ data }) {
             />
             <InfoRow label="Contact Number" value={data.contact_number} />
             <InfoRow label="Father's Name" value={data.father_name} />
-            <InfoRow label="Stream" value={data.duration_type} />
+            <InfoRow
+              label="Stream"
+              value={loadingStream ? "Loading..." : streamName || "N/A"}
+            />
             <InfoRow label="Mother's Name" value={data.mother_name} />
           </div>
 

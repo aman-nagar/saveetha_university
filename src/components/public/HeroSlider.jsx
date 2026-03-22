@@ -1,15 +1,11 @@
+// src/components/public/HeroSlider.jsx
 import { Carousel } from "flowbite-react";
 import { usePublicContent } from "@/hooks/usePublicContent";
 
-/**
- * HeroSlider Component
- * Displays rotating hero slides with university branding colors
- * Color scheme: Navy (#0b1f4b), Gold (#c9a227), Maroon (#9e2f2f)
- */
 export function HeroSlider() {
-  const { home } = usePublicContent();
+  const { home, sliders } = usePublicContent();
 
-  // Default slider data if no home data available
+  // Default slider data if no API data available
   const defaultSlides = [
     {
       id: 1,
@@ -43,8 +39,13 @@ export function HeroSlider() {
     },
   ];
 
-  // Use home.slider data if available, otherwise use defaults
-  const slides = home?.slider?.length > 0 ? home.slider : defaultSlides;
+  // Use API sliders if available, fallback to home.slider, then use defaults
+  const slides =
+    sliders?.length > 0
+      ? sliders
+      : home?.slider?.length > 0
+        ? home.slider
+        : defaultSlides;
 
   return (
     <div className="h-[80vh] min-h-screen relative overflow-hidden">

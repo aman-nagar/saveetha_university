@@ -1,7 +1,6 @@
 // src/context/PublicDataContext.jsx
 import { createContext, useState, useEffect } from "react";
 import { BASE_URL } from "../api/apiConfig";
-
 // Import mock/static data for fallbacks
 import { publicMock } from "../data/header.mock";
 
@@ -18,7 +17,7 @@ export function PublicDataProvider({ children }) {
     announcements: publicMock.announcements || [],
     // API data (fetched dynamically)
     siteDetails: null,
-    slider: null,
+    sliders: null,
     testimonials: null,
     // Add more as APIs become available
   });
@@ -30,10 +29,6 @@ export function PublicDataProvider({ children }) {
     fetchAllPublicData();
   }, []);
 
-  /**
-   * Fetch all public endpoints
-   * Add new endpoints here as they become available
-   */
   const fetchAllPublicData = async () => {
     try {
       setLoading(true);
@@ -43,10 +38,10 @@ export function PublicDataProvider({ children }) {
       const endpoints = {
         siteDetails: "/public/details.php",
         downloadForms: "/public/download-form.php",
+        sliders: "/public/sliders.php",
         // Add more as they're available:
         // header: "/public/header.php",
         // footer: "/public/footer.php",
-        // slider: "/public/slider.php",
         // testimonials: "/public/testimonials.php",
       };
 
@@ -72,6 +67,18 @@ export function PublicDataProvider({ children }) {
 
       // Combine responses with existing fallback data
       const newData = Object.fromEntries(responses);
+
+      // Transform sliders to match HeroSlider format (heading → subtitle)
+      if (newData.sliders && Array.isArray(newData.sliders)) {
+        newData.sliders = newData.sliders.map((slider) => ({
+          id: slider.id,
+          title: slider.title,
+          subtitle: slider.heading,
+          image: slider.image_url,
+          bgColor: "bg-primary",
+        }));
+      }
+
       setData((prev) => ({
         ...prev,
         ...Object.fromEntries(
@@ -113,6 +120,7 @@ export function PublicDataProvider({ children }) {
     home: data.home,
     footer: data.footer,
     siteDetails: data.siteDetails,
+    sliders: data.sliders,
     academics: data.academics,
     galleryPage: data.galleryPage,
     announcements: data.announcements,

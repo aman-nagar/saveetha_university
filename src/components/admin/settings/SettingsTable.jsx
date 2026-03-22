@@ -55,7 +55,9 @@ export default function SettingsTable({
                   key={`${row[rowKey]}-${col.key}`}
                   className="px-4 py-3 text-sm text-text"
                 >
-                  {col.render ? col.render(row[col.key], row) : row[col.key]}
+                  {col.render
+                    ? col.render(row[col.key], row, idx)
+                    : row[col.key]}
                 </td>
               ))}
               <td className="px-4 py-3 text-sm">

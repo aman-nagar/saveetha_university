@@ -134,7 +134,7 @@ export function downloadStudentPdf(student) {
   win.document.write(html);
   win.document.close();
 
-  // setTimeout(() => {
-  //   win.print();
-  // }, 1000);
+  setTimeout(() => {
+    win.print();
+  }, 1000);
 }

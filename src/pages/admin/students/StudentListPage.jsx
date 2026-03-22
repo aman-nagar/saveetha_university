@@ -15,6 +15,7 @@ import {
   deleteStudent,
   restoreStudent,
 } from "../../../api/students/studentApi";
+import { fetchAllCourses } from "../../../api/courses/courseApi";
 import { useAuth } from "../../../context/AuthContext";
 import Pagination from "../../../components/ui/Pagination";
 import DataTableLayout from "../../../components/table/DataTableLayout";
@@ -43,6 +44,28 @@ export default function StudentListPage() {
   const [viewOpen, setViewOpen] = useState(false);
   const [viewLoading, setViewLoading] = useState(false);
   const [perPage, setPerPage] = useState(10);
+  const [courses, setCourses] = useState([]);
+
+  // Load courses once on component mount
+  useEffect(() => {
+    const loadCourses = async () => {
+      try {
+        const response = await fetchAllCourses();
+        // Handle both wrapped and unwrapped responses
+        const courseList = Array.isArray(response)
+          ? response
+          : Array.isArray(response?.data)
+            ? response.data
+            : [];
+
+        console.log("✅ Courses loaded:", courseList);
+        setCourses(courseList);
+      } catch (err) {
+        console.error("❌ Failed to load courses:", err);
+      }
+    };
+    loadCourses();
+  }, []);
 
   useEffect(() => {
     loadStudents(1, search);
@@ -162,10 +185,20 @@ export default function StudentListPage() {
     }
   };
 
+  // Create course ID to name mapping
+  const courseMap = courses.reduce((acc, course) => {
+    acc[course.id] = course.name;
+    return acc;
+  }, {});
+
+  console.log("📚 Course Map:", courseMap);
+  console.log("📚 Total Courses Loaded:", courses.length);
+
   const columns = getStudentColumns({
     mode,
     isAdmin,
     handleToggleStatus,
+    courseMap,
   });
 
   const actions = getStudentActions({

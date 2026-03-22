@@ -55,7 +55,14 @@ export const getStudentColumns = ({ mode, isAdmin, handleToggleStatus }) => [
 
   { key: "enrollment_no", label: "Enrollment" },
   { key: "candidate_name", label: "Name" },
-  { key: "course", label: "Course" },
+  {
+    key: "course",
+    label: "Course",
+    render: (row) =>
+      typeof row.course === "string" && !isNaN(row.course)
+        ? `Course ID: ${row.course}`
+        : row.course || "—",
+  },
   { key: "contact_number", label: "Contact" },
   { key: "email", label: "Email" },
 

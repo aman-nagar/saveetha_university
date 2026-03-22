@@ -2,8 +2,11 @@ import { useEffect, useState } from "react";
 import Modal from "../../../components/ui/Modal";
 import { FaSpinner, FaExclamationTriangle, FaDownload } from "react-icons/fa";
 import { fetchResultById } from "../../../api/results/resultApi";
-import { fetchStudentById } from "../../../api/students/studentApi"; // Added
-import { downloadTranscript } from "../../../utils/pdfGenerator"; // Added
+import { fetchStudentById } from "../../../api/students/studentApi";
+import { downloadTranscript } from "../../../utils/pdfGenerator";
+import { fetchFaculty } from "../../../api/courses/facultyApi";
+import { fetchCourses } from "../../../api/courses/courseApi";
+import { fetchStreams } from "../../../api/courses/streamApi";
 
 export default function ViewResultModal({
   isOpen,
@@ -23,15 +26,37 @@ export default function ViewResultModal({
         const res = await fetchResultById(resultData.id);
         const result = res?.data || res;
 
-        // Fetch student details to get Course and Stream NAMES
+        // Fetch student details
         const studentRes = await fetchStudentById(result.student_id);
         const student = studentRes?.data || studentRes;
 
+        // Resolve names by IDs
+        let courseName = null,
+          streamName = null;
+
+        // Fetch course by ID
+        if (student.faculty && student.course) {
+          const cId = Number(student.course);
+          const fId = Number(student.faculty);
+          const cList = await fetchCourses(fId);
+          const cMatch = cList.find((c) => c.id === cId);
+          courseName = cMatch?.name ?? null;
+        }
+
+        // Fetch stream by ID
+        if (student.stream && courseName) {
+          const cId = Number(student.course);
+          const sId = Number(student.stream);
+          const sList = await fetchStreams(cId);
+          const sMatch = sList.find((s) => s.id === sId);
+          streamName = sMatch?.name ?? null;
+        }
+
         setViewResult({
           ...result,
-          student_name: student.name,
-          course_name: student.course,
-          stream_name: student.stream,
+          student_name: student.candidate_name,
+          course_name: courseName || student.course,
+          stream_name: streamName || student.stream,
           faculty_name: student.faculty,
         });
       } catch (err) {

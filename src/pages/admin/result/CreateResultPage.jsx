@@ -27,6 +27,8 @@ import {
   fetchResultById,
 } from "../../../api/results/resultApi";
 import { fetchStudentById } from "../../../api/students/studentApi";
+import { fetchCourses } from "../../../api/courses/courseApi";
+import { fetchStreams } from "../../../api/courses/streamApi";
 // Shared Components
 import ResultFormHeader from "../../../components/admin/result/ResultFormHeader";
 import MarksEntryTable from "../../../components/admin/result/MarksEntryTable";
@@ -104,27 +106,20 @@ export default function CreateResultPage() {
       const res = await fetchResultById(record.id);
       const data = res?.data || res;
 
-      // 2. Fetch Student to resolve the Stream Name
+      // 2. Fetch Student data (contains IDs for course, stream, etc.)
       const studentRes = await fetchStudentById(data.student_id);
       const studentData = studentRes.data || studentRes;
 
-      // 3. Manually find the Stream ID (avoids waiting for hook state)
-      const allStreams = await fetchAllStreams();
-      console.log(allStreams);
-      const sMatch = allStreams.find(
-        (s) => s.name.toLowerCase() === studentData.stream?.toLowerCase(),
-      );
-      const targetStreamId = sMatch?.id;
+      // 3. Get the stream ID directly from studentData (it's stored as ID)
+      const targetStreamId = Number(studentData.stream);
 
-      // 4. Setup Academic Flow (Wait for it to finish)
-      // ✅ THIS NOW PROPERLY AWAITS getRulesByCourseName
+      // 4. Setup Academic Flow
       await flow.selectStudent(studentData);
 
-      // ✅ CRITICAL: Small timeout to ensure durationOptions state updates
-      // and FormSelect component has the options available
+      // ✅ Small timeout to ensure durationOptions state updates
       await new Promise((resolve) => setTimeout(resolve, 100));
 
-      // 5. Fetch Subjects (Passing the manual Stream ID)
+      // 5. Fetch Subjects (Passing the stream ID)
       const currentSubjects = await flow.loadSubjectsForPart(
         data.duration,
         targetStreamId,
@@ -148,12 +143,12 @@ export default function CreateResultPage() {
         }
       });
 
-      // 7. FINAL RESET: Duration options should now be available in durationOptions
+      // 7. FINAL RESET: Use resolved flow names (not raw IDs)
       reset({
         enrollmentNo: data.enrollment_no,
-        selectedDuration: String(data.duration), // Must be a string
-        course: studentData.course || "",
-        stream: studentData.stream || "",
+        selectedDuration: String(data.duration),
+        course: flow.courseName || "",
+        stream: flow.streamName || "",
         rollNo: data.roll_no || "",
         session: data.session,
         issue_date: data.issue_date,
@@ -235,15 +230,42 @@ export default function CreateResultPage() {
     try {
       const res = await fetchResultById(row.id);
       const result = res.data || res;
-      // Enrich with names for the PDF
+
+      // Fetch student details
       const studentRes = await fetchStudentById(result.student_id);
       const student = studentRes.data || studentRes;
+
+      // Resolve course and stream names by IDs
+      let courseName = student.course;
+      let streamName = student.stream;
+
+      try {
+        // Fetch course by ID
+        if (student.faculty && student.course) {
+          const cId = Number(student.course);
+          const fId = Number(student.faculty);
+          const cList = await fetchCourses(fId);
+          const cMatch = cList.find((c) => c.id === cId);
+          if (cMatch) courseName = cMatch.name;
+        }
+
+        // Fetch stream by ID
+        if (student.stream && courseName) {
+          const cId = Number(student.course);
+          const sId = Number(student.stream);
+          const sList = await fetchStreams(cId);
+          const sMatch = sList.find((s) => s.id === sId);
+          if (sMatch) streamName = sMatch.name;
+        }
+      } catch (err) {
+        console.warn("Failed to resolve course/stream names, using IDs:", err);
+      }
 
       downloadTranscript({
         ...result,
         student_name: student.candidate_name,
-        course_name: student.course,
-        stream_name: student.stream,
+        course_name: courseName,
+        stream_name: streamName,
       });
       show("success", "PDF Generated");
     } catch (err) {

@@ -1,3 +1,5 @@
+// Note: This function expects student object with resolved names (not IDs)
+// Use StudentDetailView which fetches names, or fetch separately before calling this
 export function downloadStudentPdf(student) {
   const rows = [
     ["Enrollment No", student.enrollment_no],
@@ -10,10 +12,10 @@ export function downloadStudentPdf(student) {
     ["Contact", student.contact_number],
     ["Email", student.email],
     ["Address", student.address],
-    ["Course", student.course],
-    ["Faculty", student.faculty],
-    ["Course Type", student.course_type],
-    ["Stream", student.stream],
+    ["Course", student.courseName || student.course],
+    ["Faculty", student.facultyName || student.faculty],
+    ["Course Type", student.courseTypeName || student.course_type],
+    ["Stream", student.streamName || student.stream],
     ["Year", student.year],
     ["Session", student.session],
     ["Mode", student.mode_of_study],

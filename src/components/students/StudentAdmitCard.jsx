@@ -5,12 +5,18 @@ import { getAdmitCard } from "@/api/students/studentDashboardApi";
 import { Link } from "react-router-dom";
 import LoadingFallback from "../ui/LoadingFallback";
 import html2pdf from "html2pdf.js";
+import { fetchCourses } from "@/api/courses/courseApi";
+import { fetchStreams } from "@/api/courses/streamApi";
 
 const StudentAdmitCard = () => {
   const { studentData } = useAuth();
   const [admitCardData, setAdmitCardData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [programmeNames, setProgrammeNames] = useState({
+    courseName: null,
+    streamName: null,
+  });
   const cardRef = useRef(null);
 
   useEffect(() => {
@@ -30,6 +36,48 @@ const StudentAdmitCard = () => {
 
     fetchAdmitCard();
   }, []);
+
+  // Fetch programme names by IDs
+  useEffect(() => {
+    const fetchProgrammeNames = async () => {
+      try {
+        if (
+          !studentData?.faculty ||
+          !studentData?.course ||
+          !studentData?.stream
+        ) {
+          return;
+        }
+
+        let cName = null,
+          sName = null;
+
+        // Fetch course by ID
+        const cId = Number(studentData.course);
+        const fId = Number(studentData.faculty);
+        const cList = await fetchCourses(fId);
+        const cMatch = cList.find((c) => c.id === cId);
+        cName = cMatch?.name ?? null;
+
+        // Fetch stream by ID
+        if (cName) {
+          const sId = Number(studentData.stream);
+          const sList = await fetchStreams(cId);
+          const sMatch = sList.find((s) => s.id === sId);
+          sName = sMatch?.name ?? null;
+        }
+
+        setProgrammeNames({
+          courseName: cName,
+          streamName: sName,
+        });
+      } catch (err) {
+        console.error("Error fetching programme names:", err);
+      }
+    };
+
+    fetchProgrammeNames();
+  }, [studentData]);
 
   if (loading) {
     return <LoadingFallback variant="dashboard" />;
@@ -242,8 +290,8 @@ const StudentAdmitCard = () => {
                 {[
                   { label: "Name", value: studentData.candidate_name },
                   { label: "Enrollment No", value: studentData.enrollment_no },
-                  { label: "Course", value: studentData.course },
-                  { label: "Stream", value: studentData.stream },
+                  { label: "Course", value: programmeNames.courseName || studentData.course },
+                  { label: "Stream", value: programmeNames.streamName || studentData.stream },
                   {
                     label: "Session",
                     value: admitCardData?.session || "N/A",

@@ -149,42 +149,59 @@ export default function PublicStudentStepper({
           return;
         }
 
-        // 2. Edit mode: find course type by name match → get its ID
-        const ctMatch = ctList.find((ct) => ct.name === student.course_type);
-        const ctId = ctMatch?.id ?? null;
-
-        let fList = [],
+        // 2. Edit mode: student has IDs stored (course_type, faculty, course, stream are IDs)
+        // Use the IDs directly to load cascade data and fetch names
+        const ctId = student.course_type ? Number(student.course_type) : null;
+        let ctName = null,
+          fList = [],
           cList = [],
           sList = [];
         let fId = null,
           cId = null,
-          sId = null;
+          sId = null,
+          fName = null,
+          cName = null,
+          sName = null;
 
+        // Find course type name from loaded list
         if (ctId) {
+          const ctMatch = ctList.find((ct) => ct.id === ctId);
+          ctName = ctMatch?.name ?? null;
+
+          // Load faculty list for this course type
           fList = await fetchPublicFaculties(ctId);
           setFaculties(fList);
 
-          // 3. Find faculty by name → get its ID
-          const fMatch = fList.find((f) => f.name === student.faculty);
-          fId = fMatch?.id ?? null;
+          // 3. Get faculty ID from student and fetch its name
+          fId = student.faculty ? Number(student.faculty) : null;
+          if (fId) {
+            const fMatch = fList.find((f) => f.id === fId);
+            fName = fMatch?.name ?? null;
+          }
         }
 
         if (fId) {
           cList = await fetchPublicCourses(fId);
           setCourses(cList);
 
-          // 4. Find course by name → get its ID
-          const cMatch = cList.find((c) => c.name === student.course);
-          cId = cMatch?.id ?? null;
+          // 4. Get course ID from student and fetch its name
+          cId = student.course ? Number(student.course) : null;
+          if (cId) {
+            const cMatch = cList.find((c) => c.id === cId);
+            cName = cMatch?.name ?? null;
+          }
         }
 
         if (cId) {
           sList = await fetchPublicStreams(cId);
           setStreams(sList);
 
-          // 5. Find stream by name → get its ID
-          const sMatch = sList.find((s) => s.name === student.stream);
-          sId = sMatch?.id ?? null;
+          // 5. Get stream ID from student and fetch its name
+          sId = student.stream ? Number(student.stream) : null;
+          if (sId) {
+            const sMatch = sList.find((s) => s.id === sId);
+            sName = sMatch?.name ?? null;
+          }
         }
 
         // Store resolved IDs so future user-changes trigger correct cascades
@@ -195,8 +212,13 @@ export default function PublicStudentStepper({
           streamId: sId,
         });
 
-        // Populate form fields now that all dropdowns are loaded
-        reset(buildDefaultValues(student));
+        // Populate form fields with resolved names (not IDs)
+        const defaultVals = buildDefaultValues(student);
+        defaultVals.course_type = ctName || "";
+        defaultVals.faculty = fName || "";
+        defaultVals.course = cName || "";
+        defaultVals.stream = sName || "";
+        reset(defaultVals);
         setCascadeReady(true);
       } catch (err) {
         show("error", "Failed to load programme data: " + err.message);

@@ -1,9 +1,63 @@
 // src/pages/student/StudentDashboard.jsx
 import { useAuth } from "@/context/AuthContext";
 import { Link } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { fetchCourseCategories } from "@/api/courses/courseTypeApi";
+import { fetchFaculty } from "@/api/courses/facultyApi";
+import { fetchCourses } from "@/api/courses/courseApi";
+import { fetchStreams } from "@/api/courses/streamApi";
 
 const StudentDashboard = () => {
   const { studentData } = useAuth();
+  const [programmeNames, setProgrammeNames] = useState({
+    courseName: null,
+    streamName: null,
+  });
+
+  // Fetch programme names by IDs
+  useEffect(() => {
+    const fetchProgrammeNames = async () => {
+      try {
+        if (
+          !studentData?.course_type ||
+          !studentData?.course ||
+          !studentData?.stream
+        ) {
+          return;
+        }
+
+        let cName = null,
+          sName = null;
+
+        // Fetch course by ID
+        if (studentData.faculty && studentData.course) {
+          const cId = Number(studentData.course);
+          const fId = Number(studentData.faculty);
+          const cList = await fetchCourses(fId);
+          const cMatch = cList.find((c) => c.id === cId);
+          cName = cMatch?.name ?? null;
+        }
+
+        // Fetch stream by ID
+        if (studentData.stream && cName) {
+          const cId = Number(studentData.course);
+          const sId = Number(studentData.stream);
+          const sList = await fetchStreams(cId);
+          const sMatch = sList.find((s) => s.id === sId);
+          sName = sMatch?.name ?? null;
+        }
+
+        setProgrammeNames({
+          courseName: cName,
+          streamName: sName,
+        });
+      } catch (err) {
+        console.error("Error fetching programme names:", err);
+      }
+    };
+
+    fetchProgrammeNames();
+  }, [studentData]);
 
   if (!studentData) {
     return (
@@ -83,10 +137,10 @@ const StudentDashboard = () => {
                 {status === 1 ? "Active" : "Inactive"}
               </span>
               <span className="bg-white/15 backdrop-blur-sm text-white px-3 py-1 rounded-full text-xs font-semibold border border-white/20">
-                {course}
+                {programmeNames.courseName || studentData.course}
               </span>
               <span className="bg-white/15 backdrop-blur-sm text-white px-3 py-1 rounded-full text-xs font-semibold border border-white/20">
-                {stream}
+                {programmeNames.streamName || studentData.stream}
               </span>
             </div>
           </div>
@@ -213,13 +267,17 @@ const StudentDashboard = () => {
               <p className="text-muted text-[10px] font-bold uppercase tracking-wider">
                 Course
               </p>
-              <p className="text-text font-bold mt-1">{course}</p>
+              <p className="text-text font-bold mt-1">
+                {programmeNames.courseName || studentData.course}
+              </p>
             </div>
             <div className="bg-surface/60 rounded-xl p-4 border border-border/50">
               <p className="text-muted text-[10px] font-bold uppercase tracking-wider">
                 Stream
               </p>
-              <p className="text-text font-bold mt-1">{stream}</p>
+              <p className="text-text font-bold mt-1">
+                {programmeNames.streamName || studentData.stream}
+              </p>
             </div>
           </div>
         </div>

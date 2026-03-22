@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   FaUser,
   FaIdCard,
@@ -18,6 +18,10 @@ import {
   FaFileAlt,
 } from "react-icons/fa";
 import { motion, AnimatePresence } from "framer-motion";
+import { fetchCourseCategories } from "../../../api/courses/courseTypeApi";
+import { fetchFaculty } from "../../../api/courses/facultyApi";
+import { fetchCourses } from "../../../api/courses/courseApi";
+import { fetchStreams } from "../../../api/courses/streamApi";
 
 /* ── Sub-components ─────────────────────── */
 
@@ -200,6 +204,73 @@ const QUAL_ROWS = [
 
 export default function StudentDetailView({ student }) {
   const [preview, setPreview] = useState(null);
+  const [programmeNames, setProgrammeNames] = useState({
+    courseTypeName: null,
+    facultyName: null,
+    courseName: null,
+    streamName: null,
+  });
+
+  // Fetch and resolve programme names by IDs
+  useEffect(() => {
+    const fetchProgrammeNames = async () => {
+      try {
+        if (!student) return;
+
+        let ctName = null,
+          fName = null,
+          cName = null,
+          sName = null;
+
+        // Fetch course type by ID
+        if (student.course_type) {
+          const ctId = Number(student.course_type);
+          const ctList = await fetchCourseCategories();
+          const ctMatch = ctList.find((ct) => ct.id === ctId);
+          ctName = ctMatch?.name ?? null;
+        }
+
+        // Fetch faculty by ID
+        if (student.faculty && ctName) {
+          const ctId = Number(student.course_type);
+          const fId = Number(student.faculty);
+          const fList = await fetchFaculty(ctId);
+          const fMatch = fList.find((f) => f.id === fId);
+          fName = fMatch?.name ?? null;
+        }
+
+        // Fetch course by ID
+        if (student.course && fName) {
+          const fId = Number(student.faculty);
+          const cId = Number(student.course);
+          const cList = await fetchCourses(fId);
+          const cMatch = cList.find((c) => c.id === cId);
+          cName = cMatch?.name ?? null;
+        }
+
+        // Fetch stream by ID
+        if (student.stream && cName) {
+          const cId = Number(student.course);
+          const sId = Number(student.stream);
+          const sList = await fetchStreams(cId);
+          const sMatch = sList.find((s) => s.id === sId);
+          sName = sMatch?.name ?? null;
+        }
+
+        setProgrammeNames({
+          courseTypeName: ctName,
+          facultyName: fName,
+          courseName: cName,
+          streamName: sName,
+        });
+      } catch (err) {
+        console.error("Error fetching programme names:", err);
+      }
+    };
+
+    fetchProgrammeNames();
+  }, [student]);
+
   if (!student) return null;
 
   const status = STATUS_MAP[student.status] || {
@@ -440,10 +511,22 @@ export default function StudentDetailView({ student }) {
             )}
 
           <Section icon={FaBookOpen} title="Programme & Enrollment">
-            <Field label="Course Type" value={student.course_type} />
-            <Field label="Faculty" value={student.faculty} />
-            <Field label="Course" value={student.course} />
-            <Field label="Stream" value={student.stream} />
+            <Field
+              label="Course Type"
+              value={programmeNames.courseTypeName || student.course_type}
+            />
+            <Field
+              label="Faculty"
+              value={programmeNames.facultyName || student.faculty}
+            />
+            <Field
+              label="Course"
+              value={programmeNames.courseName || student.course}
+            />
+            <Field
+              label="Stream"
+              value={programmeNames.streamName || student.stream}
+            />
             <Field label="Academic Year" value={student.year} />
             <Field
               label="Session"

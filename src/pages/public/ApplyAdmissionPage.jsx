@@ -1,12 +1,4 @@
-/**
- * src/pages/public/ApplyAdmissionPage.jsx
- * PUBLIC STUDENT ADMISSION PAGE
- *
- * Uses PublicStudentStepper - completely independent from admin forms
- * No authentication required - public form submission
- * Uses public APIs that do not trigger auth redirects
- */
-
+// src/pages/public/ApplyAdmissionPage.jsx
 import PublicStudentStepper from "../../components/public/admission/PublicStudentStepper";
 import { SEOHelmet } from "@/components/SEO/SEOHelmet";
 
@@ -31,11 +23,11 @@ export default function ApplyAdmissionPage() {
         {/* Form Section */}
         <div className="relative ">
           <div className="max-w-6xl mx-auto">
-          <div className="bg-white/8 border border-white/10 backdrop-blur-md rounded-3xl p-6 sm:p-8 lg:p-12 shadow-xl">
-            <PublicStudentStepper />
+            <div className="bg-white/8 border border-white/10 backdrop-blur-md rounded-3xl p-6 sm:p-8 lg:p-12 shadow-xl">
+              <PublicStudentStepper />
+            </div>
           </div>
         </div>
-      </div>
       </div>
     </>
   );

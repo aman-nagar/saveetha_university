@@ -1,16 +1,13 @@
 // src/components/admin/settings/SettingsTable.jsx
 import { FaPen, FaTrash } from "react-icons/fa";
 
-/**
- * Reusable table component for displaying settings CRUD data
- * Used for: Testimonials, News, Sliders, etc.
- */
 export default function SettingsTable({
   columns,
   data,
   loading,
   onEdit,
   onDelete,
+  hideEdit = false,
   emptyMessage = "No items found",
   rowKey = "id",
 }) {
@@ -21,7 +18,6 @@ export default function SettingsTable({
       </div>
     );
   }
-  console.log(data);
   if (!data || data.length === 0) {
     return (
       <div className="py-12 text-center">
@@ -64,13 +60,15 @@ export default function SettingsTable({
               ))}
               <td className="px-4 py-3 text-sm">
                 <div className="flex gap-2">
-                  <button
-                    onClick={() => onEdit?.(row)}
-                    className="flex items-center gap-1 px-3 py-1.5 rounded bg-primary/10 text-primary hover:bg-primary/20 transition-colors text-xs font-medium"
-                  >
-                    <FaPen className="w-3 h-3" />
-                    Edit
-                  </button>
+                  {!hideEdit && (
+                    <button
+                      onClick={() => onEdit?.(row)}
+                      className="flex items-center gap-1 px-3 py-1.5 rounded bg-primary/10 text-primary hover:bg-primary/20 transition-colors text-xs font-medium"
+                    >
+                      <FaPen className="w-3 h-3" />
+                      Edit
+                    </button>
+                  )}
                   <button
                     onClick={() => onDelete?.(row[rowKey])}
                     className="flex items-center gap-1 px-3 py-1.5 rounded bg-red-600/10 text-red-600 hover:bg-red-600/20 transition-colors text-xs font-medium"

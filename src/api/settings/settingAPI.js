@@ -149,3 +149,26 @@ export function deleteSlider(id) {
     method: "DELETE",
   });
 }
+
+// ============================================
+// DOWNLOAD FORMS (CREATE & DELETE ONLY)
+// ============================================
+export function fetchDownloadForms() {
+  return apiRequest("/admin/download-form.php");
+}
+
+export function createDownloadForm(formData) {
+  return apiRequest("/admin/download-form.php", {
+    method: "POST",
+    body: formData,
+  });
+}
+
+export function deleteDownloadForm(id) {
+  return apiRequest("/admin/download-form.php", {
+    method: "DELETE",
+    body: JSON.stringify({
+      id: id,
+    }),
+  });
+}

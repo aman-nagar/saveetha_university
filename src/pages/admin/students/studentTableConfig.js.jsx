@@ -33,7 +33,7 @@ export function StatusToggle({ row, onToggle, disabled }) {
 }
 
 /* ─── Columns ─── */
-export const getStudentColumns = ({ mode, isAdmin, handleToggleStatus }) => [
+export const getStudentColumns = ({ mode, isAdmin, handleToggleStatus, courseMap = {} }) => [
   { key: "serial", label: "#", render: (_, i) => i + 1 },
 
   {
@@ -58,10 +58,24 @@ export const getStudentColumns = ({ mode, isAdmin, handleToggleStatus }) => [
   {
     key: "course",
     label: "Course",
-    render: (row) =>
-      typeof row.course === "string" && !isNaN(row.course)
-        ? `Course ID: ${row.course}`
-        : row.course || "—",
+    render: (row) => {
+      // If course is empty, show blank
+      if (!row.course || row.course === "") {
+        return <span className="text-muted text-xs">—</span>;
+      }
+      // If course name exists in map, show it
+      if (courseMap[row.course]) {
+        return courseMap[row.course];
+      }
+      // Otherwise show ID as fallback
+      return (
+        <span className="text-muted text-xs">
+          {typeof row.course === "string" && !isNaN(row.course)
+            ? `ID: ${row.course}`
+            : "—"}
+        </span>
+      );
+    },
   },
   { key: "contact_number", label: "Contact" },
   { key: "email", label: "Email" },

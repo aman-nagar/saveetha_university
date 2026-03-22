@@ -63,7 +63,6 @@ const StudentIDCard = () => {
     address,
   } = studentData;
 
-
   return (
     <div className="min-h-screen p-4 pt-6 pb-8 bg-gray-50">
       <style>{`@media print { .print-hide { display: none !important; } body { background: white; } }`}</style>
@@ -150,8 +149,6 @@ const StudentIDCard = () => {
           >
             🖨️ Print
           </button>
-         
-         
           <Link
             to="/student-dashboard"
             className="bg-gray-800 text-white px-6 py-3 rounded-lg font-bold no-underline hover:bg-black transition-all shadow-lg active:scale-95"

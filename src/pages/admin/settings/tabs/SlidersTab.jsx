@@ -30,7 +30,6 @@ export default function SlidersTab({ onSuccess, onError }) {
         ? response
         : response?.sliders || response || [];
 
-      console.log("Setting data:", sliderData);
       setData(sliderData);
     } catch (err) {
       show("error", "Failed to load sliders");
@@ -108,6 +107,13 @@ export default function SlidersTab({ onSuccess, onError }) {
   };
 
   const columns = [
+    {
+      key: "index",
+      label: "#",
+      render: (_, __, index) => (
+        <span className="font-semibold">{index + 1}</span>
+      ),
+    },
     { key: "heading", label: "Heading" },
     { key: "title", label: "Title" },
     {

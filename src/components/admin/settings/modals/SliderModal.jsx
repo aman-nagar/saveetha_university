@@ -4,8 +4,6 @@ import { useForm } from "react-hook-form";
 import Modal from "@/components/ui/Modal";
 import FormInput from "@/components/form/FormInput";
 import FormFileInput from "@/components/form/FormFileInput";
-import FormTextarea from "@/components/form/FormTextarea";
-import FormSection from "@/components/form/FormSection";
 import Button from "@/components/ui/Button";
 
 export default function SliderModal({ isOpen, item, onClose, onSave }) {
@@ -31,19 +29,15 @@ export default function SliderModal({ isOpen, item, onClose, onSave }) {
   const handleFormSubmit = async (data) => {
     const formData = new FormData();
 
-    // Add ID if updating (API requires ID and status for PATCH)
     if (item?.id) {
       formData.append("id", item.id);
     }
 
-    // Add required fields (API expects: heading, title, image, status)
     formData.append("heading", data.heading);
     formData.append("title", data.title);
 
-    // Map is_active (boolean) to status (1 or 0) - API format
     formData.append("status", data.is_active ? 1 : 0);
 
-    // Add image if provided
     if (data.image?.[0]) {
       formData.append("image", data.image[0]);
     }

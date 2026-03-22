@@ -58,7 +58,6 @@ export default function StudentListPage() {
             ? response.data
             : [];
 
-        console.log("✅ Courses loaded:", courseList);
         setCourses(courseList);
       } catch (err) {
         console.error("❌ Failed to load courses:", err);
@@ -190,9 +189,6 @@ export default function StudentListPage() {
     acc[course.id] = course.name;
     return acc;
   }, {});
-
-  console.log("📚 Course Map:", courseMap);
-  console.log("📚 Total Courses Loaded:", courses.length);
 
   const columns = getStudentColumns({
     mode,

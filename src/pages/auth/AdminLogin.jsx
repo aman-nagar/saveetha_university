@@ -23,8 +23,6 @@ export default function AdminLogin() {
 
       show("success", "Welcome, Administrator");
 
-      // 2. 🔥 FIX: Remove setTimeout. Navigate immediately and use { replace: true }
-      // This prevents the user from going 'back' to the login page after success.
       navigate("/admin", { replace: true });
     } catch (err) {
       show("error", err.message);

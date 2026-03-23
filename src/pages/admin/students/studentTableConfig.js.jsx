@@ -33,7 +33,12 @@ export function StatusToggle({ row, onToggle, disabled }) {
 }
 
 /* ─── Columns ─── */
-export const getStudentColumns = ({ mode, isAdmin, handleToggleStatus, courseMap = {} }) => [
+export const getStudentColumns = ({
+  mode,
+  isAdmin,
+  handleToggleStatus,
+  courseMap = {},
+}) => [
   { key: "serial", label: "#", render: (_, i) => i + 1 },
 
   {
@@ -115,22 +120,29 @@ export const getStudentActions = ({
           "p-2 bg-primary text-white rounded hover:opacity-80 transition",
         onClick: handleView,
       },
-      {
+    ];
+
+    // Only show Edit button to admin
+    if (isAdmin) {
+      actions.push({
         icon: <FaPen />,
         title: "Edit",
         className:
           "p-2 bg-blue-600 text-white rounded hover:opacity-80 transition",
         onClick: handleEdit,
-      },
-      {
-        icon: <FaFilePdf />,
-        title: "Download PDF",
-        className:
-          "p-2 bg-orange-500 text-white rounded hover:opacity-80 transition",
-        onClick: handleDownloadPdf,
-      },
-    ];
+      });
+    }
 
+    // Always show Download PDF
+    actions.push({
+      icon: <FaFilePdf />,
+      title: "Download PDF",
+      className:
+        "p-2 bg-orange-500 text-white rounded hover:opacity-80 transition",
+      onClick: handleDownloadPdf,
+    });
+
+    // Only show Delete button to admin
     if (isAdmin) {
       actions.push({
         icon: <FaTrash />,

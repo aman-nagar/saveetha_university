@@ -428,47 +428,59 @@ export const publicMock = {
     },
   },
 
-  // ===== FOOTER =====
-  footer: {
-    copyright: "2026 Saveetha Amravati University. All rights reserved.",
-    quickLinks: [
-      { label: "About", url: "/about" },
-      { label: "Academics", url: "/academics" },
-      { label: "News", url: "/news" },
-      { label: "Gallery", url: "/gallery" },
-      { label: "Contact", url: "/contact" },
-      { label: "Privacy Policy", url: "/privacy" },
-      { label: "Terms & Conditions", url: "/terms" },
-    ],
-    contact: {
-      phone: "+9108062182405",
-      email: "info@saveethaamaravatiuniversity.ac.in",
-      address:
-        "Vaishnavi Complex, Chennai - Kolkata Hwy, Guru Nanak Colony, Vijayawada, Andhra Pradesh 520008",
+ footer: {
+  copyright: "2026 Saveetha Amravati University. All rights reserved.",
+  columns: [
+    {
+      title: "Quick Links",
+      links: [
+        { label: "Career", url: "/career" },
+        { label: "Journals", url: "/journals" },
+        { label: "Alumni", url: "/alumni" },
+        { label: "International Students", url: "/international" },
+        { label: "Academic Calendar", url: "/calendar" },
+        { label: "Training & Placement", url: "/placement" },
+        { label: "Grievance Redressal Cell", url: "/grievance" },
+        { label: "FAQs", url: "/faqs" },
+        { label: "Student Verification", url: "/verification" },
+      ]
     },
-    social: [
-      {
-        platform: "Facebook",
-        url: "https://facebook.com/aiuniversity",
-        icon: "facebook",
-      },
-      {
-        platform: "Twitter",
-        url: "https://twitter.com/aiuniversity",
-        icon: "twitter",
-      },
-      {
-        platform: "LinkedIn",
-        url: "https://linkedin.com/company/aiuniversity",
-        icon: "linkedin",
-      },
-      {
-        platform: "Instagram",
-        url: "https://instagram.com/aiuniversity",
-        icon: "instagram",
-      },
+    {
+      title: "Facilities",
+      links: [
+        { label: "Library", url: "/library" },
+        { label: "Transport", url: "/transport" },
+        { label: "Computer Lab", url: "/lab" },
+        { label: "Auditorium", url: "/auditorium" },
+        { label: "Health Care", url: "/health" },
+        { label: "Sports", url: "/sports" },
+        { label: "Security", url: "/security" },
+      ]
+    },
+    {
+      title: "Policy",
+      links: [
+        { label: "Privacy Policy", url: "/privacy" },
+        { label: "Terms and Conditions", url: "/terms" },
+        { label: "Refund Policy", url: "/refund" },
+        { label: "Anti-Ragging Policy", url: "/anti-ragging" },
+        { label: "Caste Based Discrimination", url: "/discrimination" },
+        { label: "Public Self Disclosure", url: "/disclosure" },
+        { label: "UGC Performa section 2(f)", url: "/ugc" },
+        { label: "Basics of Cyber Hygiene", url: "/cyber" },
+      ]
+    }
+  ],
+  contact: {
+    phone: "+91-9355822001 / 002 / 003",
+    emails: [
+      { label: "General", value: "info@saveethaamaravatiuniversity.ac.in" },
+      { label: "VC Office", value: "vc@saveethaamaravatiuniversity.ac.in" },
+      { label: "Registrar", value: "registrar@saveethaamaravatiuniversity.ac.in" }
     ],
-  },
+    address: "Vaishnavi Complex, Vijaywada, Andhra Pradesh, 520008",
+  }
+},
 
   // ===== ABOUT US SECTION =====
   aboutUs: {

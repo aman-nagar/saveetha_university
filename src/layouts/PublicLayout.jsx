@@ -5,7 +5,7 @@ import PublicFooter from "../components/public/PublicFooter";
 import LoadingFallback from "../components/ui/LoadingFallback";
 
 export default function PublicLayout() {
-  const { header, footer, loading } = usePublicContent();
+  const { header, loading } = usePublicContent();
 
   // Show loading skeleton while fetching
   if (loading) {
@@ -23,7 +23,7 @@ export default function PublicLayout() {
       </main>
 
       {/* Footer - Global for all pages */}
-      {footer && <PublicFooter data={footer} />}
+      <PublicFooter />
 
       {/* Back to Top Button */}
       <BackToTop />

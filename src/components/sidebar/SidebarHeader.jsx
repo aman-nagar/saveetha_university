@@ -2,6 +2,7 @@
 import { Link } from "react-router-dom";
 import { FaThumbtack, FaChevronRight, FaSun, FaMoon } from "react-icons/fa";
 import logo2 from "../../assets/images/logo2.png";
+import { usePublicContent } from "../../hooks/usePublicContent";
 
 export default function SidebarHeader({
   isCollapsed,
@@ -11,6 +12,8 @@ export default function SidebarHeader({
   theme,
   toggleTheme,
 }) {
+  const { siteDetails } = usePublicContent();
+
   return (
     <div className="p-2 border-b border-white/10">
       <div className="flex items-center justify-between">
@@ -19,7 +22,11 @@ export default function SidebarHeader({
             onClick={toggleCollapse}
             className="p-1.5 rounded-lg hover:bg-white/10 transition-colors w-full flex items-center justify-center group relative"
           >
-            <img src={logo2} className="h-8 w-auto rounded-xl" alt="Logo" />
+            <img
+              src={siteDetails?.additional_logo || logo2}
+              className="h-8 w-auto rounded-xl"
+              alt="Logo"
+            />
           </button>
         ) : (
           <div className="flex items-center justify-between w-full">
@@ -27,7 +34,11 @@ export default function SidebarHeader({
               to="/admin"
               className="flex items-center space-x-2 p-1.5 rounded-lg hover:bg-white/10 transition-colors"
             >
-              <img src={logo2} className="h-8 w-auto rounded-xl" alt="Logo" />
+              <img
+                src={siteDetails?.additional_logo || logo2}
+                className="h-8 w-auto rounded-xl"
+                alt="Logo"
+              />
               <span className="text-sm font-bold text-white whitespace-nowrap">
                 S.A. University
               </span>

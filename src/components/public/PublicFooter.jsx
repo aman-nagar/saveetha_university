@@ -8,9 +8,11 @@ import {
 } from "flowbite-react";
 import { BsFacebook, BsInstagram, BsTwitter, BsLinkedin } from "react-icons/bs";
 import worldMap from "../../assets/images/wmap.jpg";
+import { usePublicContent } from "../../hooks/usePublicContent";
 
 export default function PublicFooter({ data }) {
   const footerData = data || getDefaultFooterData();
+  const { siteDetails } = usePublicContent();
 
   return (
     <footer
@@ -46,9 +48,11 @@ export default function PublicFooter({ data }) {
             <div>
               <FooterTitle title="Contact Us" className="text-accent" />
               <div className="text-white/80 text-sm space-y-1">
-                <div>📞 {footerData.contact.phone}</div>
-                <div>📧 {footerData.contact.email}</div>
-                <div>📍 {footerData.contact.address}</div>
+                <div>📞 {siteDetails?.phone || footerData.contact.phone}</div>
+                <div>📧 {siteDetails?.email || footerData.contact.email}</div>
+                <div>
+                  📍 {siteDetails?.address || footerData.contact.address}
+                </div>
               </div>
             </div>
           )}

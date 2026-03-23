@@ -1,10 +1,9 @@
-/**
- * BrandingBar Component - Mobile First Responsive
- * Displays university logo, name, tagline, and recognition
- */
+// src/components/public/header/BrandingBar.jsx
 import { Link } from "react-router-dom";
+import { usePublicContent } from "../../../hooks/usePublicContent";
 
 export default function BrandingBar({ data }) {
+  const { siteDetails } = usePublicContent();
   if (!data) return null;
 
   return (
@@ -14,7 +13,7 @@ export default function BrandingBar({ data }) {
         <div className="flex items-center gap-2 sm:gap-4 w-full sm:w-auto">
           {/* Logo */}
           <img
-            src={data.logo}
+            src={siteDetails.logo}
             alt="university logo"
             className="h-12 sm:h-16 md:h-20 w-auto flex-shrink-0"
           />

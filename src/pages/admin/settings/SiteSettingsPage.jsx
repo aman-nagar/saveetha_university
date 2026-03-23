@@ -9,7 +9,6 @@ import TestimonialsTab from "./tabs/TestimonialsTab";
 import NewsTab from "./tabs/NewsTab";
 import SlidersTab from "./tabs/SlidersTab";
 import HeaderSettingsTab from "./tabs/HeaderSettingsTab";
-import FooterSettingsTab from "./tabs/FooterSettingsTab";
 import DownloadFormsTab from "./tabs/DownloadFormsTab";
 
 // Tab configuration
@@ -74,11 +73,7 @@ export default function SiteSettingsPage() {
             onSuccess={() => show("success", "Header updated")}
           />
         )}
-        {activeTab === "footer" && (
-          <FooterSettingsTab
-            onSuccess={() => show("success", "Footer updated")}
-          />
-        )}
+
         {activeTab === "testimonials" && (
           <TestimonialsTab
             onSuccess={() => show("success", "Testimonial updated")}

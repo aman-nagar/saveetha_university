@@ -1,7 +1,6 @@
 // src/context/PublicDataContext.jsx
 import { createContext, useState, useEffect } from "react";
 import { BASE_URL } from "../api/apiConfig";
-// Import mock/static data for fallbacks
 import { publicMock } from "../data/header.mock";
 
 export const PublicDataContext = createContext(null);

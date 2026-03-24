@@ -472,7 +472,7 @@ export const publicMock = {
       },
     ],
     contact: {
-      phone: "+91-9355822001 / 002 / 003",
+      phone: "+91-8062182405 / 002 / 003",
       emails: [
         { label: "General", value: "info@saveethaamaravatiuniversity.ac.in" },
         { label: "VC Office", value: "vc@saveethaamaravatiuniversity.ac.in" },

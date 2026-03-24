@@ -80,6 +80,24 @@ export const SEO_CONFIG = {
     twitterImage: "https://saveethaamaravatiuniversity.ac.in/og-home-image.svg",
   },
 
+  academics: {
+    title: "Academics | Saveetha Amaravati University",
+    description:
+      "Explore SAU academics with CBCS, outcome-based education, internships, interdisciplinary pathways, skill enhancement, and research-focused learning.",
+    keywords:
+      "SAU academics, CBCS, outcome based education, NEP 2020, interdisciplinary learning, internships, skill enhancement, faculty research",
+    canonical: "https://saveethaamaravatiuniversity.ac.in/academics",
+    ogTitle: "Academics at Saveetha Amaravati University",
+    ogDescription:
+      "A future-ready academic ecosystem with practical learning, flexible pathways, holistic education, and strong faculty mentorship.",
+    ogImage: "https://saveethaamaravatiuniversity.ac.in/og-home-image.svg",
+    ogImageAlt: "Academics at Saveetha Amaravati University",
+    twitterTitle: "Academics | Saveetha Amaravati University",
+    twitterDescription:
+      "Discover SAU's modern academic framework built around flexibility, internships, and holistic learning.",
+    twitterImage: "https://saveethaamaravatiuniversity.ac.in/og-home-image.svg",
+  },
+
   contact: {
     title: "Contact Us | Saveetha Amaravati University",
     description:
@@ -147,7 +165,7 @@ export const ORGANIZATION_SCHEMA = {
 
 /**
  * Get SEO config for a specific page
- * @param {string} page - Page key (home, wiepForm, admission, about, contact)
+ * @param {string} page - Page key (home, wiepForm, admission, about, academics, contact)
  * @returns {Object} SEO configuration for that page
  */
 export function getSEOConfig(page) {

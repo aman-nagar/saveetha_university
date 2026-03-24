@@ -552,7 +552,103 @@ The sponsoring body also believes strongly in social responsibility and communit
   ],
 
   academics: {
-    // Separate by specific sub-pages
+    overview: {
+      eyebrow: "Academics at SAU",
+      title: "Future-Focused Academics Built for Depth, Choice, and Impact",
+      subtitle:
+        "Saveetha Amaravati University integrates outcome-based learning, CBCS flexibility, internships, research exposure, and holistic education into one modern academic ecosystem.",
+      intro: [
+        "Saveetha Amaravati University, established in 2018, integrates comprehensive educational components such as outcome-based education and the Choice Based Credit System (CBCS). Across its seven schools, the university offers a robust range of undergraduate and postgraduate programs designed to cultivate academic excellence and practical proficiency.",
+        "The academic structure emphasizes strong disciplinary foundations while also encouraging flexibility, interdisciplinary exploration, and real-world learning. Students are supported through an ecosystem that combines academic rigor, future-ready skills, and broad-based intellectual development.",
+      ],
+      stats: [
+        { id: 1, label: "Established", value: "2018" },
+        { id: 2, label: "Academic Schools", value: "7" },
+        { id: 3, label: "Curriculum Model", value: "CBCS" },
+        { id: 4, label: "Learning Focus", value: "Outcome-Based" },
+      ],
+      pillars: [
+        {
+          id: 1,
+          title: "Outcome-Based Education",
+          description:
+            "Programs are designed around measurable learning outcomes so students develop clear academic competencies, practical understanding, and career readiness.",
+        },
+        {
+          id: 2,
+          title: "Choice Based Credit System",
+          description:
+            "The CBCS framework gives students flexibility to shape their journey through core papers, electives, interdisciplinary options, honors pathways, and research-focused choices.",
+        },
+        {
+          id: 3,
+          title: "Mandatory Internships",
+          description:
+            "Internship courses connect classroom learning with real-world practice, helping students understand industry expectations and build confidence through hands-on exposure.",
+        },
+        {
+          id: 4,
+          title: "Global Readiness",
+          description:
+            "Foreign language learning and cross-disciplinary engagement broaden perspectives and strengthen communication skills for modern global workplaces.",
+        },
+      ],
+      futureReady: {
+        title: "Designed for Education 4.0, Ready for Education 5.0",
+        description:
+          "The university aligns its academic philosophy with evolving industry and educational models where technology, human creativity, innovation, and adaptability work together.",
+        badges: [
+          "Education 4.0",
+          "Industry 4.0",
+          "Education 5.0",
+          "Industry 5.0",
+        ],
+        points: [
+          "Interdisciplinary learning pathways aligned with NEP 2020.",
+          "Multiple entry and exit options within the CBCS framework.",
+          "Open electives and skill enhancement courses to support diverse career goals.",
+          "Opportunities to pursue honors and research-oriented academic tracks.",
+        ],
+      },
+      holisticDevelopment: {
+        title: "Holistic Education Beyond the Classroom",
+        description:
+          "Academic excellence is supported by courses and experiences that build values, cultural awareness, ethical judgment, and a sense of responsibility toward society.",
+        tracks: [
+          {
+            id: 1,
+            code: "AEC",
+            name: "Ability Enhancement Courses",
+            description:
+              "Designed to strengthen communication, analytical ability, and applied competencies needed across professional environments.",
+          },
+          {
+            id: 2,
+            code: "VEC",
+            name: "Value Education Courses",
+            description:
+              "Encourage ethical reflection, integrity, and the development of responsible decision-making.",
+          },
+          {
+            id: 3,
+            code: "IKS",
+            name: "Indian Knowledge System",
+            description:
+              "Introduces students to India’s intellectual and cultural traditions while connecting heritage with contemporary learning.",
+          },
+        ],
+      },
+      faculty: {
+        title: "Faculty Excellence that Strengthens Learning and Research",
+        description:
+          "Our faculty members are selected from esteemed institutions across India and beyond, including IITs, NITs, and other respected universities. They bring strong subject knowledge, academic rigor, and active research engagement into the classroom.",
+        points: [
+          "Experienced educators who combine teaching depth with practical relevance.",
+          "Active researchers involved in innovation, emerging ideas, and applied scholarship.",
+          "Mentors who inspire students to think critically, explore broadly, and achieve their full potential.",
+        ],
+      },
+    },
     examinationCommittee: {
       title: "Examination Committee",
       subtitle:

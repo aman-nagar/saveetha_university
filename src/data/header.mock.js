@@ -428,80 +428,104 @@ export const publicMock = {
     },
   },
 
- footer: {
-  copyright: "2026 Saveetha Amravati University. All rights reserved.",
-  columns: [
-    {
-      title: "Quick Links",
-      links: [
-        { label: "Career", url: "/career" },
-        { label: "Journals", url: "/journals" },
-        { label: "Alumni", url: "/alumni" },
-        { label: "International Students", url: "/international" },
-        { label: "Academic Calendar", url: "/calendar" },
-        { label: "Training & Placement", url: "/placement" },
-        { label: "Grievance Redressal Cell", url: "/grievance" },
-        { label: "FAQs", url: "/faqs" },
-        { label: "Student Verification", url: "/verification" },
-      ]
-    },
-    {
-      title: "Facilities",
-      links: [
-        { label: "Library", url: "/library" },
-        { label: "Transport", url: "/transport" },
-        { label: "Computer Lab", url: "/lab" },
-        { label: "Auditorium", url: "/auditorium" },
-        { label: "Health Care", url: "/health" },
-        { label: "Sports", url: "/sports" },
-        { label: "Security", url: "/security" },
-      ]
-    },
-    {
-      title: "Policy",
-      links: [
-        { label: "Privacy Policy", url: "/privacy" },
-        { label: "Terms and Conditions", url: "/terms" },
-        { label: "Refund Policy", url: "/refund" },
-        { label: "Anti-Ragging Policy", url: "/anti-ragging" },
-        { label: "Caste Based Discrimination", url: "/discrimination" },
-        { label: "Public Self Disclosure", url: "/disclosure" },
-        { label: "UGC Performa section 2(f)", url: "/ugc" },
-        { label: "Basics of Cyber Hygiene", url: "/cyber" },
-      ]
-    }
-  ],
-  contact: {
-    phone: "+91-9355822001 / 002 / 003",
-    emails: [
-      { label: "General", value: "info@saveethaamaravatiuniversity.ac.in" },
-      { label: "VC Office", value: "vc@saveethaamaravatiuniversity.ac.in" },
-      { label: "Registrar", value: "registrar@saveethaamaravatiuniversity.ac.in" }
+  footer: {
+    copyright: "Saveetha Amravati University. All rights reserved.",
+    columns: [
+      {
+        title: "Quick Links",
+        links: [
+          { label: "Career", url: "/career" },
+          { label: "Journals", url: "/journals" },
+          { label: "Alumni", url: "/alumni" },
+          { label: "International Students", url: "/international" },
+          { label: "Academic Calendar", url: "/calendar" },
+          { label: "Training & Placement", url: "/placement" },
+          { label: "Grievance Redressal Cell", url: "/grievance" },
+          { label: "FAQs", url: "/faqs" },
+          { label: "Student Verification", url: "/verification" },
+        ],
+      },
+      {
+        title: "Facilities",
+        links: [
+          { label: "Library", url: "/library" },
+          { label: "Transport", url: "/transport" },
+          { label: "Computer Lab", url: "/lab" },
+          { label: "Auditorium", url: "/auditorium" },
+          { label: "Health Care", url: "/health" },
+          { label: "Sports", url: "/sports" },
+          { label: "Security", url: "/security" },
+        ],
+      },
+      {
+        title: "Policy",
+        links: [
+          { label: "Privacy Policy", url: "/privacy" },
+          { label: "Terms and Conditions", url: "/terms" },
+          { label: "Refund Policy", url: "/refund" },
+          { label: "Anti-Ragging Policy", url: "/anti-ragging" },
+          { label: "Caste Based Discrimination", url: "/discrimination" },
+          { label: "Public Self Disclosure", url: "/disclosure" },
+          { label: "UGC Performa section 2(f)", url: "/ugc" },
+          { label: "Basics of Cyber Hygiene", url: "/cyber" },
+        ],
+      },
     ],
-    address: "Vaishnavi Complex, Vijaywada, Andhra Pradesh, 520008",
-  }
-},
+    contact: {
+      phone: "+91-9355822001 / 002 / 003",
+      emails: [
+        { label: "General", value: "info@saveethaamaravatiuniversity.ac.in" },
+        { label: "VC Office", value: "vc@saveethaamaravatiuniversity.ac.in" },
+        {
+          label: "Registrar",
+          value: "registrar@saveethaamaravatiuniversity.ac.in",
+        },
+      ],
+      address: "Vaishnavi Complex, Vijaywada, Andhra Pradesh, 520008",
+    },
+  },
 
   // ===== ABOUT US SECTION =====
   aboutUs: {
-    heading: "About Us",
-    content: `Welcome to Saveetha Amravati University, a leading institution of higher education committed to providing an exceptional academic experience for its students. It is the first ever university in North Andhra Pradesh which offers its students an array of multiple disciplines including Social Sciences and Humanities, Science and technology, management and commerce, library science, computer science, faculty of science, agriculture, physiotherapy, paramedical, skill education and many more. Our faculty members are experts in their fields, and they are committed to helping students develop the knowledge, skills, and critical thinking abilities needed to succeed in today's rapidly changing world. We believe that education is not just about imparting knowledge, but also about fostering the development of well-rounded individuals who can contribute meaningfully to society.`,
-    tagline: "SA: A GATEWAY TO HIGHER EDUCATION",
+    heading:
+      "Saveetha Amaravati University – Leading Higher Education & Innovation Hub",
+    subHeading: "About Saveetha Amaravati University",
+    content: `Saveetha Amaravati University is a modern institution dedicated to providing high-quality higher education, research opportunities, and industry-focused learning. The university is committed to developing future leaders, innovators, and professionals through a strong combination of academic excellence, practical exposure, and value-based education.
+
+Established with the vision of transforming education into a powerful tool for personal growth, professional success, and national development, Saveetha Amaravati University focuses on nurturing talent and preparing students for the challenges of the global workforce.
+
+With a progressive academic approach and a commitment to innovation, the university aims to build a Centre of Excellence in education, research, technology, management, and applied sciences. Students benefit from an environment that combines modern teaching methods, advanced technology, and holistic development.`,
+    tagline: "Leading Higher Education & Innovation Hub",
     readMoreText: "Read More...",
+    sponsoringBodyHeading: "Sponsoring Body of Saveetha Amaravati University",
+    sponsoringBodyIntro: `The sponsoring body behind Saveetha Amaravati University plays a vital role in shaping the institution's vision, governance, and long-term academic growth. The foundation is dedicated to promoting quality education, research, and innovation while creating opportunities for students from diverse backgrounds.
+
+Its mission is to develop an education system that blends discipline, culture, ethics, and modern technological knowledge. By focusing on both academic excellence and character development, the institution prepares students to become responsible professionals and global citizens.
+
+The sponsoring body also believes strongly in social responsibility and community development. Through various educational initiatives and outreach programs, it works toward providing access to education and supporting the growth of underprivileged communities.`,
+    sponsoringBody: {
+      mission: `The foundation is dedicated to promoting quality education, research, and innovation. Its mission is to develop an education system that blends discipline, culture, ethics, and modern technological knowledge.`,
+      socialResponsibility: `The sponsoring body believes strongly in social responsibility and community development. Through various educational initiatives and outreach programs, it works toward providing access to education and supporting the growth of underprivileged communities.`,
+    },
+    fourPillars: {
+      modernCampus: `Saveetha Amaravati University offers a modern, student-centric campus designed to promote creativity, innovation, and academic excellence. The campus environment supports collaborative learning, research, and extracurricular development, allowing students to grow both academically and personally. Students have access to modern classrooms, advanced laboratories, research facilities, and digital learning resources that support a future-ready education system.`,
+      industryFocused: `The academic programs at Saveetha Amaravati University are designed to align with Education 4.0 and Industry 4.0, preparing students for the evolving demands of the global job market. The university also focuses on future trends such as Education 5.0 and Industry 5.0, where human creativity and advanced technologies work together. Through industry collaborations, practical training, internships, and project-based learning, students gain the skills, knowledge, and confidence required to succeed in competitive industries.`,
+      experiencedFaculty: `The faculty at Saveetha Amaravati University consists of experienced professors, academic researchers, and industry professionals dedicated to guiding students toward success. Their expertise in teaching, research, and innovation helps students develop strong analytical skills and practical knowledge. Faculty members actively encourage research, innovation, entrepreneurship, and critical thinking, ensuring that students graduate with both academic knowledge and real-world problem-solving abilities.`,
+      visionInnovation: `Saveetha Amaravati University aims to become a leading center for higher education, innovation, and research in India. By fostering academic excellence, ethical values, and global perspectives, the university is committed to shaping future leaders, entrepreneurs, and responsible global citizens.`,
+    },
+    visionStatement: `Saveetha Amaravati University aims to become a leading center for higher education, innovation, and research in India. By fostering academic excellence, ethical values, and global perspectives, the university is committed to shaping future leaders, entrepreneurs, and responsible global citizens.`,
     profiles: [
       {
         id: 1,
         name: "Prof. (Dr) Manik Saha",
-        // title: "Chief Minister of Andhra Pradesh",
         image:
           "https://img.freepik.com/premium-photo/portrait-handsome-positive-young-man-isolated-gray-background_146377-4812.jpg?w=1480",
         testimonial:
-          "It gives me immense pleasure to convey my warm greetings and congratulation to Saveetha Amravati University as it embarks on its new journey in our state. I am happy to know that the Saveetha Amravati University, which is going to set up its campus in Tilthai, Dharmanagar, North Andhra Pradesh District, is the first University in India offering fully 'Learn and Earn' Degree/Diploma programmes with industries. Understandably, the local youths of our state will be immensely benefited by pursuing the courses offered by the said University.",
+          "It gives me immense pleasure to convey my warm greetings and congratulation to Saveetha Amravati University as it embarks on its new journey in our state. I am happy to know that the Saveetha Amravati University, which is going to set up its campus in Tilthai, Dharmanagar, North Andhra Pradesh District, is the first University in India offering fully 'Learn and Earn' Degree/Diploma programmes with industries.",
       },
       {
         id: 2,
         name: "Dr. Rajesh Kumar",
-        // title: "Vice Chancellor",
         image:
           "https://img.freepik.com/free-photo/photo-handsome-unshaven-guy-looks-with-pleasant-expression-directly-camera_176532-8164.jpg?t=st=1773393986~exp=1773397586~hmac=405bb7ddaa8378bc9c94c667e341148acd51b482ece3a3869203e9e4db999090&w=1480",
         testimonial:
@@ -510,7 +534,6 @@ export const publicMock = {
       {
         id: 3,
         name: "Prof. Neha Sharma",
-        // title: "Director, Academic Affairs",
         image:
           "https://img.freepik.com/free-photo/portrait-expressive-young-woman_1258-48167.jpg?t=st=1773394017~exp=1773397617~hmac=cee6ebf524eb801faffe6cd6d2d15408740f5174aae5b2d1d608b8cbf83e0994&w=1480",
         testimonial:

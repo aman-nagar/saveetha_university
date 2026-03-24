@@ -8,6 +8,8 @@ import {
   FaMicroscope,
 } from "react-icons/fa";
 import AboutUsSection from "../../components/public/about/AboutUsSection";
+import FeaturePillars from "../../components/public/about/FeaturePillars";
+import SponsoringBody from "../../components/public/about/SponsoringBody";
 import { SEOHelmet } from "@/components/SEO/SEOHelmet";
 import { publicMock } from "../../data/header.mock";
 
@@ -127,6 +129,12 @@ export default function About() {
             </div>
           </div>
         </section>
+
+        {/* 3.5. Feature Pillars Section */}
+        <FeaturePillars />
+
+        {/* 3.75. Sponsoring Body Section */}
+        <SponsoringBody />
 
         {/* 4. Vision & Mission (Split Interaction) */}
         <section className="py-24 bg-primary text-white overflow-hidden">

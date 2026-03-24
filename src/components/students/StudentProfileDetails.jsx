@@ -1,1 +1,0 @@
-/home/ubuntu/student-panel-ui/components/StudentProfileDetails.jsx

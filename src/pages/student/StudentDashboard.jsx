@@ -1,63 +1,9 @@
 // src/pages/student/StudentDashboard.jsx
 import { useAuth } from "@/context/AuthContext";
 import { Link } from "react-router-dom";
-import { useState, useEffect } from "react";
-import { fetchCourseCategories } from "@/api/courses/courseTypeApi";
-import { fetchFaculty } from "@/api/courses/facultyApi";
-import { fetchCourses } from "@/api/courses/courseApi";
-import { fetchStreams } from "@/api/courses/streamApi";
 
 const StudentDashboard = () => {
   const { studentData } = useAuth();
-  const [programmeNames, setProgrammeNames] = useState({
-    courseName: null,
-    streamName: null,
-  });
-
-  // Fetch programme names by IDs
-  useEffect(() => {
-    const fetchProgrammeNames = async () => {
-      try {
-        if (
-          !studentData?.course_type ||
-          !studentData?.course ||
-          !studentData?.stream
-        ) {
-          return;
-        }
-
-        let cName = null,
-          sName = null;
-
-        // Fetch course by ID
-        if (studentData.faculty && studentData.course) {
-          const cId = Number(studentData.course);
-          const fId = Number(studentData.faculty);
-          const cList = await fetchCourses(fId);
-          const cMatch = cList.find((c) => c.id === cId);
-          cName = cMatch?.name ?? null;
-        }
-
-        // Fetch stream by ID
-        if (studentData.stream && cName) {
-          const cId = Number(studentData.course);
-          const sId = Number(studentData.stream);
-          const sList = await fetchStreams(cId);
-          const sMatch = sList.find((s) => s.id === sId);
-          sName = sMatch?.name ?? null;
-        }
-
-        setProgrammeNames({
-          courseName: cName,
-          streamName: sName,
-        });
-      } catch (err) {
-        console.error("Error fetching programme names:", err);
-      }
-    };
-
-    fetchProgrammeNames();
-  }, [studentData]);
 
   if (!studentData) {
     return (
@@ -72,6 +18,7 @@ const StudentDashboard = () => {
     );
   }
 
+  // Destructure direct names from the API response
   const {
     enrollment_no,
     candidate_name,
@@ -88,8 +35,8 @@ const StudentDashboard = () => {
     city,
     address,
     pincode,
-    course,
-    stream,
+    course_name, // Using direct name from JSON
+    stream_name, // Using direct name from JSON
     status,
   } = studentData;
 
@@ -128,19 +75,17 @@ const StudentDashboard = () => {
             </p>
             <div className="mt-3 flex flex-wrap gap-2 justify-center sm:justify-start">
               <span
-                className={`px-3 py-1 rounded-full text-xs font-bold border backdrop-blur-sm ${
-                  status === 1
-                    ? "bg-green-500/20 text-green-100 border-green-400/30"
-                    : "bg-red-500/20 text-red-100 border-red-400/30"
-                }`}
+                className={`px-3 py-1 rounded-full text-xs font-bold border backdrop-blur-sm ${status === 1 ? "bg-green-500/20 text-green-100 border-green-400/30" : "bg-red-500/20 text-red-100 border-red-400/30"}`}
               >
                 {status === 1 ? "Active" : "Inactive"}
               </span>
+              {/* DIRECT COURSE NAME */}
               <span className="bg-white/15 backdrop-blur-sm text-white px-3 py-1 rounded-full text-xs font-semibold border border-white/20">
-                {programmeNames.courseName || studentData.course}
+                {course_name}
               </span>
+              {/* DIRECT STREAM NAME */}
               <span className="bg-white/15 backdrop-blur-sm text-white px-3 py-1 rounded-full text-xs font-semibold border border-white/20">
-                {programmeNames.streamName || studentData.stream}
+                {stream_name}
               </span>
             </div>
           </div>
@@ -198,8 +143,7 @@ const StudentDashboard = () => {
 
       {/* Main Content */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
-        {/* Personal & Family */}
-        <div className="bg-surface rounded-2xl shadow-sm border border-border p-5 hover:shadow-md transition-shadow">
+        <div className="bg-surface rounded-2xl shadow-sm border border-border p-5">
           <h3 className="text-base font-bold text-text flex items-center gap-2 mb-4 pb-3 border-b border-border">
             <span>👤</span> Personal & Family
           </h3>
@@ -212,7 +156,7 @@ const StudentDashboard = () => {
             ].map((field, i) => (
               <div
                 key={i}
-                className="flex flex-col xs:flex-row xs:justify-between xs:items-center py-1.5 gap-0.5"
+                className="flex justify-between items-center py-1.5 border-b border-gray-50 last:border-0"
               >
                 <span className="text-muted text-[11px] font-semibold uppercase tracking-wide">
                   {field.label}
@@ -225,8 +169,7 @@ const StudentDashboard = () => {
           </div>
         </div>
 
-        {/* Contact & Address */}
-        <div className="bg-surface rounded-2xl shadow-sm border border-border p-5 hover:shadow-md transition-shadow">
+        <div className="bg-surface rounded-2xl shadow-sm border border-border p-5">
           <h3 className="text-base font-bold text-text flex items-center gap-2 mb-4 pb-3 border-b border-border">
             <span>📍</span> Contact & Address
           </h3>
@@ -242,12 +185,12 @@ const StudentDashboard = () => {
             ].map((field, i) => (
               <div
                 key={i}
-                className="flex flex-col xs:flex-row xs:justify-between xs:items-start py-1.5 gap-0.5"
+                className="flex justify-between items-start py-1.5 border-b border-gray-50 last:border-0"
               >
-                <span className="text-muted text-[11px] font-semibold uppercase tracking-wide flex-shrink-0">
+                <span className="text-muted text-[11px] font-semibold uppercase tracking-wide shrink-0">
                   {field.label}
                 </span>
-                <span className="text-text font-semibold text-sm xs:text-right break-words xs:max-w-[65%]">
+                <span className="text-text font-semibold text-sm text-right break-words max-w-[65%]">
                   {field.value}
                 </span>
               </div>
@@ -256,9 +199,9 @@ const StudentDashboard = () => {
         </div>
       </div>
 
-      {/* Academics & Help */}
+      {/* Academics */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
-        <div className="md:col-span-2 bg-gradient-to-br from-accent/10 to-accent/5 rounded-2xl p-5 border border-accent/20 hover:shadow-md transition-shadow">
+        <div className="md:col-span-2 bg-gradient-to-br from-accent/10 to-accent/5 rounded-2xl p-5 border border-accent/20">
           <h3 className="text-base font-bold text-text flex items-center gap-2 mb-4 pb-3 border-b border-accent/20">
             <span>📚</span> Academics
           </h3>
@@ -267,17 +210,13 @@ const StudentDashboard = () => {
               <p className="text-muted text-[10px] font-bold uppercase tracking-wider">
                 Course
               </p>
-              <p className="text-text font-bold mt-1">
-                {programmeNames.courseName || studentData.course}
-              </p>
+              <p className="text-text font-bold mt-1">{course_name}</p>
             </div>
             <div className="bg-surface/60 rounded-xl p-4 border border-border/50">
               <p className="text-muted text-[10px] font-bold uppercase tracking-wider">
                 Stream
               </p>
-              <p className="text-text font-bold mt-1">
-                {programmeNames.streamName || studentData.stream}
-              </p>
+              <p className="text-text font-bold mt-1">{stream_name}</p>
             </div>
           </div>
         </div>
@@ -286,8 +225,7 @@ const StudentDashboard = () => {
           <div className="text-2xl mb-2">ℹ️</div>
           <p className="font-semibold text-text text-sm mb-1">Need Help?</p>
           <p className="text-muted text-xs leading-relaxed">
-            Contact the administration office for queries or assistance with
-            your academic records.
+            Contact the administration office for assistance with records.
           </p>
         </div>
       </div>

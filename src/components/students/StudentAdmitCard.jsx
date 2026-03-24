@@ -5,18 +5,12 @@ import { getAdmitCard } from "@/api/students/studentDashboardApi";
 import { Link } from "react-router-dom";
 import LoadingFallback from "../ui/LoadingFallback";
 import html2pdf from "html2pdf.js";
-import { fetchCourses } from "@/api/courses/courseApi";
-import { fetchStreams } from "@/api/courses/streamApi";
 
 const StudentAdmitCard = () => {
   const { studentData } = useAuth();
   const [admitCardData, setAdmitCardData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [programmeNames, setProgrammeNames] = useState({
-    courseName: null,
-    streamName: null,
-  });
   const cardRef = useRef(null);
 
   useEffect(() => {
@@ -37,48 +31,6 @@ const StudentAdmitCard = () => {
     fetchAdmitCard();
   }, []);
 
-  // Fetch programme names by IDs
-  useEffect(() => {
-    const fetchProgrammeNames = async () => {
-      try {
-        if (
-          !studentData?.faculty ||
-          !studentData?.course ||
-          !studentData?.stream
-        ) {
-          return;
-        }
-
-        let cName = null,
-          sName = null;
-
-        // Fetch course by ID
-        const cId = Number(studentData.course);
-        const fId = Number(studentData.faculty);
-        const cList = await fetchCourses(fId);
-        const cMatch = cList.find((c) => c.id === cId);
-        cName = cMatch?.name ?? null;
-
-        // Fetch stream by ID
-        if (cName) {
-          const sId = Number(studentData.stream);
-          const sList = await fetchStreams(cId);
-          const sMatch = sList.find((s) => s.id === sId);
-          sName = sMatch?.name ?? null;
-        }
-
-        setProgrammeNames({
-          courseName: cName,
-          streamName: sName,
-        });
-      } catch (err) {
-        console.error("Error fetching programme names:", err);
-      }
-    };
-
-    fetchProgrammeNames();
-  }, [studentData]);
-
   if (loading) {
     return <LoadingFallback variant="dashboard" />;
   }
@@ -95,6 +47,10 @@ const StudentAdmitCard = () => {
       </div>
     );
   }
+
+  // Destructure direct names from studentData
+  const { candidate_name, enrollment_no, course_name, stream_name } =
+    studentData;
 
   // If admit card not generated, show message
   if (error && !admitCardData) {
@@ -152,7 +108,7 @@ const StudentAdmitCard = () => {
     const element = cardRef.current;
     const opt = {
       margin: 5,
-      filename: `${studentData.candidate_name}_Admit_Card.pdf`,
+      filename: `${candidate_name}_Admit_Card.pdf`,
       image: { type: "jpeg", quality: 0.98 },
       html2canvas: {
         scale: 2,
@@ -219,7 +175,7 @@ const StudentAdmitCard = () => {
               border: "2px solid #e2e8f0",
             }}
           >
-            {/* Card Header with Gradient Pattern */}
+            {/* Card Header */}
             <div
               style={{
                 padding: "1.75rem 2rem",
@@ -229,7 +185,6 @@ const StudentAdmitCard = () => {
                 position: "relative",
               }}
             >
-              {/* Subtle Pattern Overlay */}
               <div
                 style={{
                   position: "absolute",
@@ -288,10 +243,10 @@ const StudentAdmitCard = () => {
                 }}
               >
                 {[
-                  { label: "Name", value: studentData.candidate_name },
-                  { label: "Enrollment No", value: studentData.enrollment_no },
-                  { label: "Course", value: programmeNames.courseName || studentData.course },
-                  { label: "Stream", value: programmeNames.streamName || studentData.stream },
+                  { label: "Name", value: candidate_name },
+                  { label: "Enrollment No", value: enrollment_no },
+                  { label: "Course", value: course_name },
+                  { label: "Stream", value: stream_name },
                   {
                     label: "Session",
                     value: admitCardData?.session || "N/A",
@@ -646,7 +601,7 @@ const StudentAdmitCard = () => {
               <div
                 style={{
                   display: "flex",
-                  justifyContent: "space-between",
+                  justifyBetween: "space-between",
                   alignItems: "center",
                   paddingTop: "0.75rem",
                   borderTop: "2px solid #e2e8f0",

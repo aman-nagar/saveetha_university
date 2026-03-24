@@ -25,7 +25,7 @@ const StudentIDCard = () => {
       }
     };
     fetchIDCardFormat();
-    console.log(studentData);
+    // console.log(studentData); // Removed for production cleanliness
   }, []);
 
   if (!studentData) {
@@ -52,14 +52,15 @@ const StudentIDCard = () => {
     );
   }
 
+  // Destructure qr_code_url from studentData
   const {
     enrollment_no,
     candidate_name,
     father_name,
     photo,
-    dob,
-    course,
-    stream,
+    qr_code_url, // ADDED THIS
+    course_name, // Updated based on your JSON response
+    stream_name, // Updated based on your JSON response
     address,
   } = studentData;
 
@@ -85,7 +86,7 @@ const StudentIDCard = () => {
           }}
         >
           {/* 1. Profile Photo */}
-          <div className="absolute top-[88px] right-[19px] w-[71px] h-[69px] border-2 border-[#0b1f4b] rounded-[5px] bg-white overflow-hidden flex items-center justify-center">
+          <div className="absolute top-[150px] left-[19px] w-[71px] h-[69px]  rounded-[5px] bg-white overflow-hidden flex items-center justify-center">
             {photo ? (
               <img
                 src={photo}
@@ -93,46 +94,61 @@ const StudentIDCard = () => {
                 className="w-full h-full object-cover"
               />
             ) : (
-              <div className="text-4xl">👤</div>
+              ""
+            )}
+          </div>
+
+          {/* ADDED: QR Code Section (Just below profile photo) */}
+          <div className="absolute top-[88px] right-[19px] w-[71px] h-[71px] bg-white rounded-[5px]  p-1 flex items-center justify-center overflow-hidden">
+            {qr_code_url ? (
+              <img
+                src={qr_code_url}
+                alt="Verification QR"
+                className="w-full h-full object-contain"
+              />
+            ) : (
+              <div className="text-[10px] text-gray-400 font-bold text-center">
+                QR PENDING
+              </div>
             )}
           </div>
 
           {/* 2. Main Details Content */}
           <div className="absolute text-secondary top-[141px] left-[305px] w-[260px] flex flex-col drop-shadow-sm">
-            {/* Row 1: Enrollment No (Fixed height 22px) */}
+            {/* Row 1: Enrollment No */}
             <div className="h-[22px] flex items-center">
               <div className="text-[12px] font-bold">{enrollment_no || ""}</div>
             </div>
 
-            {/* Row 2: Name (Fixed height 22px) */}
+            {/* Row 2: Name */}
             <div className="h-[22px] flex items-center">
               <div className="text-[12px] font-bold uppercase leading-tight tracking-tight">
                 {candidate_name || ""}
               </div>
             </div>
 
-            {/* Row 3: Father's Name (Fixed height 22px) */}
+            {/* Row 3: Father's Name */}
             <div className="h-[22px] flex items-center">
               <div className="text-[12px] font-bold truncate">
                 {father_name || ""}
               </div>
             </div>
 
-            {/* Row 4: Course (Fixed height 22px) */}
+            {/* Row 4: Course (Updated field name from JSON) */}
             <div className="h-[22px] flex items-center">
               <div className="text-[12px] font-bold truncate">
-                {course || ""}
+                {course_name || ""}
               </div>
             </div>
 
-            {/* Row 5: Stream (Fixed height 22px) */}
+            {/* Row 5: Stream (Updated field name from JSON) */}
             <div className="h-[22px] flex items-center">
               <div className="text-[12px] font-bold truncate">
-                {stream || ""}
+                {stream_name || ""}
               </div>
             </div>
 
-            {/* Row 6: Address (Multiline Support) */}
+            {/* Row 6: Address */}
             <div className="mt-1 flex items-start">
               <div className="text-[10px] font-bold leading-tight break-words line-clamp-2">
                 {address || ""}

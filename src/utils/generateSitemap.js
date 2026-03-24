@@ -1,5 +1,5 @@
 /**
- * Sitemap Generator for Saveetha Amravati University
+ * Sitemap Generator for Saveetha Amaravati University
  * This utility generates a sitemap.xml file at build time
  *
  * Usage:

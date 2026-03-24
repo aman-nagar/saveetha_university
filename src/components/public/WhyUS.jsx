@@ -120,7 +120,7 @@ export default function WhyUs() {
           <h2 className="text-5xl md:text-7xl font-heading font-black text-white mb-6 uppercase tracking-tighter leading-tight">
             Why Choose <br />
             <span className="text-accent italic drop-shadow-lg">
-              Saveetha Amravati?
+              Saveetha Amaravati?
             </span>
           </h2>
 

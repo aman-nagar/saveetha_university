@@ -17,7 +17,7 @@ export default function AboutUsSection({ data }) {
             title: "Chancellor",
             image: studentImg,
             testimonial:
-              "It is my great pleasure to welcome you all to the first academic year at Saveetha Amravati University. As the Chancellor of this esteemed institution, I am thrilled to see our university grow and evolve to meet the ever-changing needs of our students and society. Our commitment to providing a transformative educational experience is unwavering.",
+              "It is my great pleasure to welcome you all to the first academic year at Saveetha Amaravati University. As the Chancellor of this esteemed institution, I am thrilled to see our university grow and evolve to meet the ever-changing needs of our students and society. Our commitment to providing a transformative educational experience is unwavering.",
           },
           {
             id: 2,
@@ -31,7 +31,7 @@ export default function AboutUsSection({ data }) {
 
   const {
     heading = "About Us",
-    content = "Welcome to Saveetha Amravati University...",
+    content = "Welcome to Saveetha Amaravati University...",
     tagline = "SA: A GATEWAY TO HIGHER EDUCATION",
   } = data || {};
 

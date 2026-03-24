@@ -12,6 +12,7 @@ import FeaturePillars from "../../components/public/about/FeaturePillars";
 import SponsoringBody from "../../components/public/about/SponsoringBody";
 import { SEOHelmet } from "@/components/SEO/SEOHelmet";
 import { publicMock } from "../../data/header.mock";
+import { Link } from "react-router-dom";
 
 export default function About() {
   const [aboutData, setAboutData] = useState(null);
@@ -48,7 +49,7 @@ export default function About() {
               Defining <span className="text-accent">Excellence.</span>
             </h1>
             <p className="max-w-6xl mx-auto text-white/80 text-lg md:text-xl font-light leading-relaxed">
-              Saveetha Amravati University is a sanctuary of innovation,
+              Saveetha Amaravati University is a sanctuary of innovation,
               blending traditional values with global academic standards.
             </p>
           </motion.div>
@@ -100,7 +101,7 @@ export default function About() {
                   </span>
                 </h2>
                 <p className="text-muted text-lg leading-relaxed">
-                  Inheriting a legacy of quality from the Saveetha Amravati
+                  Inheriting a legacy of quality from the Saveetha Amaravati
                   Group, our university stands as a beacon of professional
                   education in the heart of Uttar Pradesh. We are recognized
                   under the state's rigorous academic acts, ensuring every
@@ -166,9 +167,11 @@ export default function About() {
             <h2 className="text-3xl font-heading font-bold mb-8">
               Ready to start your journey?
             </h2>
-            <button className="bg-accent text-primary px-12 py-5 rounded-full font-black uppercase tracking-widest shadow-2xl hover:bg-primary hover:text-white transition-all">
-              Apply Now 2026
-            </button>
+            <Link to="/apply-admission">
+              <button className="bg-accent text-primary px-12 py-5 rounded-full font-black uppercase tracking-widest shadow-2xl hover:bg-primary hover:text-white transition-all active:scale-95">
+                Apply Now 2026
+              </button>
+            </Link>
           </motion.div>
         </section>
       </div>

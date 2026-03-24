@@ -13,7 +13,7 @@ export default function BrandingBar({ data }) {
         <div className="flex items-center gap-2 sm:gap-4 w-full sm:w-auto">
           {/* Logo */}
           <img
-            src={siteDetails.logo}
+            src={siteDetails.additional_logo}
             alt="university logo"
             className="h-12 sm:h-16 md:h-20 w-auto flex-shrink-0"
           />

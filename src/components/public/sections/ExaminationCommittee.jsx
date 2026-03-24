@@ -76,7 +76,7 @@ export default function ExaminationCommittee() {
           </div>
 
           {/* RIGHT COLUMN: COMMITTEE MEMBERS TABLE */}
-          <div className="lg:col-span-5">
+          {/* <div className="lg:col-span-5">
             <div className="sticky top-24">
               <div className="bg-white rounded-2xl shadow-2xl overflow-hidden border border-gray-100">
                 <div className="bg-primary p-6 text-center">
@@ -123,7 +123,7 @@ export default function ExaminationCommittee() {
                 </div>
               </div>
             </div>
-          </div>
+          </div> */}
         </div>
       </div>
     </section>

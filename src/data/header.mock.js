@@ -476,10 +476,6 @@ export const publicMock = {
       emails: [
         { label: "General", value: "info@saveethaamaravatiuniversity.ac.in" },
         { label: "VC Office", value: "vc@saveethaamaravatiuniversity.ac.in" },
-        {
-          label: "Registrar",
-          value: "registrar@saveethaamaravatiuniversity.ac.in",
-        },
       ],
       address: "Vaishnavi Complex, Vijaywada, Andhra Pradesh, 520008",
     },

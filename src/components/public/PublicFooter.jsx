@@ -16,7 +16,7 @@ export default function PublicFooter() {
 
   return (
     <footer
-      className="relative w-full overflow-hidden bg-fixed bg-cover bg-center mt-10"
+      className="relative w-full overflow-hidden bg-fixed bg-cover bg-center"
       style={{ backgroundImage: `url(${worldMap})` }}
     >
       {/* Dark Navy Overlay to ensure text readability */}

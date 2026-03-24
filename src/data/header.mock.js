@@ -17,13 +17,13 @@ export const publicMock = {
       links: [{ label: "Login", url: "/portal" }],
       admissionButton: {
         label: "Admission",
-        url: "/admission",
+        url: "/apply-admission",
       },
     },
 
     branding: {
       logo: logo,
-      universityName: "Saveetha Amravati University",
+      universityName: "Saveetha Amaravati University",
       tagline:
         "Established by State Legislature of Government of Andhra pradesh by Act No 18 of 2018",
       recognition: "Recognised Under Section 2(f) of UGC Act, 1956",
@@ -220,10 +220,10 @@ export const publicMock = {
     },
 
     about: {
-      title: "About Saveetha Amravati University",
+      title: "About Saveetha Amaravati University",
       subtitle: "A Legacy of Excellence",
       description:
-        "Established with a vision to provide world-class education, Saveetha Amravati University is committed to fostering innovation, research, and holistic development of students.",
+        "Established with a vision to provide world-class education, Saveetha Amaravati University is committed to fostering innovation, research, and holistic development of students.",
       image: "/assets/about-banner.jpg",
       points: [
         "State-of-the-art infrastructure and laboratories",
@@ -287,7 +287,7 @@ export const publicMock = {
     academicStreams: {
       title: "Explore",
       highlightTitle: "Futuristic Courses",
-      subtitle: "at Saveetha Amravati",
+      subtitle: "at Saveetha Amaravati",
       streams: [
         {
           id: 1,
@@ -429,7 +429,7 @@ export const publicMock = {
   },
 
   footer: {
-    copyright: "Saveetha Amravati University. All rights reserved.",
+    copyright: "Saveetha Amaravati University. All rights reserved.",
     columns: [
       {
         title: "Quick Links",
@@ -521,7 +521,7 @@ The sponsoring body also believes strongly in social responsibility and communit
         image:
           "https://img.freepik.com/premium-photo/portrait-handsome-positive-young-man-isolated-gray-background_146377-4812.jpg?w=1480",
         testimonial:
-          "It gives me immense pleasure to convey my warm greetings and congratulation to Saveetha Amravati University as it embarks on its new journey in our state. I am happy to know that the Saveetha Amravati University, which is going to set up its campus in Tilthai, Dharmanagar, North Andhra Pradesh District, is the first University in India offering fully 'Learn and Earn' Degree/Diploma programmes with industries.",
+          "It gives me immense pleasure to convey my warm greetings and congratulation to Saveetha Amaravati University as it embarks on its new journey in our state. I am happy to know that the Saveetha Amaravati University, which is going to set up its campus in Tilthai, Dharmanagar, North Andhra Pradesh District, is the first University in India offering fully 'Learn and Earn' Degree/Diploma programmes with industries.",
       },
       {
         id: 2,
@@ -537,7 +537,7 @@ The sponsoring body also believes strongly in social responsibility and communit
         image:
           "https://img.freepik.com/free-photo/portrait-expressive-young-woman_1258-48167.jpg?t=st=1773394017~exp=1773397617~hmac=cee6ebf524eb801faffe6cd6d2d15408740f5174aae5b2d1d608b8cbf83e0994&w=1480",
         testimonial:
-          "Education at Saveetha Amravati is not just about academics. We focus on developing critical thinking, leadership skills, and values that will help our students become responsible citizens and change-makers in society.",
+          "Education at Saveetha Amaravati is not just about academics. We focus on developing critical thinking, leadership skills, and values that will help our students become responsible citizens and change-makers in society.",
       },
     ],
   },
@@ -558,7 +558,7 @@ The sponsoring body also believes strongly in social responsibility and communit
       subtitle:
         "Structure and Functions of the Examination and Assessment Council",
       overview:
-        "The Examination Committee is a key body within Saveetha Amravati University, led by the Vice Chancellor and supported by three divisions: Examination, Assessment, and Record Maintenance. Its primary responsibilities include conducting examinations, publishing results, and awarding certificates to students who successfully complete their final examinations. Additionally, the Committee maintains comprehensive records related to examinations and organizes workshops and seminars aimed at enhancing the examination system.",
+        "The Examination Committee is a key body within Saveetha Amaravati University, led by the Vice Chancellor and supported by three divisions: Examination, Assessment, and Record Maintenance. Its primary responsibilities include conducting examinations, publishing results, and awarding certificates to students who successfully complete their final examinations. Additionally, the Committee maintains comprehensive records related to examinations and organizes workshops and seminars aimed at enhancing the examination system.",
       objective:
         "To manage all aspects of Internal and External Assessment Examinations in accordance with University notifications and regulations.",
       responsibilities: [

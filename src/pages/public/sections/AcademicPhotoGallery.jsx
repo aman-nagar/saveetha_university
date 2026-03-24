@@ -111,7 +111,7 @@ export default function AcademicPhotoGallery() {
                     {selectedImage.alt}
                   </h4>
                   <p className="text-accent text-sm font-bold mt-2 uppercase">
-                    Saveetha Amravati University Archive
+                    Saveetha Amaravati University Archive
                   </p>
                 </div>
 

@@ -1,10 +1,7 @@
 import { Link } from "react-router-dom";
 import { useState, useRef, useEffect } from "react";
 
-/**
- * TopBar Component - Mobile First Responsive
- * Displays contact info, quick links, and admission button
- */
+
 export default function TopBar({ data }) {
   const [showLinks, setShowLinks] = useState(false);
   const menuRef = useRef(null);

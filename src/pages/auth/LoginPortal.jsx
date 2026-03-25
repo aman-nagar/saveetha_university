@@ -22,7 +22,7 @@ export default function LoginPortal() {
     },
     {
       id: "center",
-      title: "Center Portal",
+      title: "WIEP Portal",
       desc: "Branch Management",
       icon: <FaUniversity />,
       path: "/center/login",

@@ -37,12 +37,12 @@ export default function CenterLogin() {
 
   return (
     <LoginForm
-      title="Center Login"
+      title="WIEP Login"
       subtitle="Management portal for university partners"
       icon={<FaUniversity size={32} />}
       onSubmit={handleCenterSubmit}
       isSubmitting={loading}
-      emailLabel="Center Email"
+      emailLabel="WIEP Email"
     />
   );
 }

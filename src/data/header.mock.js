@@ -176,7 +176,6 @@ export const publicMock = {
         id: 1,
         name: "Bachelor of Technology",
         description: "4-year engineering program with industry focus",
-        image: "/assets/program-btech.jpg",
         duration: "4 Years",
         link: "/programs/btech",
       },
@@ -184,7 +183,6 @@ export const publicMock = {
         id: 2,
         name: "Master of Technology",
         description: "Advanced philosophy and research ",
-        image: "/assets/program-mtech.jpg",
         duration: "2 Years",
         link: "/programs/mtech",
       },
@@ -192,7 +190,6 @@ export const publicMock = {
         id: 3,
         name: "Bachelor of Science",
         description: "Science-based undergraduate program",
-        image: "/assets/program-bsc.jpg",
         duration: "3 Years",
         link: "/programs/bsc",
       },
@@ -200,9 +197,22 @@ export const publicMock = {
         id: 4,
         name: "Master of Business Administration",
         description: "Leadership and business management program",
-        image: "/assets/program-mba.jpg",
         duration: "2 Years",
         link: "/programs/mba",
+      },
+      {
+        id: 5,
+        name: "Computer Science",
+        description:
+          "Master software development, artificial intelligence, and complex data analytics.",
+        duration: "3 Years",
+      },
+      {
+        id: 6,
+        name: "Faculty of Law",
+        description:
+          "Comprehensive legal education focusing on corporate, criminal, and international law.",
+        duration: "3 Years",
       },
     ],
 
@@ -288,8 +298,7 @@ export const publicMock = {
           name: "School of Legal Studies",
           approval: "BCI Approved",
           levels: "Certificate | Diploma | U.G. | P.G. | Research",
-          image:
-            "https://images.unsplash.com/photo-1589829545856-d10d557cf95f?q=80&w=1000",
+          image: studentImg,
         },
         {
           id: 2,

@@ -7,7 +7,6 @@ import {
   FaChalkboardTeacher,
 } from "react-icons/fa";
 import { usePublicContent } from "@/hooks/usePublicContent";
-import bgGallery from "../../assets/images/bg-gallery.jpg";
 
 // Map string keys from Mock Data to actual Icon components
 const ICON_MAP = {
@@ -56,13 +55,7 @@ export default function WhyUs() {
   if (!data) return null;
 
   return (
-    <section
-      className="relative py-32 px-4 overflow-hidden bg-fixed bg-cover bg-center"
-      style={{
-        backgroundImage: `linear-gradient(135deg, rgba(161, 42, 42, 0.85), rgba(11, 31, 75, 0.85)), url(${bgGallery})`,
-        backgroundAttachment: "fixed",
-      }}
-    >
+    <section className="pattern-why-us relative py-32 px-4 overflow-hidden">
       {/* Animated Parallax Background Elements */}
       <motion.div
         className="absolute inset-0 pointer-events-none overflow-hidden"

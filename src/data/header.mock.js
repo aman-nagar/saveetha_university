@@ -1,6 +1,6 @@
 // src/data/header.mock.js
 import logo from "../assets/images/logo2.png";
-import admissionImage from "../assets/images/admission-open.jpg";
+
 import studentImg from "../assets/images/student.jpg";
 import aicteLogo from "../assets/images/section/aicte.png";
 import aiuLogo from "../assets/images/section/aiu.svg";
@@ -11,13 +11,9 @@ import ugcLogo from "../assets/images/section/ugc.png";
 export const publicMock = {
   header: {
     topbar: {
-      email: "info@aiuniversity.edu.in",
+      email: "info@saveethaamaravatiuniversity.ac.in",
       phone: "+918062182405",
       links: [{ label: "Login", url: "/portal" }],
-      admissionButton: {
-        label: "Admission",
-        url: "/apply-admission",
-      },
     },
 
     branding: {
@@ -26,7 +22,6 @@ export const publicMock = {
       tagline:
         "Established by State Legislature of Government of Andhra pradesh by Act No 18 of 2018",
       recognition: "Recognised Under Section 2(f) of UGC Act, 1956",
-      rightBanner: admissionImage,
     },
 
     navigation: [

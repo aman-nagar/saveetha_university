@@ -2,7 +2,6 @@
 import logo from "../assets/images/logo2.png";
 import admissionImage from "../assets/images/admission-open.jpg";
 import studentImg from "../assets/images/student.jpg";
-import bgGallery from "../assets/images/bg-gallery.jpg";
 import aicteLogo from "../assets/images/section/aicte.png";
 import aiuLogo from "../assets/images/section/aiu.svg";
 import bciLogo from "../assets/images/section/bci.png";
@@ -101,7 +100,7 @@ export const publicMock = {
     leadingSection: {
       title: "LEADING THE WAY IN",
       highlight: "EDUCATION",
-      image: bgGallery, // Your parallax background
+
       features: [
         {
           id: 1,

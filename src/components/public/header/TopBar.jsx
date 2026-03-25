@@ -6,7 +6,7 @@ export default function TopBar({ data }) {
   return (
     <div
       className="text-white text-xs sm:text-sm w-full"
-      style={{ background: "var(--color-primary)" }}
+      style={{ background: "var(--color-secondary)" }}
     >
       <div className="max-w-7xl mx-auto flex flex-row justify-between items-center px-4 py-2 sm:py-2.5">
         {/* Left Side: Contact Info */}

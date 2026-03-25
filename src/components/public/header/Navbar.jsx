@@ -30,7 +30,7 @@ export default function Navbar({ items }) {
 
   return (
     <nav
-      style={{ background: "var(--color-primary)" }}
+      style={{ background: "var(--color-secondary)" }}
       className="sticky top-0 z-40 w-full shadow-md relative"
     >
       <div className="max-w-7xl mx-auto px-3 sm:px-4 py-2 sm:py-3 relative">

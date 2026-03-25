@@ -1,6 +1,7 @@
 // src/components/students/ResultPDFTemplate.jsx
 import React from "react";
 import universityLetterhead from "../../assets/images/student_result_format.png";
+import { formatOrdinal } from "../../utils/formatters";
 
 export const ResultPDFTemplate = React.forwardRef(({ result, user }, ref) => {
   if (!result) return null;
@@ -47,7 +48,7 @@ export const ResultPDFTemplate = React.forwardRef(({ result, user }, ref) => {
             fontWeight: "700",
           }}
         >
-          {result.duration_type?.toUpperCase()} {result.duration}
+          {result.duration_type?.toUpperCase()} {formatOrdinal(result.duration)}
         </div>
 
         {/* Personal Details - Standardized Alignment */}

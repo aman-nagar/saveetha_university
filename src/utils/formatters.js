@@ -62,4 +62,27 @@ export const formatExamDate = (input) => {
   });
 };
 
+export const formatOrdinal = (number) => {
+  // Convert to an integer in case it comes from the API as a string ("1")
+  const n = parseInt(number, 10);
 
+  // If it's not a number (e.g., "Final"), just return the text as-is
+  if (isNaN(n)) return number;
+
+  const remainder10 = n % 10;
+  const remainder100 = n % 100;
+
+  // Handle exceptions like 11th, 12th, 13th
+  if (remainder10 === 1 && remainder100 !== 11) {
+    return n + "st";
+  }
+  if (remainder10 === 2 && remainder100 !== 12) {
+    return n + "nd";
+  }
+  if (remainder10 === 3 && remainder100 !== 13) {
+    return n + "rd";
+  }
+
+  // Default to "th" for everything else (4th, 5th, 11th, etc.)
+  return n + "th";
+};

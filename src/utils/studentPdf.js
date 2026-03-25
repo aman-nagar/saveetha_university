@@ -1,6 +1,43 @@
-export function downloadStudentPdf(student) {
-  const bgUrl = "https://api.nsprowebtech.com/backend/format/admissionForm.png";
+// src/utils/studentPdf.js student download form
+import { fetchCoursesById } from "../api/courses/courseApi";
+import { fetchStreamsById } from "../api/courses/streamApi";
 
+const extractName = (data) => {
+  if (Array.isArray(data) && data.length > 0) {
+    return data[0]?.name || data[0]?.title;
+  }
+  return data?.name || data?.title;
+};
+
+export async function downloadStudentPdf(student) {
+  let courseName = "";
+  let streamName = "";
+
+  try {
+    if (!student.course || !student.stream) {
+      throw new Error("Student is missing course or stream ID.");
+    }
+
+    const [courseData, streamData] = await Promise.all([
+      fetchCoursesById(student.course),
+      fetchStreamsById(student.stream),
+    ]);
+
+    courseName = extractName(courseData) || student.course;
+    streamName = extractName(streamData) || student.stream;
+
+    console.log(
+      "Successfully fetched course and stream data:",
+      courseName,
+      streamName,
+    );
+  } catch (error) {
+    console.error("Error fetching data for PDF:", error);
+    courseName = student.course;
+    streamName = student.stream;
+  }
+
+  const bgUrl = "https://api.nsprowebtech.com/backend/format/admissionForm.png";
   const html = `
   <html>
     <head>
@@ -53,8 +90,8 @@ export function downloadStudentPdf(student) {
         
         <div id="section-header" class="section">
           <div class="row"><span class="label">SESSION:</span> <span class="val">${student.session || ""}</span></div>
-          <div class="row"><span class="label">COURSE:</span>  <span class="val">${student.course_name || student.course || ""}</span></div>
-          <div class="row"><span class="label">STREAM:</span>  <span class="val">${student.stream_name || student.stream || ""}</span></div>
+          <div class="row"><span class="label">COURSE:</span>  <span class="val">${courseName || ""}</span></div>
+          <div class="row"><span class="label">STREAM:</span>  <span class="val">${streamName || ""}</span></div>
         </div>
 
         <img src="${student.photo_url}" class="student-photo" />

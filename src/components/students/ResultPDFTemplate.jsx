@@ -1,3 +1,4 @@
+// src/components/students/ResultPDFTemplate.jsx
 import React from "react";
 import universityLetterhead from "../../assets/images/student_result_format.png";
 
@@ -41,8 +42,8 @@ export const ResultPDFTemplate = React.forwardRef(({ result, user }, ref) => {
         <div
           style={{
             position: "absolute",
-            top: "243px",
-            left: "695px",
+            top: "252px",
+            left: "665px",
             fontWeight: "700",
           }}
         >
@@ -77,7 +78,7 @@ export const ResultPDFTemplate = React.forwardRef(({ result, user }, ref) => {
             fontWeight: "600",
           }}
         >
-          {result.course_name || result.course || "N/A"}
+          {result.course_name || result.course || "N/A"} ({result.stream_name})
         </div>
 
         {/* Dynamic Table Section */}
@@ -92,72 +93,115 @@ export const ResultPDFTemplate = React.forwardRef(({ result, user }, ref) => {
           <table
             style={{
               width: "100%",
+              tableLayout: "fixed" /* 👈 CRITICAL FIX: Forces full width */,
               borderCollapse: "collapse",
               fontSize: "11px",
               border: "1px solid #000000",
             }}
           >
             <thead>
-              <tr
-                style={{
-                  backgroundColor: "#f3f4f6",
-                  fontSize: "9px",
-                  fontWeight: "bold",
-                }}
-              >
+              {/* Top Row - Removed background from <tr> */}
+              <tr style={{ fontSize: "9px", fontWeight: "bold" }}>
                 <th
+                  rowSpan={2}
                   style={{
+                    backgroundColor: "#f3f4f6" /* MOVED HERE */,
                     border: "1px solid #000000",
                     padding: "8px 4px",
                     verticalAlign: "middle",
+                    width: "auto",
                   }}
                 >
                   Subject Name
                 </th>
                 <th
+                  colSpan={2}
                   style={{
+                    backgroundColor: "#f3f4f6" /* MOVED HERE */,
                     border: "1px solid #000000",
-                    width: "65px",
+                    padding: "4px",
                     verticalAlign: "middle",
-                  }}
-                >
-                  Max Th
-                </th>
-                <th
-                  style={{
-                    border: "1px solid #000000",
-                    width: "65px",
-                    verticalAlign: "middle",
+                    textAlign: "center",
+                    width: "130px",
                   }}
                 >
                   Theory
                 </th>
                 <th
+                  colSpan={2}
                   style={{
+                    backgroundColor: "#f3f4f6" /* MOVED HERE */,
                     border: "1px solid #000000",
-                    width: "65px",
+                    padding: "4px",
                     verticalAlign: "middle",
+                    textAlign: "center",
+                    width: "130px",
                   }}
                 >
-                  Max Pr
+                  Practical
                 </th>
                 <th
+                  rowSpan={2}
                   style={{
-                    border: "1px solid #000000",
-                    width: "65px",
-                    verticalAlign: "middle",
-                  }}
-                >
-                  Practic
-                </th>
-                <th
-                  style={{
+                    backgroundColor: "#f3f4f6" /* MOVED HERE */,
                     border: "1px solid #000000",
                     width: "65px",
                     verticalAlign: "middle",
                   }}
                 >
                   Total
+                </th>
+              </tr>
+
+              {/* Bottom Row - Removed background from <tr> */}
+              <tr style={{ fontSize: "9px", fontWeight: "bold" }}>
+                <th
+                  style={{
+                    backgroundColor: "#f3f4f6" /* MOVED HERE */,
+                    border: "1px solid #000000",
+                    width: "65px",
+                    padding: "4px",
+                    verticalAlign: "middle",
+                    textAlign: "center",
+                  }}
+                >
+                  Max Marks
+                </th>
+                <th
+                  style={{
+                    backgroundColor: "#f3f4f6" /* MOVED HERE */,
+                    border: "1px solid #000000",
+                    width: "65px",
+                    padding: "4px",
+                    verticalAlign: "middle",
+                    textAlign: "center",
+                  }}
+                >
+                  Obtain Marks
+                </th>
+                <th
+                  style={{
+                    backgroundColor: "#f3f4f6" /* MOVED HERE */,
+                    border: "1px solid #000000",
+                    width: "65px",
+                    padding: "4px",
+                    verticalAlign: "middle",
+                    textAlign: "center",
+                  }}
+                >
+                  Max Pr
+                </th>
+                <th
+                  style={{
+                    backgroundColor: "#f3f4f6" /* MOVED HERE */,
+                    border: "1px solid #000000",
+                    width: "65px",
+                    padding: "4px",
+                    verticalAlign: "middle",
+                    textAlign: "center",
+                  }}
+                >
+                  Obtain Marks
                 </th>
               </tr>
             </thead>

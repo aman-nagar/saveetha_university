@@ -11,7 +11,7 @@ import { motion } from "framer-motion";
 export default function DownloadFormPage() {
   const { data, loading } = usePublicContent();
   const forms = data?.downloadForms || [];
-
+  console.log("first");
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50">

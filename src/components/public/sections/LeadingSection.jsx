@@ -27,11 +27,8 @@ export default function LeadingSection() {
 
   return (
     <section className="w-full min-h-[60vh] flex flex-col md:flex-row overflow-hidden">
-      {/* LEFT: Branding with Parallax-lite effect */}
-      <div
-        className="flex-1 relative min-h-[400px] flex items-center justify-center bg-cover bg-center"
-        style={{ backgroundImage: `url(${data.image})` }}
-      >
+      {/* LEFT: Branding with Animated Pattern */}
+      <div className="flex-1 relative min-h-[400px] flex items-center justify-center pattern-leading">
         <div className="absolute inset-0 bg-primary/85 backdrop-blur-[1px]" />
         <div className="relative z-10 text-center px-10">
           <motion.h2

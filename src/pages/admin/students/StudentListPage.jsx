@@ -179,6 +179,7 @@ export default function StudentListPage() {
     try {
       const fullData = await fetchStudentById(row.id);
       downloadStudentPdf(fullData);
+      console.log(fullData);
     } catch (err) {
       show("error", "Failed to load student data for PDF");
     }

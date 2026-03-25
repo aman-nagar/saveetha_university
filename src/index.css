@@ -1,7 +1,7 @@
 /* src/index.css */
 @import "tailwindcss";
 @import "flowbite";
-
+@import "./styles/patterns.css";
 @theme {
   /* Brand colors */
   --color-primary: #0b1f4b; /* deep academic navy */

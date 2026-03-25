@@ -1,7 +1,6 @@
 import React from "react";
 import { motion } from "framer-motion";
 import { usePublicContent } from "@/hooks/usePublicContent";
-import bgGallery from "../../../assets/images/bg-gallery.jpg";
 import { Link } from "react-router-dom";
 
 export default function AccreditationSection() {
@@ -11,11 +10,8 @@ export default function AccreditationSection() {
   if (!data) return null;
 
   return (
-    <section 
-      className="relative py-24 px-4 bg-fixed bg-cover bg-center"
-      style={{ backgroundImage: `url(${bgGallery})` }}
-    >
-      <div className="absolute inset-0 bg-primary/10  z-0" />
+    <section className="pattern-accreditation relative py-24 px-4">
+      <div className="absolute inset-0 bg-primary/10 z-0" />
 
       <div className="container mx-auto max-w-7xl relative z-10">
         {/* Header */}

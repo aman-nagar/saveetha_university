@@ -1,11 +1,5 @@
-import {
-  FooterCopyright,
-  FooterLink,
-  FooterLinkGroup,
-  FooterTitle,
-} from "flowbite-react";
+import { FooterLink, FooterLinkGroup, FooterTitle } from "flowbite-react";
 import { MdPhone, MdEmail, MdLocationOn } from "react-icons/md";
-import worldMap from "../../assets/images/wmap.jpg";
 import { usePublicContent } from "../../hooks/usePublicContent";
 
 export default function PublicFooter() {
@@ -15,13 +9,7 @@ export default function PublicFooter() {
   if (!footerData) return null;
 
   return (
-    <footer
-      className="relative w-full overflow-hidden bg-fixed bg-cover bg-center"
-      style={{ backgroundImage: `url(${worldMap})` }}
-    >
-      {/* Dark Navy Overlay to ensure text readability */}
-      <div className="absolute inset-0 bg-[#0b1f4b]/90 z-0" />
-
+    <footer className="pattern-public-footer relative w-full overflow-hidden">
       <div className="relative z-10 w-full">
         <div className="max-w-7xl mx-auto px-6 py-16">
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-12">

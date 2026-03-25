@@ -24,13 +24,13 @@ export default function BrandingBar({ data }) {
               {data.universityName}
             </h1>
 
-            <p className="text-[10px] sm:text-xs lg:text-sm text-slate-600 font-semibold leading-tight mt-0.5 sm:mt-1 line-clamp-1 sm:line-clamp-none">
+            {/* <p className="text-[10px] sm:text-xs lg:text-sm text-slate-600 font-semibold leading-tight mt-0.5 sm:mt-1 line-clamp-1 sm:line-clamp-none">
               {data.tagline}
             </p>
 
             <p className="text-[8px] sm:text-[10px] text-slate-600 font-bold leading-none mt-1 sm:mt-1.5 bg-slate-100 border border-slate-200 inline-block self-start px-1.5 py-0.5 sm:px-2.5 sm:py-1 rounded sm:rounded-md uppercase tracking-wide w-max">
               {data.recognition}
-            </p>
+            </p> */}
           </div>
         </div>
 

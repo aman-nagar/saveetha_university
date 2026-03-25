@@ -32,7 +32,7 @@ export default function Home() {
         <HighlightNews />
         {/* <Stats /> */}
         <WhyUS />
-        <AcademicStreams data={publicMock.home.academicStreams} />
+        {/* <AcademicStreams data={publicMock.home.academicStreams} /> */}
 
         <AccreditationSection />
         <Programs />

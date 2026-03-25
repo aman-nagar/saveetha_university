@@ -426,42 +426,33 @@ export const publicMock = {
     copyright: "Saveetha Amaravati University. All rights reserved.",
     columns: [
       {
-        title: "Quick Links",
+        title: "Academics & Admissions",
         links: [
-          { label: "Career", url: "/career" },
-          { label: "Journals", url: "/journals" },
-          { label: "Alumni", url: "/alumni" },
-          { label: "International Students", url: "/international" },
-          { label: "Academic Calendar", url: "/calendar" },
-          { label: "Training & Placement", url: "/placement" },
-          { label: "Grievance Redressal Cell", url: "/grievance" },
-          { label: "FAQs", url: "/faqs" },
-          { label: "Student Verification", url: "/verification" },
+          { label: "Programs Offered", url: "/programs" },
+          { label: "Apply for 2026", url: "/apply" },
+          { label: "Fee Structure", url: "/fees" },
+          { label: "Academic Calendar", url: "/calendar" }, // Kept original
+          { label: "E-Learning Portal", url: "/e-learning" },
         ],
       },
       {
-        title: "Facilities",
+        title: "Campus Life",
         links: [
-          { label: "Library", url: "/library" },
-          { label: "Transport", url: "/transport" },
-          { label: "Computer Lab", url: "/lab" },
-          { label: "Auditorium", url: "/auditorium" },
-          { label: "Health Care", url: "/health" },
-          { label: "Sports", url: "/sports" },
-          { label: "Security", url: "/security" },
+          { label: "Hostel & Dining", url: "/hostel" },
+          { label: "Student Clubs", url: "/clubs" },
+          { label: "Library Resources", url: "/library" }, // Kept original (slightly modified for better UX)
+          { label: "Innovation Cell", url: "/innovation" },
+          { label: "Career Opportunities", url: "/career" }, // Kept original, shuffled from Quick Links
         ],
       },
       {
-        title: "Policy",
+        title: "Statutory Compliances", // Sounds much more official than "Policy"
         links: [
-          { label: "Privacy Policy", url: "/privacy" },
-          { label: "Terms and Conditions", url: "/terms" },
-          { label: "Refund Policy", url: "/refund" },
-          { label: "Anti-Ragging Policy", url: "/anti-ragging" },
-          { label: "Caste Based Discrimination", url: "/discrimination" },
-          { label: "Public Self Disclosure", url: "/disclosure" },
-          { label: "UGC Performa section 2(f)", url: "/ugc" },
-          { label: "Basics of Cyber Hygiene", url: "/cyber" },
+          { label: "Mandatory Disclosures", url: "/disclosures" }, // Replaces UGC and Public Disclosure
+          { label: "Equal Opportunity Cell", url: "/equal-opportunity" }, // Replaces Caste Based Discrimination with a more standard academic term
+          { label: "Anti-Ragging Committee", url: "/anti-ragging" }, // Kept original (Mandatory for Indian Unis)
+          { label: "Privacy Policy", url: "/privacy" }, // Kept original
+          { label: "Terms of Use", url: "/terms" },
         ],
       },
     ],

@@ -1,6 +1,5 @@
 // src/data/header.mock.js
 import logo from "../assets/images/logo2.png";
-
 import studentImg from "../assets/images/student.jpg";
 import aicteLogo from "../assets/images/section/aicte.png";
 import aiuLogo from "../assets/images/section/aiu.svg";
@@ -41,9 +40,9 @@ export const publicMock = {
   home: {
     accreditationSection: {
       title: "Approvals & Accreditation",
-      highlight: "and Membership",
+      highlight: "",
       description:
-        "SAU has been Established by State Legislature of Government of Andhra Pradesh by Act No 03 of 2023 & Established by the UGC under Section 2(f) of the UGC Act 1956.",
+        "Saveetha Amaravati University operates in accordance with the norms of the University Grants Commission (UGC) and adheres to the provisions of the UGC Act, 1956. The institution is dedicated to upholding high academic standards and obtaining necessary recognitions to support quality education.",
       approvals: [
         {
           id: 1,
@@ -58,7 +57,7 @@ export const publicMock = {
         {
           id: 2,
           title: "Under Section 2(f) of UGC Act 1956",
-          links: ["Extract of UGC letter", "AIU List of Universities"],
+          links: ["Extract of UGC letter", "SAU List of Universities"],
           color: "bg-[#FF671F]", // Saffron
           logo: ugcLogo,
         },

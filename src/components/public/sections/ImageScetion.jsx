@@ -1,5 +1,5 @@
 import React from "react";
-import img from "../../../assets/images/bottomEducation.png";
+import img from "../../../assets/images/bottomBanner.jpeg";
 
 export default function ImageSection() {
   return (

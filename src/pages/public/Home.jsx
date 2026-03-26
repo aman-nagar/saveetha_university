@@ -28,19 +28,19 @@ export default function Home() {
         <HeroSlider />
         <Hero />
         <AboutUsSection data={publicMock.aboutUs} />
-        <VideoSection />
         <HighlightNews />
+        <VideoSection />
         {/* <Stats /> */}
-        <WhyUS />
         <AcademicStreams data={publicMock.home.academicStreams} />
 
+        <ImageSection />
         <AccreditationSection />
+        <WhyUS />
         <Programs />
         <CTA />
         <AcademicPhotoGallery />
         <LeadingSection />
         <StudentReviews />
-        <ImageSection />
       </div>
     </>
   );

@@ -17,8 +17,7 @@ const StudentDashboard = () => {
       </div>
     );
   }
-
-  // Destructure direct names from the API response
+  console.log(studentData);
   const {
     enrollment_no,
     candidate_name,
@@ -35,8 +34,8 @@ const StudentDashboard = () => {
     city,
     address,
     pincode,
-    course_name, // Using direct name from JSON
-    stream_name, // Using direct name from JSON
+    course_name,
+    stream_name,
     status,
   } = studentData;
 

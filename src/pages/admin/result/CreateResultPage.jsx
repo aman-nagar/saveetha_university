@@ -6,7 +6,6 @@ import Button from "../../../components/ui/Button";
 import Table from "../../../components/table/Table";
 import Toast from "../../../components/ui/Toast";
 import { downloadTranscript } from "../../../utils/pdfGenerator";
-
 import {
   FaTrash,
   FaEdit,
@@ -33,7 +32,6 @@ import { fetchStreams } from "../../../api/courses/streamApi";
 import ResultFormHeader from "../../../components/admin/result/ResultFormHeader";
 import MarksEntryTable from "../../../components/admin/result/MarksEntryTable";
 import ViewResultModal from "../../../components/admin/result/ViewResultModal";
-import { fetchAllStreams } from "../../../api/courses/streamApi";
 
 export default function CreateResultPage() {
   const { toast, show, clear } = useToast();
@@ -85,6 +83,7 @@ export default function CreateResultPage() {
     try {
       const response = await fetchResults();
       const records = response.records || response.data || response;
+      console.log(records);
       setHistory(Array.isArray(records) ? records : []);
     } catch (err) {
       console.error(err);

@@ -5,7 +5,7 @@ import { formatOrdinal } from "../../utils/formatters";
 
 export const ResultPDFTemplate = React.forwardRef(({ result, user }, ref) => {
   if (!result) return null;
-
+  console.log(result);
   return (
     <div
       ref={ref}
@@ -101,7 +101,7 @@ export const ResultPDFTemplate = React.forwardRef(({ result, user }, ref) => {
             }}
           >
             <thead>
-              {/* Top Row - Removed background from <tr> */}
+              {/* Top Row*/}
               <tr style={{ fontSize: "9px", fontWeight: "bold" }}>
                 <th
                   rowSpan={2}
@@ -114,6 +114,18 @@ export const ResultPDFTemplate = React.forwardRef(({ result, user }, ref) => {
                   }}
                 >
                   Subject Name
+                </th>
+                <th
+                  rowSpan={2}
+                  style={{
+                    backgroundColor: "#f3f4f6",
+                    border: "1px solid #000000",
+                    padding: "8px 4px",
+                    verticalAlign: "middle",
+                    width: "60px", // Small width for code
+                  }}
+                >
+                  Code
                 </th>
                 <th
                   colSpan={2}
@@ -226,6 +238,16 @@ export const ResultPDFTemplate = React.forwardRef(({ result, user }, ref) => {
                     <td
                       style={{
                         border: "1px solid #000000",
+                        padding: "4px",
+                        textAlign: "center",
+                        fontFamily: "monospace",
+                      }}
+                    >
+                      {sub.subject_code}
+                    </td>
+                    <td
+                      style={{
+                        border: "1px solid #000000",
                         textAlign: "center",
                         verticalAlign: "middle",
                       }}
@@ -277,7 +299,7 @@ export const ResultPDFTemplate = React.forwardRef(({ result, user }, ref) => {
             </tbody>
             <tfoot style={{ backgroundColor: "#f3f4f6", fontWeight: "900" }}>
               <tr>
-                <td
+                <td colSpan={2}
                   style={{
                     border: "1px solid #000000",
                     padding: "10px 8px",

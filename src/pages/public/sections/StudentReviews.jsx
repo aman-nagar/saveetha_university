@@ -10,8 +10,8 @@ import {
 const REVIEWS = [
   {
     id: 1,
-    name: "Arjun Mehta",
-    course: "B.Tech Computer Science",
+    name: "Tangi Ravikumar",
+    course: "Bachelor of Science",
     year: "Final Year",
     image: "https://randomuser.me/api/portraits/men/32.jpg",
     content:

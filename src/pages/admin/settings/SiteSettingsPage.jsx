@@ -10,7 +10,7 @@ import NewsTab from "./tabs/NewsTab";
 import SlidersTab from "./tabs/SlidersTab";
 import HeaderSettingsTab from "./tabs/HeaderSettingsTab";
 import DownloadFormsTab from "./tabs/DownloadFormsTab";
-import GalleryPage from "./GalleryPage";
+import GalleryTab from "./tabs/GalleryTab";
 
 // Tab configuration
 const SETTING_TABS = [
@@ -94,7 +94,7 @@ export default function SiteSettingsPage() {
             onError={(msg) => show("error", msg)}
           />
         )}
-        {activeTab === "gallery" && <GalleryPage />}
+        {activeTab === "gallery" && <GalleryTab />}
         {activeTab === "downloadForms" && (
           <DownloadFormsTab
             onSuccess={() => show("success", "Form updated")}

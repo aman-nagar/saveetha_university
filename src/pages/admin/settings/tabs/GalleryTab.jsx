@@ -1,22 +1,23 @@
 import { useEffect, useState } from "react";
 import { FaTrash, FaPlus } from "react-icons/fa";
-import { useToast } from "../../../context/ToastContext";
-import Toast from "../../../components/ui/Toast";
-
+import { useToast } from "../../../../context/ToastContext";
+import Toast from "../../../../components/ui/Toast";
+import Modal from "../../../../components/ui/Modal";
 import {
   fetchGallery,
   uploadGalleryImage,
   deleteGalleryImage,
-} from "../../../api/settings/settingAPI";
-import GalleryModal from "../../../components/admin/settings/modals/GalleryModal";
+} from "../../../../api/settings/settingAPI";
+import GalleryModal from "../../../../components/admin/settings/modals/GalleryModal";
 
-export default function GalleryPage() {
+export default function GalleryTab() {
   const { toast, show, clear } = useToast();
   const [gallery, setGallery] = useState([]);
   const [loading, setLoading] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [deleting, setDeleting] = useState(null);
+  const [deleteConfirm, setDeleteConfirm] = useState(null);
 
   // Load gallery on mount
   useEffect(() => {
@@ -48,8 +49,6 @@ export default function GalleryPage() {
     setUploading(true);
     try {
       const response = await uploadGalleryImage(formData);
-      console.log("Upload Response:", response);
-
       show("success", "Image uploaded successfully");
       setIsModalOpen(false);
       await loadGallery();
@@ -61,21 +60,24 @@ export default function GalleryPage() {
     }
   };
 
-  const handleDelete = async (id) => {
-    if (!window.confirm("Are you sure you want to delete this image?")) {
-      return;
-    }
+  const handleDelete = (id) => {
+    setDeleteConfirm(id);
+  };
 
-    setDeleting(id);
+  const handleConfirmDelete = async () => {
+    if (!deleteConfirm) return;
+
+    setDeleting(deleteConfirm);
     try {
-      await deleteGalleryImage(id);
+      await deleteGalleryImage(deleteConfirm);
       show("success", "Image deleted successfully");
-      setGallery((prev) => prev.filter((item) => item.id !== id));
+      setGallery((prev) => prev.filter((item) => item.id !== deleteConfirm));
     } catch (err) {
       show("error", err.message || "Failed to delete image");
       console.error("Error deleting:", err);
     } finally {
       setDeleting(null);
+      setDeleteConfirm(null);
     }
   };
 
@@ -160,6 +162,36 @@ export default function GalleryPage() {
         onUpload={handleUpload}
         isLoading={uploading}
       />
+
+      {/* Delete Confirmation Modal */}
+      <Modal
+        isOpen={deleteConfirm !== null}
+        onClose={() => setDeleteConfirm(null)}
+        title="Delete Image"
+        size="sm"
+        footer={
+          <>
+            <button
+              onClick={() => setDeleteConfirm(null)}
+              className="px-4 py-2 border border-border rounded-lg text-text hover:bg-surface transition"
+            >
+              Cancel
+            </button>
+            <button
+              onClick={handleConfirmDelete}
+              disabled={deleting !== null}
+              className="px-4 py-2 bg-red-600 text-white rounded-lg hover:opacity-90 transition disabled:opacity-50"
+            >
+              {deleting !== null ? "Deleting..." : "Delete"}
+            </button>
+          </>
+        }
+      >
+        <p className="text-text-muted">
+          Are you sure you want to delete this image? This action cannot be
+          undone.
+        </p>
+      </Modal>
     </div>
   );
 }

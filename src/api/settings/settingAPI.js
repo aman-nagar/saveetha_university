@@ -172,3 +172,23 @@ export function deleteDownloadForm(id) {
     }),
   });
 }
+
+// ============================================
+// GALLERY (CRUD)
+// ============================================
+export function fetchGallery() {
+  return apiRequest("/admin/gallery.php");
+}
+
+export function uploadGalleryImage(formData) {
+  return apiRequest("/admin/gallery.php", {
+    method: "POST",
+    body: formData,
+  });
+}
+
+export function deleteGalleryImage(id) {
+  return apiRequest(`/admin/gallery.php?id=${id}`, {
+    method: "DELETE",
+  });
+}

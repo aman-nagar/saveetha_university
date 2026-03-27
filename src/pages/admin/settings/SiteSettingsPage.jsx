@@ -10,6 +10,7 @@ import NewsTab from "./tabs/NewsTab";
 import SlidersTab from "./tabs/SlidersTab";
 import HeaderSettingsTab from "./tabs/HeaderSettingsTab";
 import DownloadFormsTab from "./tabs/DownloadFormsTab";
+import GalleryPage from "./GalleryPage";
 
 // Tab configuration
 const SETTING_TABS = [
@@ -19,6 +20,7 @@ const SETTING_TABS = [
   // { id: "testimonials", label: "Testimonials", icon: "⭐" },
   // { id: "news", label: "News & Updates", icon: "📰" },
   { id: "sliders", label: "Sliders", icon: "🎨" },
+  { id: "gallery", label: "Gallery", icon: "🖼️" },
   { id: "downloadForms", label: "Download Forms", icon: "📥" },
 ];
 
@@ -92,6 +94,7 @@ export default function SiteSettingsPage() {
             onError={(msg) => show("error", msg)}
           />
         )}
+        {activeTab === "gallery" && <GalleryPage />}
         {activeTab === "downloadForms" && (
           <DownloadFormsTab
             onSuccess={() => show("success", "Form updated")}

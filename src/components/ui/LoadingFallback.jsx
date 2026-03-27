@@ -1,9 +1,4 @@
-/**
- * Loading Fallback Component
- * Displays a skeleton loader while pages are being loaded
- * Can be customized with different layouts
- */
-
+// src/components/ui/LoadingFallback.jsx
 import Skeleton from "./Skeleton";
 
 const LoadingFallback = ({

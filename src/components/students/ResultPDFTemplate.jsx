@@ -5,7 +5,7 @@ import { formatOrdinal } from "../../utils/formatters";
 
 export const ResultPDFTemplate = React.forwardRef(({ result, user }, ref) => {
   if (!result) return null;
-  console.log(result);
+
   return (
     <div
       ref={ref}
@@ -94,7 +94,7 @@ export const ResultPDFTemplate = React.forwardRef(({ result, user }, ref) => {
           <table
             style={{
               width: "100%",
-              tableLayout: "fixed" /* 👈 CRITICAL FIX: Forces full width */,
+              tableLayout: "fixed",
               borderCollapse: "collapse",
               fontSize: "11px",
               border: "1px solid #000000",
@@ -103,18 +103,6 @@ export const ResultPDFTemplate = React.forwardRef(({ result, user }, ref) => {
             <thead>
               {/* Top Row*/}
               <tr style={{ fontSize: "9px", fontWeight: "bold" }}>
-                <th
-                  rowSpan={2}
-                  style={{
-                    backgroundColor: "#f3f4f6" /* MOVED HERE */,
-                    border: "1px solid #000000",
-                    padding: "8px 4px",
-                    verticalAlign: "middle",
-                    width: "auto",
-                  }}
-                >
-                  Subject Name
-                </th>
                 <th
                   rowSpan={2}
                   style={{
@@ -127,6 +115,19 @@ export const ResultPDFTemplate = React.forwardRef(({ result, user }, ref) => {
                 >
                   Code
                 </th>
+                <th
+                  rowSpan={2}
+                  style={{
+                    backgroundColor: "#f3f4f6" /* MOVED HERE */,
+                    border: "1px solid #000000",
+                    padding: "8px 4px",
+                    verticalAlign: "middle",
+                    width: "auto",
+                  }}
+                >
+                  Subject Name
+                </th>
+
                 <th
                   colSpan={2}
                   style={{
@@ -219,22 +220,12 @@ export const ResultPDFTemplate = React.forwardRef(({ result, user }, ref) => {
               </tr>
             </thead>
             <tbody>
-              {result.subjects.map((sub, i) => {
+              {[...result.subjects].reverse().map((sub, i) => {
                 const rowObtained =
                   Number(sub.theory_marks || 0) +
                   Number(sub.practical_marks || 0);
                 return (
                   <tr key={i}>
-                    <td
-                      style={{
-                        border: "1px solid #000000",
-                        padding: "8px 8px",
-                        textAlign: "left",
-                        verticalAlign: "middle",
-                      }}
-                    >
-                      {sub.subject_name}
-                    </td>
                     <td
                       style={{
                         border: "1px solid #000000",
@@ -245,6 +236,17 @@ export const ResultPDFTemplate = React.forwardRef(({ result, user }, ref) => {
                     >
                       {sub.subject_code}
                     </td>
+                    <td
+                      style={{
+                        border: "1px solid #000000",
+                        padding: "8px 8px",
+                        textAlign: "left",
+                        verticalAlign: "middle",
+                      }}
+                    >
+                      {sub.subject_name}
+                    </td>
+
                     <td
                       style={{
                         border: "1px solid #000000",
@@ -299,7 +301,8 @@ export const ResultPDFTemplate = React.forwardRef(({ result, user }, ref) => {
             </tbody>
             <tfoot style={{ backgroundColor: "#f3f4f6", fontWeight: "900" }}>
               <tr>
-                <td colSpan={2}
+                <td
+                  colSpan={2}
                   style={{
                     border: "1px solid #000000",
                     padding: "10px 8px",

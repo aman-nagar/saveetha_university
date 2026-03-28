@@ -18,6 +18,8 @@ import {
 import { getTodayDate } from "../../../utils/formHelpers";
 import FormSelect from "../../../components/form/FormSelect";
 import FormInput from "../../../components/form/FormInput";
+import Pagination from "../../../components/ui/Pagination";
+import DataTableLayout from "../../../components/table/DataTableLayout";
 import {
   createResult,
   updateResult,
@@ -46,6 +48,12 @@ export default function CreateResultPage() {
   const [loadingHistory, setLoadingHistory] = useState(false);
   const [selectedResultForView, setSelectedResultForView] = useState(null);
   const [isViewModalOpen, setIsViewModalOpen] = useState(false);
+
+  // Pagination States
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [totalRecords, setTotalRecords] = useState(0);
+  const [pageLimit, setPageLimit] = useState(10);
 
   const {
     register,
@@ -78,22 +86,33 @@ export default function CreateResultPage() {
   ]);
 
   // Fetch History
-  const loadHistory = useCallback(async () => {
-    setLoadingHistory(true);
-    try {
-      const response = await fetchResults();
-      const records = response.records || response.data || response;
-      console.log(records);
-      setHistory(Array.isArray(records) ? records : []);
-    } catch (err) {
-      console.error(err);
-    } finally {
-      setLoadingHistory(false);
-    }
-  }, []);
+  const loadHistory = useCallback(
+    async (page = 1) => {
+      setLoadingHistory(true);
+      try {
+        const response = await fetchResults(page);
+
+        // Extract data from response structure
+        const records = response.data || [];
+        const paginationInfo = response.pagination || {};
+
+        setHistory(Array.isArray(records) ? records : []);
+        setCurrentPage(paginationInfo.current_page || page);
+        setTotalPages(paginationInfo.total_pages || 1);
+        setTotalRecords(paginationInfo.total_records || 0);
+        setPageLimit(paginationInfo.limit || 10);
+      } catch (err) {
+        console.error(err);
+        show("error", "Failed to load results");
+      } finally {
+        setLoadingHistory(false);
+      }
+    },
+    [show],
+  );
 
   useEffect(() => {
-    loadHistory();
+    loadHistory(1);
   }, [loadHistory]);
 
   const handleEditInitiate = async (record) => {
@@ -169,12 +188,18 @@ export default function CreateResultPage() {
     flow.setSearchTerm("");
   };
 
+  const handlePageChange = (page) => {
+    setCurrentPage(page);
+    loadHistory(page);
+  };
+
   const handleDelete = async (id) => {
     if (!window.confirm("Delete this result permanently?")) return;
     try {
       await deleteResult(id);
       show("success", "Result deleted");
-      loadHistory();
+      // Reload current page or go back to page 1 if last item was deleted
+      loadHistory(currentPage);
     } catch (err) {
       show("error", err.message);
     }
@@ -217,7 +242,7 @@ export default function CreateResultPage() {
       }
 
       cancelEdit();
-      loadHistory();
+      loadHistory(currentPage);
     } catch (err) {
       show("error", err.message || "Action failed");
     } finally {
@@ -357,52 +382,63 @@ export default function CreateResultPage() {
       </div>
 
       {/* History Table */}
-      <Table
-        title="Recent Records History"
-        data={history}
-        loading={loadingHistory}
-        columns={[
-          { key: "enrollment_no", label: "Enrollment" },
-          { key: "roll_no", label: "Roll No." },
-          { key: "session", label: "Session" },
-          {
-            key: "actions",
-            label: "Actions",
-            render: (row) => (
-              <div className="flex gap-3">
-                <button
-                  onClick={() => handleEditInitiate(row)}
-                  className="text-accent cursor-pointer hover:scale-110 transition-transform"
-                >
-                  <FaEdit size={16} />
-                </button>
-                <button
-                  onClick={() => {
-                    setSelectedResultForView(row);
-                    setIsViewModalOpen(true);
-                  }}
-                  className="text-blue-500 cursor-pointer hover:scale-110 transition-transform"
-                >
-                  <FaEye size={16} />
-                </button>
-                <button
-                  onClick={() => handleDownload(row)}
-                  className="text-green-600 hover:scale-110 transition-transform"
-                  title="Download PDF"
-                >
-                  <FaDownload size={16} />
-                </button>
-                <button
-                  onClick={() => handleDelete(row.id)}
-                  className="text-danger cursor-pointer hover:scale-110 transition-transform"
-                >
-                  <FaTrash size={16} />
-                </button>
-              </div>
-            ),
-          },
-        ]}
-      />
+      <DataTableLayout
+        title={`Recent Records History (${totalRecords} total)`}
+        pagination={
+          <Pagination
+            currentPage={currentPage}
+            totalPages={totalPages}
+            onPageChange={handlePageChange}
+          />
+        }
+      >
+        <Table
+          data={history}
+          loading={loadingHistory}
+          pageOffset={(currentPage - 1) * pageLimit}
+          columns={[
+            { key: "enrollment_no", label: "Enrollment" },
+            { key: "roll_no", label: "Roll No." },
+            { key: "session", label: "Session" },
+            {
+              key: "actions",
+              label: "Actions",
+              render: (row) => (
+                <div className="flex gap-3">
+                  <button
+                    onClick={() => handleEditInitiate(row)}
+                    className="text-accent cursor-pointer hover:scale-110 transition-transform"
+                  >
+                    <FaEdit size={16} />
+                  </button>
+                  <button
+                    onClick={() => {
+                      setSelectedResultForView(row);
+                      setIsViewModalOpen(true);
+                    }}
+                    className="text-blue-500 cursor-pointer hover:scale-110 transition-transform"
+                  >
+                    <FaEye size={16} />
+                  </button>
+                  <button
+                    onClick={() => handleDownload(row)}
+                    className="text-green-600 hover:scale-110 transition-transform"
+                    title="Download PDF"
+                  >
+                    <FaDownload size={16} />
+                  </button>
+                  <button
+                    onClick={() => handleDelete(row.id)}
+                    className="text-danger cursor-pointer hover:scale-110 transition-transform"
+                  >
+                    <FaTrash size={16} />
+                  </button>
+                </div>
+              ),
+            },
+          ]}
+        />
+      </DataTableLayout>
 
       {/* View Modal */}
       <ViewResultModal

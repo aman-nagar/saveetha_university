@@ -80,8 +80,6 @@ export function PublicDataProvider({ children }) {
       }
 
       if (newData.gallery && Array.isArray(newData.gallery)) {
-        // Map your API response to the format the GalleryPage expects
-        console.log("✅ Gallery API data received:", newData.gallery);
         newData.galleryPage = {
           title: "Our Memories",
           albums: newData.gallery.map((item) => ({
@@ -91,7 +89,6 @@ export function PublicDataProvider({ children }) {
             date: item.created_at,
           })),
         };
-        console.log("✅ Transformed galleryPage:", newData.galleryPage);
       }
       setData((prev) => ({
         ...prev,
@@ -111,15 +108,7 @@ export function PublicDataProvider({ children }) {
     }
   };
 
-  /**
-   * Refresh specific section or all data
-   * Useful for manual refresh or when admin updates content
-   */
   const refreshData = async (section = null) => {
-    if (section) {
-      console.log(`🔄 Refreshing ${section}...`);
-      // Could implement selective refresh here if needed
-    }
     await fetchAllPublicData();
   };
 

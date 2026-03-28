@@ -14,6 +14,7 @@ import {
   FaEye,
   FaDownload,
   FaTimes,
+  FaSearch,
 } from "react-icons/fa";
 import { getTodayDate } from "../../../utils/formHelpers";
 import FormSelect from "../../../components/form/FormSelect";
@@ -49,7 +50,8 @@ export default function CreateResultPage() {
   const [selectedResultForView, setSelectedResultForView] = useState(null);
   const [isViewModalOpen, setIsViewModalOpen] = useState(false);
 
-  // Pagination States
+  // Search + Pagination States
+  const [search, setSearch] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [totalRecords, setTotalRecords] = useState(0);
@@ -87,10 +89,10 @@ export default function CreateResultPage() {
 
   // Fetch History
   const loadHistory = useCallback(
-    async (page = 1) => {
+    async (page = 1, searchTerm = "") => {
       setLoadingHistory(true);
       try {
-        const response = await fetchResults(page);
+        const response = await fetchResults(page, searchTerm);
 
         // Extract data from response structure
         const records = response.data || [];
@@ -188,9 +190,15 @@ export default function CreateResultPage() {
     flow.setSearchTerm("");
   };
 
+  const handleSearch = (e) => {
+    const value = e.target.value;
+    setSearch(value);
+    loadHistory(1, value);
+  };
+
   const handlePageChange = (page) => {
     setCurrentPage(page);
-    loadHistory(page);
+    loadHistory(page, search);
   };
 
   const handleDelete = async (id) => {
@@ -199,7 +207,7 @@ export default function CreateResultPage() {
       await deleteResult(id);
       show("success", "Result deleted");
       // Reload current page or go back to page 1 if last item was deleted
-      loadHistory(currentPage);
+      loadHistory(currentPage, search);
     } catch (err) {
       show("error", err.message);
     }
@@ -242,7 +250,7 @@ export default function CreateResultPage() {
       }
 
       cancelEdit();
-      loadHistory(currentPage);
+      loadHistory(currentPage, search);
     } catch (err) {
       show("error", err.message || "Action failed");
     } finally {
@@ -296,6 +304,21 @@ export default function CreateResultPage() {
       show("error", "Failed to generate PDF");
     }
   };
+
+  const toolbar = (
+    <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 flex-wrap w-full">
+      <div className="relative flex-1 sm:flex-none">
+        <FaSearch className="absolute left-3 top-1/2 -translate-y-1/2 text-text-muted text-xs" />
+        <input
+          type="text"
+          placeholder="Search result by enrollment or roll..."
+          value={search}
+          onChange={handleSearch}
+          className="pl-9 pr-4 py-2 text-sm border border-border rounded-lg bg-surface text-text w-full sm:w-64 focus:outline-none focus:ring-2 focus:ring-primary/40"
+        />
+      </div>
+    </div>
+  );
 
   return (
     <div className="w-full space-y-6">
@@ -384,6 +407,7 @@ export default function CreateResultPage() {
       {/* History Table */}
       <DataTableLayout
         title={`Recent Records History (${totalRecords} total)`}
+        toolbar={toolbar}
         pagination={
           <Pagination
             currentPage={currentPage}

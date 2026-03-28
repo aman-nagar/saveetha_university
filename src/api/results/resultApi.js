@@ -7,13 +7,16 @@ const INDEX_ENDPOINT = "/admin/result/index.php";
 const UPDATE_ENDPOINT = "/admin/result/update.php";
 const DELETE_ENDPOINT = "/admin/result/delete.php";
 
-export const fetchResults = async (page = 1) => {
+export const fetchResults = async (page = 1, search = "") => {
   // Make raw request to preserve pagination metadata in 'errors' object
   const token = Cookies.get("authToken");
   const headers = { "Content-Type": "application/json" };
   if (token) headers["Authorization"] = `Bearer ${token}`;
 
-  const response = await fetch(`${BASE_URL}${INDEX_ENDPOINT}?page=${page}`, {
+  const query = new URLSearchParams({ page: String(page) });
+  if (search?.trim()) query.append("search", search.trim());
+
+  const response = await fetch(`${BASE_URL}${INDEX_ENDPOINT}?${query.toString()}`, {
     headers,
   });
 

@@ -1,13 +1,12 @@
 // src/pages/public/GalleryPage.jsx
-import React from "react";
 import { motion } from "framer-motion";
 import { usePublicContent } from "@/hooks/usePublicContent";
 import { MdArrowForward } from "react-icons/md";
 
 export default function GalleryPage() {
-  const { content } = usePublicContent();
+  const { content, loading } = usePublicContent();
   const data = content?.galleryPage;
-
+  console.log(data);
   if (!data) return null;
 
   const containerVariants = {

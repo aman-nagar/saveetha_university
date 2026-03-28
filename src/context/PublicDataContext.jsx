@@ -12,7 +12,7 @@ export function PublicDataProvider({ children }) {
     home: publicMock.home || null,
     footer: publicMock.footer || null,
     academics: publicMock.academics || null,
-    galleryPage: publicMock.galleryPage || null,
+    galleryPage: null, // Will be populated from API
     announcements: publicMock.announcements || [],
     // API data (fetched dynamically)
     siteDetails: null,
@@ -38,6 +38,7 @@ export function PublicDataProvider({ children }) {
         siteDetails: "/public/details.php",
         downloadForms: "/public/download-form.php",
         sliders: "/public/sliders.php",
+        gallery: "/public/gallery.php",
         // Add more as they're available:
         // header: "/public/header.php",
         // footer: "/public/footer.php",
@@ -78,6 +79,20 @@ export function PublicDataProvider({ children }) {
         }));
       }
 
+      if (newData.gallery && Array.isArray(newData.gallery)) {
+        // Map your API response to the format the GalleryPage expects
+        console.log("✅ Gallery API data received:", newData.gallery);
+        newData.galleryPage = {
+          title: "Our Memories",
+          albums: newData.gallery.map((item) => ({
+            id: item.id,
+            title: item.image_name || "Gallery Moment", // Fallback if name is empty
+            image: item.full_image_url,
+            date: item.created_at,
+          })),
+        };
+        console.log("✅ Transformed galleryPage:", newData.galleryPage);
+      }
       setData((prev) => ({
         ...prev,
         ...Object.fromEntries(

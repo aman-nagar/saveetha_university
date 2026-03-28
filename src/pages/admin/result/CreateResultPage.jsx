@@ -421,6 +421,11 @@ export default function CreateResultPage() {
           loading={loadingHistory}
           pageOffset={(currentPage - 1) * pageLimit}
           columns={[
+            {
+              key: "sr",
+              label: "#",
+              render: (_row, index) => index + 1,
+            },
             { key: "enrollment_no", label: "Enrollment" },
             { key: "roll_no", label: "Roll No." },
             { key: "session", label: "Session" },

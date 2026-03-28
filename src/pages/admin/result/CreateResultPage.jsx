@@ -430,6 +430,18 @@ export default function CreateResultPage() {
             { key: "roll_no", label: "Roll No." },
             { key: "session", label: "Session" },
             {
+              key: "duration",
+              label: "Duration",
+              render: (row) => {
+                const duration = Number(row.duration || 0);
+                const type = (row.duration_type || "").toLowerCase();
+                if (!duration || !type) return "-";
+                const singular = type.replace(/s$/, "");
+                const unit = duration === 1 ? singular : `${singular}s`;
+                return `${duration} ${unit}`;
+              },
+            },
+            {
               key: "actions",
               label: "Actions",
               render: (row) => (

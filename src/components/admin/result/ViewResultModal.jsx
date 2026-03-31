@@ -4,7 +4,6 @@ import { FaSpinner, FaExclamationTriangle, FaDownload } from "react-icons/fa";
 import { fetchResultById } from "../../../api/results/resultApi";
 import { fetchStudentById } from "../../../api/students/studentApi";
 import { downloadTranscript } from "../../../utils/pdfGenerator";
-import { fetchFaculty } from "../../../api/courses/facultyApi";
 import { fetchCourses } from "../../../api/courses/courseApi";
 import { fetchStreams } from "../../../api/courses/streamApi";
 

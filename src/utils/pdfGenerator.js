@@ -1,9 +1,9 @@
 import html2pdf from "html2pdf.js";
-import ResultFormat from "../assets/images/marksheet.pdf.png";
+import ResultFormat from "../assets/images/marksheet.png";
 
 export const downloadTranscript = (resultData) => {
   const element = document.createElement("div");
-
+  console.log(resultData);
   // Cumulative history logic: Ensure we show previous years/semesters [cite: 24, 57, 98]
   const history = resultData.history || [];
   const grandTotalMax = history.reduce(
@@ -23,22 +23,28 @@ export const downloadTranscript = (resultData) => {
         
         <table style="width: 100%; font-size: 11px; font-weight: bold; border-collapse: collapse; margin-bottom: 20px;">
           <tr>
-            <td style="width: 20%; padding: 4px 0;">STUDENT'S NAME:</td>
-            <td style="width: 40%; padding: 4px 0; border-bottom: 1px solid #000;">${resultData.student_name.toUpperCase()}</td>
-            <td style="width: 20%; padding: 4px 0; text-align: right;">REGN NO:</td>
-            <td style="width: 20%; padding: 4px 0; border-bottom: 1px solid #000; text-align: center;">${resultData.enrollment_no}</td>
+            <td style="width: 20%; padding: 4px 0;">STUDENT'S NAME :</td>
+            <td style="width: 40%; padding: 4px 0;">${resultData.student_name.toUpperCase()}</td>
+            <td style="width: 20%; padding: 4px 0;">REGISTRATION NO :</td>
+            <td style="width: 20%; padding: 4px 0;">${resultData.enrollment_no}</td>
           </tr>
           <tr>
-            <td style="padding: 4px 0;">FATHER'S NAME:</td>
-            <td style="padding: 4px 0; border-bottom: 1px solid #000;">${resultData.father_name.toUpperCase()}</td>
-            <td style="padding: 4px 0; text-align: right;">ROLL NO:</td>
-            <td style="padding: 4px 0; border-bottom: 1px solid #000; text-align: center;">${resultData.roll_no}</td>
+            <td style="padding: 4px 0;">FATHER'S NAME :</td>
+            <td style="padding: 4px 0;">${resultData.father_name.toUpperCase()}</td>
+            <td style="padding: 4px 0;">ROLL NO :</td>
+            <td style="padding: 4px 0;">${resultData.roll_no}</td>
           </tr>
           <tr>
-            <td style="padding: 4px 0;">COURSE:</td>
-            <td style="padding: 4px 0; border-bottom: 1px solid #000;">${resultData.course_name}</td>
-            <td style="padding: 4px 0; text-align: right;">YEAR/SEM:</td>
-            <td style="padding: 4px 0; border-bottom: 1px solid #000; text-align: center;">${resultData.duration_label || resultData.duration}</td>
+            <td style="padding: 4px 0;">MOTHER'S NAME :</td>
+            <td style="padding: 4px 0;">${resultData.mother_name.toUpperCase()}</td>
+            <td style="padding: 4px 0;">SESSION :</td>
+            <td style="padding: 4px 0;">${resultData.session}</td>
+          </tr>
+          <tr>
+            <td style="padding: 4px 0;">COURSE :</td>
+            <td style="padding: 4px 0;">${resultData.course_name}</td>
+            <td style="padding: 4px 0;">YEAR/SEM :</td>
+            <td style="padding: 4px 0;">${resultData.duration} ${resultData.duration_type}</td>
           </tr>
         </table>
 
@@ -74,7 +80,7 @@ export const downloadTranscript = (resultData) => {
         </table>
 
         <div style="margin-top: 30px;">
-          <h4 style="font-size: 11px; text-decoration: underline; margin-bottom: 8px;">CUMULATIVE PERFORMANCE</h4>
+          <h4 style="font-size: 11px;  margin-bottom: 8px;">CUMULATIVE PERFORMANCE</h4>
           <table style="width: 100%; border-collapse: collapse; border: 1.5px solid #000; font-size: 9px; text-align: center;">
             <tr style="background: rgba(0,0,0,0.05);">
               <td style="border: 1px solid #000; padding: 5px; font-weight: bold;">Year/Sem</td>

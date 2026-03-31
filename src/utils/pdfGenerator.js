@@ -47,7 +47,9 @@ export const downloadTranscript = (resultData) => {
             <td style="padding: 4px 0;">${resultData.duration} ${resultData.duration_type}</td>
           </tr>
         </table>
-
+        <div style="background-color: #FF9714; color: #FFFFFF; border: 1.5px solid #000; border-bottom: none; text-align: center; height: 35px;  font-size: 14px; font-weight: bold; ">
+          STATEMENT OF MARKS
+        </div>
         <table style="width: 100%; border-collapse: collapse; border: 1.5px solid #000; font-size: 10px; text-align: center;">
           <thead>
             <tr style="background: rgba(0,0,0,0.05);">

@@ -51,14 +51,17 @@ export const downloadTranscript = (resultData) => {
           STATEMENT OF MARKS
         </div>
         <table style="width: 100%; border-collapse: collapse; border: 1.5px solid #000; font-size: 10px; text-align: center;">
-          <thead>
-            <tr style="background: rgba(0,0,0,0.05);">
-              <th style="border: 1px solid #000; padding: 8px; width: 10%;">Code</th>
-              <th style="border: 1px solid #000; padding: 8px; text-align: left; width: 50%;">Name of the Subject</th>
-              <th style="border: 1px solid #000; padding: 8px;">Max Marks</th>
-              <th style="border: 1px solid #000; padding: 8px;">Theory</th>
-              <th style="border: 1px solid #000; padding: 8px;">Practical</th>
-              <th style="border: 1px solid #000; padding: 8px;">Total</th>
+         <thead>
+            <tr style="background: rgba(0,0,0,0.08); height: 38px; vertical-align: middle;">
+              <th rowspan="2" style="border: 1px solid #000; padding: 6px; width: 12%; vertical-align: middle;">Subject Code</th>
+              <th rowspan="2" style="border: 1px solid #000; padding: 6px; text-align: left; width: 40%; vertical-align: middle;">Name of the Subject</th>
+              <th rowspan="2" style="border: 1px solid #000; padding: 6px; width: 12%; vertical-align: middle;">Max Marks</th>
+              <th colspan="2" style="border: 1px solid #000; padding: 6px; width: 24%; vertical-align: middle;">Marks Obtained</th>
+              <th rowspan="2" style="border: 1px solid #000; padding: 6px; width: 12%; vertical-align: middle;">Total</th>
+            </tr>
+            <tr style="background: rgba(0,0,0,0.08); height: 32px; vertical-align: middle;">
+              <th style="border: 1px solid #000; padding: 6px; vertical-align: middle;">Theory</th>
+              <th style="border: 1px solid #000; padding: 6px; vertical-align: middle;">Practical</th>
             </tr>
           </thead>
           <tbody>

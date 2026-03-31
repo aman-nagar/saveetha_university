@@ -65,23 +65,33 @@ export const downloadTranscript = (resultData) => {
             </tr>
           </thead>
           <tbody>
-            ${resultData.subjects
-              .map(
-                (sub) => `
-              <tr>
-                <td style="border: 1px solid #000; padding: 6px;">${sub.subject_code || "-"}</td>
-                <td style="border: 1px solid #000; padding: 6px; text-align: left;">${sub.subject_name}</td>
-                <td style="border: 1px solid #000; padding: 6px;">${sub.max_marks || 100}</td>
-                <td style="border: 1px solid #000; padding: 6px;">${sub.theory_marks}</td>
-                <td style="border: 1px solid #000; padding: 6px;">${sub.practical_marks}</td>
-                <td style="border: 1px solid #000; padding: 6px; font-weight: bold;">
-                  ${Number(sub.theory_marks) + Number(sub.practical_marks)}
-                </td>
-              </tr>
-            `,
-              )
-              .join("")}
-          </tbody>
+  ${resultData.subjects
+    .map(
+      (sub) => `
+    <tr>
+      <td style="border-left: 1px solid #000; border-right: 1px solid #000; border-top: none; border-bottom: none; padding: 6px;">
+        ${sub.subject_code || "-"}
+      </td>
+      <td style="border-left: 1px solid #000; border-right: 1px solid #000; border-top: none; border-bottom: none; padding: 6px; text-align: left;">
+        ${sub.subject_name}
+      </td>
+      <td style="border-left: 1px solid #000; border-right: 1px solid #000; border-top: none; border-bottom: none; padding: 6px;">
+        ${sub.max_marks || 100}
+      </td>
+      <td style="border-left: 1px solid #000; border-right: 1px solid #000; border-top: none; border-bottom: none; padding: 6px;">
+        ${sub.theory_marks}
+      </td>
+      <td style="border-left: 1px solid #000; border-right: 1px solid #000; border-top: none; border-bottom: none; padding: 6px;">
+        ${sub.practical_marks}
+      </td>
+      <td style="border-left: 1px solid #000; border-right: 1px solid #000; border-top: none; border-bottom: none; padding: 6px; font-weight: bold;">
+        ${Number(sub.theory_marks) + Number(sub.practical_marks)}
+      </td>
+    </tr>
+  `,
+    )
+    .join("")}
+</tbody>
         </table>
 
         <div style="margin-top: 30px;">

@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { getAdmitCard } from "@/api/students/studentDashboardApi";
 import { Link } from "react-router-dom";
 import LoadingFallback from "../ui/LoadingFallback";
-import { FiUser } from "react-icons/fi";
+import html2pdf from "html2pdf.js";
 import { formatTimeAMPM, formatExamDate } from "@/utils/formatters";
 
 const StudentAdmitCard = () => {
@@ -12,7 +12,119 @@ const StudentAdmitCard = () => {
   const [admitCardData, setAdmitCardData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  console.log(admitCardData);
+
+  const handleDownloadPDF = async () => {
+    if (!admitCardData) return;
+
+    const element = document.createElement("div");
+    // Using explicit inline styles for PDF to match the UI layout exactly and avoid CSS issues
+    element.innerHTML = `
+      <div style="width: 210mm; padding: 10mm; background: #ffffff; font-family: Arial, sans-serif; color: #000000;">
+        <div style="border: 4px border-style: double; border-width: 4px; border-style: double; border-color: #000000; padding: 15px;">
+          
+          <div style="text-align: center; border-bottom: 2px solid #000000; padding-bottom: 12px; margin-bottom: 16px;">
+            <h1 style="font-size: 24px; font-family: serif; font-weight: 900; text-transform: uppercase; margin: 0 0 8px 0;">Saveetha Amaravati University</h1>
+            <div style="display: inline-block; color: #000000; padding: 6px 40px; font-size: 14px; font-weight: bold; border-radius: 2px; letter-spacing: 2px;">ADMIT CARD</div>
+            <p style="margin-top: 8px; font-size: 11px; font-weight: 600;">
+              Session: ${admitCardData.session || "2025-26"} | ${admitCardData.duration_type || "Semester"} ${admitCardData.duration || "1"}
+            </p>
+          </div>
+
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 20px;">
+              ${[
+                ["Enrollment Number", admitCardData.enrollment_no],
+                ["Roll No.", admitCardData.roll_number],
+                ["Candidate Name", admitCardData.candidate_name],
+                ["Contact Number", admitCardData.contact_number],
+                ["Father's Name", admitCardData.father_name],
+                ["Stream", studentData?.stream_name || "N/A"],
+                ["Mother's Name", admitCardData.mother_name],
+              ]
+                .map(
+                  ([label, value]) => `
+                <div style="display: flex; flex-direction: column; border-bottom: 1px solid #eeeeee; padding-bottom: 4px;">
+                  <span style="font-size: 9px; text-transform: uppercase; font-weight: bold; color: #666666;">${label}</span>
+                  <span style="font-size: 11px; font-weight: 900; text-transform: uppercase; color: #000000;">${value || "—"}</span>
+                </div>
+              `,
+                )
+                .join("")}
+          </div>
+
+          <div>
+            <div style="
+                color: #000000; 
+                text-align: center; 
+                height: 32px; 
+                font-size: 13px; 
+                font-weight: bold; 
+                text-transform: uppercase; 
+                width: 100%;
+                ">
+                Paper Names & Schedule
+            </div>
+            <table style="width: 100%; border-collapse: collapse; border: 2px solid #000000; table-layout: fixed;">
+               <thead>
+                <tr style="background: #f3f4f6;">
+                  <th style="border: 2px solid #000000; padding: 5px; font-size: 9px; font-weight: 900; width: 8%; color: #000000;">#</th>
+                  <th style="border: 2px solid #000000; padding: 5px; font-size: 9px; font-weight: 900; text-align: left; width: 42%; color: #000000;">Subject Code & Name</th>
+                  <th style="border: 2px solid #000000; padding: 5px; font-size: 9px; font-weight: 900; width: 25%; color: #000000;">Exam Date</th>
+                  <th style="border: 2px solid #000000; padding: 5px; font-size: 9px; font-weight: 900; width: 25%; color: #000000;">Timing</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${admitCardData.subjects
+                  ?.map(
+                    (sub, i) => `
+                  <tr>
+                    <td style="border: 2px solid #000000; padding: 5px; text-align: center; font-weight: bold; font-size: 9px; color: #000000;">${i + 1}</td>
+                    <td style="border: 2px solid #000000; padding: 5px; font-size: 9px; text-transform: uppercase; color: #000000;">
+                      <span style="display: block; color: #666666; font-weight: bold; font-size: 8px;">[${sub.subject_code}]</span>
+                      <span style="font-weight: 900;">${sub.subject_name}</span>
+                    </td>
+                    <td style="border: 2px solid #000000; padding: 5px; text-align: center; font-weight: bold; font-size: 9px; color: #000000;">${formatExamDate(sub.exam_date)}</td>
+                    <td style="border: 2px solid #000000; padding: 5px; text-align: center; font-weight: 900; font-size: 9px; color: #000000;">
+                      ${formatTimeAMPM(sub.start_time)} — ${formatTimeAMPM(sub.end_time)}
+                    </td>
+                  </tr>
+                `,
+                  )
+                  .join("")}
+              </tbody>
+            </table>
+          </div>
+
+          <div style="display: flex; justify-content: space-between; margin-top: 50px; padding: 0 10px;">
+            <div style="text-align: center; width: 40%;">
+              <div style="border-bottom: 2px solid #000000; height: 35px; margin-bottom: 5px;"></div>
+              <p style="font-size: 9px; font-weight: 900; text-transform: uppercase; margin: 0; color: #000000;">Candidate's Signature</p>
+            </div>
+            <div style="text-align: center; width: 40%;">
+              <div style="border-bottom: 2px solid #000000; height: 35px; margin-bottom: 5px; display: flex; align-items: center; justify-content: center;">
+                <span style="font-family: serif; font-style: italic; font-size: 9px; opacity: 0.2; color: #000000;">University Seal</span>
+              </div>
+              <p style="font-size: 9px; font-weight: 900; text-transform: uppercase; margin: 0; color: #000000;">Controller of Examination</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    `;
+
+    const opt = {
+      margin: 0,
+      filename: `AdmitCard_${admitCardData.enrollment_no}.pdf`,
+      image: { type: "jpeg", quality: 1.0 },
+      html2canvas: { scale: 3, useCORS: true, letterRendering: true },
+      jsPDF: { unit: "mm", format: "a4", orientation: "portrait" },
+    };
+
+    html2pdf().set(opt).from(element).save();
+  };
+
+  const handlePrint = () => {
+    window.print();
+  };
+
   useEffect(() => {
     const fetchAdmitCard = async () => {
       try {
@@ -27,69 +139,24 @@ const StudentAdmitCard = () => {
         setLoading(false);
       }
     };
-
     fetchAdmitCard();
   }, []);
 
-  if (loading) {
-    return <LoadingFallback variant="dashboard" />;
-  }
+  if (loading) return <LoadingFallback variant="dashboard" />;
 
-  if (!studentData) {
+  if (error || !admitCardData || !admitCardData.subjects?.length) {
     return (
-      <div className="flex items-center justify-center min-h-[60vh]">
-        <div className="bg-surface rounded-2xl shadow-xl p-8 max-w-md text-center border border-border">
-          <div className="text-5xl mb-4">🪪</div>
-          <p className="text-text text-lg font-medium">
-            No student data available
-          </p>
-        </div>
-      </div>
-    );
-  }
-
-  if (error && !admitCardData) {
-    return (
-      <div className="flex items-center justify-center min-h-[60vh]">
-        <div className="bg-surface rounded-2xl shadow-xl p-8 max-w-lg text-center border border-border">
+      <div className="flex items-center justify-center min-h-[60vh] font-sans">
+        <div className="bg-white rounded-2xl shadow-xl p-8 text-center border border-gray-100 max-w-[450px]">
           <div className="text-5xl mb-4">📋</div>
-          <h2 className="text-xl font-bold text-text mb-2">
-            Admit Card Not Generated
-          </h2>
-          <p className="text-muted mb-6 leading-relaxed text-sm">
-            Your admit card has not been generated yet. Please contact the
-            administration office or check back later.
+          <h2 className="text-xl font-bold mb-2">Admit Card Not Available</h2>
+          <p className="text-gray-500 text-sm mb-6">
+            Your admit card has not been generated yet. Please contact
+            administration.
           </p>
           <Link
             to="/student-dashboard"
-            className="inline-block px-5 py-2.5 bg-primary hover:bg-primary/90 text-white font-bold rounded-xl no-underline transition-all active:scale-95"
-          >
-            Back to Dashboard
-          </Link>
-        </div>
-      </div>
-    );
-  }
-
-  if (
-    !admitCardData ||
-    !admitCardData.subjects ||
-    admitCardData.subjects.length === 0
-  ) {
-    return (
-      <div className="flex items-center justify-center min-h-[60vh]">
-        <div className="bg-surface rounded-2xl shadow-xl p-8 max-w-lg text-center border border-border">
-          <div className="text-5xl mb-4">⏳</div>
-          <h2 className="text-xl font-bold text-text mb-2">
-            Admit Card Not Yet Available
-          </h2>
-          <p className="text-muted mb-6 leading-relaxed text-sm">
-            Your exam schedule has not been finalized. Please check back after
-            the schedule is announced.
-          </p>
-          <Link
-            to="/student-dashboard"
-            className="inline-block px-5 py-2.5 bg-primary hover:bg-primary/90 text-white font-bold rounded-xl no-underline transition-all active:scale-95"
+            className="px-5 py-2.5 bg-black text-white rounded-xl font-bold transition-all hover:bg-gray-900"
           >
             Back to Dashboard
           </Link>
@@ -99,171 +166,294 @@ const StudentAdmitCard = () => {
   }
 
   return (
-    <div className="admit-card-print-root w-full max-w-[210mm] mx-auto bg-white p-3 sm:p-10 print:p-0">
-      <style>{`
-        @media print {
-          @page { size: A4 portrait; margin: 8mm; }
-          html, body {
-            margin: 0 !important;
-            padding: 0 !important;
-            height: auto !important;
-            -webkit-print-color-adjust: exact;
-            print-color-adjust: exact;
-          }
-          body * { visibility: hidden !important; }
-          .admit-card-print-root,
-          .admit-card-print-root * { visibility: visible !important; }
-          .admit-card-print-root {
-            position: fixed !important;
-            top: 0 !important;
-            left: 0 !important;
-            width: 100% !important;
-            max-width: 100% !important;
-            margin: 0 !important;
-            padding: 0 !important;
-            border: none !important;
-            box-shadow: none !important;
-          }
-        }
-      `}</style>
+    <div className="w-full max-w-[210mm] mx-auto bg-white p-3 sm:p-10 print:p-0">
+      <div className="mb-4 flex justify-end gap-3 print:hidden">
+        <button
+          onClick={handlePrint}
+          className="px-4 py-2 bg-gray-800 text-white rounded-lg font-bold hover:bg-gray-700 transition-all"
+        >
+          Print Card
+        </button>
+        <button
+          onClick={handleDownloadPDF}
+          className="px-4 py-2 bg-primary text-white rounded-lg font-bold hover:bg-primary/90 transition-all"
+        >
+          Download PDF
+        </button>
+      </div>
 
-      {/* Outer Frame */}
-      <div className="border-4 border-double border-black p-3 sm:p-4 print:p-3">
-        {/* ── Header ──────────────────────────────────────────── */}
-        <div className="text-center mb-4 print:mb-2 border-b-2 border-black pb-3 print:pb-2">
-          <h1 className="text-xl sm:text-3xl print:text-xl font-serif font-extrabold text-black uppercase mb-2 print:mb-1">
-            Saveetha Amaravati University
-          </h1>
-          <div className="inline-block bg-black text-white px-6 sm:px-10 py-1.5 print:py-1 text-sm sm:text-xl print:text-sm font-bold tracking-widest rounded-sm">
-            ADMIT CARD
+      <div className="admit-card-print-root">
+        <style>{`
+          @media print {
+            @page { size: A4 portrait; margin: 8mm; }
+            html, body { margin: 0 !important; padding: 0 !important; height: auto !important; }
+            body * { visibility: hidden !important; }
+            .admit-card-print-root, .admit-card-print-root * { visibility: visible !important; }
+            .admit-card-print-root { position: fixed !important; top: 0 !important; left: 0 !important; width: 100% !important; margin: 0 !important; }
+          }
+        `}</style>
+
+        {/* --- Screen View --- */}
+        <div
+          style={{
+            border: "4px double #000",
+            padding: "16px",
+            color: "#000",
+            background: "#fff",
+          }}
+        >
+          <div
+            style={{
+              textAlign: "center",
+              borderBottom: "2px solid #000",
+              paddingBottom: "12px",
+              marginBottom: "20px",
+            }}
+          >
+            <h1
+              style={{
+                fontSize: "24px",
+                fontWeight: "900",
+                textTransform: "uppercase",
+                margin: "0",
+                fontFamily: "serif",
+              }}
+            >
+              Saveetha Amaravati University
+            </h1>
+            <div
+              style={{
+                display: "inline-block",
+                color: "#000000",
+                padding: "6px 40px",
+                margin: "12px 0",
+                fontWeight: "bold",
+                letterSpacing: "1px",
+              }}
+            >
+              ADMIT CARD
+            </div>
+            <p style={{ fontSize: "11px", fontWeight: "600" }}>
+              Session: {admitCardData.session} | {admitCardData.duration_type}{" "}
+              {admitCardData.duration}
+            </p>
           </div>
-          <p className="mt-2 print:mt-1 text-xs font-semibold text-gray-800">
-            Session: {admitCardData.session || "2025-26"} |{" "}
-            {admitCardData.duration_type || "Semester"}{" "}
-            {admitCardData.duration || "1"}
-          </p>
-        </div>
 
-        {/* ── Info + Photo ─────────────────────────────────────── */}
-        <div className="flex flex-row items-start gap-3 sm:gap-5 mb-5 print:mb-3 px-1 sm:px-2">
-          <div className="flex-1 min-w-0 grid grid-cols-1 sm:grid-cols-2 print:grid-cols-2 gap-x-4 gap-y-2 print:gap-y-1">
+          <div
+            style={{
+              display: "grid",
+              gridTemplateColumns: "1fr 1fr",
+              gap: "15px",
+              marginBottom: "20px",
+            }}
+          >
             <InfoRow
-              label="Enrollment Number"
+              label="Enrollment No"
               value={admitCardData.enrollment_no}
             />
-            <InfoRow label="Roll No." value={admitCardData.roll_number} />
+            <InfoRow label="Roll No" value={admitCardData.roll_number} />
             <InfoRow
               label="Candidate Name"
               value={admitCardData.candidate_name}
             />
-            <InfoRow
-              label="Contact Number"
-              value={admitCardData.contact_number}
-            />
+            <InfoRow label="Contact" value={admitCardData.contact_number} />
             <InfoRow label="Father's Name" value={admitCardData.father_name} />
-            <InfoRow label="Stream" value={studentData.stream_name || "N/A"} />
+            <InfoRow label="Stream" value={studentData?.stream_name} />
             <InfoRow label="Mother's Name" value={admitCardData.mother_name} />
           </div>
 
-          <div className="flex-shrink-0 w-20 h-24 sm:w-28 sm:h-36 print:w-24 print:h-32 self-start border-2 border-black bg-gray-50 flex flex-col items-center justify-center relative overflow-hidden">
-            {admitCardData.photo ? (
-              <img
-                src={admitCardData.photo}
-                alt="Student"
-                className="w-full h-full object-cover"
-              />
-            ) : (
-              <>
-                <FiUser className="w-8 h-8 sm:w-12 sm:h-12 text-gray-200" />
-                <span className="absolute bottom-1 text-[7px] uppercase text-gray-400 font-bold text-center px-1">
-                  No Photo Found
-                </span>
-              </>
-            )}
+          <div
+            style={{
+              color: "#000000",
+              textAlign: "center",
+              padding: "4px",
+              fontSize: "13px",
+              fontWeight: "bold",
+              textTransform: "uppercase",
+            }}
+          >
+            Paper Names & Schedule
           </div>
-        </div>
-
-        <div className="mb-5 print:mb-3">
-          <div className="bg-black text-white text-center py-2 print:py-1">
-            <h3 className="font-bold text-[10px] sm:text-sm print:text-[10px] tracking-widest uppercase">
-              Paper Names & Schedule
-            </h3>
-          </div>
-
-          <table className="w-full border-collapse border-2 border-black table-fixed">
-            <colgroup>
-              <col style={{ width: "8%" }} />
-              <col style={{ width: "42%" }} />
-              <col style={{ width: "25%" }} />
-              <col style={{ width: "25%" }} />
-            </colgroup>
-
+          <table
+            style={{
+              width: "100%",
+              borderCollapse: "collapse",
+              border: "2px solid #000",
+            }}
+          >
             <thead>
-              <tr className="bg-gray-100">
-                <th className="border-2 border-black py-2 print:py-1 px-1 font-black text-black text-[9px] sm:text-[11px] print:text-[9px] text-center">
+              <tr style={{ background: "#f9fafb" }}>
+                <th
+                  style={{
+                    border: "2px solid #000",
+                    padding: "6px",
+                    fontSize: "10px",
+                    width: "8%",
+                    textAlign: "center",
+                  }}
+                >
                   #
                 </th>
-                <th className="border-2 border-black py-2 print:py-1 px-2 font-black text-black text-[9px] sm:text-[11px] print:text-[9px] text-left">
+                <th
+                  style={{
+                    border: "2px solid #000",
+                    padding: "6px",
+                    fontSize: "10px",
+                    textAlign: "left",
+                    width: "42%",
+                  }}
+                >
                   Subject Code & Name
                 </th>
-                <th className="border-2 border-black py-2 print:py-1 px-1 font-black text-black text-[9px] sm:text-[11px] print:text-[9px] text-center">
+                <th
+                  style={{
+                    border: "2px solid #000",
+                    padding: "6px",
+                    fontSize: "10px",
+                    width: "25%",
+                    textAlign: "center",
+                  }}
+                >
                   Exam Date
                 </th>
-                <th className="border-2 border-black py-2 print:py-1 px-1 font-black text-black text-[9px] sm:text-[11px] print:text-[9px] text-center">
+                <th
+                  style={{
+                    border: "2px solid #000",
+                    padding: "6px",
+                    fontSize: "10px",
+                    width: "25%",
+                    textAlign: "center",
+                  }}
+                >
                   Timing
                 </th>
               </tr>
             </thead>
-
             <tbody>
-              {admitCardData.subjects?.map((sub, i) => (
-                <tr key={i} className="hover:bg-gray-50 transition-colors">
-                  <td className="border-2 border-black py-2 print:py-1 px-1 text-center font-bold text-[9px] sm:text-[11px] print:text-[9px]">
+              {admitCardData.subjects.map((sub, i) => (
+                <tr key={i}>
+                  <td
+                    style={{
+                      border: "2px solid #000",
+                      padding: "6px",
+                      textAlign: "center",
+                      fontSize: "10px",
+                      fontWeight: "bold",
+                    }}
+                  >
                     {i + 1}
                   </td>
-                  <td className="border-2 border-black py-2 print:py-1 px-2 text-black text-[9px] sm:text-[11px] print:text-[9px] uppercase">
-                    <span className="block font-bold text-gray-500">
+                  <td
+                    style={{
+                      border: "2px solid #000",
+                      padding: "6px",
+                      fontSize: "10px",
+                    }}
+                  >
+                    <span
+                      style={{
+                        color: "#666",
+                        fontWeight: "bold",
+                        fontSize: "9px",
+                      }}
+                    >
                       [{sub.subject_code}]
                     </span>
-                    <span className="font-black">{sub.subject_name}</span>
+                    <br />
+                    <span
+                      style={{ fontWeight: "900", textTransform: "uppercase" }}
+                    >
+                      {sub.subject_name}
+                    </span>
                   </td>
-                  {/* ✅ FORMATTED DATE */}
-                  <td className="border-2 border-black py-2 print:py-1 px-1 text-center font-bold text-[9px] sm:text-[11px] print:text-[9px] text-black">
+                  <td
+                    style={{
+                      border: "2px solid #000",
+                      padding: "6px",
+                      textAlign: "center",
+                      fontSize: "10px",
+                      fontWeight: "bold",
+                    }}
+                  >
                     {formatExamDate(sub.exam_date)}
                   </td>
-                  {/* ✅ FORMATTED TIME (AM/PM) */}
-                  <td className="border-2 border-black py-2 print:py-1 px-1 text-center font-black text-[9px] sm:text-[11px] print:text-[9px] text-black">
-                    <span className="block">
-                      {formatTimeAMPM(sub.start_time)}
-                    </span>
-                    <span className="block text-gray-400">—</span>
-                    <span className="block">
-                      {formatTimeAMPM(sub.end_time)}
-                    </span>
+                  <td
+                    style={{
+                      border: "2px solid #000",
+                      padding: "6px",
+                      textAlign: "center",
+                      fontSize: "10px",
+                      fontWeight: "900",
+                    }}
+                  >
+                    {formatTimeAMPM(sub.start_time)} —{" "}
+                    {formatTimeAMPM(sub.end_time)}
                   </td>
                 </tr>
               ))}
             </tbody>
           </table>
-        </div>
 
-        {/* ── Signatures ───────────────────────────────────────── */}
-        <div className="grid grid-cols-2 gap-8 sm:gap-20 mt-8 sm:mt-10 print:mt-5 px-2 sm:px-4 print:px-2">
-          <div className="text-center">
-            <div className="border-b-2 border-black h-8 sm:h-10 print:h-7 mb-1" />
-            <p className="text-[8px] sm:text-[10px] print:text-[9px] font-black uppercase text-black tracking-tighter">
-              Candidate's Signature
-            </p>
-          </div>
-          <div className="text-center">
-            <div className="border-b-2 border-black h-8 sm:h-10 print:h-7 mb-1 flex items-center justify-center opacity-10">
-              <span className="font-serif italic text-[10px]">
-                University Seal
-              </span>
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "space-between",
+              marginTop: "40px",
+              padding: "0 8px",
+            }}
+          >
+            <div style={{ textAlign: "center", width: "40%" }}>
+              <div
+                style={{
+                  borderBottom: "2px solid #000",
+                  height: "35px",
+                  marginBottom: "5px",
+                }}
+              ></div>
+              <p
+                style={{
+                  fontSize: "9px",
+                  fontWeight: "900",
+                  textTransform: "uppercase",
+                  margin: "0",
+                }}
+              >
+                Candidate's Signature
+              </p>
             </div>
-            <p className="text-[8px] sm:text-[10px] print:text-[9px] font-black uppercase text-black tracking-tighter">
-              Controller of Examination
-            </p>
+            <div style={{ textAlign: "center", width: "40%" }}>
+              <div
+                style={{
+                  borderBottom: "2px solid #000",
+                  height: "35px",
+                  marginBottom: "5px",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                }}
+              >
+                <span
+                  style={{
+                    fontStyle: "italic",
+                    fontSize: "9px",
+                    opacity: 0.2,
+                    fontFamily: "serif",
+                  }}
+                >
+                  University Seal
+                </span>
+              </div>
+              <p
+                style={{
+                  fontSize: "9px",
+                  fontWeight: "900",
+                  textTransform: "uppercase",
+                  margin: "0",
+                }}
+              >
+                Controller of Examination
+              </p>
+            </div>
           </div>
         </div>
       </div>
@@ -271,19 +461,35 @@ const StudentAdmitCard = () => {
   );
 };
 
-export default StudentAdmitCard;
+const InfoRow = ({ label, value }) => (
+  <div
+    style={{
+      display: "flex",
+      flexDirection: "column",
+      borderBottom: "1px solid #eee",
+      paddingBottom: "4px",
+    }}
+  >
+    <span
+      style={{
+        fontSize: "8px",
+        color: "#666",
+        fontWeight: "bold",
+        textTransform: "uppercase",
+      }}
+    >
+      {label}
+    </span>
+    <span
+      style={{
+        fontSize: "11px",
+        fontWeight: "900",
+        textTransform: "uppercase",
+      }}
+    >
+      {value || "—"}
+    </span>
+  </div>
+);
 
-function InfoRow({ label, value, highlight = false }) {
-  return (
-    <div className="grid grid-cols-2 gap-2 items-start">
-      <span className="text-[9px] sm:text-[10px] print:text-[9px] uppercase font-bold text-gray-500 tracking-tight pt-0.5">
-        {label}
-      </span>
-      <span
-        className={`text-black uppercase break-words border-b border-gray-100 ${highlight ? "text-sm sm:text-base print:text-sm font-black" : "text-[10px] sm:text-xs print:text-[10px] font-black"}`}
-      >
-        {value || "—"}
-      </span>
-    </div>
-  );
-}
+export default StudentAdmitCard;

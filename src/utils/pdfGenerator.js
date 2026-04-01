@@ -65,59 +65,61 @@ export const downloadTranscript = (resultData) => {
             </tr>
           </thead>
           <tbody>
+            ${resultData.subjects
+              .map(
+                (sub) => `
+              <tr>
+                <td style="border-left: 1px solid #000; border-right: 1px solid #000; border-top: none; border-bottom: none; padding: 6px;">
+                  ${sub.subject_code || "-"}
+                </td>
+                <td style="border-left: 1px solid #000; border-right: 1px solid #000; border-top: none; border-bottom: none; padding: 6px; text-align: left;">
+                  ${sub.subject_name}
+                </td>
+                <td style="border-left: 1px solid #000; border-right: 1px solid #000; border-top: none; border-bottom: none; padding: 6px;">
+                  ${sub.max_marks || 100}
+                </td>
+                <td style="border-left: 1px solid #000; border-right: 1px solid #000; border-top: none; border-bottom: none; padding: 6px;">
+                  ${sub.theory_marks}
+                </td>
+                <td style="border-left: 1px solid #000; border-right: 1px solid #000; border-top: none; border-bottom: none; padding: 6px;">
+                  ${sub.practical_marks}
+                </td>
+                <td style="border-left: 1px solid #000; border-right: 1px solid #000; border-top: none; border-bottom: none; padding: 6px; font-weight: bold;">
+                  ${Number(sub.theory_marks) + Number(sub.practical_marks)}
+                </td>
+              </tr>
+            `,
+              )
+              .join("")}
+          </tbody>
           <tfoot style="font-weight: bold; font-size: 11px;">
-  <tr style="border: 1.5px solid #000; height: 35px; vertical-align: middle;">
-    <td colspan="2" style="border: 1px solid #000; text-align: left; padding-left: 10px;">
-      <div style="display: flex; justify-content: space-between; width: 100%; padding-right: 20px;">
-        <span>Grade: &nbsp;&nbsp;&nbsp; ${resultData.grade || "A"}</span>
-        <span>Total</span>
-      </div>
-    </td>
-    <td style="border: 1px solid #000; width: 12%;">
-      ${resultData.subjects.reduce((a, s) => a + Number(s.max_marks || 100), 0)}
-    </td>
-    <td style="border: 1px solid #000; width: 12%;">
-      ${resultData.subjects.reduce((a, s) => a + Number(s.theory_marks || 0), 0)}
-    </td>
-    <td style="border: 1px solid #000; width: 12%;">
-      ${resultData.subjects.reduce((a, s) => a + Number(s.practical_marks || 0), 0)}
-    </td>
-    <td style="border: 1px solid #000; width: 12%; font-size: 13px;">
-      ${resultData.subjects.reduce((a, s) => a + (Number(s.theory_marks) + Number(s.practical_marks)), 0)}
-    </td>
-  </tr>
-</tfoot>
-  ${resultData.subjects
-    .map(
-      (sub) => `
-    <tr>
-      <td style="border-left: 1px solid #000; border-right: 1px solid #000; border-top: none; border-bottom: none; padding: 6px;">
-        ${sub.subject_code || "-"}
-      </td>
-      <td style="border-left: 1px solid #000; border-right: 1px solid #000; border-top: none; border-bottom: none; padding: 6px; text-align: left;">
-        ${sub.subject_name}
-      </td>
-      <td style="border-left: 1px solid #000; border-right: 1px solid #000; border-top: none; border-bottom: none; padding: 6px;">
-        ${sub.max_marks || 100}
-      </td>
-      <td style="border-left: 1px solid #000; border-right: 1px solid #000; border-top: none; border-bottom: none; padding: 6px;">
-        ${sub.theory_marks}
-      </td>
-      <td style="border-left: 1px solid #000; border-right: 1px solid #000; border-top: none; border-bottom: none; padding: 6px;">
-        ${sub.practical_marks}
-      </td>
-      <td style="border-left: 1px solid #000; border-right: 1px solid #000; border-top: none; border-bottom: none; padding: 6px; font-weight: bold;">
-        ${Number(sub.theory_marks) + Number(sub.practical_marks)}
-      </td>
-    </tr>
-  `,
-    )
-    .join("")}
-</tbody>
+            <tr style="border: 1.5px solid #000; height: 35px; vertical-align: middle;">
+              <td colspan="2" style="border: 1px solid #000; text-align: left; padding-left: 10px;">
+                <div style="display: flex; justify-content: space-between; width: 100%; padding-right: 20px;">
+                  <span>Grade: &nbsp;&nbsp;&nbsp; ${resultData.current_year_details.grade || "N/A"}</span> 
+                  <span>Total</span>
+                </div>
+              </td>
+              
+              <td style="border: 1px solid #000; width: 12%;">
+                ${resultData.current_year_details.max_marks}
+              </td>
+              
+              <td style="border: 1px solid #000; width: 12%;">
+                ${resultData.current_year_details.theory_total}
+              </td>
+              <td style="border: 1px solid #000; width: 12%;">
+                ${resultData.current_year_details.practical_total}
+              </td>
+              
+              <td style="border: 1px solid #000; width: 12%; font-size: 13px;">
+                ${resultData.current_year_details.obtained_marks}
+              </td>
+            </tr>
+          </tfoot>
         </table>
 
         <div style="margin-top: 30px;">
-          <h4 style="font-size: 11px;  margin-bottom: 8px;">CUMULATIVE PERFORMANCE</h4>
           <table style="width: 100%; border-collapse: collapse; border: 1.5px solid #000; font-size: 9px; text-align: center;">
             <tr style="background: rgba(0,0,0,0.05);">
               <td style="border: 1px solid #000; padding: 5px; font-weight: bold;">Year/Sem</td>

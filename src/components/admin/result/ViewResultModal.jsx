@@ -3,7 +3,10 @@ import Modal from "../../../components/ui/Modal";
 import { FaSpinner, FaExclamationTriangle, FaDownload } from "react-icons/fa";
 import { fetchResultById } from "../../../api/results/resultApi";
 import { fetchStudentById } from "../../../api/students/studentApi";
-import { downloadTranscript } from "../../../utils/pdfGenerator";
+import {
+  downloadTranscript,
+  getTranscriptHtml,
+} from "../../../utils/pdfGenerator";
 import { fetchCourses } from "../../../api/courses/courseApi";
 import { fetchStreams } from "../../../api/courses/streamApi";
 
@@ -15,6 +18,7 @@ export default function ViewResultModal({
 }) {
   const [loading, setLoading] = useState(false);
   const [viewResult, setViewResult] = useState(null);
+  const [previewHtml, setPreviewHtml] = useState("");
 
   useEffect(() => {
     if (!isOpen || !resultData?.id) return;
@@ -51,13 +55,16 @@ export default function ViewResultModal({
           streamName = sMatch?.name ?? null;
         }
 
-        setViewResult({
+        const fullResult = {
           ...result,
           student_name: student.candidate_name,
           course_name: courseName || student.course,
           stream_name: streamName || student.stream,
           faculty_name: student.faculty,
-        });
+        };
+
+        setViewResult(fullResult);
+        setPreviewHtml(getTranscriptHtml(fullResult));
       } catch (err) {
         showToast("error", "Failed to load complete details.");
       } finally {
@@ -80,38 +87,24 @@ export default function ViewResultModal({
         </div>
       ) : (
         viewResult && (
-          <div className="p-6 space-y-6">
-            <div className="grid grid-cols-2 md:grid-cols-3 gap-4 bg-slate-50 p-4 rounded-xl border border-slate-200">
-              <Detail label="Student" value={viewResult.candidate_name} />
-              <Detail label="Enrollment" value={viewResult.enrollment_no} />
-              <Detail label="Course" value={viewResult.course_name} />
-              <Detail label="Stream" value={viewResult.stream_name} />
-              <Detail label="Roll No" value={viewResult.roll_no} />
-              <Detail label="Session" value={viewResult.session} />
+          <div className="p-0">
+            <div
+              className="overflow-auto border border-slate-200 rounded-xl bg-white"
+              style={{
+                maxHeight: "85vh",
+                display: "flex",
+                justifyContent: "center",
+              }}
+            >
+              <div
+                style={{ minWidth: "210mm", display: "inline-block" }}
+                dangerouslySetInnerHTML={{
+                  __html:
+                    previewHtml ||
+                    "<div class='p-4'>Preparing preview...</div>",
+                }}
+              />
             </div>
-
-            <table className="w-full border-collapse">
-              <thead>
-                <tr className="bg-slate-800 text-white text-xs uppercase">
-                  <th className="p-3 text-left">Subject</th>
-                  <th className="p-3">Theory</th>
-                  <th className="p-3">Practical</th>
-                  <th className="p-3">Total</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-slate-200 border">
-                {viewResult.subjects.map((sub, i) => (
-                  <tr key={i} className="text-sm">
-                    <td className="p-3 font-medium">{sub.subject_name}</td>
-                    <td className="p-3 text-center">{sub.theory_marks}</td>
-                    <td className="p-3 text-center">{sub.practical_marks}</td>
-                    <td className="p-3 text-center font-bold text-blue-600">
-                      {Number(sub.theory_marks) + Number(sub.practical_marks)}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
 
             <div className="flex justify-end gap-3 pt-4">
               <button

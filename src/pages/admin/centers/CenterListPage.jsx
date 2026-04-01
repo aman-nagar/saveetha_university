@@ -38,6 +38,7 @@ export default function CenterListPage() {
     try {
       const response = await fetchCenters({ page, search: searchTerm });
       setCenters(response.data || []);
+      console.log(response.data);
       setCurrentPage(response.current_page || 1);
       setTotalPages(response.total_pages || 1);
       setPerPage(response.per_page || 10);

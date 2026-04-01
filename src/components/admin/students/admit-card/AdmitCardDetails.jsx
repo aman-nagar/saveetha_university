@@ -15,7 +15,6 @@ export default function AdmitCardDetails({ data }) {
     fetchStreamsById(data.stream_id)
       .then((res) => {
         const name = res.data?.name || res.name;
-        console.log("📌 Stream Name Fetched:", name);
         setStreamName(name);
       })
       .catch((err) => {
@@ -25,22 +24,6 @@ export default function AdmitCardDetails({ data }) {
       .finally(() => setLoadingStream(false));
   }, [data?.stream_id]);
 
-  console.group("Detail Data Contents");
-
-  if (data instanceof FormData) {
-    for (const [key, value] of data.entries()) {
-      console.log(
-        `${key}:`,
-        value instanceof File
-          ? `File (${value.name}, ${value.size} bytes)`
-          : value,
-      );
-    }
-  } else {
-    console.dir(data, { depth: null });
-  }
-
-  console.groupEnd();
   if (!data) return null;
 
   return (

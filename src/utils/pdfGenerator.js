@@ -65,6 +65,28 @@ export const downloadTranscript = (resultData) => {
             </tr>
           </thead>
           <tbody>
+          <tfoot style="font-weight: bold; font-size: 11px;">
+  <tr style="border: 1.5px solid #000; height: 35px; vertical-align: middle;">
+    <td colspan="2" style="border: 1px solid #000; text-align: left; padding-left: 10px;">
+      <div style="display: flex; justify-content: space-between; width: 100%; padding-right: 20px;">
+        <span>Grade: &nbsp;&nbsp;&nbsp; ${resultData.grade || "A"}</span>
+        <span>Total</span>
+      </div>
+    </td>
+    <td style="border: 1px solid #000; width: 12%;">
+      ${resultData.subjects.reduce((a, s) => a + Number(s.max_marks || 100), 0)}
+    </td>
+    <td style="border: 1px solid #000; width: 12%;">
+      ${resultData.subjects.reduce((a, s) => a + Number(s.theory_marks || 0), 0)}
+    </td>
+    <td style="border: 1px solid #000; width: 12%;">
+      ${resultData.subjects.reduce((a, s) => a + Number(s.practical_marks || 0), 0)}
+    </td>
+    <td style="border: 1px solid #000; width: 12%; font-size: 13px;">
+      ${resultData.subjects.reduce((a, s) => a + (Number(s.theory_marks) + Number(s.practical_marks)), 0)}
+    </td>
+  </tr>
+</tfoot>
   ${resultData.subjects
     .map(
       (sub) => `
@@ -119,17 +141,23 @@ export const downloadTranscript = (resultData) => {
           Total in Words: <span style="text-transform: capitalize;">${resultData.total_in_words || ""} Only</span>
         </div>
 
-        <div style="margin-top: 60px; display: flex; justify-content: space-between; align-items: flex-end;">
-          <div style="font-size: 11px; font-weight: bold;">
-            ISSUE DATE: ${resultData.issue_date}
+        </div>
+
+        
+        <div style="position: absolute; bottom: 1in; left: 0.8in; right: 0.8in; display: flex; justify-content: space-between; align-items: flex-end; z-index: 20;">
+          <div style="font-size: 11px; font-weight: bold; color: #000;">
+            ISSUE DATE : ${resultData.issue_date} [cite: 28, 65, 103]
           </div>
-          <div style="text-align: center; width: 2.5in;">
-            <div style="font-size: 10px; font-weight: bold; border-top: 1.5px solid #000; padding-top: 5px; text-transform: uppercase;">
-              Controller of Examinations
+
+          <div style="text-align: center; width: 2.2in;">
+            <div style="height: 40px; font-size: 9px; font-style: italic; color: rgba(0,0,0,0.2); margin-bottom: 5px;">
+              University Seal [cite: 95]
+            </div>
+            <div style="font-size: 10px; font-weight: bold; border-top: 1.5px solid #000; padding-top: 5px; text-transform: uppercase; color: #000;">
+              Controller of Examinations 
             </div>
           </div>
         </div>
-      </div>
     </div>
   `;
 

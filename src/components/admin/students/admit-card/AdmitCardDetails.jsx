@@ -208,23 +208,6 @@ export default function AdmitCardDetails({ data }) {
             </p>
           </div>
         </div>
-
-        {/* ── System Footer ────────────────────────────────────── */}
-        <div className="mt-4 sm:mt-6 print:mt-3 pt-3 print:pt-2 border-t border-gray-200 flex flex-col sm:flex-row print:flex-row justify-between gap-1 text-[7px] sm:text-[8px] print:text-[7px] font-bold text-gray-500 uppercase tracking-widest">
-          {/* ✅ FORMATTED GENERATED DATE */}
-          <span>
-            Generated On:{" "}
-            {new Date().toLocaleString("en-GB", {
-              day: "2-digit",
-              month: "short",
-              year: "numeric",
-              hour: "2-digit",
-              minute: "2-digit",
-              hour12: true,
-            })}
-          </span>
-          <span>Verification URL: www.saveethaamaravatiuniversity.ac.in/</span>
-        </div>
       </div>
     </div>
   );

@@ -26,6 +26,11 @@ export const menuItems = [
     roles: ["admin", "center", "sub-center"],
     children: [
       { label: "All Students", path: "/admin/students", roles: ["admin"] },
+      {
+        label: "Inactive Students",
+        path: "/admin/students/inactive",
+        roles: ["admin"],
+      },
       { label: "My Students", path: "/center/students", roles: ["center"] },
       {
         label: "My Students",

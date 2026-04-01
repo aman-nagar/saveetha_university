@@ -179,11 +179,7 @@ export default function AdmitCardDetails({ data }) {
             <div className="w-full grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-3">
               <InfoRow label="Enrollment Number" value={data.enrollment_no} />
               <InfoRow label="Roll No." value={data.roll_number} />
-              <InfoRow
-                label="Candidate Name"
-                value={data.candidate_name}
-                highlight
-              />
+              <InfoRow label="Candidate Name" value={data.candidate_name} />
               <InfoRow label="Contact Number" value={data.contact_number} />
               <InfoRow label="Father's Name" value={data.father_name} />
               <InfoRow

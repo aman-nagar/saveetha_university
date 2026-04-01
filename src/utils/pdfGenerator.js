@@ -4,16 +4,8 @@ import ResultFormat from "../assets/images/marksheet.png";
 export const downloadTranscript = (resultData) => {
   const element = document.createElement("div");
   console.log(resultData);
-  // Cumulative history logic: Ensure we show previous years/semesters [cite: 24, 57, 98]
-  const history = resultData.history || [];
-  const grandTotalMax = history.reduce(
-    (a, b) => a + Number(b.max_total || 0),
-    0,
-  );
-  const grandTotalObt = history.reduce(
-    (a, b) => a + Number(b.obtained_total || 0),
-    0,
-  );
+  // Cumulative history logic: Show all years/semesters from API
+  const cumulativeHistory = resultData.cumulative_history || [];
 
   element.innerHTML = `
     <div style="width: 210mm; height: 297mm; position: relative; background: white; font-family: Arial, sans-serif; color: #000;">
@@ -24,7 +16,7 @@ export const downloadTranscript = (resultData) => {
         <table style="width: 100%; font-size: 11px; font-weight: bold; border-collapse: collapse; margin-bottom: 20px;">
           <tr>
             <td style="width: 20%; padding: 4px 0;">STUDENT'S NAME :</td>
-            <td style="width: 40%; padding: 4px 0;">${resultData.student_name.toUpperCase()}</td>
+            <td style="width: 40%; padding: 4px 0;">${resultData.candidate_name.toUpperCase()}</td>
             <td style="width: 20%; padding: 4px 0;">REGISTRATION NO :</td>
             <td style="width: 20%; padding: 4px 0;">${resultData.enrollment_no}</td>
           </tr>
@@ -76,7 +68,7 @@ export const downloadTranscript = (resultData) => {
                   ${sub.subject_name}
                 </td>
                 <td style="border-left: 1px solid #000; border-right: 1px solid #000; border-top: none; border-bottom: none; padding: 6px;">
-                  ${sub.max_marks || 100}
+                  ${Number(sub.max_theory_marks) + Number(sub.max_practical_marks)}
                 </td>
                 <td style="border-left: 1px solid #000; border-right: 1px solid #000; border-top: none; border-bottom: none; padding: 6px;">
                   ${sub.theory_marks}
@@ -148,10 +140,10 @@ export const downloadTranscript = (resultData) => {
                 <td style="border: 1px solid #000; padding: 5px; font-weight: bold; text-align: left; vertical-align: middle;">Maximum Marks</td>
                 ${[1, 2, 3, 4, 5, 6, 7, 8]
                   .map((num) => {
-                    const record = resultData.cumulative_history?.find(
+                    const record = cumulativeHistory.find(
                       (h) => Number(h.duration) === num,
                     );
-                    return `<td style="border: 1px solid #000; font-weight: bold; font-size: 12px; vertical-align: middle;">${record ? record.max_marks : "----"}</td>`;
+                    return `<td style="border: 1px solid #000; font-weight: bold; font-size: 12px; vertical-align: middle;">${record?.max_marks || "----"}</td>`;
                   })
                   .join("")}
                 <td style="border: 1px solid #000; font-weight: bold; font-size: 13px; vertical-align: middle;">${resultData.grand_overall_details?.total_max || ""}</td>
@@ -167,10 +159,10 @@ export const downloadTranscript = (resultData) => {
                 <td style="border: 1px solid #000; padding: 5px; font-weight: bold; text-align: left; vertical-align: middle;">Marks Obtained</td>
                 ${[1, 2, 3, 4, 5, 6, 7, 8]
                   .map((num) => {
-                    const record = resultData.cumulative_history?.find(
+                    const record = cumulativeHistory.find(
                       (h) => Number(h.duration) === num,
                     );
-                    return `<td style="border: 1px solid #000; font-weight: bold; font-size: 12px; vertical-align: middle;">${record ? record.marks_obtained : "----"}</td>`;
+                    return `<td style="border: 1px solid #000; font-weight: bold; font-size: 12px; vertical-align: middle;">${record?.marks_obtained || "----"}</td>`;
                   })
                   .join("")}
                 <td style="border: 1px solid #000; font-weight: bold; font-size: 13px; vertical-align: middle;">${resultData.grand_overall_details?.total_obtained || ""}</td>

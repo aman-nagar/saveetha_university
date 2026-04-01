@@ -19,7 +19,7 @@ export const downloadTranscript = (resultData) => {
     <div style="width: 210mm; height: 297mm; position: relative; background: white; font-family: Arial, sans-serif; color: #000;">
       <img src="${ResultFormat}" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 0;" />
 
-      <div style="position: relative; z-index: 10; padding: 2.3in 0.8in 0.5in 0.8in;">
+      <div style="position: relative; z-index: 10; padding: 2.3in 0.4in 0.5in 0.4in;">
         
         <table style="width: 100%; font-size: 11px; font-weight: bold; border-collapse: collapse; margin-bottom: 20px;">
           <tr>
@@ -118,35 +118,82 @@ export const downloadTranscript = (resultData) => {
             </tr>
           </tfoot>
         </table>
+          <div style="margin-top: 30px;">
+            <table style="width: 100%; border-collapse: collapse; border: 1.5px solid #000; font-size: 10px; text-align: center; table-layout: fixed;">
+              <thead>
+                <tr style="background-color: #FF9714; color: #FFFFFF; font-weight: bold; height: 35px; vertical-align: middle;">
+                  <th style="border: 1px solid #000; width: 12%;">Semester/ Year</th>
+                  ${
+                    /* Logic to always show 8 columns to match screenshot width, but fill only available data */
+                    [1, 2, 3, 4, 5, 6, 7, 8]
+                      .map((num) => {
+                        const ordinals = {
+                          1: "Ist",
+                          2: "2nd",
+                          3: "3rd",
+                          4: "4th",
+                          5: "5th",
+                          6: "6th",
+                          7: "7th",
+                          8: "8th",
+                        };
+                        return `<th style="border: 1px solid #000;">${ordinals[num]} Sem/Year</th>`;
+                      })
+                      .join("")
+                  }
+                  <th style="border: 1px solid #000;">Grand Total</th>
+                  <th style="border: 1px solid #000;">Result</th>
+                  <th style="border: 1px solid #000;">Grade</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr style="height: 32px;">
+                  <td style="border: 1px solid #000; padding: 5px; font-weight: bold; text-align: left;">Maximum Marks</td>
+                  ${[1, 2, 3, 4, 5, 6, 7, 8]
+                    .map((num) => {
+                      const record = resultData.cumulative_history?.find(
+                        (h) => h.duration === num,
+                      );
+                      return `<td style="border: 1px solid #000; font-weight: bold; font-size: 12px;">${record ? record.max_marks : "----"}</td>`;
+                    })
+                    .join("")}
+                  <td style="border: 1px solid #000; font-weight: bold; font-size: 13px;">${resultData.grand_overall_details?.total_max || ""}</td>
+                  <td rowspan="2" style="border: 1px solid #000; font-weight: bold; vertical-align: middle; padding: 4px;">
+                    ${resultData.grand_overall_details?.result_status || ""}
+                  </td>
+                  <td rowspan="2" style="border: 1px solid #000; font-weight: bold; font-size: 14px; vertical-align: middle;">
+                    ${resultData.grand_overall_details?.final_grade || ""}
+                  </td>
+                </tr>
 
-        <div style="margin-top: 30px;">
-          <table style="width: 100%; border-collapse: collapse; border: 1.5px solid #000; font-size: 9px; text-align: center;">
-            <tr style="background: rgba(0,0,0,0.05);">
-              <td style="border: 1px solid #000; padding: 5px; font-weight: bold;">Year/Sem</td>
-              ${history.map((h) => `<td style="border: 1px solid #000; padding: 5px; font-weight: bold;">${h.year}</td>`).join("")}
-              <td style="border: 1px solid #000; padding: 5px; font-weight: bold; background: #eee;">Grand Total</td>
-            </tr>
-            <tr>
-              <td style="border: 1px solid #000; padding: 5px; font-weight: bold;">Maximum Marks</td>
-              ${history.map((h) => `<td style="border: 1px solid #000; padding: 5px;">${h.max_total}</td>`).join("")}
-              <td style="border: 1px solid #000; padding: 5px; font-weight: bold;">${grandTotalMax}</td>
-            </tr>
-            <tr>
-              <td style="border: 1px solid #000; padding: 5px; font-weight: bold;">Marks Obtained</td>
-              ${history.map((h) => `<td style="border: 1px solid #000; padding: 5px;">${h.obtained_total}</td>`).join("")}
-              <td style="border: 1px solid #000; padding: 5px; font-weight: bold;">${grandTotalObt}</td>
-            </tr>
-          </table>
-        </div>
+                <tr style="height: 32px;">
+                  <td style="border: 1px solid #000; padding: 5px; font-weight: bold; text-align: left;">Marks Obtained</td>
+                  ${[1, 2, 3, 4, 5, 6, 7, 8]
+                    .map((num) => {
+                      const record = resultData.cumulative_history?.find(
+                        (h) => h.duration === num,
+                      );
+                      return `<td style="border: 1px solid #000; font-weight: bold; font-size: 12px;">${record ? record.marks_obtained : "----"}</td>`;
+                    })
+                    .join("")}
+                  <td style="border: 1px solid #000; font-weight: bold; font-size: 13px;">${resultData.grand_overall_details?.total_obtained || ""}</td>
+                </tr>
+              </tbody>
+            </table>
+
+            <div style="margin-top: 12px; font-size: 12px; font-weight: bold; color: #000;">
+              Total in Word : &nbsp; <span style="font-weight: 900;">${resultData.grand_overall_details?.total_in_words || ""} Only</span>
+            </div>
+          </div>
 
         <div style="margin-top: 15px; font-size: 11px; font-weight: bold;">
           Total in Words: <span style="text-transform: capitalize;">${resultData.total_in_words || ""} Only</span>
         </div>
 
-        </div>
+      </div>
 
         
-        <div style="position: absolute; bottom: 1in; left: 0.8in; right: 0.8in; display: flex; justify-content: space-between; align-items: flex-end; z-index: 20;">
+        <div style="position: absolute; bottom: 0.8in; left: 0.4in; right: 0.4in; display: flex; justify-content: space-between; align-items: flex-end; z-index: 20;">
           <div style="font-size: 11px; font-weight: bold; color: #000;">
             ISSUE DATE : ${resultData.issue_date} [cite: 28, 65, 103]
           </div>

@@ -45,14 +45,20 @@ export const getCenterColumns = ({ handleToggle, togglingId }) => [
     key: "institute_name",
     label: "Institute",
     render: (row) => (
-      <div className="flex flex-col min-w-0">
-        <span className="font-medium text-text text-sm sm:text-base truncate">
+      <div className="flex flex-col min-w-0 max-w-[180px] sm:max-w-[280px]">
+        <span
+          className="font-medium text-text text-sm sm:text-base truncate"
+          title={row.institute_name}
+        >
           {row.institute_name}
         </span>
-        <span className="text-xs text-muted truncate hidden sm:block">
+        <span
+          className="text-xs text-muted truncate hidden sm:block"
+          title={row.institute_full_address}
+        >
           {row.institute_full_address}
         </span>
-        <span className="text-xs text-muted sm:hidden">
+        <span className="text-xs text-muted sm:hidden truncate">
           {row.state}, {row.district}
         </span>
       </div>

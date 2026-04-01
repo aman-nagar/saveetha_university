@@ -118,73 +118,71 @@ export const downloadTranscript = (resultData) => {
             </tr>
           </tfoot>
         </table>
-          <div style="margin-top: 30px;">
-            <table style="width: 100%; border-collapse: collapse; border: 1.5px solid #000; font-size: 10px; text-align: center; table-layout: fixed;">
-              <thead>
-                <tr style="background-color: #FF9714; color: #FFFFFF; font-weight: bold; height: 40px; vertical-align: middle;">
-                  <th style="border: 1px solid #000; width: 10%;">Semester/Year</th>
-                  ${
-                    /* Logic to always show 8 columns to match screenshot width, but fill only available data */
-                    [1, 2, 3, 4, 5, 6, 7, 8]
-                      .map((num) => {
-                        const ordinals = {
-                          1: "Ist",
-                          2: "2nd",
-                          3: "3rd",
-                          4: "4th",
-                          5: "5th",
-                          6: "6th",
-                          7: "7th",
-                          8: "8th",
-                        };
-                        return `<th style="border: 1px solid #000;">${ordinals[num]} Sem/Year</th>`;
-                      })
-                      .join("")
-                  }
-                  <th style="border: 1px solid #000;">Grand Total</th>
-                  <th style="border: 1px solid #000;">Result</th>
-                  <th style="border: 1px solid #000;">Grade</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr style="height: 32px;">
-                  <td style="border: 1px solid #000; padding: 5px; font-weight: bold; text-align: left;">Maximum Marks</td>
-                  ${[1, 2, 3, 4, 5, 6, 7, 8]
-                    .map((num) => {
-                      const record = resultData.cumulative_history?.find(
-                        (h) => h.duration === num,
-                      );
-                      return `<td style="border: 1px solid #000; font-weight: bold; font-size: 12px;">${record ? record.max_marks : "----"}</td>`;
-                    })
-                    .join("")}
-                  <td style="border: 1px solid #000; font-weight: bold; font-size: 13px;">${resultData.grand_overall_details?.total_max || ""}</td>
-                  <td rowspan="2" style="border: 1px solid #000; font-weight: bold; vertical-align: middle; padding: 4px;">
-                    ${resultData.grand_overall_details?.result_status || ""}
-                  </td>
-                  <td rowspan="2" style="border: 1px solid #000; font-weight: bold; font-size: 14px; vertical-align: middle;">
-                    ${resultData.grand_overall_details?.final_grade || ""}
-                  </td>
-                </tr>
+        <div style="margin-top: 30px;">
+          <table style="width: 100%; border-collapse: collapse; border: 1.5px solid #000; font-size: 8px; text-align: center; table-layout: fixed;">
+            <thead>
+              <tr style="background-color: #FF9714; color: #FFFFFF; font-weight: bold; height: 40px;">
+                <th style="border: 1px solid #000; width: 12%; vertical-align: middle;">Semester/ Year</th>
+                ${[1, 2, 3, 4, 5, 6, 7, 8]
+                  .map((num) => {
+                    const ordinals = {
+                      1: "Ist",
+                      2: "2nd",
+                      3: "3rd",
+                      4: "4th",
+                      5: "5th",
+                      6: "6th",
+                      7: "7th",
+                      8: "8th",
+                    };
+                    return `<th style="border: 1px solid #000; vertical-align: middle;">${ordinals[num]} Sem/Year</th>`;
+                  })
+                  .join("")}
+                <th style="border: 1px solid #000; vertical-align: middle;">Grand Total</th>
+                <th style="border: 1px solid #000; vertical-align: middle;">Result</th>
+                <th style="border: 1px solid #000; vertical-align: middle;">Grade</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr style="height: 32px;">
+                <td style="border: 1px solid #000; padding: 5px; font-weight: bold; text-align: left; vertical-align: middle;">Maximum Marks</td>
+                ${[1, 2, 3, 4, 5, 6, 7, 8]
+                  .map((num) => {
+                    const record = resultData.cumulative_history?.find(
+                      (h) => Number(h.duration) === num,
+                    );
+                    return `<td style="border: 1px solid #000; font-weight: bold; font-size: 12px; vertical-align: middle;">${record ? record.max_marks : "----"}</td>`;
+                  })
+                  .join("")}
+                <td style="border: 1px solid #000; font-weight: bold; font-size: 13px; vertical-align: middle;">${resultData.grand_overall_details?.total_max || ""}</td>
+                <td rowspan="2" style="border: 1px solid #000; font-weight: bold; vertical-align: middle; padding: 4px;">
+                  ${resultData.grand_overall_details?.result_status || ""}
+                </td>
+                <td rowspan="2" style="border: 1px solid #000; font-weight: bold; font-size: 14px; vertical-align: middle;">
+                  ${resultData.grand_overall_details?.final_grade || ""}
+                </td>
+              </tr>
 
-                <tr style="height: 32px;">
-                  <td style="border: 1px solid #000; padding: 5px; font-weight: bold; text-align: left;">Marks Obtained</td>
-                  ${[1, 2, 3, 4, 5, 6, 7, 8]
-                    .map((num) => {
-                      const record = resultData.cumulative_history?.find(
-                        (h) => h.duration === num,
-                      );
-                      return `<td style="border: 1px solid #000; font-weight: bold; font-size: 12px;">${record ? record.marks_obtained : "----"}</td>`;
-                    })
-                    .join("")}
-                  <td style="border: 1px solid #000; font-weight: bold; font-size: 13px;">${resultData.grand_overall_details?.total_obtained || ""}</td>
-                </tr>
-              </tbody>
-            </table>
+              <tr style="height: 32px;">
+                <td style="border: 1px solid #000; padding: 5px; font-weight: bold; text-align: left; vertical-align: middle;">Marks Obtained</td>
+                ${[1, 2, 3, 4, 5, 6, 7, 8]
+                  .map((num) => {
+                    const record = resultData.cumulative_history?.find(
+                      (h) => Number(h.duration) === num,
+                    );
+                    return `<td style="border: 1px solid #000; font-weight: bold; font-size: 12px; vertical-align: middle;">${record ? record.marks_obtained : "----"}</td>`;
+                  })
+                  .join("")}
+                <td style="border: 1px solid #000; font-weight: bold; font-size: 13px; vertical-align: middle;">${resultData.grand_overall_details?.total_obtained || ""}</td>
+              </tr>
+            </tbody>
+          </table>
 
-            <div style="margin-top: 12px; font-size: 12px; font-weight: bold; color: #000;">
-              Total in Word : &nbsp; <span style="font-weight: 900;">${resultData.grand_overall_details?.total_in_words || ""} Only</span>
-            </div>
+          <div style="margin-top: 12px; font-size: 12px; font-weight: bold; color: #000;">
+            Total in Word : &nbsp; <span style="font-weight: 900;">${resultData.grand_overall_details?.total_in_words || ""} Only</span>
           </div>
+        </div>
+
       </div>
 
         

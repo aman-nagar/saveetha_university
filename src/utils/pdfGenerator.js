@@ -42,7 +42,7 @@ export const downloadTranscript = (resultData) => {
         <div style="background-color: #FF9714; color: #FFFFFF; border: 1.5px solid #000; border-bottom: none; text-align: center; height: 35px;  font-size: 14px; font-weight: bold; ">
           STATEMENT OF MARKS
         </div>
-        <table style="width: 100%; border-collapse: collapse; border: 1.5px solid #000; font-size: 10px; text-align: center;">
+        <table style="width: 100%; border-collapse: collapse; border: 1.5px solid #000; font-size: 10px; text-align: center; min-height: 425px;">
          <thead>
             <tr style="background: rgba(0,0,0,0.08); height: 38px; vertical-align: middle;">
               <th rowspan="2" style="border: 1px solid #000; padding: 6px; width: 12%; vertical-align: middle;">Subject Code</th>
@@ -180,7 +180,7 @@ export const downloadTranscript = (resultData) => {
         
         <div style="position: absolute; bottom: 0.8in; left: 0.4in; right: 0.4in; display: flex; justify-content: space-between; align-items: flex-end; z-index: 20;">
           <div style="font-size: 11px; font-weight: bold; color: #000;">
-            ISSUE DATE : ${resultData.issue_date} [cite: 28, 65, 103]
+            ISSUE DATE : ${resultData.issue_date}
           </div>
 
           <div style="text-align: center; width: 2.2in;">

@@ -22,6 +22,24 @@ export async function fetchStudentById(id) {
   return apiRequest(`/students/index.php?id=${id}`);
 }
 
+// get inactive students list
+export async function fetchInactiveStudents({ page = 1, search = "" } = {}) {
+  let endpoint = `/admin/inactive_students.php?page=${page}`;
+  if (search.trim()) {
+    endpoint += `&search=${encodeURIComponent(search.trim())}`;
+  }
+
+  const result = await apiRequest(endpoint);
+
+  return {
+    students: result.students || [],
+    current_page: result.current_page || page,
+    total_pages: result.total_pages || 1,
+    total: result.total_records || 0,
+    per_page: result.per_page || 10,
+  };
+}
+
 // get recycle list
 export async function getRecycleStudentsList({ page = 1, search = "" } = {}) {
   // Construct the endpoint

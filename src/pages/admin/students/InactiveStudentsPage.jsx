@@ -1,4 +1,4 @@
-// src/pages/admin/students/StudentListPage.jsx
+// src/pages/admin/students/InactiveStudentsPage.jsx
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { FaSearch } from "react-icons/fa";
@@ -9,36 +9,30 @@ import { useConfirm } from "../../../hooks/useConfirm";
 import StudentDetailView from "../../../components/admin/students/StudentDetailView";
 import {
   fetchStudentById,
-  fetchStudents,
-  getRecycleStudentsList,
+  fetchInactiveStudents,
   updateStudentStatus,
   deleteStudent,
-  restoreStudent,
 } from "../../../api/students/studentApi";
 import { fetchAllCourses } from "../../../api/courses/courseApi";
 import { useAuth } from "../../../context/AuthContext";
 import Pagination from "../../../components/ui/Pagination";
 import DataTableLayout from "../../../components/table/DataTableLayout";
-import { getStudentActions, getStudentColumns } from "./studentTableConfig.js";
+import { getStudentColumns, getStudentActions } from "./studentTableConfig.js";
 import { downloadStudentPdf } from "../../../utils/studentPdf.js";
 
-export default function StudentListPage() {
+export default function InactiveStudentsPage() {
   const { user } = useAuth();
   const isAdmin = user?.role === "admin";
   const { toast, show, clear } = useToast();
   const { target, isOpen, open, close } = useConfirm();
   const navigate = useNavigate();
-  const basePath = isAdmin
-    ? "/admin"
-    : user?.role === "center"
-      ? "/center"
-      : "/sub-center";
+  const basePath = "/admin";
+
   const [students, setStudents] = useState([]);
   const [search, setSearch] = useState("");
   const [loading, setLoading] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
-  const [mode, setMode] = useState("active");
 
   const [selectedStudent, setSelectedStudent] = useState(null);
   const [viewOpen, setViewOpen] = useState(false);
@@ -51,7 +45,6 @@ export default function StudentListPage() {
     const loadCourses = async () => {
       try {
         const response = await fetchAllCourses();
-        // Handle both wrapped and unwrapped responses
         const courseList = Array.isArray(response)
           ? response
           : Array.isArray(response?.data)
@@ -68,25 +61,18 @@ export default function StudentListPage() {
 
   useEffect(() => {
     loadStudents(1, search);
-  }, [mode]);
+  }, []);
 
   const loadStudents = async (page = 1, searchTerm = "") => {
     setLoading(true);
     try {
-      let data;
-      if (mode === "active") {
-        data = await fetchStudents({ page, search: searchTerm });
-        // Show all students in "All Students" page (both active and inactive)
-        // The separate "Inactive Students" page handles inactive students only
-      } else {
-        data = await getRecycleStudentsList({ page, search: searchTerm });
-      }
+      const data = await fetchInactiveStudents({ page, search: searchTerm });
       setStudents(data.students || []);
       setCurrentPage(data.current_page || 1);
       setTotalPages(data.total_pages || 1);
       setPerPage(data.per_page || 10);
     } catch (err) {
-      show("error", err.message || "Failed to load students");
+      show("error", err.message || "Failed to load inactive students");
     } finally {
       setLoading(false);
     }
@@ -140,12 +126,8 @@ export default function StudentListPage() {
     open({
       ...row,
       actionType: "delete",
-      isPermanent: mode === "recycle",
+      isPermanent: false,
     });
-  };
-
-  const handleRestore = async (row) => {
-    open({ ...row, actionType: "restore" });
   };
 
   const [isProcessing, setIsProcessing] = useState(false);
@@ -158,17 +140,10 @@ export default function StudentListPage() {
     try {
       if (target.actionType === "delete") {
         await deleteStudent(target.id);
-        show(
-          "success",
-          target.isPermanent ? "Permanently deleted" : "Moved to Recycle Bin",
-        );
-      } else {
-        await restoreStudent(target.id);
-        show("success", "Student restored to Active");
+        show("success", "Moved to Recycle Bin");
       }
 
       setStudents((prev) => prev.filter((s) => s.id !== target.id));
-
       close();
     } catch (err) {
       show("error", err.message || "Action failed");
@@ -181,7 +156,6 @@ export default function StudentListPage() {
     try {
       const fullData = await fetchStudentById(row.id);
       downloadStudentPdf(fullData);
-      console.log(fullData);
     } catch (err) {
       show("error", "Failed to load student data for PDF");
     }
@@ -194,20 +168,19 @@ export default function StudentListPage() {
   }, {});
 
   const columns = getStudentColumns({
-    mode,
+    mode: "inactive",
     isAdmin,
     handleToggleStatus,
     courseMap,
   });
 
   const actions = getStudentActions({
-    mode,
+    mode: "inactive",
     isAdmin,
     handleView,
     handleEdit,
     handleDownloadPdf,
     handleDelete,
-    handleRestore,
   });
 
   const toolbar = (
@@ -223,32 +196,6 @@ export default function StudentListPage() {
           className="pl-9 pr-4 py-2 text-sm border border-border rounded-lg bg-surface text-text w-full sm:w-56 md:w-64 focus:outline-none focus:ring-2 focus:ring-primary/40"
         />
       </div>
-
-      {/* Mode switch */}
-      {isAdmin && (
-        <div className="flex border border-border rounded-lg overflow-hidden shadow-sm self-start sm:self-auto">
-          <button
-            onClick={() => setMode("active")}
-            className={`flex-1 sm:flex-none px-3 sm:px-4 py-2 text-xs sm:text-sm font-medium transition ${
-              mode === "active"
-                ? "bg-primary text-white"
-                : "bg-surface text-text hover:bg-bg"
-            }`}
-          >
-            Active
-          </button>
-          <button
-            onClick={() => setMode("recycle")}
-            className={`flex-1 sm:flex-none px-3 sm:px-4 py-2 text-xs sm:text-sm font-medium border-l border-border transition ${
-              mode === "recycle"
-                ? "bg-primary text-white"
-                : "bg-surface text-text hover:bg-bg"
-            }`}
-          >
-            Recycle Bin
-          </button>
-        </div>
-      )}
     </div>
   );
 
@@ -257,7 +204,7 @@ export default function StudentListPage() {
       {toast && <Toast {...toast} onClose={clear} />}
 
       <DataTableLayout
-        title={mode === "active" ? "All Students" : "Recycle Bin"}
+        title="Inactive Students"
         toolbar={toolbar}
         pagination={
           <Pagination
@@ -273,22 +220,13 @@ export default function StudentListPage() {
           actions={actions}
           loading={loading}
           pageOffset={(currentPage - 1) * perPage}
-          emptyMessage={
-            mode === "active"
-              ? "No active students found"
-              : "Recycle bin is empty"
-          }
+          emptyMessage="No inactive students found"
         />
       </DataTableLayout>
+
       <Modal isOpen={isOpen} onClose={close} size="sm" title="Confirm Action">
         <div className="p-4 text-center space-y-4">
-          <p className="text-sm">
-            {target?.actionType === "delete"
-              ? target?.isPermanent
-                ? "Permanently delete this student?"
-                : "Move student to Recycle Bin?"
-              : "Restore this student to Active list?"}
-          </p>
+          <p className="text-sm">Move student to Recycle Bin?</p>
 
           <div className="flex gap-3">
             <button onClick={close} className="flex-1 py-2 border rounded-lg">
@@ -305,6 +243,7 @@ export default function StudentListPage() {
           </div>
         </div>
       </Modal>
+
       {/* View Modal */}
       <Modal
         isOpen={viewOpen}

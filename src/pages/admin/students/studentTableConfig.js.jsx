@@ -86,10 +86,27 @@ export const getStudentColumns = ({
   { key: "email", label: "Email" },
 
   {
+    key: "admitted_by",
+    label: "Admitted By",
+    render: (row) => {
+      // If institute_name exists and is not empty, show it
+      if (row.institute_name && row.institute_name.trim() !== "") {
+        return (
+          <span className="text-sm text-text font-medium">
+            {row.institute_name}
+          </span>
+        );
+      }
+      // Otherwise, it was admitted by admin
+      return <span className="text-sm text-primary font-semibold">Admin</span>;
+    },
+  },
+
+  {
     key: "status",
     label: "Status",
     render: (row) =>
-      mode === "active" ? (
+      mode === "active" || mode === "inactive" ? (
         <StatusToggle
           row={row}
           onToggle={handleToggleStatus}
@@ -111,7 +128,7 @@ export const getStudentActions = ({
   handleDelete,
   handleRestore,
 }) => {
-  if (mode === "active") {
+  if (mode === "active" || mode === "inactive") {
     const actions = [
       {
         icon: <FaEye />,

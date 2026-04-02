@@ -1,7 +1,9 @@
+// src/api/center/centerApi.jsx
 import { apiRequest } from "../client";
 
 const CENTER_ENDPOINT = "/centers/index.php";
 const UPDATE_ENDPOINT = "/centers/update.php";
+const DASHBOARD_ENDPOINT = "/centers/center_dashboard.php";
 
 export function fetchCenters({ page = 1, search = "" } = {}) {
   const params = new URLSearchParams();
@@ -50,4 +52,8 @@ export function deleteCenter(id) {
     },
     body: JSON.stringify({ id }),
   });
+}
+
+export function fetchCenterDashboard() {
+  return apiRequest(`${DASHBOARD_ENDPOINT}`);
 }

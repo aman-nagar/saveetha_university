@@ -1,50 +1,71 @@
 // src/pages/center/CenterDashboard.jsx
-import React from "react";
+import React, { useEffect, useState } from "react";
+import {
+  HiUsers,
+  HiUserRemove,
+  HiIdentification,
+  HiAcademicCap,
+} from "react-icons/hi";
 import CenterStatsCard from "../../components/center/CenterStatsCard";
+import { fetchCenterDashboard } from "../../api/center/centerApi";
+import LoadingFallback from "../../components/ui/LoadingFallback";
 
 export default function CenterDashboardPage() {
+  const [stats, setStats] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetchCenterDashboard()
+      .then((res) => {
+        if (res.success) setStats(res.data);
+      })
+      .catch((err) => console.error("Dashboard Fetch Error:", err))
+      .finally(() => setLoading(false));
+  }, []);
+
+  if (loading) return <LoadingFallback variant="dashboard" />;
+
   return (
-    <div className="p-6 space-y-8">
-      {/* Header */}
-      <div>
-        <h1 className="text-2xl md:text-3xl font-bold text-primary">
-          Center Dashboard
+    <div className="p-4 sm:p-8 space-y-8 bg-bg min-h-screen">
+      {/* Header Section */}
+      <div className="flex flex-col gap-2">
+        <h1 className="text-3xl font-heading font-extrabold text-primary tracking-tight">
+          WIEP Overview
         </h1>
-        <p className="text-muted mt-1">Welcome back, Center Name</p>
+        <div className="flex items-center gap-2">
+          <span className="w-2 h-2 rounded-full bg-success animate-pulse"></span>
+          <p className="text-muted font-medium text-sm">
+            System Live: Dashboard Analytics
+          </p>
+        </div>
       </div>
 
-      {/* Quick Stats */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      {/* Stats Grid - Mapping API Data */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
         <CenterStatsCard
-          title="Total Sub-centers"
-          value="12"
-          icon="building"
-          color="blue"
+          title="Total Students"
+          value={stats?.total_students || 0}
+          icon={HiUsers}
+          colorClass="text-primary bg-primary/10"
         />
         <CenterStatsCard
-          title="Active Students"
-          value="348"
-          icon="users"
-          color="green"
+          title="Inactive Students"
+          value={stats?.inactive_students || 0}
+          icon={HiUserRemove}
+          colorClass="text-secondary bg-secondary/10"
         />
         <CenterStatsCard
-          title="Pending Admissions"
-          value="19"
-          icon="clock"
-          color="yellow"
+          title="Admit Cards"
+          value={stats?.total_admit_cards || 0}
+          icon={HiIdentification}
+          colorClass="text-warning bg-warning/10"
         />
         <CenterStatsCard
-          title="Revenue This Month"
-          value="₹4.2L"
-          icon="rupee"
-          color="purple"
+          title="Total Results"
+          value={stats?.total_results || 0}
+          icon={HiAcademicCap}
+          colorClass="text-success bg-success/10"
         />
-      </div>
-
-      {/* Optional: Recent Activity / Notices */}
-      <div className="bg-surface border border-border rounded-xl p-6">
-        <h2 className="text-lg font-semibold mb-4">Recent Activity</h2>
-        <p className="text-muted">No recent activity to show.</p>
       </div>
     </div>
   );

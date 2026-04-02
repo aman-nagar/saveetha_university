@@ -86,3 +86,23 @@ export const formatOrdinal = (number) => {
   // Default to "th" for everything else (4th, 5th, 11th, etc.)
   return n + "th";
 };
+
+export const formatRoman = (number) => {
+  const n = parseInt(number, 10);
+  if (isNaN(n)) return number;
+
+  const romanMap = {
+    1: "I",
+    2: "II",
+    3: "III",
+    4: "IV",
+    5: "V",
+    6: "VI",
+    7: "VII",
+    8: "VIII",
+    9: "IX",
+    10: "X",
+  };
+
+  return romanMap[n] || number;
+};

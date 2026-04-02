@@ -12,7 +12,7 @@ export const ResultPDFTemplate = React.forwardRef(({ result, user }, ref) => {
       className="relative flex-shrink-0 bg-white"
       style={{
         width: "794px",
-        height: "1123px",
+        height: "1122px",
         color: "#000000",
         fontFamily: "'Helvetica', 'Arial', sans-serif",
       }}
@@ -33,7 +33,7 @@ export const ResultPDFTemplate = React.forwardRef(({ result, user }, ref) => {
         <div
           style={{
             position: "absolute",
-            top: "229px",
+            top: "223px",
             left: "245px",
             fontWeight: "700",
           }}
@@ -43,39 +43,39 @@ export const ResultPDFTemplate = React.forwardRef(({ result, user }, ref) => {
         <div
           style={{
             position: "absolute",
-            top: "252px",
+            top: "247px",
             left: "665px",
             fontWeight: "700",
           }}
         >
-          {result.duration_type?.toUpperCase()} {formatOrdinal(result.duration)}
+          {formatOrdinal(result.duration)} {result.duration_type?.toUpperCase()}
         </div>
 
         {/* Personal Details - Standardized Alignment */}
-        <div style={{ position: "absolute", top: "269px", left: "245px" }}>
+        <div style={{ position: "absolute", top: "266px", left: "265px" }}>
           {result.roll_no}
         </div>
         <div
           style={{
             position: "absolute",
-            top: "297px",
-            left: "245px",
+            top: "295px",
+            left: "265px",
             fontWeight: "600",
           }}
         >
           {(result.student_name || user?.name || "N/A").toUpperCase()}
         </div>
-        <div style={{ position: "absolute", top: "325px", left: "245px" }}>
+        <div style={{ position: "absolute", top: "323px", left: "265px" }}>
           {(result.father_name || user?.father_name || "N/A").toUpperCase()}
         </div>
-        <div style={{ position: "absolute", top: "355px", left: "245px" }}>
+        <div style={{ position: "absolute", top: "353px", left: "265px" }}>
           {(result.mother_name || user?.mother_name || "N/A").toUpperCase()}
         </div>
         <div
           style={{
             position: "absolute",
-            top: "383px",
-            left: "245px",
+            top: "380px",
+            left: "265px",
             fontWeight: "600",
           }}
         >
@@ -110,7 +110,7 @@ export const ResultPDFTemplate = React.forwardRef(({ result, user }, ref) => {
                     border: "1px solid #000000",
                     padding: "8px 4px",
                     verticalAlign: "middle",
-                    width: "60px", // Small width for code
+                    width: "60px",
                   }}
                 >
                   Code
@@ -131,9 +131,9 @@ export const ResultPDFTemplate = React.forwardRef(({ result, user }, ref) => {
                 <th
                   colSpan={2}
                   style={{
-                    backgroundColor: "#f3f4f6" /* MOVED HERE */,
+                    backgroundColor: "#f3f4f6",
                     border: "1px solid #000000",
-                    padding: "4px",
+                    padding: "14px",
                     verticalAlign: "middle",
                     textAlign: "center",
                     width: "130px",
@@ -144,7 +144,7 @@ export const ResultPDFTemplate = React.forwardRef(({ result, user }, ref) => {
                 <th
                   colSpan={2}
                   style={{
-                    backgroundColor: "#f3f4f6" /* MOVED HERE */,
+                    backgroundColor: "#f3f4f6",
                     border: "1px solid #000000",
                     padding: "4px",
                     verticalAlign: "middle",
@@ -157,7 +157,7 @@ export const ResultPDFTemplate = React.forwardRef(({ result, user }, ref) => {
                 <th
                   rowSpan={2}
                   style={{
-                    backgroundColor: "#f3f4f6" /* MOVED HERE */,
+                    backgroundColor: "#f3f4f6",
                     border: "1px solid #000000",
                     width: "65px",
                     verticalAlign: "middle",
@@ -171,10 +171,10 @@ export const ResultPDFTemplate = React.forwardRef(({ result, user }, ref) => {
               <tr style={{ fontSize: "9px", fontWeight: "bold" }}>
                 <th
                   style={{
-                    backgroundColor: "#f3f4f6" /* MOVED HERE */,
+                    backgroundColor: "#f3f4f6",
                     border: "1px solid #000000",
                     width: "65px",
-                    padding: "4px",
+                    padding: "14px",
                     verticalAlign: "middle",
                     textAlign: "center",
                   }}
@@ -183,7 +183,7 @@ export const ResultPDFTemplate = React.forwardRef(({ result, user }, ref) => {
                 </th>
                 <th
                   style={{
-                    backgroundColor: "#f3f4f6" /* MOVED HERE */,
+                    backgroundColor: "#f3f4f6",
                     border: "1px solid #000000",
                     width: "65px",
                     padding: "4px",
@@ -195,7 +195,7 @@ export const ResultPDFTemplate = React.forwardRef(({ result, user }, ref) => {
                 </th>
                 <th
                   style={{
-                    backgroundColor: "#f3f4f6" /* MOVED HERE */,
+                    backgroundColor: "#f3f4f6",
                     border: "1px solid #000000",
                     width: "65px",
                     padding: "4px",
@@ -207,7 +207,7 @@ export const ResultPDFTemplate = React.forwardRef(({ result, user }, ref) => {
                 </th>
                 <th
                   style={{
-                    backgroundColor: "#f3f4f6" /* MOVED HERE */,
+                    backgroundColor: "#f3f4f6",
                     border: "1px solid #000000",
                     width: "65px",
                     padding: "4px",

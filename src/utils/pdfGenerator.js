@@ -1,5 +1,6 @@
 import html2pdf from "html2pdf.js";
 import ResultFormat from "../assets/images/marksheet.png";
+import { formatRoman } from "./formatters";
 
 export const getTranscriptHtml = (resultData) => {
   const cumulativeHistory = resultData.cumulative_history || [];
@@ -32,7 +33,7 @@ export const getTranscriptHtml = (resultData) => {
             <td style="padding: 4px 0;">COURSE :</td>
             <td style="padding: 4px 0; font-weight: bold;">${resultData.course_name || ""}</td>
             <td style="padding: 4px 0;">YEAR/SEM :</td>
-            <td style="padding: 4px 0; font-weight: bold;">${resultData.duration || ""} ${resultData.duration_type || ""}</td>
+            <td style="padding: 4px 0; font-weight: bold;">${formatRoman(resultData.duration) || ""} ${resultData.duration_type || ""}</td>
           </tr>
         </table>
 

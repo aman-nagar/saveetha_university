@@ -5,7 +5,7 @@ export const getTranscriptHtml = (resultData) => {
   const cumulativeHistory = resultData.cumulative_history || [];
 
   return `
-    <div style="width: 210mm; height: 297mm; position: relative; background: white; font-family: Arial, Helvetica, sans-serif; color: #000;">
+    <div style="width: 210mm; height: 296.5mm; position: relative; background: white; font-family: Arial, Helvetica, sans-serif; color: #000;">
       <img src="${ResultFormat}" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 0;" />
 
       <div style="position: relative; z-index: 10; padding: 2.3in 0.4in 0.5in 0.4in;">

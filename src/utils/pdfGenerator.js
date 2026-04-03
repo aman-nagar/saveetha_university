@@ -3,13 +3,14 @@ import ResultFormat from "../assets/images/marksheet.png";
 import { formatRoman } from "./formatters";
 
 export const getTranscriptHtml = (resultData, isPdf = false) => {
+  console.log(resultData);
   const cumulativeHistory = resultData.cumulative_history || [];
 
   return `
     <div style="width: 210mm; height: 296.5mm; position: relative; background: white; font-family: Arial, Helvetica, sans-serif; color: #000;">
       <img src="${ResultFormat}" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 0;" />
 
-      <div style="position: relative; z-index: 10; padding: 2.3in 0.4in 0.5in 0.4in;">
+      <div style="position: relative; z-index: 10; padding: 2.3in 0.5in 0.5in 0.5in;">
         <table style="width: 100%; font-size: 11px;  border-collapse: collapse; margin-bottom: 20px;">
           <tr>
             <td style="width: 20%; padding: 4px 0;">STUDENT'S NAME</td>
@@ -47,19 +48,19 @@ export const getTranscriptHtml = (resultData, isPdf = false) => {
               <th rowspan="2" style="border: 1px solid #000; padding: 6px; width: 12%; ">Subject Code</th>
               <th rowspan="2" style="border: 1px solid #000; padding: 6px; text-align: left; width: 40%; ">Name of the Subject</th>
               <th rowspan="2" style="border: 1px solid #000; padding: 6px; width: 12%; ">Max Marks</th>
-              <th colspan="2" style="border: 1px solid #000; width: 24%; ${isPdf ? "padding-bottom: 15px;" : "vertical-align: middle;"}">Marks Obtained</th>
+              <th colspan="2" style="border: 1px solid #000; width: 24%; ${isPdf ? "padding-bottom: 15px;" : ""}">Marks Obtained</th>
               <th rowspan="2" style="border: 1px solid #000; padding: 6px; width: 12%; ">Total</th>
             </tr>
             <tr style="background: rgba(0,0,0,0.08); height: 32px;">
-              <th style="border: 1px solid #000;height: 32px;text-align: center; ${isPdf ? "padding-bottom: 15px;" : "vertical-align: middle;"}">Theory</th>
-              <th style="border: 1px solid #000;height: 32px;text-align: center; ${isPdf ? "padding-bottom: 15px;" : "vertical-align: middle;"}">Practical</th>
+              <th style="border: 1px solid #000;height: 32px;text-align: center; ${isPdf ? "padding-bottom: 15px;" : ""}">Theory</th>
+              <th style="border: 1px solid #000;height: 32px;text-align: center; ${isPdf ? "padding-bottom: 15px;" : ""}">Practical</th>
             </tr>
           </thead>
           <tbody>
             ${(resultData.subjects || [])
               .map(
                 (sub) => `
-              <tr style="height: 30px; vertical-align: middle;">
+              <tr style="height: 30px; ">
                 <td style="border-left: 1px solid #000; border-right: 1px solid #000; padding: 6px;">${sub.subject_code || "-"}</td>
                 <td style="border-left: 1px solid #000; border-right: 1px solid #000; padding: 6px; text-align: left;">${sub.subject_name.toUpperCase() || ""}</td>
                 <td style="border-left: 1px solid #000; border-right: 1px solid #000; padding: 6px;">${Number(sub.max_theory_marks || 0) + Number(sub.max_practical_marks || 0)}</td>
@@ -80,7 +81,7 @@ export const getTranscriptHtml = (resultData, isPdf = false) => {
               <td style="border-left: 1px solid #000; border-right: 1px solid #000;"></td>
             </tr>
           </tbody>
-          <tfoot style="font-weight: bold; font-size: 11px;">
+          <tfoot style="font-weight: bolder; font-size: 13px;">
             <tr style="border: 1.5px solid #000; height: 35px;">
               <td colspan="2" style="border: 1px solid #000; text-align: left; padding-left: 10px;">
                 <div style="${isPdf ? "padding-bottom: 15px;" : ""} display: flex; justify-content: space-between; width: 90%; padding-left: 40px;">
@@ -91,16 +92,16 @@ export const getTranscriptHtml = (resultData, isPdf = false) => {
               <td style="${isPdf ? "padding-bottom: 15px;" : ""} border: 1px solid #000; width: 12%;">${resultData.current_year_details?.max_marks || ""}</td>
               <td style="${isPdf ? "padding-bottom: 15px;" : ""} border: 1px solid #000; width: 12%;">${resultData.current_year_details?.theory_total || ""}</td>
               <td style="${isPdf ? "padding-bottom: 15px;" : ""} border: 1px solid #000; width: 12%;">${resultData.current_year_details?.practical_total || ""}</td>
-              <td style="${isPdf ? "padding-bottom: 15px;" : ""} border: 1px solid #000; width: 12%; font-size: 13px;">${resultData.current_year_details?.obtained_marks || ""}</td>
+              <td style="${isPdf ? "padding-bottom: 15px;" : ""} border: 1px solid #000; width: 12%;">${resultData.current_year_details?.obtained_marks || ""}</td>
             </tr>
           </tfoot>
         </table>
 
         <div style="margin-top: 30px;">
-          <table style="width: 100%; border-collapse: collapse; border: 1.5px solid #000; font-size: 8px; text-align: center; table-layout: fixed;">
+          <table style="width: 100%; border-collapse: collapse; border: 1.5px solid #000; font-size: 10px; text-align: center; table-layout: fixed;">
             <thead>
               <tr style="background-color: #FF9714; color: #FFFFFF; font-weight: bold; height: 40px;">
-                <th style="border: 1px solid #000; width: 12%; vertical-align: middle;">Semester/ Year</th>
+                <th style="${isPdf ? "padding-bottom: 12px;" : ""} border: 1px solid #000; width: 10%; ">Semester/ Year</th>
                 ${[1, 2, 3, 4, 5, 6, 7, 8]
                   .map((num) => {
                     const ordinals = {
@@ -113,52 +114,52 @@ export const getTranscriptHtml = (resultData, isPdf = false) => {
                       7: "7th",
                       8: "8th",
                     };
-                    return `<th style="border: 1px solid #000; vertical-align: middle;">${ordinals[num]} Sem/Year</th>`;
+                    return `<th style="${isPdf ? "padding-bottom: 12px;" : ""} border: 1px solid #000; ">${ordinals[num]} Sem/Year</th>`;
                   })
                   .join("")}
-                <th style="border: 1px solid #000; vertical-align: middle;">Grand Total</th>
-                <th style="border: 1px solid #000; vertical-align: middle;">Result</th>
-                <th style="border: 1px solid #000; vertical-align: middle;">Grade</th>
+                <th style="${isPdf ? "padding-bottom: 12px;" : ""} border: 1px solid #000;">Grand Total</th>
+                <th style="${isPdf ? "padding-bottom: 12px;" : ""} border: 1px solid #000; width:10%;">Result</th>
+                <th style="${isPdf ? "padding-bottom: 12px;" : ""} border: 1px solid #000; ">Grade</th>
               </tr>
             </thead>
             <tbody>
               <tr style="height: 32px;">
-                <td style="border: 1px solid #000; padding: 5px; font-weight: bold; text-align: left; vertical-align: middle;">Maximum Marks</td>
+                <td style="${isPdf ? "padding-bottom: 15px;" : ""} padding-left:5px; border: 1px solid #000; font-weight: bold; text-align: left;">Maximum Marks</td>
                 ${[1, 2, 3, 4, 5, 6, 7, 8]
                   .map((num) => {
                     const record = cumulativeHistory.find(
                       (h) => Number(h.duration) === num,
                     );
-                    return `<td style="border: 1px solid #000; font-weight: bold; font-size: 12px; vertical-align: middle;">${record?.max_marks || "----"}</td>`;
+                    return `<td style="${isPdf ? "padding-bottom: 12px;" : ""} border: 1px solid #000; font-weight: bold; font-size: 14px; ">${record?.max_marks || "----"}</td>`;
                   })
                   .join("")}
-                <td style="border: 1px solid #000; font-weight: bold; font-size: 13px; vertical-align: middle;">${resultData.grand_overall_details?.total_max || ""}</td>
-                <td rowspan="2" style="border: 1px solid #000; font-weight: bold; vertical-align: middle; padding: 4px;">${resultData.grand_overall_details?.result_status || ""}</td>
-                <td rowspan="2" style="border: 1px solid #000; font-weight: bold; font-size: 14px; vertical-align: middle;">${resultData.grand_overall_details?.final_grade || ""}</td>
+                <td style="${isPdf ? "padding-bottom: 12px;" : ""} border: 1px solid #000; font-weight: bold; font-size: 13px;">${resultData.grand_overall_details?.total_max || ""}</td>
+                <td rowspan="2" style="${isPdf ? "padding-bottom: 12px;" : ""} border: 1px solid #000; font-weight: bolder; font-size: 12px; ">${resultData.grand_overall_details?.result_status || ""}</td>
+                <td rowspan="2" style="${isPdf ? "padding-bottom: 12px;" : ""} border: 1px solid #000; font-weight: bold; font-size: 14px;">${resultData.grand_overall_details?.final_grade || ""}</td>
               </tr>
               <tr style="height: 32px;">
-                <td style="border: 1px solid #000; padding: 5px; font-weight: bold; text-align: left; vertical-align: middle;">Marks Obtained</td>
+                <td style="${isPdf ? "padding-bottom: 12px;" : ""} padding-left:5px; border: 1px solid #000; font-weight: bold; text-align: left; ">Marks Obtained</td>
                 ${[1, 2, 3, 4, 5, 6, 7, 8]
                   .map((num) => {
                     const record = cumulativeHistory.find(
                       (h) => Number(h.duration) === num,
                     );
-                    return `<td style="border: 1px solid #000; font-weight: bold; font-size: 12px; vertical-align: middle;">${record?.marks_obtained || "----"}</td>`;
+                    return `<td style="${isPdf ? "padding-bottom: 12px;" : ""} border: 1px solid #000; font-weight: bold; font-size: 14px; ">${record?.marks_obtained || "----"}</td>`;
                   })
                   .join("")}
-                <td style="border: 1px solid #000; font-weight: bold; font-size: 13px; vertical-align: middle;">${resultData.grand_overall_details?.total_obtained || ""}</td>
+                <td style="${isPdf ? "padding-bottom: 12px;" : ""} border: 1px solid #000; font-weight: bold; font-size: 13px; ">${resultData.grand_overall_details?.total_obtained || ""}</td>
               </tr>
-              <tr>
+              <tr style="height:32px">
                 <td 
                   colspan="12" 
-                  style="
+                  style="${isPdf ? "padding-bottom: 12px;" : ""}
                     border: 1px solid #000;
-                    padding: 6px;
                     text-align: left;
                     white-space: nowrap;
+                    padding-left:5px;
                   "
                 >
-                  Total in Word : <span style="font-size: 10px; font-weight: bold;">${resultData.grand_overall_details?.total_in_words || ""} Only</span>
+                  Total in Word : <span style="font-size: 12px; font-weight: bold;">${resultData.grand_overall_details?.total_in_words || ""} Only</span>
                 </td>
               </tr>
             </tbody>

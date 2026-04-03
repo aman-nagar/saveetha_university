@@ -1,6 +1,6 @@
 import html2pdf from "html2pdf.js";
 import ResultFormat from "../assets/images/marksheet.png";
-import { formatRoman } from "./formatters";
+import { formatDateDDMMYYYY, formatRoman } from "./formatters";
 
 export const getTranscriptHtml = (resultData, isPdf = false) => {
   console.log(resultData);
@@ -168,7 +168,7 @@ export const getTranscriptHtml = (resultData, isPdf = false) => {
       </div>
 
       <div style="position: absolute; bottom: 0.8in; left: 0.4in; right: 0.4in; display: flex; justify-content: space-between; align-items: flex-end; z-index: 20;">
-        <div style="font-size: 11px; font-weight: bold; color: #000;">ISSUE DATE : ${resultData.issue_date || ""}</div>
+        <div style="font-size: 11px; font-weight: bold; color: #000;">ISSUE DATE : ${formatDateDDMMYYYY(resultData.issue_date) || ""}</div>
         <div style="text-align: center; width: 2.2in;">
           <div style="font-size: 10px; font-weight: bold; padding-top: 5px; text-transform: uppercase; color: #000;">Controller of Examinations</div>
         </div>

@@ -119,3 +119,17 @@ export const formatRoman = (number) => {
   // Return with space and superscript
   return `${roman} <sup>${suffix}</sup>`;
 };
+
+
+export const formatDateDDMMYYYY = (dateString) => {
+  if (!dateString) return "";
+
+  const date = new Date(dateString);
+
+  // invalid date check
+  if (isNaN(date)) return "";
+
+  return date
+    .toLocaleDateString("en-GB") // DD/MM/YYYY
+    .replace(/\//g, "-");        // → DD-MM-YYYY
+};

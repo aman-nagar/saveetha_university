@@ -89,7 +89,7 @@ export const formatOrdinal = (number) => {
 
 export const formatRoman = (number) => {
   const n = parseInt(number, 10);
-  if (isNaN(n)) return number;
+  if (isNaN(n) || n <= 0) return number;
 
   const romanMap = {
     1: "I",
@@ -102,7 +102,20 @@ export const formatRoman = (number) => {
     8: "VIII",
     9: "IX",
     10: "X",
+    11: "XI",
+    12: "XII",
+    13: "XIII",
+    14: "XIV",
+    15: "XV",
   };
 
-  return romanMap[n] || number;
+  const roman = romanMap[n] || n;
+
+  let suffix = "th";
+  if (n % 10 === 1 && n % 100 !== 11) suffix = "st";
+  else if (n % 10 === 2 && n % 100 !== 12) suffix = "nd";
+  else if (n % 10 === 3 && n % 100 !== 13) suffix = "rd";
+
+  // Return with space and superscript
+  return `${roman} <sup>${suffix}</sup>`;
 };

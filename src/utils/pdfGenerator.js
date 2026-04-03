@@ -43,16 +43,16 @@ export const getTranscriptHtml = (resultData) => {
 
         <table style="width: 100%; border-collapse: collapse; border: 1.5px solid #000; font-size: 10px; text-align: center; table-layout: fixed;">
           <thead>
-            <tr style="background: rgba(0,0,0,0.08); height: 38px; vertical-align: middle;">
-              <th rowspan="2" style="border: 1px solid #000; padding: 6px; width: 12%; vertical-align: middle;">Subject Code</th>
-              <th rowspan="2" style="border: 1px solid #000; padding: 6px; text-align: left; width: 40%; vertical-align: middle;">Name of the Subject</th>
-              <th rowspan="2" style="border: 1px solid #000; padding: 6px; width: 12%; vertical-align: middle;">Max Marks</th>
-              <th colspan="2" style="border: 1px solid #000; padding: 6px; width: 24%; vertical-align: middle;">Marks Obtained</th>
-              <th rowspan="2" style="border: 1px solid #000; padding: 6px; width: 12%; vertical-align: middle;">Total</th>
+            <tr style="background: rgba(0,0,0,0.08); height: 38px; ">
+              <th rowspan="2" style="border: 1px solid #000; padding: 6px; width: 12%; ">Subject Code</th>
+              <th rowspan="2" style="border: 1px solid #000; padding: 6px; text-align: left; width: 40%; ">Name of the Subject</th>
+              <th rowspan="2" style="border: 1px solid #000; padding: 6px; width: 12%; ">Max Marks</th>
+              <th colspan="2" style="border: 1px solid #000; padding: 6px; width: 24%; ">Marks Obtained</th>
+              <th rowspan="2" style="border: 1px solid #000; padding: 6px; width: 12%; ">Total</th>
             </tr>
-            <tr style="background: rgba(0,0,0,0.08); height: 32px; vertical-align: middle;">
-              <th style="border: 1px solid #000; padding: 6px; vertical-align: middle;">Theory</th>
-              <th style="border: 1px solid #000; padding: 6px; vertical-align: middle;">Practical</th>
+            <tr style="background: rgba(0,0,0,0.08); height: 32px;">
+              <th style="border: 1px solid #000; ">Theory</th>
+              <th style="border: 1px solid #000; ">Practical</th>
             </tr>
           </thead>
           <tbody>

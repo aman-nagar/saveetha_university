@@ -2,7 +2,7 @@ import html2pdf from "html2pdf.js";
 import ResultFormat from "../assets/images/marksheet.png";
 import { formatRoman } from "./formatters";
 
-export const getTranscriptHtml = (resultData) => {
+export const getTranscriptHtml = (resultData, isPdf = false) => {
   const cumulativeHistory = resultData.cumulative_history || [];
 
   return `
@@ -37,7 +37,7 @@ export const getTranscriptHtml = (resultData) => {
           </tr>
         </table>
 
-        <div style="background-color: #FF9714; color: #FFFFFF; border: 1.5px solid #000; border-bottom: none; text-align: center; height: 35px; font-size: 14px; font-weight: bold;">
+        <div style="${isPdf ? "padding-bottom: 15px;" : ""} background-color: #FF9714; color: #FFFFFF; border: 1.5px solid #000; border-bottom: none; text-align: center; height: 35px; font-size: 14px; font-weight: bold; display: flex;align-items: center;justify-content: center;">
           STATEMENT OF MARKS
         </div>
 
@@ -47,12 +47,12 @@ export const getTranscriptHtml = (resultData) => {
               <th rowspan="2" style="border: 1px solid #000; padding: 6px; width: 12%; ">Subject Code</th>
               <th rowspan="2" style="border: 1px solid #000; padding: 6px; text-align: left; width: 40%; ">Name of the Subject</th>
               <th rowspan="2" style="border: 1px solid #000; padding: 6px; width: 12%; ">Max Marks</th>
-              <th colspan="2" style="border: 1px solid #000; padding: 6px; width: 24%; ">Marks Obtained</th>
+              <th colspan="2" style="border: 1px solid #000; width: 24%; ${isPdf ? "padding-bottom: 15px;" : "vertical-align: middle;"}">Marks Obtained</th>
               <th rowspan="2" style="border: 1px solid #000; padding: 6px; width: 12%; ">Total</th>
             </tr>
             <tr style="background: rgba(0,0,0,0.08); height: 32px;">
-              <th style="border: 1px solid #000; ">Theory</th>
-              <th style="border: 1px solid #000; ">Practical</th>
+              <th style="border: 1px solid #000;height: 32px;text-align: center; ${isPdf ? "padding-bottom: 15px;" : "vertical-align: middle;"}">Theory</th>
+              <th style="border: 1px solid #000;height: 32px;text-align: center; ${isPdf ? "padding-bottom: 15px;" : "vertical-align: middle;"}">Practical</th>
             </tr>
           </thead>
           <tbody>
@@ -81,17 +81,17 @@ export const getTranscriptHtml = (resultData) => {
             </tr>
           </tbody>
           <tfoot style="font-weight: bold; font-size: 11px;">
-            <tr style="border: 1.5px solid #000; height: 35px; vertical-align: middle;">
+            <tr style="border: 1.5px solid #000; height: 35px;">
               <td colspan="2" style="border: 1px solid #000; text-align: left; padding-left: 10px;">
-                <div style="display: flex; justify-content: space-between; width: 100%; padding-right: 20px;">
+                <div style="${isPdf ? "padding-bottom: 15px;" : ""} display: flex; justify-content: space-between; width: 90%; padding-left: 40px;">
                   <span>Grade: &nbsp;&nbsp;&nbsp; ${resultData.current_year_details?.grade || "N/A"}</span>
                   <span>Total</span>
                 </div>
               </td>
-              <td style="border: 1px solid #000; width: 12%;">${resultData.current_year_details?.max_marks || ""}</td>
-              <td style="border: 1px solid #000; width: 12%;">${resultData.current_year_details?.theory_total || ""}</td>
-              <td style="border: 1px solid #000; width: 12%;">${resultData.current_year_details?.practical_total || ""}</td>
-              <td style="border: 1px solid #000; width: 12%; font-size: 13px;">${resultData.current_year_details?.obtained_marks || ""}</td>
+              <td style="${isPdf ? "padding-bottom: 15px;" : ""} border: 1px solid #000; width: 12%;">${resultData.current_year_details?.max_marks || ""}</td>
+              <td style="${isPdf ? "padding-bottom: 15px;" : ""} border: 1px solid #000; width: 12%;">${resultData.current_year_details?.theory_total || ""}</td>
+              <td style="${isPdf ? "padding-bottom: 15px;" : ""} border: 1px solid #000; width: 12%;">${resultData.current_year_details?.practical_total || ""}</td>
+              <td style="${isPdf ? "padding-bottom: 15px;" : ""} border: 1px solid #000; width: 12%; font-size: 13px;">${resultData.current_year_details?.obtained_marks || ""}</td>
             </tr>
           </tfoot>
         </table>
@@ -178,7 +178,7 @@ export const getTranscriptHtml = (resultData) => {
 
 export const downloadTranscript = (resultData) => {
   const element = document.createElement("div");
-  element.innerHTML = getTranscriptHtml(resultData);
+  element.innerHTML = getTranscriptHtml(resultData, true);
 
   const opt = {
     margin: 0,

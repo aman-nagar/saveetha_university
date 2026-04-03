@@ -12,28 +12,28 @@ export const getTranscriptHtml = (resultData) => {
       <div style="position: relative; z-index: 10; padding: 2.3in 0.4in 0.5in 0.4in;">
         <table style="width: 100%; font-size: 11px;  border-collapse: collapse; margin-bottom: 20px;">
           <tr>
-            <td style="width: 20%; padding: 4px 0;">STUDENT'S NAME :</td>
-            <td style="width: 40%; padding: 4px 0; font-weight: bold;">${(resultData.candidate_name || resultData.student_name || "").toUpperCase()}</td>
-            <td style="width: 20%; padding: 4px 0;">REGISTRATION NO :</td>
-            <td style="width: 20%; padding: 4px 0; font-weight: bold;">${resultData.enrollment_no || ""}</td>
+            <td style="width: 20%; padding: 4px 0;">STUDENT'S NAME</td>
+            <td style="width: 40%; padding: 4px 0; font-weight: bold;">:&nbsp  ${(resultData.candidate_name || resultData.student_name || "").toUpperCase()}</td>
+            <td style="width: 20%; padding: 4px 0;">REGISTRATION NO</td>
+            <td style="width: 20%; padding: 4px 0; font-weight: bold;">:&nbsp  ${resultData.enrollment_no || ""}</td>
           </tr>
           <tr>
-            <td style="padding: 4px 0;">FATHER'S NAME :</td>
-            <td style="padding: 4px 0; font-weight: bold;">${(resultData.father_name || "").toUpperCase()}</td>
-            <td style="padding: 4px 0;">ROLL NO :</td>
-            <td style="padding: 4px 0; font-weight: bold;">${resultData.roll_no || ""}</td>
+            <td style="padding: 4px 0;">FATHER'S NAME</td>
+            <td style="padding: 4px 0; font-weight: bold;">:&nbsp  ${(resultData.father_name || "").toUpperCase()}</td>
+            <td style="padding: 4px 0;">ROLL NO</td>
+            <td style="padding: 4px 0; font-weight: bold;">:&nbsp  ${resultData.roll_no || ""}</td>
           </tr>
           <tr>
-            <td style="padding: 4px 0;">MOTHER'S NAME :</td>
-            <td style="padding: 4px 0; font-weight: bold;">${(resultData.mother_name || "").toUpperCase()}</td>
-            <td style="padding: 4px 0;">SESSION :</td>
-            <td style="padding: 4px 0; font-weight: bold;">${resultData.session || ""}</td>
+            <td style="padding: 4px 0;">MOTHER'S NAME</td>
+            <td style="padding: 4px 0; font-weight: bold;">:&nbsp  ${(resultData.mother_name || "").toUpperCase()}</td>
+            <td style="padding: 4px 0;">SESSION</td>
+            <td style="padding: 4px 0; font-weight: bold;">:&nbsp  ${resultData.session || ""}</td>
           </tr>
           <tr>
-            <td style="padding: 4px 0;">COURSE :</td>
-            <td style="padding: 4px 0; font-weight: bold;">${resultData.course_name || ""}</td>
-            <td style="padding: 4px 0;">YEAR/SEM :</td>
-            <td style="padding: 4px 0; font-weight: bold;">${formatRoman(resultData.duration) || ""} ${resultData.duration_type || ""}</td>
+            <td style="padding: 4px 0;">COURSE</td>
+            <td style="padding: 4px 0; font-weight: bold;">:&nbsp  ${resultData.course_name || ""}</td>
+            <td style="padding: 4px 0;">YEAR/SEM</td>
+            <td style="padding: 4px 0; font-weight: bold;">:&nbsp  ${formatRoman(resultData.duration) || ""} ${resultData.duration_type || ""}</td>
           </tr>
         </table>
 
@@ -169,7 +169,7 @@ export const getTranscriptHtml = (resultData) => {
       <div style="position: absolute; bottom: 0.8in; left: 0.4in; right: 0.4in; display: flex; justify-content: space-between; align-items: flex-end; z-index: 20;">
         <div style="font-size: 11px; font-weight: bold; color: #000;">ISSUE DATE : ${resultData.issue_date || ""}</div>
         <div style="text-align: center; width: 2.2in;">
-          <div style="font-size: 10px; font-weight: bold; border-top: 1.5px solid #000; padding-top: 5px; text-transform: uppercase; color: #000;">Controller of Examinations</div>
+          <div style="font-size: 10px; font-weight: bold; padding-top: 5px; text-transform: uppercase; color: #000;">Controller of Examinations</div>
         </div>
       </div>
     </div>

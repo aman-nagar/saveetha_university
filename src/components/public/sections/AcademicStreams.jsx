@@ -83,19 +83,16 @@ const BentoCard = ({ stream, index }) => {
       whileHover="hover"
       className={`group relative overflow-hidden rounded-[2rem] bg-surface border border-border/40 shadow-sm hover:shadow-xl transition-all duration-500 cursor-pointer flex ${gridClasses}`}
     >
-      {/* LAYOUT 1: The Large Featured Card (Index 0) - NOW WITH IMAGE */}
+      {/* LAYOUT 1: The Large Featured Card (Index 0) */}
       {isLarge && (
         <>
-          {/* Background Image with slight zoom on hover */}
           <div
             className="absolute inset-0 bg-cover bg-center transition-transform duration-700 group-hover:scale-105"
             style={{ backgroundImage: `url(${stream.image})` }}
           />
-          {/* Smooth dark gradient overlay so text and icons pop */}
           <div className="absolute inset-0 bg-gradient-to-t from-primary/95 via-primary/50 to-primary/20 transition-opacity duration-500 group-hover:opacity-90" />
 
           <div className="relative z-10 flex flex-col justify-end p-8 w-full h-full">
-            {/* Frosted Glass Icon Box in Top Left */}
             <div className="w-16 h-16 bg-white/10 backdrop-blur-md rounded-2xl flex items-center justify-center mb-auto border border-white/20 text-white group-hover:bg-accent group-hover:text-primary transition-colors duration-500 shadow-lg">
               {getStreamIcon(stream.id, "w-8 h-8")}
             </div>
@@ -115,33 +112,34 @@ const BentoCard = ({ stream, index }) => {
         </>
       )}
 
-      {/* LAYOUT 2: The Wide Footer Card (Index 7) - SOLID COLOR + LARGE ICON */}
+      {/* LAYOUT 2: The Wide Footer Card (Index 7) - FIXED RESPONSIVE ALIGNMENT */}
       {isWide && !isLarge && (
-        <div className="w-full h-full flex flex-col sm:flex-row items-center p-6 sm:p-8 bg-primary relative overflow-hidden">
+        <div className="w-full h-full flex flex-row items-center p-5 sm:p-8 bg-primary relative overflow-hidden">
           <div className="absolute -right-12 -top-12 w-64 h-64 bg-accent/10 rounded-full blur-3xl group-hover:bg-accent/20 transition-colors duration-500" />
 
-          <div className="relative z-10 flex-1 pr-6">
-            <span className="text-accent text-[10px] font-black uppercase tracking-widest block mb-2">
+          <div className="relative z-10 flex-1 pr-2 sm:pr-6">
+            <span className="text-accent text-[9px] sm:text-[10px] font-black uppercase tracking-widest block mb-1 sm:mb-2">
               {stream.approval}
             </span>
-            <h3 className="text-2xl font-heading font-black text-white mb-2">
+            <h3 className="text-lg sm:text-2xl font-heading font-black text-white mb-1 sm:mb-2 leading-tight">
               {stream.name}
             </h3>
-            <p className="text-white/60 text-sm font-medium line-clamp-2">
+            <p className="text-white/60 text-[11px] sm:text-sm font-medium line-clamp-2">
               {stream.levels}
             </p>
           </div>
 
-          <div className="relative z-10 w-24 h-24 sm:w-32 sm:h-32 shrink-0 rounded-[1.5rem] bg-white/5 border border-white/10 flex items-center justify-center shadow-lg mt-4 sm:mt-0 group-hover:bg-accent group-hover:border-accent transition-colors duration-500">
+          {/* Icon Box: Adjusted size and centering for mobile */}
+          <div className="relative z-10 w-16 h-16 sm:w-32 sm:h-32 shrink-0 rounded-2xl sm:rounded-[1.5rem] bg-white/5 border border-white/10 flex items-center justify-center shadow-lg group-hover:bg-accent group-hover:border-accent transition-colors duration-500">
             {getStreamIcon(
               stream.id,
-              "w-12 h-12 sm:w-16 sm:h-16 text-white/50 group-hover:text-primary transition-colors duration-500",
+              "w-8 h-8 sm:w-16 sm:h-16 text-white/50 group-hover:text-primary transition-colors duration-500",
             )}
           </div>
         </div>
       )}
 
-      {/* LAYOUT 3: Standard Square Cards (Indices 1-6) - MINIMAL + SMALL ICON */}
+      {/* LAYOUT 3: Standard Square Cards (Indices 1-6) */}
       {!isLarge && !isWide && (
         <div className="w-full h-full flex flex-col p-6 sm:p-8 relative">
           <div className="absolute inset-0 bg-gradient-to-br from-transparent to-primary/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />

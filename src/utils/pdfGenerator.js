@@ -14,13 +14,13 @@ export const getTranscriptHtml = (resultData, isPdf = false) => {
           <tr>
             <td style="width: 20%; padding: 4px 0;">STUDENT'S NAME</td>
             <td style="width: 40%; padding: 4px 0; font-weight: bold;">:&nbsp  ${(resultData.candidate_name || resultData.student_name || "").toUpperCase()}</td>
-            <td style="width: 20%; padding: 4px 0;">REGISTRATION NO</td>
+            <td style="width: 20%; padding: 4px 0;">REGISTRATION NO.</td>
             <td style="width: 20%; padding: 4px 0; font-weight: bold;">:&nbsp  ${resultData.enrollment_no || ""}</td>
           </tr>
           <tr>
             <td style="padding: 4px 0;">FATHER'S NAME</td>
             <td style="padding: 4px 0; font-weight: bold;">:&nbsp  ${(resultData.father_name || "").toUpperCase()}</td>
-            <td style="padding: 4px 0;">ROLL NO</td>
+            <td style="padding: 4px 0;">ROLL NO.</td>
             <td style="padding: 4px 0; font-weight: bold;">:&nbsp  ${resultData.roll_no || ""}</td>
           </tr>
           <tr>

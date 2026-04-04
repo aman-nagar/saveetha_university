@@ -3,7 +3,7 @@ import ResultFormat from "../assets/images/marksheet.png";
 import { formatDateDDMMYYYY, formatRoman } from "./formatters";
 
 export const getTranscriptHtml = (resultData, isPdf = false) => {
-  console.log(resultData.serial_no);
+  console.log(resultData.stream_name);
   const cumulativeHistory = resultData.cumulative_history || [];
 
   return `
@@ -32,7 +32,7 @@ export const getTranscriptHtml = (resultData, isPdf = false) => {
           </tr>
           <tr>
             <td style="padding: 4px 0;">COURSE</td>
-            <td style="padding: 4px 0; font-weight: bold;">:&nbsp  ${resultData.course_name || ""}</td>
+            <td style="padding: 4px 0; font-weight: bold;">:&nbsp  ${resultData.course_name || ""} <span>( ${resultData.stream_name} )</span></td> 
             <td style="padding: 4px 0;">YEAR/SEM</td>
             <td style="padding: 4px 0; font-weight: bold;">:&nbsp  ${formatRoman(resultData.duration) || ""} ${resultData.duration_type || ""}</td>
           </tr>

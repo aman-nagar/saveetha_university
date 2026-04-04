@@ -3,7 +3,6 @@ import ResultFormat from "../assets/images/marksheet.png";
 import { formatDateDDMMYYYY, formatRoman } from "./formatters";
 
 export const getTranscriptHtml = (resultData, isPdf = false) => {
-  console.log(resultData.stream_name);
   const cumulativeHistory = resultData.cumulative_history || [];
 
   return `

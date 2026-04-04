@@ -3,13 +3,13 @@ import ResultFormat from "../assets/images/marksheet.png";
 import { formatDateDDMMYYYY, formatRoman } from "./formatters";
 
 export const getTranscriptHtml = (resultData, isPdf = false) => {
-  console.log(resultData);
+  console.log(resultData.serial_no);
   const cumulativeHistory = resultData.cumulative_history || [];
 
   return `
     <div style="width: 210mm; height: 296.5mm; position: relative; background: white; font-family: Arial, Helvetica, sans-serif; color: #000;">
       <img src="${ResultFormat}" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 0;" />
-
+      <div style="position: absolute;top: 1.2in;right: 1in;font-size: 16px;font-weight: bold;z-index: 20;color: #000;">Sr. No. ${resultData.serial_no || ""}</div>
       <div style="position: relative; z-index: 10; padding: 2.3in 0.5in 0.5in 0.5in;">
         <table style="width: 100%; font-size: 11px;  border-collapse: collapse; margin-bottom: 20px;">
           <tr>

@@ -166,7 +166,7 @@ export const getTranscriptHtml = (resultData, isPdf = false) => {
         </div>
       </div>
 
-      <div style="position: absolute; bottom: 0.8in; left: 0.4in; right: 0.4in; display: flex; justify-content: space-between; align-items: flex-end; z-index: 20;">
+      <div style="position: absolute; bottom: 0.5in; left: 0.6in; right: 0.4in; display: flex; justify-content: space-between; align-items: flex-end; z-index: 20;">
         <div style="font-size: 14px;  color: #000;">ISSUE DATE : <span style="font-weight:bolder; font-size:15px;">${formatDateDDMMYYYY(resultData.issue_date) || ""}</span></div>
         <div style="text-align: center; width: 2.2in;">
           <div style="font-size: 10px; font-weight: bold; padding-top: 5px; text-transform: uppercase; color: #000;">Controller of Examinations</div>

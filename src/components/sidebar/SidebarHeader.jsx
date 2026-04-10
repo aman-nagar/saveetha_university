@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { FaThumbtack, FaChevronRight, FaSun, FaMoon } from "react-icons/fa";
 import logo2 from "../../assets/images/logo2.png";
 import { usePublicContent } from "../../hooks/usePublicContent";
+import { useAuth } from "../../context/AuthContext";
 
 export default function SidebarHeader({
   isCollapsed,
@@ -13,6 +14,13 @@ export default function SidebarHeader({
   toggleTheme,
 }) {
   const { siteDetails } = usePublicContent();
+  const { user } = useAuth();
+
+  const isCenter = user?.role === "center";
+  const displayLogo =
+    isCenter && user?.owner_image
+      ? user.owner_image
+      : siteDetails?.additional_logo || logo2;
 
   return (
     <div className="p-2 border-b border-white/10">
@@ -23,7 +31,7 @@ export default function SidebarHeader({
             className="p-1.5 rounded-lg hover:bg-white/10 transition-colors w-full flex items-center justify-center group relative"
           >
             <img
-              src={siteDetails?.additional_logo || logo2}
+              src={displayLogo}
               className="h-8 w-auto rounded-xl"
               alt="Logo"
             />
@@ -35,7 +43,7 @@ export default function SidebarHeader({
               className="flex items-center space-x-2 p-1.5 rounded-lg hover:bg-white/10 transition-colors"
             >
               <img
-                src={siteDetails?.additional_logo || logo2}
+                src={displayLogo}
                 className="h-8 w-auto rounded-xl"
                 alt="Logo"
               />

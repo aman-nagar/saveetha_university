@@ -17,7 +17,7 @@ const StudentDashboard = () => {
       </div>
     );
   }
-  console.log(studentData);
+
   const {
     enrollment_no,
     candidate_name,

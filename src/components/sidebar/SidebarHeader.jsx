@@ -14,13 +14,26 @@ export default function SidebarHeader({
   toggleTheme,
 }) {
   const { siteDetails } = usePublicContent();
-  const { user } = useAuth();
+  const { user, studentData } = useAuth();
 
   const isCenter = user?.role === "center";
-  const displayLogo =
-    isCenter && user?.owner_image
-      ? user.owner_image
-      : siteDetails?.additional_logo || logo2;
+  const isStudent = user?.role === "student";
+  let displayLogo = siteDetails?.additional_logo || logo2;
+  if (isCenter && user?.owner_image) {
+    displayLogo = user.owner_image;
+  } else if (isStudent && studentData?.photo) {
+    displayLogo = studentData.photo;
+  }
+
+  let headerName = "S.A. University";
+  if (isCenter) {
+    headerName = user?.institute_name || "Center Portal";
+  } else if (isStudent) {
+    headerName = studentData?.candidate_name || "Student Portal";
+  }
+  let dashboardRoute = "/admin";
+  if (isCenter) dashboardRoute = "/center";
+  if (isStudent) dashboardRoute = "/student-dashboard";
 
   return (
     <div className="p-2 border-b border-white/10">
@@ -39,7 +52,7 @@ export default function SidebarHeader({
         ) : (
           <div className="flex items-center justify-between w-full">
             <Link
-              to="/admin"
+              to={dashboardRoute}
               className="flex items-center space-x-2 p-1.5 rounded-lg hover:bg-white/10 transition-colors"
             >
               <img
@@ -48,7 +61,7 @@ export default function SidebarHeader({
                 alt="Logo"
               />
               <span className="text-sm font-bold text-white whitespace-nowrap">
-                S.A. University
+                {headerName}
               </span>
             </Link>
 

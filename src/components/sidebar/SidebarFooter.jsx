@@ -8,12 +8,25 @@ export default function SidebarFooter({ isCollapsed }) {
 
   if (loading)
     return <div className="p-4 text-white/20 text-xs">Loading...</div>;
-  
+
   // Determine if user is student or admin
   const isStudent = user?.role === "student";
-  const displayName = isStudent ? studentData?.candidate_name : user?.name;
-  const displaySubtext = isStudent ? studentData?.enrollment_no : user?.email;
-  const firstLetter = isStudent ? studentData?.candidate_name?.charAt(0) : user?.name?.charAt(0);
+  const isCenter = user?.role === "center";
+  // const displayName = isStudent ? studentData?.candidate_name : user?.name;
+  let displayName = user?.name;
+  // const displaySubtext = isStudent ? studentData?.enrollment_no : user?.email;
+  let displaySubtext = user?.email;
+  let firstLetter = user?.name?.charAt(0);
+
+  if (isStudent) {
+    displayName = studentData?.candidate_name;
+    displaySubtext = studentData?.email;
+    firstLetter = studentData?.candidate_name?.charAt(0);
+  } else if (isCenter) {
+    displayName = user?.institute_owner_name || "Center Owner";
+    displaySubtext = user?.email;
+    firstLetter = displayName?.charAt(0);
+  }
 
   if (!user && !studentData) return null;
 
@@ -50,7 +63,12 @@ export default function SidebarFooter({ isCollapsed }) {
                   {displayName || "User"}
                 </p>
                 <p className="text-[10px] text-white/50 truncate max-w-[100px]">
-                  {displaySubtext || (isStudent ? "Student" : "Administrator")}
+                  {displaySubtext ||
+                    (isStudent
+                      ? "Student"
+                      : isCenter
+                        ? "Center"
+                        : "Administrator")}
                 </p>
               </div>
             </div>

@@ -9,7 +9,7 @@ import {
   exportCenterWiseStudentsCSV,
 } from "../../../api/students/studentApi";
 import { fetchCenters } from "../../../api/center/centerApi";
-import { FaDownload } from "react-icons/fa"; // ✅ Import the download icon
+import { FaDownload } from "react-icons/fa";
 
 export default function CenterWiseStudentsPage() {
   const { toast, show, clear } = useToast();
@@ -19,7 +19,7 @@ export default function CenterWiseStudentsPage() {
 
   const [students, setStudents] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [exporting, setExporting] = useState(false); // ✅ Export loading state
+  const [exporting, setExporting] = useState(false);
   const [pagination, setPagination] = useState({
     current_page: 1,
     total_pages: 1,
@@ -49,7 +49,7 @@ export default function CenterWiseStudentsPage() {
     try {
       const response = await fetchCenterWiseStudents(centerId, page);
       const data = response.data || response;
-
+      console.log(data);
       setStudents(data.students || []);
       setPagination({
         current_page: data.pagination?.current_page || 1,
@@ -136,7 +136,7 @@ export default function CenterWiseStudentsPage() {
     },
     { header: "Enrollment No.", accessor: "enrollment_no" },
     { header: "Name", accessor: "candidate_name" },
-    { header: "Course ID", accessor: "course" },
+    { header: "Course ", accessor: "course_name" },
     { header: "Contact", accessor: "contact_number" },
     { header: "Email", accessor: "email" },
   ];

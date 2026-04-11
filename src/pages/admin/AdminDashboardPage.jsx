@@ -1,127 +1,288 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 import {
   HiUserGroup,
   HiOfficeBuilding,
   HiDocumentText,
   HiClipboardList,
-  HiTrendingUp,
-  HiLightningBolt,
+  HiPhotograph,
   HiChevronRight,
   HiCheckCircle,
+  HiUserAdd,
 } from "react-icons/hi";
+import { fetchAdminDashboard } from "../../api/dashboard/dashboardApi";
 
 export default function AdminDashboard() {
-  const stats = [
-    { title: "Students", value: 7, sub: "+2 new", icon: HiUserGroup, trend: "57% Appr.", color: "primary" },
-    { title: "Centers", value: 20, sub: "Active", icon: HiOfficeBuilding, trend: "100%", color: "secondary" },
-    { title: "Certificates", value: 0, sub: "Pending", icon: HiDocumentText, trend: "0%", color: "accent" },
-    { title: "Results", value: 5, sub: "71% Success", icon: HiClipboardList, trend: "Sync", color: "primary" },
+  const [data, setData] = useState({
+    all_students: 0,
+    active_students: 0,
+    total_results: 0,
+    total_admit_cards: 0,
+    total_centers: 0,
+    total_courses: 0,
+    total_gallery_images: 0,
+  });
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const loadDashboardData = async () => {
+      try {
+        const response = await fetchAdminDashboard();
+        setData(response || {});
+      } catch (error) {
+        console.error("Failed to load dashboard data:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    loadDashboardData();
+  }, []);
+
+  // --- Calculations ---
+  const inactiveStudents = Math.max(
+    0,
+    data.all_students - data.active_students,
+  );
+  const activePct =
+    data.all_students > 0
+      ? Math.round((data.active_students / data.all_students) * 100)
+      : 0;
+  const inactivePct =
+    data.all_students > 0
+      ? Math.round((inactiveStudents / data.all_students) * 100)
+      : 0;
+
+  // --- Top Row Stats ---
+  const topStats = [
+    {
+      title: "Total Centers",
+      value: data.total_centers,
+      icon: HiOfficeBuilding,
+      color: "text-primary",
+      bg: "bg-primary/10",
+      border: "border-primary/20",
+    },
+    {
+      title: "Total Courses",
+      value: data.total_courses,
+      icon: HiDocumentText,
+      color: "text-accent",
+      bg: "bg-accent/10",
+      border: "border-accent/20",
+    },
+    {
+      title: "Admit Cards",
+      value: data.total_admit_cards,
+      icon: HiClipboardList,
+      color: "text-warning",
+      bg: "bg-warning/10",
+      border: "border-warning/20",
+    },
+    {
+      title: "Results Published",
+      value: data.total_results,
+      icon: HiCheckCircle,
+      color: "text-success",
+      bg: "bg-success/10",
+      border: "border-success/20",
+    },
   ];
 
   return (
-    <div className="h-[screen-60px] w-full bg-bg text-text p-3 overflow-hidden flex flex-col">
-      {/* ── MAIN BENTO GRID ── */}
-      <div className="flex-1 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 lg:grid-rows-4 gap-3 lg:max-h-full min-h-0">
-        
-        {/* Row 1: Mini Stats (Strictly 1 row high) */}
-        {stats.map((item, i) => (
-          <div
-            key={i}
-            className="bg-surface border border-border rounded-2xl p-4 flex flex-row lg:flex-col justify-between items-center lg:items-start min-h-0 shadow-sm overflow-hidden"
-          >
-            <div className={`p-2 rounded-xl bg-${item.color}/10 text-${item.color} shrink-0`}>
-              <item.icon className="size-5 lg:size-6" />
-            </div>
-            <div className="flex-1 ml-4 lg:ml-0 lg:mt-1 text-right lg:text-left truncate">
-              <h2 className="text-xl lg:text-2xl font-black leading-none">{item.value}</h2>
-              <p className="text-[10px] lg:text-xs font-bold text-muted truncate">{item.title}</p>
-            </div>
+    <div className="min-h-[calc(100vh-60px)] w-full bg-bg text-text p-4 md:p-6 overflow-y-auto">
+      <div className="max-w-7xl mx-auto space-y-4 md:space-y-6">
+        {/* ── HEADER ── */}
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+          <div>
+            <h1 className="text-2xl font-heading font-bold">Admin Dashboard</h1>
+            <p className="text-sm text-muted">
+              Overview of university operations and data.
+            </p>
           </div>
-        ))}
+        </div>
 
-        {/* Row 2-3: Center Analytics (Spans 3 cols, 2 rows) */}
-        <div className="lg:col-span-3 lg:row-span-2 bg-surface border border-border rounded-3xl p-4 flex flex-col min-h-0">
-          <div className="flex justify-between items-center mb-2 shrink-0">
-            <h3 className="font-heading font-bold text-xs lg:text-sm flex items-center gap-2">
-              <HiTrendingUp className="text-success" /> Enrollment Velocity
-            </h3>
-            <span className="text-[9px] font-black text-muted uppercase">Live</span>
-          </div>
+        {/* ── TOP STATS GRID ── */}
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+          {topStats.map((stat, idx) => (
+            <div
+              key={idx}
+              className="bg-surface border border-border rounded-2xl p-4 flex flex-col justify-between shadow-sm transition-all hover:shadow-md"
+            >
+              <div className="flex justify-between items-start mb-4">
+                <div
+                  className={`p-2.5 rounded-xl ${stat.bg} ${stat.color} border ${stat.border}`}
+                >
+                  <stat.icon className="w-5 h-5" />
+                </div>
+              </div>
+              <div>
+                {loading ? (
+                  <div className="h-8 w-16 bg-border/50 animate-pulse rounded mb-1"></div>
+                ) : (
+                  <h2 className="text-2xl md:text-3xl font-black leading-none">
+                    {stat.value}
+                  </h2>
+                )}
+                <p className="text-xs md:text-sm font-medium text-muted mt-1">
+                  {stat.title}
+                </p>
+              </div>
+            </div>
+          ))}
+        </div>
 
-          <div className="flex-1 flex flex-col justify-center min-h-0">
-            {/* Visual Bar Chart - Height controlled by flex-1 */}
-            <div className="flex items-end gap-1.5 h-full max-h-32 mb-4 min-h-0">
-              {[40, 70, 45, 90, 65, 80, 57].map((h, i) => (
-                <div key={i} className="flex-1 bg-primary/10 rounded-t-lg relative group h-full">
+        {/* ── MAIN BENTO GRID ── */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 md:gap-6">
+          {/* 1. STUDENT ANALYTICS (Spans 2 columns) */}
+          <div className="lg:col-span-2 bg-surface border border-border rounded-3xl p-5 md:p-6 shadow-sm flex flex-col justify-between">
+            <div className="flex justify-between items-center mb-6">
+              <div className="flex items-center gap-3">
+                <div className="p-2 bg-primary/10 text-primary rounded-lg">
+                  <HiUserGroup className="w-5 h-5" />
+                </div>
+                <h3 className="font-heading font-bold text-lg">
+                  Student Enrollment
+                </h3>
+              </div>
+              <span className="text-xs font-bold px-3 py-1 bg-border rounded-full text-muted uppercase tracking-wider">
+                Analytics
+              </span>
+            </div>
+
+            <div className="flex flex-col md:flex-row gap-8 items-center">
+              {/* Total Big Number */}
+              <div className="text-center md:text-left shrink-0">
+                <p className="text-sm font-medium text-muted mb-1">
+                  Total Registered
+                </p>
+                {loading ? (
+                  <div className="h-12 w-24 bg-border/50 animate-pulse rounded mx-auto md:mx-0"></div>
+                ) : (
+                  <h2 className="text-5xl lg:text-6xl font-black text-text">
+                    {data.all_students}
+                  </h2>
+                )}
+              </div>
+
+              {/* Progress Bar & Breakdown */}
+              <div className="flex-1 w-full space-y-4">
+                {/* Visual Bar */}
+                <div className="h-4 w-full bg-border rounded-full overflow-hidden flex">
                   <div
-                    className={`absolute bottom-0 w-full rounded-t-lg transition-all duration-700 ${i === 6 ? "bg-accent" : "bg-primary"}`}
-                    style={{ height: `${h}%` }}
+                    className="h-full bg-success transition-all duration-1000"
+                    style={{ width: `${activePct}%` }}
+                    title="Active"
+                  />
+                  <div
+                    className="h-full bg-warning transition-all duration-1000"
+                    style={{ width: `${inactivePct}%` }}
+                    title="Pending/Inactive"
                   />
                 </div>
-              ))}
-            </div>
-            {/* Status Boxes */}
-            <div className="grid grid-cols-2 gap-2 shrink-0">
-              <div className="p-2 lg:p-3 rounded-xl bg-success/5 border border-success/10 text-center">
-                <p className="text-[8px] lg:text-[10px] uppercase font-black text-success">Approved</p>
-                <p className="text-lg lg:text-xl font-black">04</p>
-              </div>
-              <div className="p-2 lg:p-3 rounded-xl bg-warning/5 border border-warning/10 text-center">
-                <p className="text-[8px] lg:text-[10px] uppercase font-black text-warning">Pending</p>
-                <p className="text-lg lg:text-xl font-black">03</p>
-              </div>
-            </div>
-          </div>
-        </div>
 
-        {/* Row 2-3 Side: Quick Launch (Spans 1 col, 2 rows) */}
-        <div className="lg:row-span-2 bg-primary dark:bg-surface text-white dark:text-text rounded-3xl p-4 flex flex-col min-h-0 shadow-xl border border-white/5">
-          <h3 className="font-heading font-bold text-xs mb-3 shrink-0">Quick Launch</h3>
-          <div className="grid grid-cols-2 lg:grid-cols-1 gap-2 flex-1 min-h-0 overflow-hidden">
-            {["Gallery", "Students", "ID Cards", "Exams"].map((action, idx) => (
-              <button
-                key={idx}
-                className="p-2 lg:p-3 rounded-xl bg-white/10 hover:bg-white/20 dark:bg-bg dark:hover:bg-primary/20 border border-white/5 flex items-center justify-between group transition-all min-h-0"
-              >
-                <span className="text-[9px] lg:text-xs font-bold truncate">{action}</span>
-                <HiChevronRight className="hidden lg:block group-hover:translate-x-1 transition-transform" />
-              </button>
-            ))}
-          </div>
-          <div className="mt-2 p-2 rounded-xl bg-accent text-primary flex items-center gap-2 shrink-0">
-            <HiLightningBolt size={12} />
-            <span className="text-[9px] font-black uppercase tracking-tight">Online</span>
-          </div>
-        </div>
-
-        {/* Row 4: Activity Bar (Spans 4 cols, 1 row) - STRICTLY COMPACT */}
-        <div className="lg:col-span-4 bg-surface border border-border rounded-full px-4 flex items-center min-h-0 h-12 lg:h-auto self-center">
-          <div className="flex items-center gap-6 overflow-x-auto no-scrollbar w-full py-1">
-            <div className="hidden lg:flex items-center gap-2 border-r border-border pr-4 shrink-0">
-              <div className="w-1.5 h-1.5 rounded-full bg-accent animate-pulse" />
-              <span className="text-[9px] font-black uppercase text-muted">Activity</span>
-            </div>
-            <div className="flex items-center gap-6">
-              {[
-                { label: "New Student", time: "2m", color: "success" },
-                { label: "Cert. Issued", time: "1h", color: "accent" },
-                { label: "Center Audit", time: "3h", color: "secondary" },
-                { label: "Result Pub", time: "5h", color: "primary" },
-              ].map((log, i) => (
-                <div key={i} className="shrink-0 flex items-center gap-2.5 pr-4 border-r border-border last:border-0">
-                  <div className={`w-6 h-6 rounded-lg bg-${log.color}/10 text-${log.color} flex items-center justify-center`} >
-                    <HiCheckCircle size={12} />
+                {/* Legend */}
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="bg-success/5 border border-success/20 rounded-xl p-3">
+                    <p className="text-xs text-success font-bold uppercase tracking-wide">
+                      Active
+                    </p>
+                    <div className="flex items-end gap-2">
+                      <span className="text-2xl font-black">
+                        {loading ? "-" : data.active_students}
+                      </span>
+                      <span className="text-xs text-muted mb-1 pb-0.5">
+                        ({activePct}%)
+                      </span>
+                    </div>
                   </div>
-                  <div className="whitespace-nowrap">
-                    <p className="text-[9px] font-bold leading-none">{log.label}</p>
-                    <p className="text-[8px] text-muted">{log.time}</p>
+                  <div className="bg-warning/5 border border-warning/20 rounded-xl p-3">
+                    <p className="text-xs text-warning font-bold uppercase tracking-wide">
+                      Pending / Inactive
+                    </p>
+                    <div className="flex items-end gap-2">
+                      <span className="text-2xl font-black">
+                        {loading ? "-" : inactiveStudents}
+                      </span>
+                      <span className="text-xs text-muted mb-1 pb-0.5">
+                        ({inactivePct}%)
+                      </span>
+                    </div>
                   </div>
                 </div>
-              ))}
+              </div>
+            </div>
+          </div>
+
+          {/* 2. MEDIA & QUICK ACTIONS (Spans 1 column) */}
+          <div className="flex flex-col gap-4 md:gap-6">
+            {/* Gallery Stats Widget */}
+            <div className="bg-surface border border-border rounded-3xl p-5 shadow-sm flex items-center gap-4">
+              <div className="w-14 h-14 rounded-2xl bg-secondary/10 text-secondary flex items-center justify-center shrink-0 border border-secondary/20">
+                <HiPhotograph className="w-7 h-7" />
+              </div>
+              <div>
+                <p className="text-xs font-bold text-muted uppercase tracking-wider mb-1">
+                  Gallery Media
+                </p>
+                <div className="flex items-baseline gap-2">
+                  {loading ? (
+                    <div className="h-8 w-10 bg-border/50 animate-pulse rounded"></div>
+                  ) : (
+                    <h3 className="text-3xl font-black leading-none">
+                      {data.total_gallery_images}
+                    </h3>
+                  )}
+                  <span className="text-sm font-medium text-muted">Images</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Quick Launch Menu */}
+            <div className="flex-1 bg-primary text-white rounded-3xl p-5 shadow-lg border border-primary flex flex-col">
+              <h3 className="font-heading font-bold text-sm mb-4 opacity-90 uppercase tracking-wider">
+                Quick Actions
+              </h3>
+              <div className="flex flex-col gap-2 flex-1">
+                <Link
+                  to="/admin/students/add"
+                  className="flex items-center justify-between p-3 rounded-xl bg-white/10 hover:bg-white/20 border border-white/5 transition-all group"
+                >
+                  <div className="flex items-center gap-3">
+                    <HiUserAdd className="w-4 h-4 opacity-70" />
+                    <span className="text-sm font-semibold">
+                      Add New Student
+                    </span>
+                  </div>
+                  <HiChevronRight className="opacity-50 group-hover:opacity-100 group-hover:translate-x-1 transition-all" />
+                </Link>
+                <Link
+                  to="/admin/centers/add"
+                  className="flex items-center justify-between p-3 rounded-xl bg-white/10 hover:bg-white/20 border border-white/5 transition-all group"
+                >
+                  <div className="flex items-center gap-3">
+                    <HiOfficeBuilding className="w-4 h-4 opacity-70" />
+                    <span className="text-sm font-semibold">
+                      Register Center
+                    </span>
+                  </div>
+                  <HiChevronRight className="opacity-50 group-hover:opacity-100 group-hover:translate-x-1 transition-all" />
+                </Link>
+                <Link
+                  to="/admin/results/create"
+                  className="flex items-center justify-between p-3 rounded-xl bg-white/10 hover:bg-white/20 border border-white/5 transition-all group"
+                >
+                  <div className="flex items-center gap-3">
+                    <HiCheckCircle className="w-4 h-4 opacity-70" />
+                    <span className="text-sm font-semibold">
+                      Publish Result
+                    </span>
+                  </div>
+                  <HiChevronRight className="opacity-50 group-hover:opacity-100 group-hover:translate-x-1 transition-all" />
+                </Link>
+              </div>
             </div>
           </div>
         </div>
-        
       </div>
     </div>
   );

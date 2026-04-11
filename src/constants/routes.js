@@ -31,6 +31,7 @@ export const ADMIN_ROUTES = {
   STUDENTS: "/admin/students",
   STUDENTS_ADD: "/admin/students/add",
   STUDENTS_EDIT: (id) => `/admin/students/edit/${id}`,
+  CENTER_WISE_STUDENTS: "/admin/center-wise-students",
   CENTERS: "/admin/centers",
   CENTERS_ADD: "/admin/centers/add",
   ADMIT_CARD_GENERATE: "/admin/admit-card/generate",

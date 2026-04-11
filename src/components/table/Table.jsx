@@ -7,7 +7,7 @@ export default function Table({
   loading = false,
   emptyMessage = "No data found",
   skeletonRows = 5,
-  pageOffset = 0, // ✅ NEW (default safe)
+  pageOffset = 0,
 }) {
   if (loading) {
     return (
@@ -33,7 +33,9 @@ export default function Table({
         ) : (
           <div className="divide-y divide-border">
             {data.map((row, index) => {
-              const adjustedIndex = pageOffset + index; // ✅ global index
+              const adjustedIndex = pageOffset + index;
+              // Safe fallback for mobile primary column
+              const firstColKey = columns[0]?.accessor || columns[0]?.key;
 
               return (
                 <div
@@ -44,14 +46,14 @@ export default function Table({
                     <div className="font-medium text-text text-sm">
                       {columns[0]?.render
                         ? columns[0].render(row, adjustedIndex)
-                        : (row[columns[0]?.key] ?? "—")}
+                        : (row[firstColKey] ?? "—")}
                     </div>
 
                     {actions.length > 0 && (
                       <div className="flex items-center gap-1 shrink-0">
                         {actions.map((action, idx) => (
                           <button
-                            key={idx}
+                            key={`action-mob-${idx}`}
                             onClick={() => action.onClick(row)}
                             className={action.className}
                             title={action.title}
@@ -64,19 +66,25 @@ export default function Table({
                   </div>
 
                   <div className="space-y-1.5">
-                    {columns.slice(1).map((col) => (
-                      <div
-                        key={col.key}
-                        className="flex items-center justify-between text-xs"
-                      >
-                        <span className="text-muted">{col.label}:</span>
-                        <span className="text-text font-medium">
-                          {col.render
-                            ? col.render(row, adjustedIndex)
-                            : (row[col.key] ?? "—")}
-                        </span>
-                      </div>
-                    ))}
+                    {columns.slice(1).map((col, idx) => {
+                      const colIdentifier =
+                        col.accessor || col.key || `col-mob-${idx}`;
+                      return (
+                        <div
+                          key={colIdentifier}
+                          className="flex items-center justify-between text-xs"
+                        >
+                          <span className="text-muted">
+                            {col.header || col.label}:
+                          </span>
+                          <span className="text-text font-medium">
+                            {col.render
+                              ? col.render(row, adjustedIndex)
+                              : (row[col.accessor || col.key] ?? "—")}
+                          </span>
+                        </div>
+                      );
+                    })}
                   </div>
                 </div>
               );
@@ -90,14 +98,19 @@ export default function Table({
         <table className="w-full text-sm text-left">
           <thead className="bg-bg text-muted">
             <tr>
-              {columns.map((col) => (
-                <th
-                  key={col.key}
-                  className="px-3 lg:px-6 py-2.5 lg:py-3 font-medium border-b border-border whitespace-nowrap text-xs lg:text-sm"
-                >
-                  {col.label}
-                </th>
-              ))}
+              {columns.map((col, idx) => {
+                // Determine a unique key using accessor, key, or index fallback
+                const colIdentifier =
+                  col.accessor || col.key || `col-head-${idx}`;
+                return (
+                  <th
+                    key={colIdentifier}
+                    className="px-3 lg:px-6 py-2.5 lg:py-3 font-medium border-b border-border whitespace-nowrap text-xs lg:text-sm"
+                  >
+                    {col.header || col.label}
+                  </th>
+                );
+              })}
               {actions.length > 0 && (
                 <th className="px-3 lg:px-6 py-2.5 lg:py-3 font-medium border-b border-border text-center">
                   Actions
@@ -118,30 +131,34 @@ export default function Table({
               </tr>
             ) : (
               data.map((row, index) => {
-                const adjustedIndex = pageOffset + index; // ✅ global index
+                const adjustedIndex = pageOffset + index;
 
                 return (
                   <tr
-                    key={row.id ?? index}
+                    key={row.id ?? `row-${index}`}
                     className="border-b border-border hover:bg-bg/50 transition-colors"
                   >
-                    {columns.map((col) => (
-                      <td
-                        key={col.key}
-                        className="px-3 lg:px-6 py-3 lg:py-4 text-text text-xs lg:text-sm"
-                      >
-                        {col.render
-                          ? col.render(row, adjustedIndex)
-                          : (row[col.key] ?? "—")}
-                      </td>
-                    ))}
+                    {columns.map((col, idx) => {
+                      const colIdentifier =
+                        col.accessor || col.key || `col-cell-${idx}`;
+                      return (
+                        <td
+                          key={colIdentifier}
+                          className="px-3 lg:px-6 py-3 lg:py-4 text-text text-xs lg:text-sm"
+                        >
+                          {col.render
+                            ? col.render(row, adjustedIndex)
+                            : (row[col.accessor || col.key] ?? "—")}
+                        </td>
+                      );
+                    })}
 
                     {actions.length > 0 && (
                       <td className="px-3 lg:px-6 py-3 lg:py-4">
                         <div className="flex items-center justify-center gap-2">
                           {actions.map((action, idx) => (
                             <button
-                              key={idx}
+                              key={`action-desk-${idx}`}
                               onClick={() => action.onClick(row)}
                               className={action.className}
                               title={action.title}

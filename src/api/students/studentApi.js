@@ -1,5 +1,7 @@
 // src/api/students/studentApi.js
 import { apiRequest } from "../client";
+import Cookies from "js-cookie";
+import { BASE_URL } from "../apiConfig";
 
 // get all students pagination wise
 export async function fetchStudents({
@@ -143,4 +145,32 @@ export async function searchEnrollment(query) {
     `/students/index.php?getRulesByCourseName=${encodeURIComponent(query)}`,
   );
   return response.students || response;
+}
+
+export function fetchCenterWiseStudents(centerId, page = 1) {
+  return apiRequest(
+    `/admin/centre_wise_student.php?center_id=${centerId}&page=${page}`,
+  );
+}
+
+export async function exportCenterWiseStudentsCSV(centerId) {
+  if (!centerId) throw new Error("Center ID is required");
+
+  const token = Cookies.get("authToken");
+  const endpoint = `/admin/centre_wise_student_export.php?center_id=${centerId}`;
+
+  const response = await fetch(`${BASE_URL}${endpoint}`, {
+    method: "GET",
+    headers: {
+      Authorization: `Bearer ${token}`,
+      // Do not force application/json here so the server returns CSV
+    },
+  });
+
+  if (!response.ok) {
+    throw new Error(`Export failed: ${response.statusText}`);
+  }
+
+  // Return raw text instead of parsing JSON
+  return await response.text();
 }

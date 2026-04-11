@@ -45,6 +45,9 @@ const StudentListPage = lazy(
 const InactiveStudentsPage = lazy(
   () => import("@/pages/admin/students/InactiveStudentsPage"),
 );
+const CenterWiseStudentsPage = lazy(
+  () => import("@/pages/admin/students/CenterWiseStudentsPage"),
+);
 const AddStudent = lazy(() => import("@/pages/admin/students/AddStudent"));
 const EditStudent = lazy(() => import("@/pages/admin/students/EditStudent"));
 const GenerateAdmitCardPage = lazy(
@@ -156,6 +159,10 @@ function App() {
                   <Route
                     path="students/inactive"
                     element={<InactiveStudentsPage />}
+                  />
+                  <Route
+                    path="center-wise-students"
+                    element={<CenterWiseStudentsPage />}
                   />
                   <Route path="students/add" element={<AddStudent />} />
                   <Route path="students/edit/:id" element={<EditStudent />} />

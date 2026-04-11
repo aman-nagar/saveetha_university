@@ -31,6 +31,11 @@ export const menuItems = [
         path: "/admin/students/inactive",
         roles: ["admin"],
       },
+      {
+        label: "Center Wise Students",
+        path: "/admin/center-wise-students",
+        roles: ["admin"],
+      },
       { label: "My Students", path: "/center/students", roles: ["center"] },
       {
         label: "My Students",

@@ -2,14 +2,13 @@
 import { useEffect, useState } from "react";
 import { FaPen, FaTrash } from "react-icons/fa";
 import { fetchCourseCategories } from "../../../api/courses/courseTypeApi";
-import { fetchFaculty, fetchAllFaculty } from "../../../api/courses/facultyApi";
+import { fetchAllFaculty } from "../../../api/courses/facultyApi";
 import {
   fetchCourses,
   createCourse,
   deleteCourse,
   updateCourse,
 } from "../../../api/courses/courseApi";
-
 import { useCrud } from "../../../hooks/useCrud";
 import { useConfirm } from "../../../hooks/useConfirm";
 import { useToast } from "../../../context/ToastContext";
@@ -24,9 +23,10 @@ export default function CoursePage() {
   const { target, isOpen, open, close } = useConfirm();
 
   const [courseTypes, setCourseTypes] = useState([]);
-  const [selectedCourseType, setSelectedCourseType] = useState("");
-  const [loadingFaculties, setLoadingFaculties] = useState(false);
+  const [allFaculties, setAllFaculties] = useState([]);
   const [facultyList, setFacultyList] = useState([]);
+
+  const [selectedCourseType, setSelectedCourseType] = useState("");
   const [selectedFaculty, setSelectedFaculty] = useState("");
   const [editData, setEditData] = useState(null);
 
@@ -40,36 +40,34 @@ export default function CoursePage() {
     deleteFn: deleteCourse,
   });
 
-  // Load course types on mount
   useEffect(() => {
-    loadCourseTypes();
+    const loadInitialData = async () => {
+      try {
+        const [typesData, facultiesData] = await Promise.all([
+          fetchCourseCategories(),
+          fetchAllFaculty(),
+        ]);
+        setCourseTypes(typesData);
+        setAllFaculties(facultiesData);
+      } catch (err) {
+        show("error", "Failed to load initial data: " + err.message);
+      }
+    };
+    loadInitialData();
   }, []);
 
-  const loadCourseTypes = async () => {
-    try {
-      const data = await fetchCourseCategories();
-      setCourseTypes(data);
-    } catch (err) {
-      show("error", err.message);
-    }
-  };
-
-  // Load faculties when course type is selected
-  const handleCourseTypeChange = async (value) => {
+  // Filter faculties locally instead of hitting the API every time
+  const handleCourseTypeChange = (value) => {
     setSelectedCourseType(value);
-    setFacultyList([]); // Clear previous faculties
-    setSelectedFaculty(""); // Clear previous faculty selection
+    setSelectedFaculty(""); // Reset faculty
 
-    if (value && !editData) {
-      setLoadingFaculties(true);
-      try {
-        const data = await fetchFaculty(value);
-        setFacultyList(data);
-      } catch (err) {
-        show("error", err.message);
-      } finally {
-        setLoadingFaculties(false);
-      }
+    if (value) {
+      const filtered = allFaculties.filter(
+        (f) => String(f.course_type_id) === String(value),
+      );
+      setFacultyList(filtered);
+    } else {
+      setFacultyList([]);
     }
   };
 
@@ -78,20 +76,30 @@ export default function CoursePage() {
     if (value && !editData) load(value);
   };
 
-  // In edit mode, cascade load: course type -> faculties -> courses
-  const handleEditClick = async (row) => {
-    setEditData(row);
-    // First set course type to load its faculties
-    setSelectedCourseType(row.course_type_id);
-    setLoadingFaculties(true);
+  const handleEditClick = (row) => {
     try {
-      const faculties = await fetchFaculty(row.course_type_id);
-      setFacultyList(faculties);
+      const parentFaculty = allFaculties.find(
+        (f) => String(f.id) === String(row.faculty_id),
+      );
+      const cTypeId = row.course_type_id || parentFaculty?.course_type_id;
+
+      if (!cTypeId)
+        throw new Error("Could not find Course Type for this record.");
+
+      // 2. Filter the dropdown list
+      const filteredFaculties = allFaculties.filter(
+        (f) => String(f.course_type_id) === String(cTypeId),
+      );
+      setFacultyList(filteredFaculties);
+
+      // 3. Set standard states
+      setSelectedCourseType(cTypeId);
       setSelectedFaculty(row.faculty_id);
+
+      // 4. Pass merged data to the form
+      setEditData({ ...row, course_type_id: cTypeId });
     } catch (err) {
       show("error", err.message);
-    } finally {
-      setLoadingFaculties(false);
     }
   };
 
@@ -107,17 +115,16 @@ export default function CoursePage() {
 
   const handleUpdate = async (courseData) => {
     if (!editData) return;
-
     try {
       await updateCourse({
         id: editData.id,
-        facultyId: courseData.facultyId,
+        faculty_id: courseData.facultyId,
         name: courseData.name,
         duration: courseData.duration,
-        durationType: courseData.durationType,
+        duration_type: courseData.durationType,
       });
 
-      show("success", "Course updated");
+      show("success", "Course updated successfully");
       setEditData(null);
       load(courseData.facultyId);
     } catch (err) {
@@ -127,7 +134,6 @@ export default function CoursePage() {
 
   const confirmDelete = async () => {
     if (!target) return;
-
     try {
       await remove(target.id);
       show("success", "Course deleted");
@@ -139,7 +145,7 @@ export default function CoursePage() {
   };
 
   const facultyMap = {};
-  facultyList.forEach((f) => {
+  allFaculties.forEach((f) => {
     facultyMap[f.id] = f.name;
   });
 
@@ -187,8 +193,7 @@ export default function CoursePage() {
         onFacultyChange={handleFacultyChange}
         onSubmit={handleCreate}
         mode="create"
-        loadingFaculties={loadingFaculties}
-        isEmptyFaculties={facultyList.length === 0 && !loadingFaculties}
+        isEmptyFaculties={facultyList.length === 0}
       />
 
       <Table
@@ -199,29 +204,28 @@ export default function CoursePage() {
         loading={loading}
       />
 
-      {/* EDIT MODAL */}
       <Modal
         isOpen={!!editData}
         title="Edit Course"
         onClose={() => setEditData(null)}
       >
-        <CourseForm
-          courseTypes={courseTypes}
-          selectedCourseType={selectedCourseType}
-          onCourseTypeChange={handleCourseTypeChange}
-          facultyList={facultyList}
-          selectedFaculty={selectedFaculty}
-          onFacultyChange={handleFacultyChange}
-          onSubmit={handleUpdate}
-          initialData={editData}
-          mode="edit"
-          onCancel={() => setEditData(null)}
-          loadingFaculties={loadingFaculties}
-          isEmptyFaculties={facultyList.length === 0 && !loadingFaculties}
-        />
+        {editData && (
+          <CourseForm
+            courseTypes={courseTypes}
+            selectedCourseType={selectedCourseType}
+            onCourseTypeChange={handleCourseTypeChange}
+            facultyList={facultyList}
+            selectedFaculty={selectedFaculty}
+            onFacultyChange={handleFacultyChange}
+            onSubmit={handleUpdate}
+            initialData={editData}
+            mode="edit"
+            onCancel={() => setEditData(null)}
+            isEmptyFaculties={facultyList.length === 0}
+          />
+        )}
       </Modal>
 
-      {/* DELETE MODAL */}
       <Modal
         isOpen={isOpen}
         title="Confirm Delete"

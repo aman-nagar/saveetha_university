@@ -70,6 +70,9 @@ const SiteSettingsPage = lazy(
 const CreateResultPage = lazy(
   () => import("@/pages/admin/result/CreateResultPage"),
 );
+const CreateCertificatePage = lazy(
+  () => import("@/pages/admin/result/CreateCertificatePage"),
+);
 
 // ===== CENTER PAGES  =====
 const CenterDashboardPage = lazy(
@@ -181,6 +184,10 @@ function App() {
                   <Route path="course" element={<CoursePage />} />
                   <Route path="stream" element={<StreamPage />} />
                   <Route path="subject" element={<SubjectPage />} />
+                  <Route
+                    path={ROUTES.ADMIN.CERTIFICATE_CREATE}
+                    element={<CreateCertificatePage />}
+                  />
                   <Route path="site-settings" element={<SiteSettingsPage />} />
                 </Route>
 

@@ -16,6 +16,7 @@ export const menuItems = [
     children: [
       { label: "Overview", path: "/admin", roles: ["admin"] },
       { label: "Overview", path: "/center", roles: ["center"] },
+      { label: "Payments", path: "/center/payments", roles: ["center"] },
       { label: "Overview", path: "/sub-center", roles: ["sub-center"] },
     ],
   },

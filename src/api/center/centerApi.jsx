@@ -57,3 +57,16 @@ export function deleteCenter(id) {
 export function fetchCenterDashboard() {
   return apiRequest(`${DASHBOARD_ENDPOINT}`);
 }
+
+// center panel's payments api
+const FEES_ENDPOINT = "/centers/center_fees.php";
+export function submitCenterPayment(paymentData) {
+  return apiRequest(FEES_ENDPOINT, {
+    method: "POST",
+    body: JSON.stringify(paymentData),
+  });
+}
+
+export function fetchCenterFees() {
+  return apiRequest(FEES_ENDPOINT);
+}

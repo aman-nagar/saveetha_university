@@ -78,6 +78,9 @@ const CreateCertificatePage = lazy(
 const CenterDashboardPage = lazy(
   () => import("@/pages/center/CenterDashboardPage"),
 );
+const CenterPaymentsPage = lazy(
+  () => import("@/pages/center/CenterPaymentsPage"),
+);
 
 // ===== STUDENT PAGES  =====
 const StudentDashboard = lazy(() => import("@/pages/student/StudentDashboard"));
@@ -201,6 +204,7 @@ function App() {
                   }
                 >
                   <Route index element={<CenterDashboardPage />} />
+                  <Route path="payments" element={<CenterPaymentsPage />} />
                   <Route path="students" element={<StudentListPage />} />
                   <Route path="students/add" element={<AddStudent />} />
                   <Route

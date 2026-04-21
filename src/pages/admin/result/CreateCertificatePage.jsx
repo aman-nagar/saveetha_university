@@ -1,153 +1,125 @@
-import React, { useEffect, useState } from "react";
-import { useForm } from "react-hook-form";
-import { FaTrash, FaSearch, FaSpinner } from "react-icons/fa";
+import React, { useEffect, useState, useCallback } from "react";
+import { FaTrash, FaEye, FaDownload } from "react-icons/fa";
 import {
   FetchCertificate,
-  createCertificate,
   DeleteCertificate,
+  fetchSingleCertificate,
 } from "../../../api/certificate/certificate";
-import { fetchResults } from "../../../api/results/resultApi";
 
-// UI Components
+// Utilities & Components
+import {
+  getCertificateHtml,
+  downloadCertificate,
+} from "../../../utils/certificatePdfGenerator";
 import Toast from "../../../components/ui/Toast";
 import { useToast } from "../../../context/ToastContext";
-import FormSection from "../../../components/form/FormSection";
-import FormInput from "../../../components/form/FormInput";
 import Button from "../../../components/ui/Button";
 import Table from "../../../components/table/Table";
 import DataTableLayout from "../../../components/table/DataTableLayout";
+import Modal from "../../../components/ui/Modal";
+import Pagination from "../../../components/ui/Pagination";
+import SearchInput from "../../../components/ui/SearchInput";
+import CertificateGeneratorForm from "../../../components/admin/certificate/CertificateGeneratorForm";
 
 export default function CreateCertificatePage() {
   const { toast, show, clear } = useToast();
-  const {
-    register,
-    handleSubmit,
-    reset,
-    formState: { errors },
-  } = useForm();
 
-  // --- States ---
+  // Table States
   const [certificates, setCertificates] = useState([]);
   const [loadingList, setLoadingList] = useState(true);
-  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // Search States
-  const [searchTerm, setSearchTerm] = useState("");
-  const [searchResults, setSearchResults] = useState([]);
-  const [isSearching, setIsSearching] = useState(false);
-  const [showDropdown, setShowDropdown] = useState(false);
+  // Pagination & Search States
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [listSearch, setListSearch] = useState("");
 
-  const [selectedEnrollment, setSelectedEnrollment] = useState(null);
-  const [selectedStudentId, setSelectedStudentId] = useState(null); // ✅ ADDED THIS STATE
+  // Modal & Download States
+  const [isViewModalOpen, setIsViewModalOpen] = useState(false);
+  const [selectedCert, setSelectedCert] = useState(null);
+  const [isDownloading, setIsDownloading] = useState(false);
+  const [isFetchingDetails, setIsFetchingDetails] = useState(false);
 
-  // --- 1. Load Certificates on Mount ---
-  const loadCertificates = async () => {
-    try {
-      setLoadingList(true);
-      const res = await FetchCertificate();
-      console.log(res);
-      setCertificates(Array.isArray(res) ? res : res?.data || []);
-    } catch (error) {
-      show("error", "Failed to load certificates");
-    } finally {
-      setLoadingList(false);
-    }
-  };
-
-  useEffect(() => {
-    loadCertificates();
-  }, []);
-
-  // --- 2. Debounced Search ---
-  useEffect(() => {
-    if (selectedEnrollment && searchTerm === selectedEnrollment) {
-      setShowDropdown(false);
-      return;
-    }
-
-    if (searchTerm.length < 3) {
-      setSearchResults([]);
-      setShowDropdown(false);
-      return;
-    }
-
-    const delayDebounceFn = setTimeout(async () => {
-      setIsSearching(true);
+  // --- Data Loading ---
+  const loadCertificates = useCallback(
+    async (page = 1, search = "") => {
       try {
-        const response = await fetchResults(1, searchTerm);
-        const data = response.data || [];
-        setSearchResults(data);
-        setShowDropdown(true);
-      } catch (err) {
-        console.error("Search error:", err);
+        setLoadingList(true);
+        const res = await FetchCertificate(page, search);
+        setCertificates(res.data);
+        setTotalPages(res.pagination?.total_pages || 1);
+        setCurrentPage(res.pagination?.current_page || 1);
+      } catch (error) {
+        show("error", "Failed to load certificates");
       } finally {
-        setIsSearching(false);
+        setLoadingList(false);
       }
-    }, 400);
+    },
+    [show],
+  );
 
-    return () => clearTimeout(delayDebounceFn);
-  }, [searchTerm, selectedEnrollment]);
+  useEffect(() => {
+    loadCertificates(1, listSearch);
+  }, [loadCertificates, listSearch]);
 
-  const handleSelectStudent = (resultRecord) => {
-    setSelectedEnrollment(resultRecord.enrollment_no);
-    setSelectedStudentId(resultRecord.student_id);
-    setSearchTerm(resultRecord.enrollment_no);
-    setShowDropdown(false);
+  // --- Handlers ---
+  const handlePageChange = (page) => {
+    setCurrentPage(page);
+    loadCertificates(page, listSearch);
   };
 
-  const clearSelection = () => {
-    setSelectedEnrollment(null);
-    setSelectedStudentId(null);
-    setSearchTerm("");
+  const handleSearch = (val) => {
+    setListSearch(val);
+    setCurrentPage(1);
   };
 
-  // --- 3. Submit Handler ---
-  const onSubmit = async (data) => {
-    if (!selectedStudentId) {
-      return show(
-        "error",
-        "Please search and select an Enrollment Number first.",
-      );
-    }
-
-    setIsSubmitting(true);
-    try {
-      const payload = {
-        student_id: selectedStudentId,
-        issue_date: data.issue_date,
-        final_year: data.final_year,
-      };
-
-      await createCertificate(payload);
-      show("success", "Certificate created successfully!");
-
-      reset();
-      clearSelection();
-      loadCertificates();
-    } catch (error) {
-      show("error", error.message || "Failed to create certificate");
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
-
-  // --- 4. Delete Handler ---
   const handleDelete = async (id) => {
     if (!window.confirm("Are you sure you want to delete this certificate?"))
       return;
-
     try {
       await DeleteCertificate(id);
       show("success", "Certificate deleted");
-      loadCertificates();
+      loadCertificates(currentPage, listSearch);
     } catch (error) {
       show("error", error.message || "Failed to delete");
     }
   };
 
-  // --- Table Columns ---
+  const handleViewDetails = async (row) => {
+    setIsFetchingDetails(true);
+    try {
+      const fullCertData = await fetchSingleCertificate(row.id);
+      setSelectedCert(fullCertData);
+      setIsViewModalOpen(true);
+    } catch (error) {
+      show("error", "Failed to fetch certificate details.");
+    } finally {
+      setIsFetchingDetails(false);
+    }
+  };
+
+  const handleDownloadAction = async (row) => {
+    if (isDownloading) return;
+    setIsDownloading(true);
+    show("success", "Fetching data & Generating PDF...");
+
+    try {
+      const fullCertData = await fetchSingleCertificate(row.id);
+      await downloadCertificate(fullCertData); // ✅ Calling the standalone utility
+    } catch (err) {
+      show("error", "Failed to generate PDF");
+      console.error(err);
+    } finally {
+      setIsDownloading(false);
+    }
+  };
+
+  // --- Table Configuration ---
   const columns = [
-    { key: "serial", label: "#", render: (_, i) => i + 1 },
+    {
+      key: "serial",
+      label: "#",
+      render: (_, i) => (currentPage - 1) * 10 + i + 1,
+    },
     { key: "enrollment_no", label: "Enrollment no." },
     { key: "final_year", label: "Passing Year" },
     { key: "issue_date", label: "Issue Date" },
@@ -156,114 +128,62 @@ export default function CreateCertificatePage() {
 
   const actions = [
     {
+      icon: <FaEye />,
+      className:
+        "px-3 py-1 rounded bg-blue-600 text-white hover:bg-blue-700 text-sm",
+      title: "View Certificate",
+      onClick: handleViewDetails,
+    },
+    {
+      icon: <FaDownload />,
+      className:
+        "px-3 py-1 rounded bg-green-600 text-white hover:bg-green-700 text-sm",
+      title: "Download PDF",
+      onClick: handleDownloadAction,
+    },
+    {
       icon: <FaTrash />,
       className:
-        "px-3 py-1 rounded bg-red-600 text-white hover:bg-red-700 text-sm transition-colors",
+        "px-3 py-1 rounded bg-red-600 text-white hover:bg-red-700 text-sm",
       title: "Delete Certificate",
       onClick: (row) => handleDelete(row.id),
     },
   ];
 
+  const toolbar = (
+    <div className="w-full sm:w-64">
+      <SearchInput
+        onDebounce={handleSearch}
+        placeholder="Search certificates..."
+      />
+    </div>
+  );
+
   return (
     <div className="w-full space-y-6">
       {toast && <Toast {...toast} onClose={clear} />}
 
-      <div className="bg-surface border border-border rounded-xl p-6 shadow-sm">
-        <h2 className="text-xl font-bold text-text mb-6">
-          Generate Certificate
-        </h2>
+      <CertificateGeneratorForm
+        showToast={show}
+        onSuccess={() => loadCertificates(currentPage, listSearch)}
+      />
 
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-          {/* SEARCH BOX SECTION */}
-          <div className="space-y-1.5 sm:space-y-2 relative">
-            <label className="text-xs sm:text-sm font-medium text-text">
-              Search Enrollment No. (Must have a result){" "}
-              <span className="text-danger">*</span>
-            </label>
-
-            <div className="relative">
-              <FaSearch className="absolute left-3 top-1/2 -translate-y-1/2 text-muted" />
-              <input
-                type="text"
-                value={searchTerm}
-                onChange={(e) => {
-                  setSearchTerm(e.target.value);
-                  if (selectedEnrollment) clearSelection();
-                }}
-                placeholder="Type to search..."
-                className={`w-full border rounded-lg pl-9 pr-3 py-2.5 bg-surface text-text text-sm sm:text-base focus:outline-none focus:ring-2 focus:ring-primary/40 ${
-                  selectedEnrollment
-                    ? "border-success ring-1 ring-success"
-                    : "border-border"
-                }`}
-                autoComplete="off"
-              />
-              {isSearching && (
-                <FaSpinner className="absolute right-3 top-1/2 -translate-y-1/2 text-primary animate-spin" />
-              )}
-            </div>
-
-            {showDropdown && searchResults.length > 0 && (
-              <div className="absolute z-50 w-full mt-1 bg-surface border border-border rounded-lg shadow-xl max-h-60 overflow-y-auto">
-                {searchResults.map((res) => (
-                  <div
-                    key={res.id}
-                    onClick={() => handleSelectStudent(res)}
-                    className="px-4 py-3 hover:bg-bg cursor-pointer border-b border-border last:border-0"
-                  >
-                    <p className="text-sm font-bold text-text">
-                      {res.enrollment_no}
-                    </p>
-                    <p className="text-xs text-muted">
-                      Roll: {res.roll_no} | Session: {res.session}
-                    </p>
-                  </div>
-                ))}
-              </div>
-            )}
-
-            {showDropdown && searchResults.length === 0 && !isSearching && (
-              <div className="absolute z-50 w-full mt-1 bg-surface border border-border rounded-lg shadow-xl p-4 text-center text-sm text-muted">
-                No published results found for this enrollment number.
-              </div>
-            )}
-
-            {selectedEnrollment && (
-              <p className="text-xs text-success font-semibold mt-1">
-                ✓ Enrollment selected
-              </p>
-            )}
+      <DataTableLayout
+        title="Generated Certificates"
+        toolbar={toolbar}
+        pagination={
+          <Pagination
+            currentPage={currentPage}
+            totalPages={totalPages}
+            onPageChange={handlePageChange}
+          />
+        }
+      >
+        {isFetchingDetails && (
+          <div className="p-4 text-center text-sm text-primary animate-pulse">
+            Loading detailed view...
           </div>
-
-          <FormSection columns={2}>
-            <FormInput
-              type="date"
-              label="Issue Date"
-              name="issue_date"
-              register={register}
-              required="Issue date is required"
-              error={errors.issue_date?.message}
-            />
-            <FormInput
-              type="text"
-              label="Passing Year"
-              name="final_year"
-              placeholder="e.g., 2024"
-              register={register}
-              required="Passing year is required"
-              error={errors.final_year?.message}
-            />
-          </FormSection>
-
-          <div className="flex justify-end pt-2">
-            <Button type="submit" disabled={isSubmitting || !selectedStudentId}>
-              {isSubmitting ? "Creating..." : "Create Certificate"}
-            </Button>
-          </div>
-        </form>
-      </div>
-
-      <DataTableLayout title="Generated Certificates">
+        )}
         <Table
           columns={columns}
           data={certificates}
@@ -272,6 +192,34 @@ export default function CreateCertificatePage() {
           emptyMessage="No certificates found."
         />
       </DataTableLayout>
+
+      {/* --- VIEW MODAL --- */}
+      <Modal
+        isOpen={isViewModalOpen}
+        onClose={() => setIsViewModalOpen(false)}
+        title="Certificate Preview"
+        size="max-w-6xl"
+      >
+        {selectedCert && (
+          // overflow-x-auto allows horizontal scrolling if the screen is smaller than A4 Landscape (297mm)
+          <div className="w-full overflow-x-auto bg-gray-50 p-4 rounded-lg flex justify-center">
+            {/* ✅ Rendering the exact same HTML template as the PDF generator */}
+            <div
+              dangerouslySetInnerHTML={{
+                __html: getCertificateHtml(selectedCert, false),
+              }}
+            />
+          </div>
+        )}
+        <div className="mt-4 flex justify-end">
+          <Button
+            onClick={() => handleDownloadAction(selectedCert)}
+            disabled={isDownloading}
+          >
+            {isDownloading ? "Downloading..." : "Download PDF"}
+          </Button>
+        </div>
+      </Modal>
     </div>
   );
 }

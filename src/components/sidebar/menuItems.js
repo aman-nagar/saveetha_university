@@ -89,7 +89,10 @@ export const menuItems = [
     label: "Result",
     icon: TbReport,
     roles: ["admin"],
-    children: [{ label: "Create Result", path: "/admin/results/create" }],
+    children: [
+      { label: "Create Result", path: "/admin/results/create" },
+      { label: "Certificate", path: "/admin/certificate/create" },
+    ],
   },
   {
     id: 7,

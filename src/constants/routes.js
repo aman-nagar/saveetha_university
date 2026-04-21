@@ -36,6 +36,7 @@ export const ADMIN_ROUTES = {
   CENTERS_ADD: "/admin/centers/add",
   ADMIT_CARD_GENERATE: "/admin/admit-card/generate",
   RESULTS_CREATE: "/admin/results/create",
+  CERTIFICATE_CREATE: "/admin/certificate/create",
   COURSE_CATEGORY: "/admin/course-category",
   FACULTY: "/admin/faculty",
   COURSE: "/admin/course",

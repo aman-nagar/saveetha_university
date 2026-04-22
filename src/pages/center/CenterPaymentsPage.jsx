@@ -141,63 +141,6 @@ export default function CenterPaymentsPage() {
             </FormSection>
           </form>
         </div>
-
-        {/* Transaction History / Details Table (Right/Bottom) */}
-        <div className="lg:col-span-7">
-          <div className="bg-surface border border-border rounded-xl shadow-sm overflow-hidden">
-            <div className="flex items-center gap-2 p-4 sm:p-5 border-b border-border bg-bg/30">
-              <HiTable className="text-primary w-5 h-5" />
-              <h2 className="font-heading font-semibold text-text">
-                Account Ledger
-              </h2>
-            </div>
-
-            <div className="overflow-x-auto">
-              <table className="w-full text-left text-sm border-collapse">
-                <thead className="bg-bg/50 text-muted uppercase text-[10px] sm:text-xs font-bold tracking-wider">
-                  <tr>
-                    <th className="px-4 py-3 border-b border-border">
-                      Description
-                    </th>
-                    <th className="px-4 py-3 border-b border-border text-right">
-                      Amount
-                    </th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-border">
-                  <TableRow
-                    label="Total Accrued Payable"
-                    value={stats?.total_payable_amount}
-                    color="text-text"
-                  />
-                  <TableRow
-                    label="Total Verified Payments"
-                    value={stats?.total_verified_paid}
-                    color="text-success"
-                  />
-                  <tr className="bg-secondary/5">
-                    <td className="px-4 py-4 font-bold text-secondary">
-                      Outstanding Balance
-                    </td>
-                    <td className="px-4 py-4 text-right font-black text-secondary text-base sm:text-lg">
-                      ₹
-                      {Number(stats?.net_due_balance || 0).toLocaleString(
-                        "en-IN",
-                      )}
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-            <div className="p-4 bg-bg/20">
-              <p className="text-[10px] sm:text-xs text-muted leading-relaxed">
-                * Note: Payments submitted manually may take 24-48 hours to
-                reflect in the "Verified Paid" section after university
-                approval.
-              </p>
-            </div>
-          </div>
-        </div>
       </div>
     </div>
   );

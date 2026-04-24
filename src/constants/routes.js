@@ -48,7 +48,7 @@ export const ADMIN_ROUTES = {
 // Center Routes
 export const CENTER_ROUTES = {
   DASHBOARD: "/center",
-  PAYMENTS: "/center/payments",
+  // PAYMENTS: "/center/payments",
   STUDENTS: "/center/students",
   STUDENTS_ADD: "/center/students/add",
   CENTER_ADD: "/center/center/add",

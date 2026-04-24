@@ -74,6 +74,7 @@ export const menuItems = [
         roles: ["center"],
         condition: (user) => user?.is_form_enabled === true,
       },
+      { label: "Fees", path: "/admin/fees", roles: ["admin"] },
     ],
   },
   {

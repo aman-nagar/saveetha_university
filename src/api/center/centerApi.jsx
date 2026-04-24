@@ -5,6 +5,7 @@ const CENTER_ENDPOINT = "/centers/index.php";
 const UPDATE_ENDPOINT = "/centers/update.php";
 const DASHBOARD_ENDPOINT = "/centers/center_dashboard.php";
 
+
 export function fetchCenters({ page = 1, search = "" } = {}) {
   const params = new URLSearchParams();
   if (page) params.append("page", page);
@@ -69,4 +70,9 @@ export function submitCenterPayment(paymentData) {
 
 export function fetchCenterFees() {
   return apiRequest(FEES_ENDPOINT);
+}
+
+
+export function fetchAdminFees() {
+  return apiRequest(ADMIN_FEES);
 }

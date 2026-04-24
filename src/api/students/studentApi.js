@@ -147,6 +147,12 @@ export async function searchEnrollment(query) {
   return response.students || response;
 }
 
+export async function fetchAllCentersForDropdown() {
+  const response = await apiRequest("/admin/centre_wise_student.php");
+  // The response data contains { centers: [...], total_centers: 57 }
+  return response.centers || [];
+}
+
 export function fetchCenterWiseStudents(centerId, page = 1) {
   return apiRequest(
     `/admin/centre_wise_student.php?center_id=${centerId}&page=${page}`,

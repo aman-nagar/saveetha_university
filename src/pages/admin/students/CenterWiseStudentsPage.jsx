@@ -1,3 +1,4 @@
+// src/pages/admin/students/CenterWiseStudentsPage.jsx
 import { useEffect, useState } from "react";
 import DataTableLayout from "../../../components/table/DataTableLayout";
 import Table from "../../../components/table/Table";
@@ -7,9 +8,9 @@ import Toast from "../../../components/ui/Toast";
 import {
   fetchCenterWiseStudents,
   exportCenterWiseStudentsCSV,
+  fetchAllCentersForDropdown,
 } from "../../../api/students/studentApi";
-import { fetchCenters } from "../../../api/center/centerApi";
-import { FaDownload } from "react-icons/fa";
+import { FaArrowAltCircleUp } from "react-icons/fa";
 
 export default function CenterWiseStudentsPage() {
   const { toast, show, clear } = useToast();
@@ -29,11 +30,11 @@ export default function CenterWiseStudentsPage() {
   useEffect(() => {
     const loadCenters = async () => {
       try {
-        const res = await fetchCenters();
-        const centerList = Array.isArray(res) ? res : res.data || [];
+        // Use the new API that returns ALL centers
+        const centerList = await fetchAllCentersForDropdown();
         setCenters(centerList);
       } catch (err) {
-        show("error", "Failed to load centers list");
+        show("error", "Failed to load centers list: " + err.message);
       }
     };
     loadCenters();
@@ -48,17 +49,21 @@ export default function CenterWiseStudentsPage() {
     setLoading(true);
     try {
       const response = await fetchCenterWiseStudents(centerId, page);
-      const data = response.data || response;
-      console.log(data);
-      setStudents(data.students || []);
+      // Response structure: { students: [], pagination: {...} }
+      setStudents(response.students || []);
       setPagination({
-        current_page: data.pagination?.current_page || 1,
-        total_pages: data.pagination?.total_pages || 1,
-        total_records: data.pagination?.total_records || 0,
+        current_page: response.pagination?.current_page || 1,
+        total_pages: response.pagination?.total_pages || 1,
+        total_records: response.pagination?.total_records || 0,
       });
     } catch (err) {
       show("error", err.message || "Failed to fetch students");
       setStudents([]);
+      setPagination({
+        current_page: 1,
+        total_pages: 1,
+        total_records: 0,
+      });
     } finally {
       setLoading(false);
     }
@@ -67,14 +72,23 @@ export default function CenterWiseStudentsPage() {
   const handleCenterChange = (e) => {
     const centerId = e.target.value;
     setSelectedCenter(centerId);
-    loadStudents(centerId, 1);
+    if (centerId) {
+      loadStudents(centerId, 1);
+    } else {
+      setStudents([]);
+      setPagination({
+        current_page: 1,
+        total_pages: 1,
+        total_records: 0,
+      });
+    }
   };
 
   const handlePageChange = (page) => {
     loadStudents(selectedCenter, page);
   };
 
-  // ✅ Add Export Handler
+  // Export Handler
   const handleExportCSV = async () => {
     if (!selectedCenter) return;
     setExporting(true);
@@ -82,13 +96,10 @@ export default function CenterWiseStudentsPage() {
     try {
       const csvData = await exportCenterWiseStudentsCSV(selectedCenter);
 
-      // 1. Find the selected center object from your centers array
       const currentCenter = centers.find(
         (c) => String(c.id) === String(selectedCenter),
       );
 
-      // 2. Get the name and sanitize it (replace spaces/special chars with underscores)
-      // Fallback to the ID if the name is somehow missing
       let fileNameSuffix = selectedCenter;
       if (currentCenter && currentCenter.institute_name) {
         fileNameSuffix = currentCenter.institute_name.replace(
@@ -97,19 +108,16 @@ export default function CenterWiseStudentsPage() {
         );
       }
 
-      // 3. Create a Blob from the CSV string
       const blob = new Blob([csvData], { type: "text/csv;charset=utf-8;" });
       const url = URL.createObjectURL(blob);
-
-      // 4. Create a hidden link and trigger download with the dynamic name
       const link = document.createElement("a");
       link.href = url;
       link.setAttribute("download", `${fileNameSuffix}_students.csv`);
       document.body.appendChild(link);
       link.click();
-
-      // 5. Cleanup
       document.body.removeChild(link);
+      URL.revokeObjectURL(url); // Clean up
+
       show("success", "Export downloaded successfully!");
     } catch (err) {
       show("error", err.message || "Failed to download CSV");
@@ -128,41 +136,48 @@ export default function CenterWiseStudentsPage() {
           alt={row.candidate_name || "Student"}
           className="w-10 h-10 rounded-full object-cover border border-border"
           onError={(e) => {
-            e.target.src =
-              "https://api.nsprowebtech.com/backend/uploads/students/photos/default.jpg";
+            e.target.src = "/default-avatar.png";
           }}
         />
       ),
     },
     { header: "Enrollment No.", accessor: "enrollment_no" },
     { header: "Name", accessor: "candidate_name" },
-    { header: "Course ", accessor: "course_name" },
+    { header: "Course", accessor: "course_name" },
     { header: "Contact", accessor: "contact_number" },
     { header: "Email", accessor: "email" },
   ];
 
-  // ✅ Updated Toolbar with Export Button
+  // Make dropdown scrollable with custom styling
   const toolbar = (
     <div className="flex flex-col sm:flex-row items-center gap-3 w-full sm:w-auto">
-      <select
-        value={selectedCenter}
-        onChange={handleCenterChange}
-        className="px-4 py-2 border border-border rounded-lg bg-surface text-text w-full sm:w-64 focus:outline-none focus:ring-2 focus:ring-primary/40"
-      >
-        <option value="">-- Select a Center --</option>
-        {centers.map((center) => (
-          <option key={center.id} value={center.id}>
-            {center.institute_name || `Center #${center.id}`}
-          </option>
-        ))}
-      </select>
+      <div className="relative w-full sm:w-64">
+        <select
+          value={selectedCenter}
+          onChange={handleCenterChange}
+          className="w-full px-4 py-2 pr-8 border border-border rounded-lg bg-surface text-text focus:outline-none focus:ring-2 focus:ring-primary/40 appearance-none"
+          style={{
+            backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%23666'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E")`,
+            backgroundRepeat: "no-repeat",
+            backgroundPosition: "right 8px center",
+            backgroundSize: "16px",
+          }}
+        >
+          <option value="">-- Select a Center --</option>
+          {centers.map((center) => (
+            <option key={center.id} value={center.id}>
+              {center.institute_name || `Center #${center.id}`}
+            </option>
+          ))}
+        </select>
+      </div>
 
       <button
         onClick={handleExportCSV}
         disabled={!selectedCenter || exporting || students.length === 0}
         className="flex items-center justify-center gap-2 px-4 py-2 bg-primary text-white text-sm font-medium rounded-lg hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed transition-colors w-full sm:w-auto whitespace-nowrap"
       >
-        <FaDownload className="w-3.5 h-3.5" />
+        <FaArrowAltCircleUp className="w-3.5 h-3.5" />
         {exporting ? "Exporting..." : "Export CSV"}
       </button>
     </div>
@@ -176,7 +191,9 @@ export default function CenterWiseStudentsPage() {
         title="Center Wise Students"
         toolbar={toolbar}
         pagination={
-          selectedCenter && students.length > 0 ? (
+          selectedCenter &&
+          students.length > 0 &&
+          pagination.total_pages > 1 ? (
             <Pagination
               currentPage={pagination.current_page}
               totalPages={pagination.total_pages}

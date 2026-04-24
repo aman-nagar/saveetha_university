@@ -4,6 +4,7 @@ import { useAcademicFlow } from "../../../hooks/useAcademicFlow";
 import { useToast } from "../../../context/ToastContext";
 
 import Button from "../../../components/ui/Button";
+import SearchInput from "../../../components/ui/SearchInput";
 import AdmitCardForm from "../../../components/admin/students/admit-card/AdmitCardForm";
 import ScheduleTable from "../../../components/admin/students/admit-card/ScheduleTable";
 import Table from "../../../components/table/Table";
@@ -39,12 +40,13 @@ export default function GenerateAdmitCardPage() {
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [loadingHistory, setLoadingHistory] = useState(false);
+  const [historySearch, setHistorySearch] = useState("");
 
   const academicFlow = useAcademicFlow(setValue);
-  const loadHistory = async (page = 1) => {
+  const loadHistory = async (page = 1, search = "") => {
     setLoadingHistory(true);
     try {
-      const response = await fetchAdmitCards(page);
+      const response = await fetchAdmitCards(page, search);
 
       // console.log("History API Structured Response:", response);
 
@@ -63,12 +65,17 @@ export default function GenerateAdmitCardPage() {
   };
 
   useEffect(() => {
-    loadHistory(currentPage);
-  }, [currentPage]);
+    loadHistory(currentPage, historySearch);
+  }, [currentPage, historySearch]);
 
   const handlePageChange = (page) => {
     setCurrentPage(page);
     // Smooth scroll to table top if needed
+  };
+
+  const handleHistorySearch = (value) => {
+    setCurrentPage(1);
+    setHistorySearch(value);
   };
 
   useEffect(() => {
@@ -148,7 +155,7 @@ export default function GenerateAdmitCardPage() {
       await hardDeleteAdmitCard(deleteId);
       show("success", "Admit card permanently deleted.");
       setDeleteId(null);
-      loadHistory();
+      loadHistory(currentPage, historySearch);
     } catch (err) {
       show("error", err.message || "Failed to delete admit card.");
     } finally {
@@ -187,7 +194,7 @@ export default function GenerateAdmitCardPage() {
       }
 
       cancelEdit();
-      loadHistory();
+      loadHistory(currentPage, historySearch);
     } catch (err) {
       show("error", err.message || "Action failed.");
     } finally {
@@ -294,12 +301,22 @@ export default function GenerateAdmitCardPage() {
         </form>
       </div>
 
-      <Table
-        title="History"
-        columns={columns}
-        data={admitCards}
-        loading={loadingHistory}
-      />
+      <div className="space-y-4">
+        <div className="flex justify-end">
+          <SearchInput
+            onDebounce={handleHistorySearch}
+            placeholder="Search by enrollment no..."
+            className="w-full sm:w-72"
+          />
+        </div>
+
+        <Table
+          title="History"
+          columns={columns}
+          data={admitCards}
+          loading={loadingHistory}
+        />
+      </div>
 
       {/* Pagination UI */}
       {totalPages > 1 && (

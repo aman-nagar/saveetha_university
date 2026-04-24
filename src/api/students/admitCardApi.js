@@ -2,16 +2,21 @@
 import { apiRequest } from "../client";
 
 // We remove the local BASE_URL because client.js handles the root path
-export async function fetchAdmitCards(page = 1) {
-  const endpoint = `/admin/admit-card/index.php?page=${page}`;
-  return await apiRequest(endpoint);
+export function fetchAdmitCards(page = 1, search = "") {
+  let endpoint = `/admin/admit-card/index.php?page=${page}`;
+
+  if (search.trim()) {
+    endpoint += `&search=${encodeURIComponent(search.trim())}`;
+  }
+
+  return apiRequest(endpoint);
 }
 
-export async function fetchAdmitCardById(id) {
+export function fetchAdmitCardById(id) {
   const endpoint = `/admin/admit-card/index.php?id=${id}`;
 
   // Returns the single card object inside json.data
-  return await apiRequest(endpoint);
+  return apiRequest(endpoint);
 }
 
 export async function createAdmitCard(payload) {

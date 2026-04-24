@@ -10,7 +10,7 @@ import {
   HiCheckCircle,
   HiUserAdd,
 } from "react-icons/hi";
-import { fetchAdminDashboard } from "../../api/dashboard/dashboardApi";
+import { fetchAdminDashboard } from "../../api/admin/dashboardApi";
 
 export default function AdminDashboard() {
   const [data, setData] = useState({

@@ -6,7 +6,6 @@ import {
   HiCheckCircle,
   HiExclamationCircle,
   HiCreditCard,
-  HiTable,
 } from "react-icons/hi";
 import {
   fetchCenterFees,

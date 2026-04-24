@@ -57,6 +57,9 @@ const CenterListPage = lazy(
   () => import("@/pages/admin/centers/CenterListPage"),
 );
 const AddCenterPage = lazy(() => import("@/pages/admin/centers/AddCenterPage"));
+const CenterFeesPage = lazy(
+  () => import("@/pages/admin/centers/CenterFeesPage"),
+);
 const CourseCategoryPage = lazy(
   () => import("@/pages/admin/courses/CourseCategoryPage"),
 );
@@ -174,6 +177,7 @@ function App() {
                   <Route path="students/edit/:id" element={<EditStudent />} />
                   <Route path="centers/add" element={<AddCenterPage />} />
                   <Route path="centers" element={<CenterListPage />} />
+                  <Route path="fees" element={<CenterFeesPage />} />
                   <Route
                     path="admit-card/generate"
                     element={<GenerateAdmitCardPage />}

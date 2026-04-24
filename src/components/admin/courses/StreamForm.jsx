@@ -25,31 +25,44 @@ export default function StreamForm({
   isEmptyFaculties = false,
   isEmptyCourses = false,
 }) {
-  const { register, handleSubmit, reset } = useForm();
+  const { register, handleSubmit, reset } = useForm({
+    defaultValues: {
+      courseType: "",
+      faculty: "",
+      course: "",
+      stream: "",
+      application_fee: "",
+    },
+  });
 
   useEffect(() => {
-    if (initialData) {
-      reset({
-        stream: initialData.name,
-        application_fee: initialData.application_fee || "",
-      });
-      // In edit mode, cascade: set course type first, then faculty, then course
-      onCourseTypeChange(initialData.course_type_id);
-      onFacultyChange(initialData.faculty_id);
-      onCourseChange(initialData.course_id);
-    } else {
-      reset({ stream: "", application_fee: "" });
-    }
-  }, [initialData, reset, onCourseTypeChange, onFacultyChange, onCourseChange]);
+    if (!initialData) return;
+
+    reset({
+      courseType: selectedCourseType || initialData.course_type_id || "",
+      faculty: selectedFaculty || initialData.faculty_id || "",
+      course: selectedCourse || initialData.course_id || "",
+      stream: initialData.name || "",
+      application_fee: initialData.application_fee ?? "",
+    });
+  }, [initialData, reset, selectedCourseType, selectedFaculty, selectedCourse]);
 
   const submitForm = async (data) => {
     await onSubmit({
-      courseId: selectedCourse,
+      courseId: selectedCourse || initialData?.course_id || data.course,
       name: data.stream,
       applicationFee: parseFloat(data.application_fee),
     });
 
-    if (mode === "create") reset();
+    if (mode === "create") {
+      reset({
+        courseType: selectedCourseType || "",
+        faculty: selectedFaculty || "",
+        course: selectedCourse || "",
+        stream: "",
+        application_fee: "",
+      });
+    }
   };
 
   return (
@@ -71,9 +84,9 @@ export default function StreamForm({
           onChangeCb={(selected) => {
             onCourseTypeChange(selected?.value || "");
           }}
-          disabled={courseTypes.length === 0}
+          disabled={mode === "edit" || courseTypes.length === 0}
           placeholder="Select Course Type"
-          required="Course type is required"
+          required={mode === "create" ? "Course type is required" : false}
         />
 
         {/* Faculty select */}
@@ -89,11 +102,11 @@ export default function StreamForm({
           onChangeCb={(selected) => {
             onFacultyChange(selected?.value || "");
           }}
-          disabled={!selectedCourseType || facultyList.length === 0}
+          disabled={mode === "edit" || !selectedCourseType || facultyList.length === 0}
           isLoading={loadingFaculties}
           isEmpty={isEmptyFaculties}
           placeholder="Select Faculty"
-          required="Faculty is required"
+          required={mode === "create" ? "Faculty is required" : false}
         />
 
         {/* Course select */}
@@ -109,11 +122,11 @@ export default function StreamForm({
           onChangeCb={(selected) => {
             onCourseChange(selected?.value || "");
           }}
-          disabled={!selectedFaculty || courseList.length === 0}
+          disabled={mode === "edit" || !selectedFaculty || courseList.length === 0}
           isLoading={loadingCourses}
           isEmpty={isEmptyCourses}
           placeholder="Select Course"
-          required="Course is required"
+          required={mode === "create" ? "Course is required" : false}
         />
 
         <FormInput

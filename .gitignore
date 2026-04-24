@@ -23,4 +23,9 @@ node_modules
 *.sw?
 .github
 dist/
+<<<<<<< HEAD
 docs/
+=======
+docs
+.codex
+>>>>>>> develop13_stream-edit

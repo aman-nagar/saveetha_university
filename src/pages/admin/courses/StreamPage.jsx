@@ -2,7 +2,7 @@
 import { useEffect, useState } from "react";
 import { FaPen, FaTrash } from "react-icons/fa";
 import { fetchCourseCategories } from "../../../api/courses/courseTypeApi";
-import { fetchFaculty } from "../../../api/courses/facultyApi";
+import { fetchFaculty, fetchAllFaculty } from "../../../api/courses/facultyApi";
 import { fetchCourses, fetchAllCourses } from "../../../api/courses/courseApi";
 import {
   fetchStreams,
@@ -25,6 +25,8 @@ export default function StreamPage() {
   const { target, isOpen, open, close } = useConfirm();
 
   const [courseTypes, setCourseTypes] = useState([]);
+  const [allFaculties, setAllFaculties] = useState([]);
+  const [allCourses, setAllCourses] = useState([]);
   const [selectedCourseType, setSelectedCourseType] = useState("");
   const [loadingFaculties, setLoadingFaculties] = useState(false);
   const [facultyList, setFacultyList] = useState([]);
@@ -45,13 +47,20 @@ export default function StreamPage() {
   });
 
   useEffect(() => {
-    loadCourseTypes();
+    loadInitialData();
   }, []);
 
-  const loadCourseTypes = async () => {
+  const loadInitialData = async () => {
     try {
-      const data = await fetchCourseCategories();
-      setCourseTypes(data);
+      const [typesData, facultiesData, coursesData] = await Promise.all([
+        fetchCourseCategories(),
+        fetchAllFaculty(),
+        fetchAllCourses(),
+      ]);
+
+      setCourseTypes(typesData);
+      setAllFaculties(facultiesData);
+      setAllCourses(coursesData);
     } catch (err) {
       show("error", err.message);
     }
@@ -102,30 +111,67 @@ export default function StreamPage() {
     if (value && !editData) load(value);
   };
 
-  // In edit mode, cascade load: course type -> faculties -> courses
+  // In edit mode, resolve parent IDs first so the modal opens fully hydrated.
   const handleEditClick = async (row) => {
-    setEditData(row);
-    // First set course type to load its faculties
-    setSelectedCourseType(row.course_type_id);
-    setLoadingFaculties(true);
     try {
-      const faculties = await fetchFaculty(row.course_type_id);
-      setFacultyList(faculties);
-      setSelectedFaculty(row.faculty_id);
+      let facultiesSource = allFaculties;
+      let coursesSource = allCourses;
 
-      // Then load courses for selected faculty
-      setLoadingCourses(true);
-      try {
-        const courses = await fetchCourses(row.faculty_id);
-        setCourseList(courses);
-        setSelectedCourse(row.course_id);
-      } finally {
-        setLoadingCourses(false);
+      if (facultiesSource.length === 0 || coursesSource.length === 0) {
+        const [facultiesData, coursesData] = await Promise.all([
+          fetchAllFaculty(),
+          fetchAllCourses(),
+        ]);
+        facultiesSource = facultiesData;
+        coursesSource = coursesData;
+        setAllFaculties(facultiesData);
+        setAllCourses(coursesData);
       }
+
+      const courseId = row.course_id || selectedCourse;
+      const matchedCourse = coursesSource.find(
+        (course) => String(course.id) === String(courseId),
+      );
+      const facultyId = row.faculty_id || matchedCourse?.faculty_id;
+      const matchedFaculty = facultiesSource.find(
+        (faculty) => String(faculty.id) === String(facultyId),
+      );
+      const courseTypeId = row.course_type_id || matchedFaculty?.course_type_id;
+
+      if (!courseId) {
+        throw new Error("Could not resolve the course for this stream.");
+      }
+      if (!facultyId) {
+        throw new Error("Could not resolve the faculty for this stream.");
+      }
+      if (!courseTypeId) {
+        throw new Error("Could not resolve the course type for this stream.");
+      }
+
+      setSelectedCourseType(courseTypeId);
+      setSelectedFaculty(facultyId);
+      setSelectedCourse(courseId);
+
+      setFacultyList(
+        facultiesSource.filter(
+          (faculty) =>
+            String(faculty.course_type_id) === String(courseTypeId),
+        ),
+      );
+      setCourseList(
+        coursesSource.filter(
+          (course) => String(course.faculty_id) === String(facultyId),
+        ),
+      );
+
+      setEditData({
+        ...row,
+        course_id: courseId,
+        faculty_id: facultyId,
+        course_type_id: courseTypeId,
+      });
     } catch (err) {
       show("error", err.message);
-    } finally {
-      setLoadingFaculties(false);
     }
   };
 
@@ -156,7 +202,7 @@ export default function StreamPage() {
 
       show("success", "Stream updated");
       setEditData(null);
-      load(streamData.courseId);
+      load(streamData.courseId || editData.course_id);
     } catch (err) {
       show("error", err.message);
     }
@@ -176,7 +222,7 @@ export default function StreamPage() {
   };
 
   const courseMap = {};
-  courseList.forEach((c) => {
+  allCourses.forEach((c) => {
     courseMap[c.id] = c.name;
   });
 
@@ -246,25 +292,27 @@ export default function StreamPage() {
         title="Edit Stream"
         onClose={() => setEditData(null)}
       >
-        <StreamForm
-          courseTypes={courseTypes}
-          selectedCourseType={selectedCourseType}
-          onCourseTypeChange={handleCourseTypeChange}
-          facultyList={facultyList}
-          selectedFaculty={selectedFaculty}
-          onFacultyChange={handleFacultyChange}
-          courseList={courseList}
-          selectedCourse={selectedCourse}
-          onCourseChange={handleCourseChange}
-          onSubmit={handleUpdate}
-          initialData={editData}
-          mode="edit"
-          onCancel={() => setEditData(null)}
-          loadingFaculties={loadingFaculties}
-          loadingCourses={loadingCourses}
-          isEmptyFaculties={facultyList.length === 0 && !loadingFaculties}
-          isEmptyCourses={courseList.length === 0 && !loadingCourses}
-        />
+        {editData && (
+          <StreamForm
+            courseTypes={courseTypes}
+            selectedCourseType={selectedCourseType}
+            onCourseTypeChange={handleCourseTypeChange}
+            facultyList={facultyList}
+            selectedFaculty={selectedFaculty}
+            onFacultyChange={handleFacultyChange}
+            courseList={courseList}
+            selectedCourse={selectedCourse}
+            onCourseChange={handleCourseChange}
+            onSubmit={handleUpdate}
+            initialData={editData}
+            mode="edit"
+            onCancel={() => setEditData(null)}
+            loadingFaculties={loadingFaculties}
+            loadingCourses={loadingCourses}
+            isEmptyFaculties={facultyList.length === 0 && !loadingFaculties}
+            isEmptyCourses={courseList.length === 0 && !loadingCourses}
+          />
+        )}
       </Modal>
 
       {/* DELETE MODAL */}

@@ -2,9 +2,8 @@
 import { HiPencil, HiTrash } from "react-icons/hi";
 import { FaToggleOn, FaToggleOff, FaSpinner } from "react-icons/fa";
 
-/**
- * Center Table Columns
- */
+// Center Table Columns
+
 export const getCenterColumns = ({ handleToggle, togglingId }) => [
   {
     key: "serial",
@@ -135,9 +134,8 @@ export const getCenterColumns = ({ handleToggle, togglingId }) => [
   },
 ];
 
-/**
- * Center Table Actions
- */
+// Center Table Actions
+
 export const getCenterActions = ({ navigate, handleDelete }) => [
   {
     icon: <HiPencil className="w-3.5 h-3.5 sm:w-4 sm:h-4" />,

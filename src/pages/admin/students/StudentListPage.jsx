@@ -1,7 +1,7 @@
 // src/pages/admin/students/StudentListPage.jsx
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { FaSearch } from "react-icons/fa";
+import { FaSearch, FaDownload } from "react-icons/fa";
 import Table from "../../../components/table/Table";
 import Modal from "../../../components/ui/Modal";
 import { useToast } from "../../../context/ToastContext";
@@ -14,6 +14,7 @@ import {
   updateStudentStatus,
   deleteStudent,
   restoreStudent,
+  exportAllStudentsCSV,
 } from "../../../api/students/studentApi";
 import { fetchAllCourses } from "../../../api/courses/courseApi";
 import { useAuth } from "../../../context/AuthContext";
@@ -39,6 +40,8 @@ export default function StudentListPage() {
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [mode, setMode] = useState("active");
+  const [exporting, setExporting] = useState(false);
+  const [exportModalOpen, setExportModalOpen] = useState(false);
 
   const [selectedStudent, setSelectedStudent] = useState(null);
   const [viewOpen, setViewOpen] = useState(false);
@@ -76,8 +79,6 @@ export default function StudentListPage() {
       let data;
       if (mode === "active") {
         data = await fetchStudents({ page, search: searchTerm });
-        // Show all students in "All Students" page (both active and inactive)
-        // The separate "Inactive Students" page handles inactive students only
       } else {
         data = await getRecycleStudentsList({ page, search: searchTerm });
       }
@@ -101,6 +102,40 @@ export default function StudentListPage() {
   const handlePageChange = (page) => {
     setCurrentPage(page);
     loadStudents(page, search);
+  };
+
+  // Export handler with modal
+  const handleExportClick = () => {
+    setExportModalOpen(true);
+  };
+
+  // Perform actual export based on selected option
+  const performExport = async (status, label) => {
+    setExporting(true);
+    setExportModalOpen(false);
+
+    try {
+      const csvData = await exportAllStudentsCSV(status);
+
+      const date = new Date().toISOString().slice(0, 19).replace(/:/g, "-");
+      const filename = `students_${label}_${date}.csv`;
+
+      const blob = new Blob([csvData], { type: "text/csv;charset=utf-8;" });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.setAttribute("download", filename);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
+
+      show("success", `Export completed! Downloaded ${filename}`);
+    } catch (err) {
+      show("error", err.message || "Failed to export students");
+    } finally {
+      setExporting(false);
+    }
   };
 
   const handleView = async (row) => {
@@ -224,6 +259,18 @@ export default function StudentListPage() {
         />
       </div>
 
+      {/* Export Button - Only show for admin */}
+      {isAdmin && (
+        <button
+          onClick={handleExportClick}
+          disabled={exporting}
+          className="flex items-center justify-center gap-2 px-4 py-2 bg-green-600 text-white text-sm font-medium rounded-lg hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors w-full sm:w-auto whitespace-nowrap"
+        >
+          <FaDownload className="w-3.5 h-3.5" />
+          {exporting ? "Exporting..." : "Export Students"}
+        </button>
+      )}
+
       {/* Mode switch */}
       {isAdmin && (
         <div className="flex border border-border rounded-lg overflow-hidden shadow-sm self-start sm:self-auto">
@@ -280,6 +327,51 @@ export default function StudentListPage() {
           }
         />
       </DataTableLayout>
+
+      <Modal
+        isOpen={exportModalOpen}
+        onClose={() => setExportModalOpen(false)}
+        size="sm"
+        title="Export Students"
+      >
+        <div className="p-4 space-y-4">
+          <p className="text-sm text-text-muted mb-4">
+            Select which students you want to export:
+          </p>
+
+          <div className="flex flex-col gap-3">
+            <button
+              onClick={() => performExport(null, "all")}
+              className="w-full py-2.5 px-4 bg-primary text-white text-sm font-medium rounded-lg hover:bg-primary/90 transition-colors"
+            >
+              Export All Students
+            </button>
+
+            <button
+              onClick={() => performExport(1, "active")}
+              className="w-full py-2.5 px-4 bg-green-600 text-white text-sm font-medium rounded-lg hover:bg-green-700 transition-colors"
+            >
+              Export Active Students Only
+            </button>
+
+            <button
+              onClick={() => performExport(0, "inactive")}
+              className="w-full py-2.5 px-4 bg-red-600 text-white text-sm font-medium rounded-lg hover:bg-red-700 transition-colors"
+            >
+              Export Inactive Students Only
+            </button>
+          </div>
+
+          <button
+            onClick={() => setExportModalOpen(false)}
+            className="w-full mt-3 py-2 px-4 border border-border text-text text-sm font-medium rounded-lg hover:bg-bg transition-colors"
+          >
+            Cancel
+          </button>
+        </div>
+      </Modal>
+
+      {/* Confirm Action Modal */}
       <Modal isOpen={isOpen} onClose={close} size="sm" title="Confirm Action">
         <div className="p-4 text-center space-y-4">
           <p className="text-sm">

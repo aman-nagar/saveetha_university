@@ -180,3 +180,27 @@ export async function exportCenterWiseStudentsCSV(centerId) {
   // Return raw text instead of parsing JSON
   return await response.text();
 }
+
+export async function exportAllStudentsCSV(status = null) {
+  let endpoint = `/admin/all_student_export.php`;
+
+  // Add status filter if provided (1 for active, 0 for inactive)
+  if (status !== null && (status === 1 || status === 0)) {
+    endpoint += `?status=${status}`;
+  }
+
+  const token = Cookies.get("authToken");
+  const response = await fetch(`${BASE_URL}${endpoint}`, {
+    method: "GET",
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+
+  if (!response.ok) {
+    throw new Error(`Export failed: ${response.statusText}`);
+  }
+
+  // Return raw text for CSV download
+  return await response.text();
+}

@@ -1,10 +1,11 @@
 // src/api/center/centerApi.jsx
+import Cookies from "js-cookie";
 import { apiRequest } from "../client";
+import { BASE_URL } from "../apiConfig";
 
 const CENTER_ENDPOINT = "/centers/index.php";
 const UPDATE_ENDPOINT = "/centers/update.php";
 const DASHBOARD_ENDPOINT = "/centers/center_dashboard.php";
-
 
 export function fetchCenters({ page = 1, search = "" } = {}) {
   const params = new URLSearchParams();
@@ -72,7 +73,31 @@ export function fetchCenterFees() {
   return apiRequest(FEES_ENDPOINT);
 }
 
-
 export function fetchAdminFees() {
   return apiRequest(ADMIN_FEES);
+}
+
+// Export centers - Independent function that doesn't use apiRequest
+export async function exportCentersCSV(status = null) {
+  let endpoint = `/admin/export_centers.php`;
+
+  // Add status filter if provided (1 for active, 0 for inactive)
+  if (status !== null && (status === 1 || status === 0)) {
+    endpoint += `?status=${status}`;
+  }
+
+  const token = Cookies.get("authToken");
+  const response = await fetch(`${BASE_URL}${endpoint}`, {
+    method: "GET",
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+
+  if (!response.ok) {
+    throw new Error(`Export failed: ${response.statusText}`);
+  }
+
+  // Return raw text for CSV download
+  return await response.text();
 }

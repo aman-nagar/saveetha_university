@@ -5,6 +5,7 @@ import {
   fetchCenters,
   toggleCenterStatus,
   deleteCenter,
+  exportCentersCSV,
 } from "../../../api/center/centerApi";
 import { useToast } from "../../../context/ToastContext";
 import { useConfirm } from "../../../hooks/useConfirm";
@@ -14,7 +15,7 @@ import Pagination from "../../../components/ui/Pagination";
 import SearchInput from "../../../components/ui/SearchInput";
 import Button from "../../../components/ui/Button";
 import Modal from "../../../components/ui/Modal";
-import { HiPlus } from "react-icons/hi";
+import { HiPlus, HiDownload } from "react-icons/hi";
 import { getCenterActions, getCenterColumns } from "./centerTableConfig";
 
 export default function CenterListPage() {
@@ -29,6 +30,9 @@ export default function CenterListPage() {
   const [togglingId, setTogglingId] = useState(null);
   const [isDeleting, setIsDeleting] = useState(false);
   const [perPage, setPerPage] = useState(10);
+  const [exporting, setExporting] = useState(false);
+  const [exportModalOpen, setExportModalOpen] = useState(false);
+
   useEffect(() => {
     loadCenters(1, "");
   }, []);
@@ -38,7 +42,6 @@ export default function CenterListPage() {
     try {
       const response = await fetchCenters({ page, search: searchTerm });
       setCenters(response.data || []);
-      console.log(response.data);
       setCurrentPage(response.current_page || 1);
       setTotalPages(response.total_pages || 1);
       setPerPage(response.per_page || 10);
@@ -63,6 +66,40 @@ export default function CenterListPage() {
   const handleSearchChange = useCallback((value) => {
     setSearch(value);
   }, []);
+
+  // Export handler with modal
+  const handleExportClick = () => {
+    setExportModalOpen(true);
+  };
+
+  // Perform actual export based on selected option
+  const performExport = async (status, label) => {
+    setExporting(true);
+    setExportModalOpen(false);
+
+    try {
+      const csvData = await exportCentersCSV(status);
+
+      const date = new Date().toISOString().slice(0, 19).replace(/:/g, "-");
+      const filename = `centers_${label}_${date}.csv`;
+
+      const blob = new Blob([csvData], { type: "text/csv;charset=utf-8;" });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.setAttribute("download", filename);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
+
+      show("success", `Export completed! Downloaded ${filename}`);
+    } catch (err) {
+      show("error", err.message || "Failed to export centers");
+    } finally {
+      setExporting(false);
+    }
+  };
 
   const handleToggle = async (row, field) => {
     try {
@@ -134,6 +171,16 @@ export default function CenterListPage() {
         className="flex-1 sm:flex-none"
         inputClassName="sm:w-56 md:w-64"
       />
+      {/* Export Button */}
+      <Button
+        onClick={handleExportClick}
+        disabled={exporting}
+        variant="secondary"
+        className="flex items-center gap-1.5 sm:gap-2 text-xs sm:text-sm justify-center sm:justify-start bg-green-600 text-white hover:bg-green-700"
+      >
+        <HiDownload className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+        {exporting ? "Exporting..." : "Export Centers"}
+      </Button>
 
       {/* Add Button */}
       <Button
@@ -169,6 +216,51 @@ export default function CenterListPage() {
           emptyMessage="No centers found. Click 'Add New Center' to get started."
         />
       </DataTableLayout>
+
+      {/* Export Options Modal */}
+      <Modal
+        isOpen={exportModalOpen}
+        onClose={() => setExportModalOpen(false)}
+        size="sm"
+        title="Export Centers"
+      >
+        <div className="p-4 space-y-4">
+          <p className="text-sm text-text-muted mb-4">
+            Select which centers you want to export:
+          </p>
+
+          <div className="flex flex-col gap-3">
+            <button
+              onClick={() => performExport(null, "all")}
+              className="w-full py-2.5 px-4 bg-primary text-white text-sm font-medium rounded-lg hover:bg-primary/90 transition-colors"
+            >
+              Export All Centers
+            </button>
+
+            <button
+              onClick={() => performExport(1, "active")}
+              className="w-full py-2.5 px-4 bg-green-600 text-white text-sm font-medium rounded-lg hover:bg-green-700 transition-colors"
+            >
+              Export Active Centers Only
+            </button>
+
+            <button
+              onClick={() => performExport(0, "inactive")}
+              className="w-full py-2.5 px-4 bg-red-600 text-white text-sm font-medium rounded-lg hover:bg-red-700 transition-colors"
+            >
+              Export Inactive Centers Only
+            </button>
+          </div>
+
+          <button
+            onClick={() => setExportModalOpen(false)}
+            className="w-full mt-3 py-2 px-4 border border-border text-text text-sm font-medium rounded-lg hover:bg-bg transition-colors"
+          >
+            Cancel
+          </button>
+        </div>
+      </Modal>
+
       {/* Delete Confirmation Modal */}
       <Modal
         isOpen={isOpen}

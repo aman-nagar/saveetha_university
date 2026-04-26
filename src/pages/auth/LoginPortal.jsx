@@ -5,6 +5,7 @@ import {
   FaUserTie,
   FaUserGraduate,
   FaUniversity,
+  FaUsers,
   FaArrowRight,
 } from "react-icons/fa";
 
@@ -36,6 +37,14 @@ export default function LoginPortal() {
       path: "/login",
       color: "from-orange-500 to-red-600",
     },
+    {
+      id: "member",
+      title: "Member Portal",
+      desc: "Secure dashboard access for members",
+      icon: <FaUsers />,
+      path: "/member/login",
+      color: "from-sky-600 to-blue-800",
+    },
   ];
 
   return (
@@ -60,7 +69,7 @@ export default function LoginPortal() {
           </p>
         </motion.div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-8">
           {roles.map((role, index) => (
             <motion.div
               key={role.id}

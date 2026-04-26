@@ -25,6 +25,23 @@ export default function MobileNavDrawer({
   const { user, logout } = useAuth();
   const [expandedMenus, setExpandedMenus] = useState([]);
   const location = useLocation();
+  const isCenter = user?.role === "center";
+  const isStudent = user?.role === "student";
+  const isMember = user?.role === "member";
+
+  let dashboardRoute = "/admin";
+  let portalName = "S.A. University";
+
+  if (isCenter) {
+    dashboardRoute = "/center";
+    portalName = user?.institute_name || "Center Portal";
+  } else if (isStudent) {
+    dashboardRoute = "/student-dashboard";
+    portalName = "Student Portal";
+  } else if (isMember) {
+    dashboardRoute = "/member-dashboard";
+    portalName = user?.name || "Member Portal";
+  }
 
   // Close drawer on route change
   useEffect(() => {
@@ -76,13 +93,13 @@ export default function MobileNavDrawer({
             {/* Header */}
             <div className="flex items-center justify-between p-4 border-b border-white/10">
               <Link
-                to="/admin"
+                to={dashboardRoute}
                 className="flex items-center space-x-3"
                 onClick={onClose}
               >
                 <img src={logo2} className="h-8 w-auto rounded-xl" alt="Logo" />
                 <span className="text-base font-bold text-white">
-                  S.A. University
+                  {portalName}
                 </span>
               </Link>
 

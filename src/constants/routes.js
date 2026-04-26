@@ -10,6 +10,7 @@ export const AUTH_ROUTES = {
   STUDENT_LOGIN: "/login",
   ADMIN_LOGIN: "/admin/login",
   CENTER_LOGIN: "/center/login",
+  MEMBER_LOGIN: "/member/login",
 };
 
 // Public Routes
@@ -34,6 +35,7 @@ export const ADMIN_ROUTES = {
   CENTER_WISE_STUDENTS: "/admin/center-wise-students",
   CENTERS: "/admin/centers",
   CENTERS_ADD: "/admin/centers/add",
+  MEMBERS: "/admin/members",
   ADMIT_CARD_GENERATE: "/admin/admit-card/generate",
   RESULTS_CREATE: "/admin/results/create",
   CERTIFICATE_CREATE: "/admin/certificate/create",
@@ -62,6 +64,11 @@ export const STUDENT_ROUTES = {
   RESULTS: "/student-dashboard/results",
 };
 
+// Member Routes
+export const MEMBER_ROUTES = {
+  DASHBOARD: "/member-dashboard",
+};
+
 // Error Routes
 export const ERROR_ROUTES = {
   UNAUTHORIZED: "/unauthorized",
@@ -74,5 +81,6 @@ export const ROUTES = {
   ADMIN: ADMIN_ROUTES,
   CENTER: CENTER_ROUTES,
   STUDENT: STUDENT_ROUTES,
+  MEMBER: MEMBER_ROUTES,
   ERROR: ERROR_ROUTES,
 };

@@ -3,8 +3,10 @@ import { motion } from "framer-motion";
 
 const routeTitles = {
   "/admin": "Overview",
+  "/admin/members": "Member Management",
   "/admin/students": "Student Directory",
   "/admin/students/add": "New Admission",
+  "/member-dashboard": "Member Dashboard",
   "/admin/site-settings": "Configuration",
 };
 

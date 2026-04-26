@@ -5,6 +5,7 @@ import { BrowserRouter, Route, Routes } from "react-router-dom";
 // ===== LAYOUTS =====
 import AdminLayout from "@/layouts/AdminLayout";
 import CenterLayout from "@/layouts/CenterLayout";
+import MemberLayout from "@/layouts/MemberLayout";
 import StudentLayout from "@/layouts/StudentLayout";
 import PublicLayout from "@/layouts/PublicLayout";
 
@@ -35,6 +36,7 @@ const ApplyAdmissionPage = lazy(
 const LoginPortal = lazy(() => import("@/pages/auth/LoginPortal"));
 const AdminLogin = lazy(() => import("@/pages/auth/AdminLogin"));
 const CenterLogin = lazy(() => import("@/pages/auth/CenterLogin"));
+const MemberLogin = lazy(() => import("@/pages/auth/MemberLogin"));
 const StudentLogin = lazy(() => import("@/pages/auth/StudentLogin"));
 
 // ===== ADMIN PAGES =====
@@ -76,6 +78,7 @@ const CreateResultPage = lazy(
 const CreateCertificatePage = lazy(
   () => import("@/pages/admin/result/CreateCertificatePage"),
 );
+const MemberListPage = lazy(() => import("@/pages/members/MemberListPage"));
 
 // ===== CENTER PAGES  =====
 const CenterDashboardPage = lazy(
@@ -96,6 +99,9 @@ const StudentAdmitCardPage = lazy(
 const StudentResultPage = lazy(
   () => import("@/pages/student/StudentResultPage"),
 );
+
+// ===== MEMBER PAGES =====
+const MemberDashboard = lazy(() => import("@/pages/member/MemberDashboard"));
 
 // ===== ERROR PAGES =====
 const UnauthorizedPage = lazy(() => import("@/pages/UnauthorizedPage"));
@@ -124,6 +130,10 @@ function App() {
                 <Route
                   path={ROUTES.AUTH.CENTER_LOGIN}
                   element={<CenterLogin />}
+                />
+                <Route
+                  path={ROUTES.AUTH.MEMBER_LOGIN}
+                  element={<MemberLogin />}
                 />
 
                 {/* ===== PUBLIC ROUTES ===== */}
@@ -177,6 +187,7 @@ function App() {
                   <Route path="students/edit/:id" element={<EditStudent />} />
                   <Route path="centers/add" element={<AddCenterPage />} />
                   <Route path="centers" element={<CenterListPage />} />
+                  <Route path="members" element={<MemberListPage />} />
                   <Route path="fees" element={<CenterFeesPage />} />
                   <Route
                     path="admit-card/generate"
@@ -234,6 +245,18 @@ function App() {
                   <Route path="id-card" element={<StudentIDCardPage />} />
                   <Route path="admit-card" element={<StudentAdmitCardPage />} />
                   <Route path="results" element={<StudentResultPage />} />
+                </Route>
+
+                {/* ===== MEMBER ROUTES ===== */}
+                <Route
+                  path={ROUTES.MEMBER.DASHBOARD}
+                  element={
+                    <ProtectedRoute allowedRoles={["member"]}>
+                      <MemberLayout />
+                    </ProtectedRoute>
+                  }
+                >
+                  <Route index element={<MemberDashboard />} />
                 </Route>
 
                 {/* ===== ERROR ROUTES ===== */}

@@ -102,6 +102,7 @@ const StudentResultPage = lazy(
 
 // ===== MEMBER PAGES =====
 const MemberDashboard = lazy(() => import("@/pages/member/MemberDashboard"));
+const MemberCenterPage = lazy(() => import("@/pages/member/MemberCenterPage"));
 
 // ===== ERROR PAGES =====
 const UnauthorizedPage = lazy(() => import("@/pages/UnauthorizedPage"));
@@ -257,6 +258,7 @@ function App() {
                   }
                 >
                   <Route index element={<MemberDashboard />} />
+                  <Route path="centers" element={<MemberCenterPage />} />
                 </Route>
 
                 {/* ===== ERROR ROUTES ===== */}

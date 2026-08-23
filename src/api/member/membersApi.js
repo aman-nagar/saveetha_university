@@ -53,3 +53,34 @@ export async function deleteMember(id) {
     body: JSON.stringify({ id }),
   });
 }
+
+const INACTIVE_CENTERS_ENDPOINT = "/member-dashboard/inactive-centers.php";
+
+export async function fetchMemberInactiveCenters({ page = 1, search = "" } = {}) {
+  const params = new URLSearchParams();
+
+  if (page) params.append("page", page);
+  if (search && search.trim()) params.append("search", search.trim());
+
+  const query = params.toString();
+  const response = await apiRequest(
+    `${INACTIVE_CENTERS_ENDPOINT}${query ? `?${query}` : ""}`,
+  );
+
+  // Response is normalized by apiRequest (json?.data ?? json)
+  const centerList = Array.isArray(response?.data)
+    ? response.data
+    : Array.isArray(response)
+      ? response
+      : [];
+
+  return {
+    data: centerList,
+    current_page: Number(response?.current_page ?? page),
+    per_page: Number(response?.per_page ?? centerList.length ?? 10),
+    total_records: Number(response?.total_records ?? centerList.length ?? 0),
+    total_pages: Number(response?.total_pages ?? Math.ceil((response?.total_records || centerList.length || 1) / (response?.per_page || 10))),
+    search: response?.search ?? search,
+  };
+}
+

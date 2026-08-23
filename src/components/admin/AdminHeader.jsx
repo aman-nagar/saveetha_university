@@ -7,6 +7,7 @@ const routeTitles = {
   "/admin/students": "Student Directory",
   "/admin/students/add": "New Admission",
   "/member-dashboard": "Member Dashboard",
+  "/member-dashboard/centers": "Center Management",
   "/admin/site-settings": "Configuration",
 };
 

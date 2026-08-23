@@ -67,6 +67,7 @@ export const STUDENT_ROUTES = {
 // Member Routes
 export const MEMBER_ROUTES = {
   DASHBOARD: "/member-dashboard",
+  CENTERS: "/member-dashboard/centers",
 };
 
 // Error Routes

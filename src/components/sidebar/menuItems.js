@@ -136,6 +136,9 @@ export const menuItems = [
     label: "Member Area",
     icon: FaUsers,
     roles: ["member"],
-    children: [{ label: "Dashboard", path: "/member-dashboard" }],
+    children: [
+      { label: "Dashboard", path: "/member-dashboard", roles: ["member"] },
+      { label: "Center", path: "/member-dashboard/centers", roles: ["member"] },
+    ],
   },
 ];

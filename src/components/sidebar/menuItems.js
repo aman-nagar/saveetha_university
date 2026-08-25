@@ -139,6 +139,7 @@ export const menuItems = [
     children: [
       { label: "Dashboard", path: "/member-dashboard", roles: ["member"] },
       { label: "Center", path: "/member-dashboard/centers", roles: ["member"] },
+      { label: "Students", path: "/member-dashboard/students", roles: ["member"] },
     ],
   },
 ];

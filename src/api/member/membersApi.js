@@ -84,3 +84,51 @@ export async function fetchMemberInactiveCenters({ page = 1, search = "" } = {})
   };
 }
 
+// Uses the member-authorized endpoint so the backend can enforce member scope.
+export function activateMemberCenter(id) {
+  if (!id) throw new Error("Center ID is required");
+
+  return apiRequest(INACTIVE_CENTERS_ENDPOINT, {
+    method: "PUT",
+    body: JSON.stringify({ id, is_active: 1 }),
+  });
+}
+
+const INACTIVE_STUDENTS_ENDPOINT = "/member-dashboard/inactive-students.php";
+
+export async function fetchMemberInactiveStudents({ page = 1, search = "" } = {}) {
+  const params = new URLSearchParams();
+
+  if (page) params.append("page", page);
+  if (search && search.trim()) params.append("search", search.trim());
+
+  const query = params.toString();
+  const response = await apiRequest(
+    `${INACTIVE_STUDENTS_ENDPOINT}${query ? `?${query}` : ""}`,
+  );
+
+  // Response is normalized by apiRequest (json?.data ?? json)
+  const studentList = Array.isArray(response?.students)
+    ? response.students
+    : Array.isArray(response?.data)
+      ? response.data
+      : Array.isArray(response)
+        ? response
+        : [];
+
+  return {
+    students: studentList,
+    current_page: Number(response?.current_page ?? page),
+    per_page: Number(response?.per_page ?? studentList.length ?? 10),
+    total_records: Number(response?.total_records ?? studentList.length ?? 0),
+    total_pages: Number(
+      response?.total_pages ??
+        Math.ceil(
+          (response?.total_records || studentList.length || 1) /
+            (response?.per_page || 10),
+        ),
+    ),
+    search: response?.search ?? search,
+  };
+}
+

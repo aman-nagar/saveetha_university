@@ -68,6 +68,8 @@ export const STUDENT_ROUTES = {
 export const MEMBER_ROUTES = {
   DASHBOARD: "/member-dashboard",
   CENTERS: "/member-dashboard/centers",
+  STUDENTS: "/member-dashboard/students",
+  STUDENTS_EDIT: (id) => `/member-dashboard/students/edit/${id}`,
 };
 
 // Error Routes

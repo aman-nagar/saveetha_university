@@ -132,3 +132,24 @@ export async function fetchMemberInactiveStudents({ page = 1, search = "" } = {}
   };
 }
 
+// Fetches a complete student record through the member-authorized endpoint.
+export async function fetchMemberStudentById(id) {
+  if (!id) throw new Error("Student ID is required");
+
+  const response = await apiRequest(
+    `${INACTIVE_STUDENTS_ENDPOINT}?id=${encodeURIComponent(id)}`,
+  );
+
+  return response?.student ?? response;
+}
+
+// Uses the member-authorized student queue endpoint for status approval.
+export function activateMemberStudent(id) {
+  if (!id) throw new Error("Student ID is required");
+
+  return apiRequest(INACTIVE_STUDENTS_ENDPOINT, {
+    method: "PUT",
+    body: JSON.stringify({ id, status: 1 }),
+  });
+}
+

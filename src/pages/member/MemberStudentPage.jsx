@@ -1,25 +1,20 @@
 import React, { useCallback, useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
 import {
   FaEye,
-  FaEdit,
   FaFileExcel,
   FaFilePdf,
   FaUserGraduate,
   FaPhoneAlt,
   FaEnvelope,
   FaBuilding,
-  FaCalendarAlt,
   FaInfoCircle,
   FaSync,
   FaBook,
   FaLayerGroup,
   FaIdBadge,
   FaCheckCircle,
-  FaToggleOn,
-  FaToggleOff,
 } from "react-icons/fa";
-import { HiUserGroup, HiExclamationCircle } from "react-icons/hi";
+import { HiUserGroup } from "react-icons/hi";
 import Table from "@/components/table/Table";
 import DataTableLayout from "@/components/table/DataTableLayout";
 import Pagination from "@/components/ui/Pagination";
@@ -28,16 +23,17 @@ import Button from "@/components/ui/Button";
 import Modal from "@/components/ui/Modal";
 import StudentDetailView from "@/components/admin/students/StudentDetailView";
 import { useToast } from "@/context/ToastContext";
-import { fetchMemberInactiveStudents } from "@/api/member/membersApi";
 import {
-  fetchStudentById,
-  updateStudentStatus,
-} from "@/api/students/studentApi";
+  activateMemberStudent,
+  fetchMemberInactiveStudents,
+  fetchMemberStudentById,
+} from "@/api/member/membersApi";
 import { downloadStudentPdf } from "@/utils/studentPdf";
 import * as XLSX from "xlsx";
 
+const isStudentActive = (student) => Number(student?.status) === 1;
+
 export default function MemberStudentPage() {
-  const navigate = useNavigate();
   const { show } = useToast();
   const [students, setStudents] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -103,32 +99,19 @@ export default function MemberStudentPage() {
     show("info", "Refreshing students data...");
   };
 
-  // Toggle student active/inactive status
-  const handleToggleStatus = async (student) => {
+  // This screen lists inactive students, so a member can only activate them.
+  const handleActivateStudent = async (student) => {
+    if (!student?.id) return;
+
     setTogglingId(student.id);
     try {
-      const newStatus = student.status === 1 ? 0 : 1;
-      await updateStudentStatus(student.id, newStatus);
-
-      setStudents((prev) =>
-        prev.map((s) =>
-          s.id === student.id ? { ...s, status: newStatus } : s,
-        ),
-      );
-
-      if (selectedStudent && selectedStudent.id === student.id) {
-        setSelectedStudent((prev) => ({ ...prev, status: newStatus }));
-      }
-
-      show(
-        "success",
-        `Student "${student.candidate_name}" status changed to ${
-          newStatus === 1 ? "Active" : "Inactive"
-        }`,
-      );
+      await activateMemberStudent(student.id);
+      show("success", `Student "${student.candidate_name}" activated successfully`);
+      setSelectedStudent(null);
+      await loadInactiveStudents(currentPage, search);
     } catch (err) {
-      console.error("Failed to toggle status:", err);
-      show("error", err.message || "Failed to update student status");
+      console.error("Failed to activate student:", err);
+      show("error", err.message || "Failed to activate student");
     } finally {
       setTogglingId(null);
     }
@@ -138,7 +121,7 @@ export default function MemberStudentPage() {
     setViewLoading(true);
     setSelectedStudent(row); // Initial preview
     try {
-      const fullData = await fetchStudentById(row.id);
+      const fullData = await fetchMemberStudentById(row.id);
       setSelectedStudent(fullData || row);
     } catch (err) {
       console.warn("Could not fetch full student record, using row data:", err);
@@ -152,7 +135,7 @@ export default function MemberStudentPage() {
     try {
       let studentData = student;
       if (!student.father_name || !student.date_of_birth) {
-        const fullData = await fetchStudentById(student.id);
+        const fullData = await fetchMemberStudentById(student.id);
         if (fullData) studentData = fullData;
       }
       await downloadStudentPdf(studentData);
@@ -335,18 +318,15 @@ export default function MemberStudentPage() {
       key: "status",
       label: "Status / Activation",
       render: (row) => {
-        const isActive = row.status === 1;
+        const isActive = isStudentActive(row);
         const isToggling = togglingId === row.id;
 
         return (
           <button
-            onClick={() => handleToggleStatus(row)}
-            disabled={isToggling}
-            title={
-              isActive
-                ? "Click to deactivate student"
-                : "Click to activate student"
-            }
+            type="button"
+            onClick={() => handleActivateStudent(row)}
+            disabled={isToggling || isActive}
+            title={isActive ? "Student is already active" : "Activate student"}
             className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold transition-all hover:scale-105 shadow-2xs ${
               isActive
                 ? "bg-emerald-500/15 text-emerald-600 border border-emerald-500/30 hover:bg-emerald-500/25"
@@ -362,7 +342,7 @@ export default function MemberStudentPage() {
                 }`}
               />
             )}
-            <span>{isActive ? "Active" : "Inactive"}</span>
+            <span>{isActive ? "Active" : "Activate"}</span>
           </button>
         );
       },
@@ -378,7 +358,7 @@ export default function MemberStudentPage() {
     },
   ];
 
-  // Actions definition (View Details + Edit + Download PDF)
+  // Actions definition (View Details + Download PDF)
   const actions = [
     {
       icon: <FaEye className="w-3.5 h-3.5" />,
@@ -386,13 +366,6 @@ export default function MemberStudentPage() {
         "p-2 rounded-xl bg-primary/10 text-primary hover:bg-primary/20 hover:scale-105 transition-all shadow-xs",
       title: "View Student Profile",
       onClick: handleViewStudent,
-    },
-    {
-      icon: <FaEdit className="w-3.5 h-3.5" />,
-      className:
-        "p-2 rounded-xl bg-blue-600/10 text-blue-600 hover:bg-blue-600/20 hover:scale-105 transition-all shadow-xs",
-      title: "Edit Student Details",
-      onClick: (row) => navigate(`/member-dashboard/students/edit/${row.id}`),
     },
     {
       icon: <FaFilePdf className="w-3.5 h-3.5" />,
@@ -551,37 +524,21 @@ export default function MemberStudentPage() {
           <div className="flex flex-col sm:flex-row justify-between items-center gap-3 w-full">
             <div className="flex items-center gap-2 w-full sm:w-auto">
               <Button
-                onClick={() => handleToggleStatus(selectedStudent)}
-                disabled={togglingId === selectedStudent?.id}
-                className={`flex items-center gap-1.5 text-xs sm:text-sm ${
-                  selectedStudent?.status === 1
-                    ? "bg-red-600 hover:bg-red-700 text-white"
-                    : "bg-emerald-600 hover:bg-emerald-700 text-white"
-                }`}
+                onClick={() => handleActivateStudent(selectedStudent)}
+                disabled={
+                  togglingId === selectedStudent?.id ||
+                  isStudentActive(selectedStudent)
+                }
+                className="flex items-center gap-1.5 text-xs sm:text-sm bg-emerald-600 hover:bg-emerald-700 text-white"
               >
                 {togglingId === selectedStudent?.id ? (
                   <span className="w-3.5 h-3.5 border-2 border-white border-t-transparent rounded-full animate-spin" />
                 ) : (
                   <FaCheckCircle className="w-3.5 h-3.5" />
                 )}
-                <span>
-                  {selectedStudent?.status === 1
-                    ? "Set Inactive"
-                    : "Activate Student"}
-                </span>
+                <span>Activate Student</span>
               </Button>
 
-              <Button
-                onClick={() => {
-                  const id = selectedStudent.id;
-                  setSelectedStudent(null);
-                  navigate(`/member-dashboard/students/edit/${id}`);
-                }}
-                className="flex items-center gap-1.5 text-xs sm:text-sm bg-blue-600 hover:bg-blue-700 text-white"
-              >
-                <FaEdit className="w-3.5 h-3.5" />
-                <span>Edit Student</span>
-              </Button>
             </div>
 
             <div className="flex items-center gap-2 ml-auto">

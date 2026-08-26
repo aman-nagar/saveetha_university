@@ -1,0 +1,34 @@
+import { useEffect, useState } from "react";
+import { Outlet } from "react-router-dom";
+import AdminHeader from "../components/admin/AdminHeader";
+import Sidebar from "../components/sidebar/Sidebar";
+
+export default function MemberLayout() {
+  const [theme, setTheme] = useState(
+    localStorage.getItem("memberTheme") || "light",
+  );
+
+  useEffect(() => {
+    localStorage.setItem("memberTheme", theme);
+  }, [theme]);
+
+  const toggleTheme = () => {
+    setTheme((prev) => (prev === "dark" ? "light" : "dark"));
+  };
+
+  return (
+    <div
+      className={`min-h-screen flex flex-col ${theme === "dark" ? "dark" : ""}`}
+    >
+      <div className="flex flex-1 bg-bg text-text">
+        <Sidebar theme={theme} toggleTheme={toggleTheme} />
+        <div className="flex-1 flex flex-col min-w-0">
+          <AdminHeader />
+          <main className="w-full flex flex-1 justify-center p-2 md:p-4 overflow-x-hidden">
+            <Outlet />
+          </main>
+        </div>
+      </div>
+    </div>
+  );
+}

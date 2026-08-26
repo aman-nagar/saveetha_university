@@ -1,3 +1,4 @@
+// src\components\ui\Modal.jsx
 import { useEffect } from "react";
 
 export default function Modal({
@@ -7,6 +8,7 @@ export default function Modal({
   children,
   footer,
   size = "md",
+  centered = false,
 }) {
   useEffect(() => {
     const handleKeyDown = (e) => {
@@ -38,7 +40,11 @@ export default function Modal({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center sm:p-4">
+    <div
+      className={`fixed inset-0 z-50 flex justify-center ${
+        centered ? "items-center p-3 sm:p-4" : "items-end sm:items-center sm:p-4"
+      }`}
+    >
       {/* Overlay */}
       <div
         className="absolute inset-0 bg-black/60 backdrop-blur-sm transition-opacity"
@@ -48,7 +54,7 @@ export default function Modal({
       {/* Modal Container */}
       <div
         className={`
-          relative bg-surface text-text rounded-t-xl sm:rounded-xl shadow-2xl
+          relative bg-surface text-text ${centered ? "rounded-xl" : "rounded-t-xl sm:rounded-xl"} shadow-2xl
           w-full ${sizeClasses[size]} border border-border
           flex flex-col max-h-[85vh] sm:max-h-[90vh]
           animate-in slide-in-from-bottom-10 sm:slide-in-from-bottom-0

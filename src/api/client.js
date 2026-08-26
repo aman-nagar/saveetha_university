@@ -35,6 +35,7 @@ export async function apiRequest(endpoint, options = {}) {
       console.error("❌ SESSION EXPIRED:", backendError);
       Cookies.remove("authToken");
       localStorage.removeItem("authUser");
+      localStorage.removeItem("studentData");
       window.location.href = "/portal";
     }
     throw new Error(backendError);

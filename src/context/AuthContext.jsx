@@ -1,6 +1,10 @@
 // src/context/AuthContext.jsx
 import { createContext, useContext, useState, useEffect } from "react";
 import Cookies from "js-cookie";
+import { logoutAdmin } from "../api/auth/adminAuthApi";
+import { logoutCenter } from "../api/auth/centerAuthApi";
+import { logoutMember } from "../api/auth/memberAuthApi";
+import { logoutStudent } from "../api/auth/studentAuthApi";
 
 const AuthContext = createContext(null);
 
@@ -15,12 +19,19 @@ export function AuthProvider({ children }) {
     const storedStudentData = localStorage.getItem("studentData");
 
     if (token && storedUser) {
-      const parsedUser = JSON.parse(storedUser);
-      setUser(parsedUser);
+      try {
+        const parsedUser = JSON.parse(storedUser);
+        setUser(parsedUser);
 
-      // Restore student data if it was stored
-      if (storedStudentData) {
-        setStudentData(JSON.parse(storedStudentData));
+        if (parsedUser.role === "student" && storedStudentData) {
+          setStudentData(JSON.parse(storedStudentData));
+        } else {
+          setStudentData(null);
+        }
+      } catch (error) {
+        Cookies.remove("authToken");
+        localStorage.removeItem("authUser");
+        localStorage.removeItem("studentData");
       }
     }
 
@@ -28,25 +39,41 @@ export function AuthProvider({ children }) {
   }, []);
 
   const login = (userData) => {
-    return new Promise((resolve) => {
-      Cookies.set("authToken", userData.token, {
+    return new Promise((resolve, reject) => {
+      const authToken =
+        userData?.token || userData?.access_token || userData?.authToken;
+
+      if (!authToken) {
+        reject(new Error("Authentication token missing from login response."));
+        return;
+      }
+
+      const normalizedUser = {
+        ...userData,
+        token: authToken,
+      };
+
+      Cookies.set("authToken", authToken, {
         expires: 7,
         secure: true,
         sameSite: "Strict",
       });
 
-      localStorage.setItem("authUser", JSON.stringify(userData));
+      localStorage.setItem("authUser", JSON.stringify(normalizedUser));
 
       // For student role, store the entire response data
-      if (userData.role === "student" && userData.student_id) {
-        localStorage.setItem("studentData", JSON.stringify(userData));
-        setStudentData(userData);
+      if (normalizedUser.role === "student" && normalizedUser.student_id) {
+        localStorage.setItem("studentData", JSON.stringify(normalizedUser));
+        setStudentData(normalizedUser);
+      } else {
+        localStorage.removeItem("studentData");
+        setStudentData(null);
       }
 
-      setUser(userData);
+      setUser(normalizedUser);
 
       // Resolve immediately so the component can proceed
-      resolve(userData);
+      resolve(normalizedUser);
     });
   };
 
@@ -56,6 +83,7 @@ export function AuthProvider({ children }) {
       if (user?.role === "admin") await logoutAdmin();
       else if (user?.role === "center") await logoutCenter();
       else if (user?.role === "student") await logoutStudent();
+      else if (user?.role === "member") await logoutMember();
     } catch (error) {
       console.error(
         "Backend logout failed, clearing local session anyway",

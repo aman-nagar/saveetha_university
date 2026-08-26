@@ -17,6 +17,7 @@ export default function SidebarHeader({
   const { user, studentData } = useAuth();
 
   const isCenter = user?.role === "center";
+  const isMember = user?.role === "member";
   const isStudent = user?.role === "student";
   let displayLogo = siteDetails?.additional_logo || logo2;
   if (isCenter && user?.owner_image) {
@@ -28,11 +29,14 @@ export default function SidebarHeader({
   let headerName = "S.A. University";
   if (isCenter) {
     headerName = user?.institute_name || "Center Portal";
+  } else if (isMember) {
+    headerName = user?.name || "Member Portal";
   } else if (isStudent) {
     headerName = studentData?.candidate_name || "Student Portal";
   }
   let dashboardRoute = "/admin";
   if (isCenter) dashboardRoute = "/center";
+  if (isMember) dashboardRoute = "/member-dashboard";
   if (isStudent) dashboardRoute = "/student-dashboard";
 
   return (

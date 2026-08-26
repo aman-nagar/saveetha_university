@@ -5,6 +5,7 @@ import {
   FaBook,
   FaClipboardList,
   FaCog,
+  FaUsers,
 } from "react-icons/fa";
 import { TbReport } from "react-icons/tb";
 export const menuItems = [
@@ -98,6 +99,13 @@ export const menuItems = [
   },
   {
     id: 7,
+    label: "Members",
+    icon: FaUsers,
+    roles: ["admin"],
+    children: [{ label: "Manage Members", path: "/admin/members" }],
+  },
+  {
+    id: 8,
     label: "Settings",
     icon: FaCog,
     roles: ["admin"],
@@ -106,14 +114,14 @@ export const menuItems = [
   // students menus only
 
   {
-    id: 8,
+    id: 9,
     label: "My Academy",
     icon: FaUserGraduate,
     roles: ["student"],
     children: [{ label: "Dashboard", path: "/student-dashboard" }],
   },
   {
-    id: 9,
+    id: 10,
     label: "Downloads",
     icon: TbReport,
     roles: ["student"],
@@ -121,6 +129,17 @@ export const menuItems = [
       { label: "ID Card", path: "/student-dashboard/id-card" },
       { label: "Admit Card", path: "/student-dashboard/admit-card" },
       { label: "Results", path: "/student-dashboard/results" },
+    ],
+  },
+  {
+    id: 11,
+    label: "Member Area",
+    icon: FaUsers,
+    roles: ["member"],
+    children: [
+      { label: "Dashboard", path: "/member-dashboard", roles: ["member"] },
+      { label: "Center", path: "/member-dashboard/centers", roles: ["member"] },
+      { label: "Students", path: "/member-dashboard/students", roles: ["member"] },
     ],
   },
 ];

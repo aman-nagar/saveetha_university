@@ -1,15 +1,10 @@
 // src/components/public/AnnouncementPopup.jsx
-// NOTE: The backend /admin/popup_image.php requires auth for GET requests.
-// As a workaround, the admin panel (PopupImageTab) stores the URL in
-// localStorage under "sau_popup_image_url" when the image is loaded/uploaded.
-// The public popup reads from there — no auth token needed.
-// When the backend makes the GET endpoint public, replace with a direct API call.
-
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { MdClose } from "react-icons/md";
+import { publicApiRequest } from "@/api/public/publicApiRequest";
 
-const STORAGE_KEY = "sau_popup_image_url";
+const PUBLIC_POPUP_ENDPOINT = "/public/popup_image.php";
 
 export default function AnnouncementPopup() {
   const [isOpen, setIsOpen] = useState(false);
@@ -17,20 +12,30 @@ export default function AnnouncementPopup() {
   const [imageLoaded, setImageLoaded] = useState(false);
 
   useEffect(() => {
-    // Read the URL cached by the admin panel (no API call needed — no auth issues)
-    const url = localStorage.getItem(STORAGE_KEY);
-    if (url) {
-      setImageUrl(url);
-      // Show popup after short delay
-      const timer = setTimeout(() => setIsOpen(true), 800);
-      return () => clearTimeout(timer);
-    }
-    // If nothing in storage → popup stays hidden
+    let cancelled = false;
+
+    (async () => {
+      try {
+        // publicApiRequest returns json.data directly:
+        // { title, popup_image_url, updated_at }
+        const data = await publicApiRequest(PUBLIC_POPUP_ENDPOINT);
+        if (cancelled) return;
+
+        const url = data?.popup_image_url || null;
+        if (url) {
+          setImageUrl(url);
+          setTimeout(() => {
+            if (!cancelled) setIsOpen(true);
+          }, 700);
+        }
+      } catch {
+        // No active popup — stay hidden silently
+      }
+    })();
+
+    return () => { cancelled = true; };
   }, []);
 
-  const handleClose = () => setIsOpen(false);
-
-  // Don't render if no image URL stored
   if (!imageUrl) return null;
 
   return (
@@ -42,82 +47,71 @@ export default function AnnouncementPopup() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            transition={{ duration: 0.2 }}
-            onClick={handleClose}
+            transition={{ duration: 0.22 }}
             className="fixed inset-0 z-[100] bg-[#0b1f4b]/80 backdrop-blur-sm"
+            onClick={() => setIsOpen(false)}
           />
 
-          {/* Scroll container — mobile-safe */}
+          {/* Scroll-safe centering wrapper */}
           <div className="fixed inset-0 z-[101] overflow-y-auto flex items-center justify-center p-3 sm:p-5">
             <motion.div
-              initial={{ opacity: 0, scale: 0.94, y: 20 }}
+              initial={{ opacity: 0, scale: 0.93, y: 24 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.94, y: 20 }}
-              transition={{ type: "spring", stiffness: 320, damping: 30 }}
-              className="relative w-full max-w-lg my-auto rounded-2xl sm:rounded-3xl shadow-2xl overflow-hidden"
+              exit={{ opacity: 0, scale: 0.93, y: 24 }}
+              transition={{ type: "spring", stiffness: 300, damping: 28 }}
+              className="relative w-full max-w-lg my-auto rounded-2xl sm:rounded-3xl overflow-hidden shadow-2xl"
               style={{ border: "1px solid rgba(255,255,255,0.10)" }}
             >
               {/* Close button */}
               <button
-                onClick={handleClose}
+                onClick={() => setIsOpen(false)}
                 aria-label="Close announcement"
-                className="absolute top-3 right-3 z-20 w-9 h-9 flex items-center justify-center rounded-full text-white transition-colors"
-                style={{ background: "rgba(0,0,0,0.50)" }}
+                className="absolute top-3 right-3 z-20 w-9 h-9 flex items-center justify-center rounded-full text-white transition-all hover:scale-110"
+                style={{ background: "rgba(0,0,0,0.55)" }}
               >
                 <MdClose size={20} />
               </button>
 
-              {/* Image area */}
+              {/* Image */}
               <div
                 className="relative w-full bg-[#0b1f4b]"
-                style={{ minHeight: imageLoaded ? 0 : "320px" }}
+                style={{ minHeight: imageLoaded ? 0 : "300px" }}
               >
-                {/* Loading spinner */}
                 {!imageLoaded && (
                   <div className="absolute inset-0 flex items-center justify-center">
                     <div className="w-8 h-8 border-2 border-white/20 border-t-white/70 rounded-full animate-spin" />
                   </div>
                 )}
-
                 <img
                   src={imageUrl}
                   alt="University Announcement"
                   className="w-full h-auto block"
                   style={{ display: imageLoaded ? "block" : "none" }}
                   onLoad={() => setImageLoaded(true)}
-                  onError={() => {
-                    // Broken image — remove from storage and hide popup
-                    localStorage.removeItem(STORAGE_KEY);
-                    setIsOpen(false);
-                  }}
+                  onError={() => setIsOpen(false)}
                 />
               </div>
 
-              {/* Dismiss strip */}
+              {/* Dismiss button */}
               <button
-                onClick={handleClose}
-                className="w-full py-3 text-xs font-bold uppercase tracking-widest transition-colors"
+                onClick={() => setIsOpen(false)}
+                className="w-full py-3 text-[11px] font-bold uppercase tracking-widest transition-colors"
                 style={{
                   background: "#0b1f4b",
-                  color: "rgba(255,255,255,0.40)",
+                  color: "rgba(255,255,255,0.38)",
                   borderTop: "1px solid rgba(255,255,255,0.07)",
                 }}
-                onMouseEnter={(e) =>
-                  (e.currentTarget.style.color = "rgba(255,255,255,0.75)")
-                }
-                onMouseLeave={(e) =>
-                  (e.currentTarget.style.color = "rgba(255,255,255,0.40)")
-                }
+                onMouseEnter={(e) => (e.currentTarget.style.color = "rgba(255,255,255,0.72)")}
+                onMouseLeave={(e) => (e.currentTarget.style.color = "rgba(255,255,255,0.38)")}
               >
                 Close Notice
               </button>
 
-              {/* Brand accent stripe */}
+              {/* Brand stripe */}
               <div
                 className="h-1"
                 style={{
-                  background:
-                    "linear-gradient(to right, #0b1f4b, #a12a2a, #f59e0b, #a12a2a, #0b1f4b)",
+                  background: "linear-gradient(to right, #0b1f4b, #a12a2a, #f59e0b, #a12a2a, #0b1f4b)",
                 }}
               />
             </motion.div>

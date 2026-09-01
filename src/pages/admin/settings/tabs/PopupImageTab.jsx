@@ -30,20 +30,9 @@ export default function PopupImageTab() {
       setLoading(true);
       try {
         const res = await fetchPopupImage();
-        // apiRequest returns json?.data ?? json
-        // So `res` here is already `data`: { id, title, image_path, is_active, full_image_url }
-        const url = res?.full_image_url || null;
-        const active = res?.is_active === 1 || res?.is_active === true;
-        setCurrentImageUrl(url);
-        setIsActive(active);
-
-        // ⚡ Persist to localStorage so the public homepage popup can read it
-        // without needing an auth token (backend /admin/popup_image.php requires auth)
-        if (url && active) {
-          localStorage.setItem("sau_popup_image_url", url);
-        } else {
-          localStorage.removeItem("sau_popup_image_url");
-        }
+        // apiRequest unwraps json.data, so res = { id, title, image_path, is_active, full_image_url }
+        setCurrentImageUrl(res?.full_image_url || null);
+        setIsActive(res?.is_active === 1 || res?.is_active === true);
       } catch (err) {
         console.warn("No popup image found:", err.message);
         setCurrentImageUrl(null);
@@ -87,17 +76,11 @@ export default function PopupImageTab() {
       if (newUrl) {
         setCurrentImageUrl(newUrl);
         setIsActive(newActive);
-        // ⚡ Keep localStorage in sync so public homepage popup updates immediately
-        if (newActive) {
-          localStorage.setItem("sau_popup_image_url", newUrl);
-        } else {
-          localStorage.removeItem("sau_popup_image_url");
-        }
       }
       setSelectedFile(null);
       setPreview(null);
       if (fileInputRef.current) fileInputRef.current.value = "";
-      show("success", "Popup image updated! Refresh the homepage to see it.");
+      show("success", "Popup image updated successfully!");
     } catch (err) {
       console.error("Upload failed:", err);
       show("error", err.message || "Failed to upload popup image");

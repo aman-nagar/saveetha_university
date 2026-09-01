@@ -194,7 +194,7 @@ export function deleteGalleryImage(id) {
 }
 
 // ============================================
-// POPUP IMAGE
+// POPUP IMAGE — ADMIN (requires auth)
 // ============================================
 export function fetchPopupImage() {
   return apiRequest("/admin/popup_image.php");
@@ -203,6 +203,6 @@ export function fetchPopupImage() {
 export function uploadPopupImage(formData) {
   return apiRequest("/admin/popup_image.php", {
     method: "POST",
-    body: formData, // FormData — no Content-Type header, browser sets it with boundary
+    body: formData, // FormData — browser sets Content-Type with boundary
   });
 }

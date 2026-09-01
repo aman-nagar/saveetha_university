@@ -192,3 +192,17 @@ export function deleteGalleryImage(id) {
     method: "DELETE",
   });
 }
+
+// ============================================
+// POPUP IMAGE
+// ============================================
+export function fetchPopupImage() {
+  return apiRequest("/admin/popup_image.php");
+}
+
+export function uploadPopupImage(formData) {
+  return apiRequest("/admin/popup_image.php", {
+    method: "POST",
+    body: formData, // FormData — no Content-Type header, browser sets it with boundary
+  });
+}

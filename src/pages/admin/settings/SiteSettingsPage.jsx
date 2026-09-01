@@ -11,6 +11,7 @@ import SlidersTab from "./tabs/SlidersTab";
 import HeaderSettingsTab from "./tabs/HeaderSettingsTab";
 import DownloadFormsTab from "./tabs/DownloadFormsTab";
 import GalleryTab from "./tabs/GalleryTab";
+import PopupImageTab from "./tabs/PopupImageTab";
 
 // Tab configuration
 const SETTING_TABS = [
@@ -22,6 +23,7 @@ const SETTING_TABS = [
   { id: "sliders", label: "Sliders", icon: "🎨" },
   { id: "gallery", label: "Gallery", icon: "🖼️" },
   { id: "downloadForms", label: "Download Forms", icon: "📥" },
+  { id: "popupImage", label: "Popup Image", icon: "📢" },
 ];
 
 export default function SiteSettingsPage() {
@@ -95,6 +97,7 @@ export default function SiteSettingsPage() {
           />
         )}
         {activeTab === "gallery" && <GalleryTab />}
+        {activeTab === "popupImage" && <PopupImageTab />}
         {activeTab === "downloadForms" && (
           <DownloadFormsTab
             onSuccess={() => show("success", "Form updated")}
